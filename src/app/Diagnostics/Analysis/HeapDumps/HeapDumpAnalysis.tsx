@@ -27,14 +27,28 @@ import {
   EmptyState,
   Grid,
   GridItem,
-  Stack,
-  StackItem,
+  Tab,
+  Tabs,
+  TabTitleText,
 } from '@patternfly/react-core';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { concatMap, EMPTY, finalize, first, of } from 'rxjs';
-import { ClassAndSizeCombo, HeapDumpAnalysisResult, HighSizeObjects, ProblemFieldsEntry } from './types';
+import {
+  AggregateValue,
+  DuplicateArray,
+  DuplicateString,
+  Field,
+  HeapDumpAnalysisResult,
+  HighSizeObjects,
+  HistogramEntry,
+  ObjectEntry,
+  ProblemClass,
+  ProblemCollection,
+  ProblemField,
+  WeakHashMapEntry,
+} from './types';
 import { TopologyIcon } from '@patternfly/react-icons';
 import { HeapDumpSelector } from './HeapDumpSelector';
 import { TargetView } from '@app/TargetView/TargetView';
@@ -60,7 +74,7 @@ const isSameTarget = (a: NullableTarget, b: NullableTarget): boolean =>
   a?.connectUrl === b?.connectUrl && a?.jvmId === b?.jvmId;
 
 interface ProblemFieldRowData {
-  problemFieldsInfo: ProblemFieldsEntry;
+  problemFieldsInfo: ProblemField;
   isExpanded: boolean;
   cellContents: React.ReactNode[];
   children?: React.ReactNode;
@@ -73,20 +87,99 @@ interface HighSizeObjsRowData {
   children?: React.ReactNode;
 }
 
+interface CollectionRowData {
+  collectionInfo: ProblemCollection;
+  isExpanded: boolean;
+  cellContents: React.ReactNode[];
+  children?: React.ReactNode;
+}
+
+interface DupArrayRowData {
+  dupArrayInfo: DuplicateArray;
+  isExpanded: boolean;
+  cellContents: React.ReactNode[];
+  children?: React.ReactNode;
+}
+
+interface DupStringRowData {
+  dupStringInfo: DuplicateString;
+  isExpanded: boolean;
+  cellContents: React.ReactNode[];
+  children?: React.ReactNode;
+}
+
+interface WeakHashMapRowData {
+  weakHashMapInfo: WeakHashMapEntry;
+  isExpanded: boolean;
+  cellContents: React.ReactNode[];
+  children?: React.ReactNode;
+}
+
+const weakHashMapColumns: TableColumn[] = [
+  {
+    title: 'Class and Field',
+    keyPaths: ['classAndField'],
+    sortable: true,
+  },
+  {
+    title: 'Defining Class',
+    keyPaths: ['definingClass'],
+    sortable: true,
+  },
+  {
+    title: 'Overhead',
+    keyPaths: ['overhead'],
+    sortable: true,
+  },
+  {
+    title: 'Bad Objects',
+    keyPaths: ['badObjs'],
+    sortable: true,
+  },
+];
+
 const collectionsColumns: TableColumn[] = [
+  {
+    title: 'Class',
+    keyPaths: ['classAndField'],
+    sortable: true,
+  },
+  {
+    title: 'Defining Class',
+    keyPaths: ['definingClass'],
+    sortable: true,
+  },
+  {
+    title: 'Overhead',
+    keyPaths: ['overhead'],
+    sortable: true,
+  },
+  {
+    title: 'Bad Objects',
+    keyPaths: ['badObjs'],
+    sortable: true,
+  },
+  {
+    title: 'Good Collections',
+    keyPaths: ['goodCollections'],
+    sortable: true,
+  },
+];
+
+const collectionsSubColumns: TableColumn[] = [
   {
     title: 'Class',
     keyPaths: ['clazz'],
     sortable: true,
   },
   {
-    title: 'Problem Kind',
+    title: 'Problem Type',
     keyPaths: ['problemKind'],
     sortable: true,
   },
   {
     title: 'Instances',
-    keyPaths: ['instances'],
+    keyPaths: ['numInstances'],
     sortable: true,
   },
   {
@@ -98,31 +191,84 @@ const collectionsColumns: TableColumn[] = [
 
 const dupArraysColumns: TableColumn[] = [
   {
-    title: 'Element Type',
-    keyPaths: ['elementType'],
+    title: 'Class and Field',
+    keyPaths: ['classAndField'],
     sortable: true,
   },
   {
-    title: 'Size',
-    keyPaths: ['size'],
+    title: 'Defining Class',
+    keyPaths: ['definingClass'],
+    sortable: true,
+  },
+  {
+    title: 'Overhead',
+    keyPaths: ['overhead'],
+    sortable: true,
+  },
+  {
+    title: 'Bad Objects',
+    keyPaths: ['badObjs'],
+    sortable: true,
+  },
+  {
+    title: 'Non Duplicate Arrays',
+    keyPaths: ['nonDupArrays'],
+    sortable: true,
+  },
+];
+
+const dupStringsColumns: TableColumn[] = [
+  {
+    title: 'Class and Field',
+    keyPaths: ['classAndField'],
+    sortable: true,
+  },
+  {
+    title: 'Defining Class',
+    keyPaths: ['definingClass'],
+    sortable: true,
+  },
+  {
+    title: 'Overhead',
+    keyPaths: ['overhead'],
+    sortable: true,
+  },
+  {
+    title: 'Bad Objects',
+    keyPaths: ['badObjs'],
+    sortable: true,
+  },
+  {
+    title: 'Backing Char Array Memory',
+    keyPaths: ['dupBackingCharArrays'],
+    sortable: true,
+  },
+  {
+    title: 'Non Duplicate Arrays',
+    keyPaths: ['nonDupArrays'],
     sortable: true,
   },
 ];
 
 const highSizeObjectsColumns: TableColumn[] = [
   {
-    title: 'Class',
-    keyPaths: ['clazz'],
+    title: 'Class and Field',
+    keyPaths: ['classAndField'],
     sortable: true,
   },
   {
-    title: 'Instances',
-    keyPaths: ['instances'],
+    title: 'Defining Class',
+    keyPaths: ['definingClass'],
     sortable: true,
   },
   {
-    title: 'Size/Overhead',
-    keyPaths: ['sizeOrOvhd'],
+    title: 'Overhead',
+    keyPaths: ['overhead'],
+    sortable: true,
+  },
+  {
+    title: 'Bad Objects',
+    keyPaths: ['badObjs'],
     sortable: true,
   },
 ];
@@ -130,7 +276,7 @@ const highSizeObjectsColumns: TableColumn[] = [
 const problemFieldColumns: TableColumn[] = [
   {
     title: 'Class',
-    keyPaths: ['class'],
+    keyPaths: ['clazz'],
     sortable: true,
   },
   {
@@ -140,12 +286,12 @@ const problemFieldColumns: TableColumn[] = [
   },
   {
     title: 'Overhead',
-    keyPaths: ['allProblemFieldsOvhd'],
+    keyPaths: ['overhead'],
     sortable: true,
   },
   {
-    title: 'Status',
-    keyPaths: ['status'],
+    title: 'Problem Type',
+    keyPaths: ['problemKind'],
     sortable: true,
   },
 ];
@@ -191,6 +337,37 @@ const problemFieldSubColumns: TableColumn[] = [
   },
 ];
 
+const dupArraysSubColumns: TableColumn[] = [
+  {
+    title: 'Array Value',
+    keyPaths: ['value'],
+    sortable: true,
+  },
+  {
+    title: 'Duplicate Array Count',
+    keyPaths: ['count'],
+    sortable: true,
+  },
+];
+
+const highSizeObjectsSubColumns: TableColumn[] = [
+  {
+    title: 'Class',
+    keyPaths: ['clazz'],
+    sortable: true,
+  },
+  {
+    title: 'Instances',
+    keyPaths: ['numInstances'],
+    sortable: true,
+  },
+  {
+    title: 'Overhead',
+    keyPaths: ['overhead'],
+    sortable: true,
+  },
+];
+
 export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
@@ -206,11 +383,21 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
   const [heapDumps, setHeapDumps] = React.useState<HeapDump[]>([]);
   const [sortBy, getSortParams] = useSort();
   const [openProblemFieldRows, setOpenProblemFieldRows] = React.useState<number[]>([]);
+  const [openCollectionRows, setOpenCollectionRows] = React.useState<number[]>([]);
+  const [openDupArrayRows, setOpenDupArrayRows] = React.useState<number[]>([]);
+  const [openDupStringRows, setOpenDupStringRows] = React.useState<number[]>([]);
+  const [openWeakHashMapRows, setOpenWeakHashMapRows] = React.useState<number[]>([]);
   const [openHighSizeObjRows, setOpenHighSizeObjRows] = React.useState<number[]>([]);
 
   const selectedHeapDumpJvmIdRef = React.useRef<string>();
 
   const targetAsObs = React.useMemo(() => of(target), [target]);
+  const [activeTab, setActiveTab] = React.useState(0);
+
+  const onTabSelect = React.useCallback(
+    (_evt: MouseEvent | React.MouseEvent, idx: string | number) => setActiveTab(Number(idx)),
+    [setActiveTab],
+  );
 
   const handleHeapDumpAnalysis = React.useCallback(
     (result: HeapDumpAnalysisResult) => {
@@ -520,182 +707,636 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
     );
   }, [analysisResult]);
 
-  const problemFieldsSubTable = React.useCallback((fields: string[], classes: string[], overhead: number[]) => {
+  const problemFieldsSubTable = React.useCallback(
+    (fields: Field[]) => {
+      if (fields.length) {
+        return (
+          <Card>
+            <CardTitle>Problem Fields</CardTitle>
+            <Table aria-label="Problem Fields" variant={TableVariant.compact}>
+              <Thead>
+                <Tr>
+                  {problemFieldSubColumns.map(({ title }) => (
+                    <Th key={`field-header-${title}`}>{title}</Th>
+                  ))}
+                </Tr>
+              </Thead>
+              <Tbody>
+                {fields.map((f: Field) => (
+                  <Tr key={`problem-fields`}>
+                    <Td key={`field`} dataLabel={problemFieldSubColumns[0].title}>
+                      {f.field ? f.field : 'N/A'}
+                    </Td>
+                    <Td key={`clazz`} dataLabel={problemFieldSubColumns[1].title}>
+                      {f.clazz ? f.clazz : 'N/A'}
+                    </Td>
+                    <Td key={`overhead`} dataLabel={problemFieldSubColumns[2].title}>
+                      {f.overhead ? f.overhead : 'N/A'}
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </Card>
+        );
+      } else {
+        return emptyTableState('No Problem Field Details Found');
+      }
+    },
+    [problemFieldSubColumns],
+  );
+
+  const collectionsSubTable = React.useCallback((classAndOvhds: ProblemClass[]) => {
     return (
       <Card>
-        <CardTitle>Problem Fields</CardTitle>
-        <Table aria-label="Problem Fields" variant={TableVariant.compact}>
+        <CardTitle>Collection Overhead Details</CardTitle>
+        <Table aria-label="Collection Details" variant={TableVariant.compact}>
           <Thead>
             <Tr>
-              {problemFieldSubColumns.map(({ title }) => (
+              {collectionsSubColumns.map(({ title }) => (
                 <Th key={`field-header-${title}`}>{title}</Th>
               ))}
             </Tr>
           </Thead>
           <Tbody>
-            <Tr key={`problem-fields`}>
-              {fields.map((s: string) => (
-                <Td key={`field`} dataLabel={problemFieldSubColumns[0].title}>
-                  {s ? s : 'N/A'}
+            {classAndOvhds.map((c: ProblemClass) => (
+              <Tr key={`problem-classes`}>
+                <Td key={`clazz`} dataLabel={collectionsSubColumns[0].title}>
+                  {c.clazz ? c.clazz : 'N/A'}
                 </Td>
-              ))}
-              {classes.map((s: string) => (
-                <Td key={`declaring-class`} dataLabel={problemFieldSubColumns[1].title}>
-                  {s ? s : 'N/A'}
+                <Td key={`problemKind`} dataLabel={collectionsSubColumns[1].title}>
+                  {c.problemKind ? c.problemKind : 'N/A'}
                 </Td>
-              ))}
-              {overhead.map((n: number) => (
-                <Td key={`field`} dataLabel={problemFieldSubColumns[2].title}>
-                  {n ? n : 'N/A'}
+                <Td key={`numInstances`} dataLabel={collectionsSubColumns[2].title}>
+                  {c.numInstances ? c.numInstances : 'N/A'}
                 </Td>
-              ))}
-            </Tr>
+                <Td key={`overhead`} dataLabel={collectionsSubColumns[3].title}>
+                  {c.overhead ? c.overhead : 'N/A'}
+                </Td>
+              </Tr>
+            ))}
           </Tbody>
         </Table>
       </Card>
     );
   }, []);
 
-  const highSizeObjsSubTable = React.useCallback((objs: ClassAndSizeCombo[]) => {
-    return (
-      <Card>
-        <CardTitle>Classes and Sizes</CardTitle>
-        <Table aria-label="Classes and Sizes" variant={TableVariant.compact}>
+  const highSizeObjectsSubTable = React.useCallback(
+    (classAndSizeCombos: ObjectEntry[]) => {
+      if (classAndSizeCombos.length) {
+        return (
+          <Card>
+            <CardTitle>High Size Object Details</CardTitle>
+            <Table aria-label="High Size Object" variant={TableVariant.compact}>
+              <Thead>
+                <Tr>
+                  {highSizeObjectsSubColumns.map(({ title }) => (
+                    <Th key={`high-size-objects-sub-header-${title}`}>{title}</Th>
+                  ))}
+                </Tr>
+              </Thead>
+              <Tbody>
+                {classAndSizeCombos.map((c: ObjectEntry) => (
+                  <Tr key={`high-size-object-entries`}>
+                    <Td key={`clazz`} dataLabel={highSizeObjectsSubColumns[0].title}>
+                      {c.clazz ? c.clazz : 'N/A'}
+                    </Td>
+                    <Td key={`numInstances`} dataLabel={collectionsSubColumns[1].title}>
+                      {c.numInstances ? c.numInstances : 'N/A'}
+                    </Td>
+                    <Td key={`overhead`} dataLabel={collectionsSubColumns[2].title}>
+                      {c.overhead ? c.overhead : 'N/A'}
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </Card>
+        );
+      } else {
+        return emptyTableState('No Detailed Information Found');
+      }
+    },
+    [emptyTableState],
+  );
+
+  const weakHashMapSubTable = React.useCallback(
+    (classes: String[]) => {
+      if (classes.length) {
+        return (
+          <Card>
+            <CardTitle>Weak HashMap Classes</CardTitle>
+            <Table aria-label="Weak HashMap Classes" variant={TableVariant.compact}>
+              <Thead>
+                <Tr>
+                  <Th key={`weak-hashmap-classes`}>{'Classes'}</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {classes.map((c: String) => (
+                  <Tr key={`weak-hashmap-subtable`}>
+                    <Td key={`class`} dataLabel={'class'}>
+                      {c ? c : 'N/A'}
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </Card>
+        );
+      } else {
+        return emptyTableState('No Weak HashMap Classes Found');
+      }
+    },
+    [emptyTableState],
+  );
+
+  const dupArraysSubTable = React.useCallback(
+    (aggregates: AggregateValue[]) => {
+      if (aggregates.length) {
+        return (
+          <Card>
+            <CardTitle>Duplicate Array Overhead Details</CardTitle>
+            <Table aria-label="Duplicate Array Details" variant={TableVariant.compact}>
+              <Thead>
+                <Tr>
+                  {dupArraysSubColumns.map(({ title }) => (
+                    <Th key={`array-header-${title}`}>{title}</Th>
+                  ))}
+                </Tr>
+              </Thead>
+              <Tbody>
+                {aggregates.map((c: AggregateValue) => (
+                  <Tr key={`dup-array-subtable`}>
+                    <Td key={`value`} dataLabel={dupArraysSubColumns[0].title}>
+                      {c.value ? c.value : 'N/A'}
+                    </Td>
+                    <Td key={`count`} dataLabel={dupArraysSubColumns[1].title}>
+                      {c.count ? c.count : 'N/A'}
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </Card>
+        );
+      } else {
+        return emptyTableState('No Duplicate Array Overhead Details Found');
+      }
+    },
+    [emptyTableState],
+  );
+
+  const dupStringsSubTable = React.useCallback(
+    (aggregates: AggregateValue[]) => {
+      if (aggregates.length) {
+        return (
+          <Card>
+            <CardTitle>Duplicate String Overhead Details</CardTitle>
+            <Table aria-label="Duplicate String Details" variant={TableVariant.compact}>
+              <Thead>
+                <Tr>
+                  {dupArraysSubColumns.map(({ title }) => (
+                    <Th key={`string-header-${title}`}>{title}</Th>
+                  ))}
+                </Tr>
+              </Thead>
+              <Tbody>
+                {aggregates.map((c: AggregateValue) => (
+                  <Tr key={`dup-string-subtable`}>
+                    <Td key={`value`} dataLabel={dupArraysSubColumns[0].title}>
+                      {c.value ? c.value : 'N/A'}
+                    </Td>
+                    <Td key={`count`} dataLabel={dupArraysSubColumns[1].title}>
+                      {c.count ? c.count : 'N/A'}
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </Card>
+        );
+      } else {
+        return emptyTableState('No Duplicate String Details Found');
+      }
+    },
+    [emptyTableState],
+  );
+
+  const displayedCollectionRowData = React.useMemo(() => {
+    const rows: CollectionRowData[] = [];
+    const sorted = sortResources(
+      {
+        index: sortBy.index ?? 1,
+        direction: sortBy.direction ?? SortByDirection.asc,
+      },
+      analysisResult?.problemCollections ? analysisResult?.problemCollections : [],
+      collectionsColumns,
+    );
+    if (analysisResult) {
+      sorted.forEach((p: ProblemCollection) => {
+        rows.push({
+          collectionInfo: p,
+          cellContents: [p.classAndField, p.definingClass, p.overhead, p.badObjs, p.goodCollections],
+          isExpanded: openCollectionRows.some((id) => id === hashCode(p.classAndField)),
+          children: collectionsSubTable(p.classAndOvhds),
+        });
+      });
+    }
+    return rows;
+  }, [openCollectionRows, sortBy, collectionsSubTable, analysisResult]);
+
+  const displayedWeakHashMapRowData = React.useMemo(() => {
+    const rows: WeakHashMapRowData[] = [];
+    const sorted = sortResources(
+      {
+        index: sortBy.index ?? 1,
+        direction: sortBy.direction ?? SortByDirection.asc,
+      },
+      analysisResult?.weakHashMapClusters ? analysisResult?.weakHashMapClusters : [],
+      dupArraysColumns,
+    );
+    if (analysisResult) {
+      sorted.forEach((d: WeakHashMapEntry) => {
+        rows.push({
+          weakHashMapInfo: d,
+          cellContents: [d.classAndField, d.definingClass, d.overhead, d.badObjs],
+          isExpanded: openWeakHashMapRows.some((id) => id === hashCode(d.classAndField)),
+          children: weakHashMapSubTable(d.classes),
+        });
+      });
+    }
+    return rows;
+  }, [openWeakHashMapRows, sortBy, weakHashMapSubTable, analysisResult]);
+
+  const displayedDupArrayRowData = React.useMemo(() => {
+    const rows: DupArrayRowData[] = [];
+    const sorted = sortResources(
+      {
+        index: sortBy.index ?? 1,
+        direction: sortBy.direction ?? SortByDirection.asc,
+      },
+      analysisResult?.duplicateArrays ? analysisResult?.duplicateArrays : [],
+      dupArraysColumns,
+    );
+    if (analysisResult) {
+      sorted.forEach((d: DuplicateArray) => {
+        rows.push({
+          dupArrayInfo: d,
+          cellContents: [d.classAndField, d.definingClass, d.overhead, d.badObjs, d.nonDupArrays],
+          isExpanded: openDupArrayRows.some((id) => id === hashCode(d.classAndField)),
+          children: dupArraysSubTable(d.aggregates),
+        });
+      });
+    }
+    return rows;
+  }, [openDupArrayRows, sortBy, dupArraysSubTable, analysisResult]);
+
+  const displayedDupStringRowData = React.useMemo(() => {
+    const rows: DupStringRowData[] = [];
+    const sorted = sortResources(
+      {
+        index: sortBy.index ?? 1,
+        direction: sortBy.direction ?? SortByDirection.asc,
+      },
+      analysisResult?.duplicateStrings ? analysisResult?.duplicateStrings : [],
+      dupStringsColumns,
+    );
+    if (analysisResult) {
+      sorted.forEach((d: DuplicateString) => {
+        rows.push({
+          dupStringInfo: d,
+          cellContents: [
+            d.classAndField,
+            d.definingClass,
+            d.overhead,
+            d.badObjs,
+            d.dupBackingCharArrays,
+            d.nonDupStrings,
+          ],
+          isExpanded: openDupStringRows.some((id) => id === hashCode(d.classAndField)),
+          children: dupStringsSubTable(d.aggregates),
+        });
+      });
+    }
+    return rows;
+  }, [openDupStringRows, sortBy, dupStringsSubTable, analysisResult]);
+
+  const onDupArrayRowToggle = React.useCallback(
+    (d: DuplicateArray) => {
+      setOpenDupArrayRows((old) => {
+        const typeId = hashCode(d.classAndField);
+        if (old.some((id) => id === typeId)) {
+          return old.filter((id) => id !== typeId);
+        }
+        return [...old, typeId];
+      });
+    },
+    [setOpenDupArrayRows],
+  );
+
+  const onDupStringRowToggle = React.useCallback(
+    (d: DuplicateString) => {
+      setOpenDupStringRows((old) => {
+        const typeId = hashCode(d.classAndField);
+        if (old.some((id) => id === typeId)) {
+          return old.filter((id) => id !== typeId);
+        }
+        return [...old, typeId];
+      });
+    },
+    [setOpenDupStringRows],
+  );
+
+  const onWeakHashMapRowToggle = React.useCallback(
+    (d: WeakHashMapEntry) => {
+      setOpenWeakHashMapRows((old) => {
+        const typeId = hashCode(d.classAndField);
+        if (old.some((id) => id === typeId)) {
+          return old.filter((id) => id !== typeId);
+        }
+        return [...old, typeId];
+      });
+    },
+    [setOpenWeakHashMapRows],
+  );
+
+  const dupArraysTable = React.useMemo(() => {
+    if (displayedDupArrayRowData.length) {
+      return (
+        <Table aria-label="Duplicate Arrays" variant={TableVariant.compact}>
           <Thead>
             <Tr>
-              {highSizeObjectsColumns.map(({ title }) => (
-                <Th key={`field-header-${title}`}>{title}</Th>
+              <Th key="table-header-expand" />
+              {dupArraysColumns.map(({ title }) => (
+                <Th key={`dup-arrays-header-${title}`}>{title}</Th>
               ))}
             </Tr>
           </Thead>
-          <Tbody>
-            {objs.map((o) => {
-              <Tr key={`classes-and-sizes`}>
-                <Td key={`clazz`} dataLabel={highSizeObjectsColumns[0].title}>
-                  {o.clazz ? o.clazz : 'N/A'}
+          {displayedDupArrayRowData.map((c: DupArrayRowData, index) => (
+            <Tbody key={`dup-arrays-row-pair-${index}`} isExpanded={c.isExpanded}>
+              <Tr key={`dup-arrays-row-${index}`}>
+                <Td
+                  key={`dup-arrays-row-expandable`}
+                  expand={{
+                    rowIndex: index,
+                    isExpanded: c.isExpanded,
+                    expandId: `expandable-dup-arrays-row-${index}`,
+                    onToggle: () => onDupArrayRowToggle(c.dupArrayInfo),
+                  }}
+                />
+                <Td key={`collection-class-and-field-${index}`} colSpan={1} dataLabel={dupArraysColumns[0].title}>
+                  {c.dupArrayInfo.classAndField !== undefined ? c.dupArrayInfo.classAndField : 'N/A'}
                 </Td>
-                <Td key={`numInstances`} dataLabel={highSizeObjectsColumns[1].title}>
-                  {o.numInstances ? o.numInstances : 'N/A'}
+                <Td key={`dup-array-defining-class-${index}`} colSpan={1} dataLabel={dupArraysColumns[1].title}>
+                  {c.dupArrayInfo.definingClass !== undefined ? c.dupArrayInfo.definingClass : 'N/A'}
                 </Td>
-                <Td key={`sizeOrOvhd`} dataLabel={highSizeObjectsColumns[2].title}>
-                  {o.sizeOrOvhd ? o.sizeOrOvhd : 'N/A'}
+                <Td key={`dup-array-overhead-${index}`} colSpan={1} dataLabel={dupArraysColumns[2].title}>
+                  {c.dupArrayInfo.overhead !== undefined ? c.dupArrayInfo.overhead : 'N/A'}
                 </Td>
-              </Tr>;
-            })}
-          </Tbody>
+                <Td key={`dup-array-bad-objs-${index}`} colSpan={1} dataLabel={dupArraysColumns[3].title}>
+                  {c.dupArrayInfo.badObjs != null ? c.dupArrayInfo.badObjs : 'N/A'}
+                </Td>
+                <Td key={`dup-array-non-dup-arrays-${index}`} colSpan={1} dataLabel={dupArraysColumns[4].title}>
+                  {c.dupArrayInfo.nonDupArrays !== undefined ? c.dupArrayInfo.nonDupArrays : 'N/A'}
+                </Td>
+              </Tr>
+              <Tr key={`dup-array-row-${index}-expandable-child`} isExpanded={c.isExpanded}>
+                <Td dataLabel="dup-array-details" colSpan={dupArraysColumns.length}>
+                  <ExpandableRowContent>{c.children}</ExpandableRowContent>
+                </Td>
+              </Tr>
+            </Tbody>
+          ))}
         </Table>
-      </Card>
-    );
-  }, []);
+      );
+    } else {
+      return emptyTableState('No Duplicate Arrays Found');
+    }
+  }, [displayedDupArrayRowData, emptyTableState, onDupArrayRowToggle]);
+
+  const weakHashMapTable = React.useMemo(() => {
+    if (displayedWeakHashMapRowData.length) {
+      return (
+        <Table aria-label="Weak HashMaps" variant={TableVariant.compact}>
+          <Thead>
+            <Tr>
+              <Th key="table-header-expand" />
+              {weakHashMapColumns.map(({ title }) => (
+                <Th key={`weak-hashmaps-header-${title}`}>{title}</Th>
+              ))}
+            </Tr>
+          </Thead>
+          {displayedWeakHashMapRowData.map((c: WeakHashMapRowData, index) => (
+            <Tbody key={`weak-hashmap-row-pair-${index}`} isExpanded={c.isExpanded}>
+              <Tr key={`weak-hashmap-row-${index}`}>
+                <Td
+                  key={`weak-hashmap-row-expandable`}
+                  expand={{
+                    rowIndex: index,
+                    isExpanded: c.isExpanded,
+                    expandId: `expandable-weak-hashmap-row-${index}`,
+                    onToggle: () => onWeakHashMapRowToggle(c.weakHashMapInfo),
+                  }}
+                />
+                <Td key={`weak-hashmap-class-and-field-${index}`} colSpan={1} dataLabel={weakHashMapColumns[0].title}>
+                  {c.weakHashMapInfo.classAndField !== undefined ? c.weakHashMapInfo.classAndField : 'N/A'}
+                </Td>
+                <Td key={`weak-hashmap-defining-class-${index}`} colSpan={1} dataLabel={weakHashMapColumns[1].title}>
+                  {c.weakHashMapInfo.definingClass !== undefined ? c.weakHashMapInfo.definingClass : 'N/A'}
+                </Td>
+                <Td key={`weak-hashmap-overhead-${index}`} colSpan={1} dataLabel={weakHashMapColumns[2].title}>
+                  {c.weakHashMapInfo.overhead !== undefined ? c.weakHashMapInfo.overhead : 'N/A'}
+                </Td>
+                <Td key={`weak-hashmap-bad-objs-${index}`} colSpan={1} dataLabel={dupStringsColumns[3].title}>
+                  {c.weakHashMapInfo.badObjs != null ? c.weakHashMapInfo.badObjs : 'N/A'}
+                </Td>
+              </Tr>
+              <Tr key={`weak-hashmap-row-${index}-expandable-child`} isExpanded={c.isExpanded}>
+                <Td dataLabel="weak-hashmap-details" colSpan={weakHashMapColumns.length}>
+                  <ExpandableRowContent>{c.children}</ExpandableRowContent>
+                </Td>
+              </Tr>
+            </Tbody>
+          ))}
+        </Table>
+      );
+    } else {
+      return emptyTableState('No Weak HashMaps Found');
+    }
+  }, [displayedWeakHashMapRowData, emptyTableState, onWeakHashMapRowToggle]);
+
+  const dupStringsTable = React.useMemo(() => {
+    if (displayedDupStringRowData.length) {
+      return (
+        <Table aria-label="Duplicate Strings" variant={TableVariant.compact}>
+          <Thead>
+            <Tr>
+              <Th key="table-header-expand" />
+              {dupStringsColumns.map(({ title }) => (
+                <Th key={`dup-strings-header-${title}`}>{title}</Th>
+              ))}
+            </Tr>
+          </Thead>
+          {displayedDupStringRowData.map((c: DupStringRowData, index) => (
+            <Tbody key={`dup-strings-row-pair-${index}`} isExpanded={c.isExpanded}>
+              <Tr key={`dup-strings-row-${index}`}>
+                <Td
+                  key={`dup-strings-row-expandable`}
+                  expand={{
+                    rowIndex: index,
+                    isExpanded: c.isExpanded,
+                    expandId: `expandable-dup-strings-row-${index}`,
+                    onToggle: () => onDupStringRowToggle(c.dupStringInfo),
+                  }}
+                />
+                <Td key={`dup-string-class-and-field-${index}`} colSpan={1} dataLabel={dupStringsColumns[0].title}>
+                  {c.dupStringInfo.classAndField !== undefined ? c.dupStringInfo.classAndField : 'N/A'}
+                </Td>
+                <Td key={`dup-array-defining-class-${index}`} colSpan={1} dataLabel={dupStringsColumns[1].title}>
+                  {c.dupStringInfo.definingClass !== undefined ? c.dupStringInfo.definingClass : 'N/A'}
+                </Td>
+                <Td key={`dup-array-overhead-${index}`} colSpan={1} dataLabel={dupStringsColumns[2].title}>
+                  {c.dupStringInfo.overhead !== undefined ? c.dupStringInfo.overhead : 'N/A'}
+                </Td>
+                <Td key={`dup-array-bad-objs-${index}`} colSpan={1} dataLabel={dupStringsColumns[3].title}>
+                  {c.dupStringInfo.badObjs != null ? c.dupStringInfo.badObjs : 'N/A'}
+                </Td>
+                <Td key={`dup-string-backing-char-arrays-${index}`} colSpan={1} dataLabel={dupStringsColumns[4].title}>
+                  {c.dupStringInfo.dupBackingCharArrays !== undefined ? c.dupStringInfo.dupBackingCharArrays : 'N/A'}
+                </Td>
+                <Td key={`dup-array-non-dup-strings-${index}`} colSpan={1} dataLabel={dupStringsColumns[5].title}>
+                  {c.dupStringInfo.nonDupStrings !== undefined ? c.dupStringInfo.nonDupStrings : 'N/A'}
+                </Td>
+              </Tr>
+              <Tr key={`dup-string-row-${index}-expandable-child`} isExpanded={c.isExpanded}>
+                <Td dataLabel="dup-string-details" colSpan={dupStringsColumns.length}>
+                  <ExpandableRowContent>{c.children}</ExpandableRowContent>
+                </Td>
+              </Tr>
+            </Tbody>
+          ))}
+        </Table>
+      );
+    } else {
+      return emptyTableState('No Duplicate Strings Found');
+    }
+  }, [displayedDupStringRowData, emptyTableState, onDupStringRowToggle]);
+
+  const onCollectionRowToggle = React.useCallback(
+    (d: ProblemCollection) => {
+      setOpenCollectionRows((old) => {
+        const typeId = hashCode(d.classAndField);
+        if (old.some((id) => id === typeId)) {
+          return old.filter((id) => id !== typeId);
+        }
+        return [...old, typeId];
+      });
+    },
+    [setOpenCollectionRows],
+  );
+
+  const histogramRows = React.useMemo(
+    () =>
+      analysisResult?.objectHistogram.map((h: HistogramEntry) => (
+        <Tr key={`object-histogram`}>
+          <Td key={`clazz`} dataLabel={objectHistogramTableColumns[0].title}>
+            {h.clazz ? h.clazz : 'N/A'}
+          </Td>
+          <Td key={`numInstances`} dataLabel={objectHistogramTableColumns[1].title}>
+            {h.numInstances ? h.numInstances : 'N/A'}
+          </Td>
+          <Td key={`inclusive`} dataLabel={objectHistogramTableColumns[2].title}>
+            {h.inclusiveSize ? h.inclusiveSize : 'N/A'}
+          </Td>
+          <Td key={`shallow`} dataLabel={objectHistogramTableColumns[3].title}>
+            {h.shallowSize ? h.shallowSize : 'N/A'}
+          </Td>
+        </Tr>
+      )),
+    [analysisResult],
+  );
 
   const objectHistogramTable = React.useMemo(() => {
-    return analysisResult?.objectHistogram.map((o) => {
+    return (
       <Card>
         <CardTitle>Object Histogram</CardTitle>
-        <Table aria-label="Object Histogram" variant={TableVariant.compact}>
-          <Thead>
-            <Tr>
-              {objectHistogramTableColumns.map(({ title }) => (
-                <Th key={`histogram-header-${title}`}>{title}</Th>
-              ))}
-            </Tr>
-          </Thead>
-          <Tbody>
-            <Tr key={`object-histogram`}>
-              <Td key={`class`} dataLabel={objectHistogramTableColumns[0].title}>
-                {o.class ? o.class : 'N/A'}
-              </Td>
-              <Td key={`instances`} dataLabel={objectHistogramTableColumns[1].title}>
-                {o.instances ? o.instances : 'N/A'}
-              </Td>
-              <Td key={`inclusive`} dataLabel={objectHistogramTableColumns[2].title}>
-                {o.inclusiveSize ? o.inclusiveSize : 'N/A'}
-              </Td>
-              <Td key={`shallow`} dataLabel={objectHistogramTableColumns[3].title}>
-                {o.shallowSize ? o.shallowSize : 'N/A'}
-              </Td>
-            </Tr>
-          </Tbody>
-        </Table>
-      </Card>;
-    });
+        {histogramRows?.length ? (
+          <Table aria-label="Object Histogram" variant={TableVariant.compact}>
+            <Thead>
+              <Tr>
+                {objectHistogramTableColumns.map(({ title }) => (
+                  <Th key={`histogram-${title}`}>{title}</Th>
+                ))}
+              </Tr>
+            </Thead>
+            <Tbody>{histogramRows}</Tbody>
+          </Table>
+        ) : (
+          emptyTableState('No Object Histogram')
+        )}
+      </Card>
+    );
   }, [analysisResult]);
 
   const collectionsTable = React.useMemo(() => {
-    return (
-      // 0 is full reference chains, 1 is nearest field
-      analysisResult?.collectionClusters[0].map((coll) => {
-        <Card>
-          <CardTitle>Problem Collections</CardTitle>
-          <Content component={ContentVariants.dl}> Good Collections: {coll.numGoodCollections}</Content>
-          <Table aria-label="Problem Collections" variant={TableVariant.compact}>
-            <Thead>
-              <Tr>
-                {collectionsColumns.map(({ title }) => (
-                  <Th key={`collections-header-${title}`}>{title}</Th>
-                ))}
+    if (displayedCollectionRowData) {
+      return (
+        <Table aria-label="Problem Collections" variant={TableVariant.compact}>
+          <Thead>
+            <Tr>
+              <Th key="table-header-expand" />
+              {collectionsColumns.map(({ title }) => (
+                <Th key={`collections-header-${title}`}>{title}</Th>
+              ))}
+            </Tr>
+          </Thead>
+          {displayedCollectionRowData.map((c: CollectionRowData, index) => (
+            <Tbody key={`collection-row-pair-${index}`} isExpanded={c.isExpanded}>
+              <Tr key={`collection-row-${index}`}>
+                <Td
+                  key={`collection-row-expandable`}
+                  expand={{
+                    rowIndex: index,
+                    isExpanded: c.isExpanded,
+                    expandId: `expandable-collection-row-${index}`,
+                    onToggle: () => onCollectionRowToggle(c.collectionInfo),
+                  }}
+                />
+                <Td key={`collection-class-and-field-${index}`} colSpan={1} dataLabel={collectionsColumns[0].title}>
+                  {c.collectionInfo.classAndField !== undefined ? c.collectionInfo.classAndField : 'N/A'}
+                </Td>
+                <Td key={`collection-defining-class-${index}`} colSpan={1} dataLabel={collectionsColumns[1].title}>
+                  {c.collectionInfo.definingClass !== undefined ? c.collectionInfo.definingClass : 'N/A'}
+                </Td>
+                <Td key={`collection-overhead-${index}`} colSpan={1} dataLabel={collectionsColumns[2].title}>
+                  {c.collectionInfo.overhead !== undefined ? c.collectionInfo.overhead : 'N/A'}
+                </Td>
+                <Td key={`collection-bad-objs-${index}`} colSpan={1} dataLabel={collectionsColumns[3].title}>
+                  {c.collectionInfo.badObjs != null ? c.collectionInfo.badObjs : 'N/A'}
+                </Td>
+                <Td key={`collection-goodCollections-${index}`} colSpan={1} dataLabel={collectionsColumns[4].title}>
+                  {c.collectionInfo.goodCollections !== undefined ? c.collectionInfo.goodCollections : 'N/A'}
+                </Td>
               </Tr>
-            </Thead>
-            <Tbody>
-              {coll.classAndOvhdList.map((o) => {
-                <Tr key={`collections`}>
-                  <Td key={`class`} dataLabel={collectionsColumns[0].title}>
-                    {o.clazz ? o.clazz : 'N/A'}
-                  </Td>
-                  <Td key={`problemKind`} dataLabel={collectionsColumns[1].title}>
-                    {o.problemKind ? o.problemKind : 'N/A'}
-                  </Td>
-                  <Td key={`instances`} dataLabel={collectionsColumns[2].title}>
-                    {o.instances ? o.instances : 'N/A'}
-                  </Td>
-                  <Td key={`overhead`} dataLabel={collectionsColumns[3].title}>
-                    {o.overhead ? o.overhead : 'N/A'}
-                  </Td>
-                </Tr>;
-              })}
-            </Tbody>
-          </Table>
-        </Card>;
-      })
-    );
-  }, [analysisResult]);
-
-  const dupArraysTable = React.useMemo(() => {
-    return (
-      // 0 is full reference chains, 1 is nearest field
-      analysisResult?.duplicateArrayClusters[0].map((cluster) => {
-        <Card>
-          <CardTitle>Duplicate Arrays</CardTitle>
-          <Table aria-label="Duplicate Arrays" variant={TableVariant.compact}>
-            <Thead>
-              <Tr>
-                {dupArraysColumns.map(({ title }) => (
-                  <Th key={`dup-arrays-header-${title}`}>{title}</Th>
-                ))}
+              <Tr key={`collection-row-${index}-expandable-child`} isExpanded={c.isExpanded}>
+                <Td dataLabel="collection-details" colSpan={collectionsColumns.length}>
+                  <ExpandableRowContent>{c.children}</ExpandableRowContent>
+                </Td>
               </Tr>
-            </Thead>
-            <Tbody>
-              {cluster.entries.map((e) => {
-                <Tr key={`collections`}>
-                  <Td key={`Element Type`} dataLabel={dupArraysColumns[0].title}>
-                    {e.elementType ? e.elementType : 'N/A'}
-                  </Td>
-                  <Td key={`Size`} dataLabel={dupArraysColumns[1].title}>
-                    {e.size ? e.size : 'N/A'}
-                  </Td>
-                </Tr>;
-              })}
             </Tbody>
-          </Table>
-        </Card>;
-      })
-    );
-  }, [analysisResult]);
+          ))}
+        </Table>
+      );
+    } else {
+      return emptyTableState('No Problem Collections Found');
+    }
+  }, [displayedCollectionRowData, emptyTableState, onCollectionRowToggle]);
 
   const onProblemFieldRowToggle = React.useCallback(
-    (d: ProblemFieldsEntry) => {
+    (d: ProblemField) => {
       setOpenProblemFieldRows((old) => {
-        const typeId = hashCode(d.class);
+        const typeId = hashCode(d.clazz);
         if (old.some((id) => id === typeId)) {
           return old.filter((id) => id !== typeId);
         }
@@ -708,7 +1349,7 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
   const onHighSizeObjsRowToggle = React.useCallback(
     (d: HighSizeObjects) => {
       setOpenHighSizeObjRows((old) => {
-        const typeId = hashCode(d.clazz);
+        const typeId = hashCode(d.classAndField);
         if (old.some((id) => id === typeId)) {
           return old.filter((id) => id !== typeId);
         }
@@ -729,12 +1370,12 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
       problemFieldColumns,
     );
     if (analysisResult) {
-      sorted.forEach((d: ProblemFieldsEntry) => {
+      sorted.forEach((d: ProblemField) => {
         rows.push({
           problemFieldsInfo: d,
-          cellContents: [d.class, d.numInstances, d.allProblemFieldsOvhd, d.status],
-          isExpanded: openProblemFieldRows.some((id) => id === hashCode(d.class)),
-          children: problemFieldsSubTable(d.problemFieldNames, d.problemFieldDeclaringClasses, d.perFieldOvhd),
+          cellContents: [d.clazz, d.numInstances, d.overhead, d.problemKind],
+          isExpanded: openProblemFieldRows.some((id) => id === hashCode(d.clazz)),
+          children: problemFieldsSubTable(d.fields),
         });
       });
     }
@@ -748,29 +1389,29 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
         index: sortBy.index ?? 1,
         direction: sortBy.direction ?? SortByDirection.asc,
       },
-      analysisResult?.highSizeObjectClusters[0] ? analysisResult.highSizeObjectClusters[0] : [],
-      problemFieldColumns,
+      analysisResult?.highSizeObjects ? analysisResult.highSizeObjects : [],
+      highSizeObjectsColumns,
     );
     if (analysisResult) {
       sorted.forEach((d: HighSizeObjects) => {
         rows.push({
           highSizeObjsInfo: d,
-          cellContents: [d.clazz, d.numInstances, d.sizeOrOvhd],
-          isExpanded: openHighSizeObjRows.some((id) => id === hashCode(d.clazz)),
-          children: highSizeObjsSubTable(d.classAndSizeList),
+          cellContents: [d.classAndField, d.badObjs, d.overhead],
+          isExpanded: openHighSizeObjRows.some((id) => id === hashCode(d.classAndField)),
+          children: highSizeObjectsSubTable(d.classAndSizeCombos),
         });
       });
     }
     return rows;
-  }, [openHighSizeObjRows, sortBy, problemFieldsSubTable, analysisResult]);
+  }, [openHighSizeObjRows, sortBy, highSizeObjectsSubTable, analysisResult]);
 
   const problemFieldTable = React.useMemo(() => {
     if (displayedProblemFieldRowData.length) {
-      return displayedProblemFieldRowData.map((d: ProblemFieldRowData, index) => (
+      return (
         <Table aria-label="Problem Field Table" variant={TableVariant.compact}>
           <Thead>
             <Tr>
-              <Th />
+              <Th key="table-header-expand" />
               {problemFieldColumns.map(({ title, sortable }, index) => (
                 <Th key={`problem-field-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
                   {title}
@@ -778,38 +1419,40 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
               ))}
             </Tr>
           </Thead>
-          <Tbody key={`problem-field-row-pair-${index}`} isExpanded={d.isExpanded}>
-            <Tr key={`problem-fields`}>
-              <Td
-                key={`problem-field-row-expandable`}
-                expand={{
-                  rowIndex: index,
-                  isExpanded: d.isExpanded,
-                  expandId: `expandable-problem-field-row-${index}`,
-                  onToggle: () => onProblemFieldRowToggle(d.problemFieldsInfo),
-                }}
-              />
-              <Td key={`problem-field-class`} dataLabel={problemFieldColumns[0].title}>
-                {d.problemFieldsInfo.class ? d.problemFieldsInfo.class : 'N/A'}
-              </Td>
-              <Td key={`problem-field-instances`} dataLabel={problemFieldColumns[1].title}>
-                {d.problemFieldsInfo.numInstances ? d.problemFieldsInfo.numInstances : 'N/A'}
-              </Td>
-              <Td key={`problem-field-overhead`} dataLabel={problemFieldColumns[2].title}>
-                {d.problemFieldsInfo.allProblemFieldsOvhd ? d.problemFieldsInfo.allProblemFieldsOvhd : 'N/A'}
-              </Td>
-              <Td key={`problem-field-status`} dataLabel={problemFieldColumns[3].title}>
-                {d.problemFieldsInfo.status ? d.problemFieldsInfo.status : 'N/A'}
-              </Td>
-            </Tr>
-            <Tr key={`problem-field-row-${index}-expandable-child`} isExpanded={d.isExpanded}>
-              <Td dataLabel="problem-field-subtable" colSpan={problemFieldColumns.length}>
-                <ExpandableRowContent>{d.children}</ExpandableRowContent>
-              </Td>
-            </Tr>
-          </Tbody>
+          {displayedProblemFieldRowData.map((d: ProblemFieldRowData, index) => (
+            <Tbody key={`field-row-pair-${index}`} isExpanded={d.isExpanded}>
+              <Tr key={`field-row-${index}`}>
+                <Td
+                  key={`field-row-expandable`}
+                  expand={{
+                    rowIndex: index,
+                    isExpanded: d.isExpanded,
+                    expandId: `expandable-field-row-${index}`,
+                    onToggle: () => onProblemFieldRowToggle(d.problemFieldsInfo),
+                  }}
+                />
+                <Td key={`field-clazz-${index}`} colSpan={1} dataLabel={problemFieldColumns[0].title}>
+                  {d.problemFieldsInfo.clazz ? d.problemFieldsInfo.clazz : 'N/A'}
+                </Td>
+                <Td key={`field-instances-${index}`} colSpan={1} dataLabel={problemFieldColumns[1].title}>
+                  {d.problemFieldsInfo.numInstances ? d.problemFieldsInfo.numInstances : 'N/A'}
+                </Td>
+                <Td key={`field-overhead-${index}`} colSpan={1} dataLabel={problemFieldColumns[2].title}>
+                  {d.problemFieldsInfo.overhead !== undefined ? d.problemFieldsInfo.overhead : 'N/A'}
+                </Td>
+                <Td key={`field-problem-kind-${index}`} colSpan={1} dataLabel={problemFieldColumns[3].title}>
+                  {d.problemFieldsInfo.problemKind != null ? d.problemFieldsInfo.problemKind : 'N/A'}
+                </Td>
+              </Tr>
+              <Tr key={`field-row-${index}-expandable-child`} isExpanded={d.isExpanded}>
+                <Td dataLabel="field-details" colSpan={problemFieldColumns.length}>
+                  <ExpandableRowContent>{d.children}</ExpandableRowContent>
+                </Td>
+              </Tr>
+            </Tbody>
+          ))}
         </Table>
-      ));
+      );
     } else {
       return emptyTableState('No Problem Fields Detected');
     }
@@ -817,7 +1460,7 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
 
   const highSizeObjsTable = React.useMemo(() => {
     if (displayedHighSizeObjsRowData.length) {
-      return displayedHighSizeObjsRowData.map((d: HighSizeObjsRowData, index) => (
+      return (
         <Table aria-label="High Size Objects Table" variant={TableVariant.compact}>
           <Thead>
             <Tr>
@@ -829,35 +1472,40 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
               ))}
             </Tr>
           </Thead>
-          <Tbody key={`high-size-objs-row-pair-${index}`} isExpanded={d.isExpanded}>
-            <Tr key={`high-size-objs`}>
-              <Td
-                key={`high-size-objs-row-expandable`}
-                expand={{
-                  rowIndex: index,
-                  isExpanded: d.isExpanded,
-                  expandId: `expandable-high-size-objs-row-${index}`,
-                  onToggle: () => onHighSizeObjsRowToggle(d.highSizeObjsInfo),
-                }}
-              />
-              <Td key={`high-size-objs-class`} dataLabel={highSizeObjectsColumns[0].title}>
-                {d.highSizeObjsInfo.clazz ? d.highSizeObjsInfo.clazz : 'N/A'}
-              </Td>
-              <Td key={`high-size-objs-instances`} dataLabel={highSizeObjectsColumns[1].title}>
-                {d.highSizeObjsInfo.numInstances ? d.highSizeObjsInfo.numInstances : 'N/A'}
-              </Td>
-              <Td key={`high-size-objs-overhead`} dataLabel={highSizeObjectsColumns[2].title}>
-                {d.highSizeObjsInfo.sizeOrOvhd ? d.highSizeObjsInfo.sizeOrOvhd : 'N/A'}
-              </Td>
-            </Tr>
-            <Tr key={`high-size-objs-row-${index}-expandable-child`} isExpanded={d.isExpanded}>
-              <Td dataLabel="high-size-objs-subtable" colSpan={highSizeObjectsColumns.length}>
-                <ExpandableRowContent>{d.children}</ExpandableRowContent>
-              </Td>
-            </Tr>
-          </Tbody>
+          {displayedHighSizeObjsRowData.map((d: HighSizeObjsRowData, index) => (
+            <Tbody key={`high-size-objs-row-pair-${index}`} isExpanded={d.isExpanded}>
+              <Tr key={`high-size-objs`}>
+                <Td
+                  key={`high-size-objs-row-expandable`}
+                  expand={{
+                    rowIndex: index,
+                    isExpanded: d.isExpanded,
+                    expandId: `expandable-high-size-objs-row-${index}`,
+                    onToggle: () => onHighSizeObjsRowToggle(d.highSizeObjsInfo),
+                  }}
+                />
+                <Td key={`high-size-objs-class`} dataLabel={highSizeObjectsColumns[0].title}>
+                  {d.highSizeObjsInfo.classAndField ? d.highSizeObjsInfo.classAndField : 'N/A'}
+                </Td>
+                <Td key={`high-size-objs-class`} dataLabel={highSizeObjectsColumns[1].title}>
+                  {d.highSizeObjsInfo.definingClass ? d.highSizeObjsInfo.definingClass : 'N/A'}
+                </Td>
+                <Td key={`high-size-objs-overhead`} dataLabel={highSizeObjectsColumns[2].title}>
+                  {d.highSizeObjsInfo.overhead ? d.highSizeObjsInfo.overhead : 'N/A'}
+                </Td>
+                <Td key={`high-size-objs-overhead`} dataLabel={highSizeObjectsColumns[3].title}>
+                  {d.highSizeObjsInfo.badObjs ? d.highSizeObjsInfo.badObjs : 'N/A'}
+                </Td>
+              </Tr>
+              <Tr key={`high-size-objs-row-${index}-expandable-child`} isExpanded={d.isExpanded}>
+                <Td dataLabel="high-size-objs-subtable" colSpan={highSizeObjectsColumns.length}>
+                  <ExpandableRowContent>{d.children}</ExpandableRowContent>
+                </Td>
+              </Tr>
+            </Tbody>
+          ))}
         </Table>
-      ));
+      );
     } else {
       return emptyTableState('No High Size Objects Detected');
     }
@@ -870,70 +1518,104 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
     view = emptyTableState('Select a Heap Dump to Analyze');
   } else {
     view = (
-      <Grid hasGutter>
-        <GridItem span={3}>{fundamentalStatsCard}</GridItem>
-        <GridItem span={3}>{compressibleStringStatsCard}</GridItem>
-        <GridItem span={3}>{duplicateStringStatsCard}</GridItem>
-        <GridItem span={3}>{histogramStatsCard}</GridItem>
-        <GridItem span={7}>
-          <Card>
-            <CardTitle>Class Loader Instances</CardTitle>
-            <CardBody>
-              <AggregateDataCard
-                data={analysisResult?.classLoaderInstanceStats.map((t) => {
-                  return { data: t.value, count: t.count };
-                })}
-                title="Class Loader Instances"
-                description="Class Loader Instance Statistics"
-              />
-            </CardBody>
-          </Card>
-        </GridItem>
-        <GridItem span={7}>
-          <Card>
-            <CardTitle>Class Loader Classes</CardTitle>
-            <CardBody>
-              <AggregateDataCard
-                data={analysisResult?.classLoaderClassStats.map((t) => {
-                  return { data: t.value, count: t.count };
-                })}
-                title="Class Loader Classes"
-                description="Class Loader Class Statistics"
-              />
-            </CardBody>
-          </Card>
-        </GridItem>
-        <GridItem>
-          <Card>
-            <CardTitle>Problem Fields</CardTitle>
-            {problemFieldTable}
-          </Card>
-        </GridItem>
-        <GridItem>
-          <Card>
-            <CardTitle>Object Histogram</CardTitle>
-            {objectHistogramTable}
-          </Card>
-        </GridItem>
-        <GridItem>
-          <Card>
-            <CardTitle>Collection Custers</CardTitle>
-            {collectionsTable}
-          </Card>
-        </GridItem>
-        <GridItem>
-          <Card>
-            <CardTitle>Duplicate Array Custers</CardTitle>
-            {dupArraysTable}
-          </Card>
-        </GridItem>
-        <GridItem>
-          <Card>
-            <CardTitle>High Size Object Custers</CardTitle>
-            {dupArraysTable}
-          </Card>
-        </GridItem>
-      </Grid>
+      <Tabs activeKey={activeTab} onSelect={onTabSelect}>
+        <Tab eventKey={0} title={<TabTitleText>Basic Statistics</TabTitleText>}>
+          <Grid hasGutter>
+            <GridItem span={3}>{fundamentalStatsCard}</GridItem>
+            <GridItem span={3}>{compressibleStringStatsCard}</GridItem>
+            <GridItem span={3}>{duplicateStringStatsCard}</GridItem>
+            <GridItem span={3}>{histogramStatsCard}</GridItem>
+            <GridItem span={7}>
+              <Card>
+                <CardTitle>Class Loader Instances</CardTitle>
+                <CardBody>
+                  <AggregateDataCard
+                    data={analysisResult?.classLoaderInstanceStats.map((t) => {
+                      return { data: t.value, count: t.count };
+                    })}
+                    title="Class Loader Instances"
+                    description="Class Loader Instance Statistics"
+                  />
+                </CardBody>
+              </Card>
+            </GridItem>
+            <GridItem span={7}>
+              <Card>
+                <CardTitle>Class Loader Classes</CardTitle>
+                <CardBody>
+                  <AggregateDataCard
+                    data={analysisResult?.classLoaderClassStats.map((t) => {
+                      return { data: t.value, count: t.count };
+                    })}
+                    title="Class Loader Classes"
+                    description="Class Loader Class Statistics"
+                  />
+                </CardBody>
+              </Card>
+            </GridItem>
+          </Grid>
+        </Tab>
+        <Tab eventKey={1} title={<TabTitleText>Problem Fields</TabTitleText>}>
+          <Grid hasGutter>
+            <GridItem>
+              <Card>
+                <CardTitle>Problem Fields</CardTitle>
+                {problemFieldTable}
+              </Card>
+            </GridItem>
+          </Grid>
+        </Tab>
+        <Tab eventKey={2} title={<TabTitleText>Object Histogram</TabTitleText>}>
+          <Grid hasGutter>
+            <GridItem>{objectHistogramTable}</GridItem>
+          </Grid>
+        </Tab>
+        <Tab eventKey={3} title={<TabTitleText>Collections</TabTitleText>}>
+          <Grid hasGutter>
+            <GridItem>{collectionsTable}</GridItem>
+          </Grid>
+        </Tab>
+        <Tab eventKey={4} title={<TabTitleText>Duplicate Arrays</TabTitleText>}>
+          <Grid hasGutter>
+            <GridItem>
+              <Card>
+                <CardTitle>Duplicate Arrays</CardTitle>
+                {dupArraysTable}
+              </Card>
+            </GridItem>
+          </Grid>
+        </Tab>
+        <Tab eventKey={5} title={<TabTitleText>High Size Objects</TabTitleText>}>
+          <Grid hasGutter>
+            <GridItem>
+              <Card>
+                <CardTitle>High Size Objects</CardTitle>
+                {highSizeObjsTable}
+              </Card>
+            </GridItem>
+          </Grid>
+        </Tab>
+        <Tab eventKey={6} title={<TabTitleText>Duplicate Strings</TabTitleText>}>
+          <Grid hasGutter>
+            <GridItem>
+              <Card>
+                <CardTitle>Duplicate Strings</CardTitle>
+                {dupStringsTable}
+              </Card>
+            </GridItem>
+          </Grid>
+        </Tab>
+        <Tab eventKey={7} title={<TabTitleText>Weak HashMaps</TabTitleText>}>
+          <Grid hasGutter>
+            <GridItem>
+              <Card>
+                <CardTitle>Weak HashMaps</CardTitle>
+                {weakHashMapTable}
+              </Card>
+            </GridItem>
+          </Grid>
+        </Tab>
+      </Tabs>
     );
   }
 

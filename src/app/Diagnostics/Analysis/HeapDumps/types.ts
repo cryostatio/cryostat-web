@@ -14,70 +14,82 @@
  * limitations under the License.
  */
 
-export interface ObjectHistogramEntry {
-  class: string;
-  instances: number;
+export interface HistogramEntry {
+  clazz: string;
+  numInstances: number;
   inclusiveSize: number;
   shallowSize: number;
 }
 
-export interface ProblemFieldsEntry {
-  class: string;
-  numInstances: number;
-  problemFieldNames: string[];
-  problemFieldDeclaringClasses: string[];
-  perFieldOvhd: number[];
-  allProblemFieldsOvhd: number;
-  status: string; // SOME_FIELDS_EMPTY, ALL_FIELDS_EMPTY, NO_FIELDS, SOME_FIELDS_UNUSED_HI_BYTES;
-}
-
-export interface ClassAndSizeCombo {
-  clazz: string;
-  numInstances: number;
-  sizeOrOvhd: number;
-}
-
-export interface ClassAndOvhdCombo {
+export interface ProblemClass {
   clazz: string;
   problemKind: string;
-  instances: number;
+  numInstances: number;
   overhead: number;
 }
 
-export interface PrimitiveArrayWrapper {
-  elementType: string;
-  size: number;
+export interface ProblemCollection {
+  classAndField: string;
+  definingClass: string;
+  overhead: number;
+  badObjs: number;
+  goodCollections: number;
+  classAndOvhds: ProblemClass[];
 }
 
-export interface WeakHashMaps {
+export interface DuplicateArray {
+  classAndField: string;
+  definingClass: string;
+  overhead: number;
+  badObjs: number;
+  nonDupArrays: number;
+  aggregates: AggregateValue[];
+}
+
+export interface DuplicateString {
+  classAndField: string;
+  definingClass: string;
+  overhead: number;
+  badObjs: number;
+  dupBackingCharArrays: number;
+  nonDupStrings: number;
+  aggregates: AggregateValue[];
+}
+
+export interface ObjectEntry {
+  clazz: string;
   numInstances: number;
-  colClasses: string[];
-  valueTypeAndFieldSamples: string[];
+  overhead: number;
 }
 
 export interface HighSizeObjects {
-  classAndSizeList: ClassAndSizeCombo[];
+  classAndField: string;
+  definingClass: string;
+  overhead: number;
+  badObjs: number;
+  classAndSizeCombos: ObjectEntry[];
+}
+
+export interface WeakHashMapEntry {
+  classAndField: string;
+  definingClass: string;
+  overhead: number;
+  badObjs: number;
+  classes: string[];
+}
+
+export interface Field {
+  clazz: string;
+  field: string;
+  overhead: number;
+}
+
+export interface ProblemField {
   clazz: string;
   numInstances: number;
-  sizeOrOvhd: number;
-}
-
-export interface DupArrays {
-  numNonDupArrays: number;
-  entries: PrimitiveArrayWrapper[];
-}
-
-export interface DupStrings {
-  printLongStrings: boolean;
-  printAllStrings: boolean;
-  numDupBackingCharArrays: number;
-  numNonDupStrings: number;
-  entries: string[];
-}
-
-export interface Collections {
-  classAndOvhdList: ClassAndOvhdCombo[];
-  numGoodCollections: number;
+  fields: Field[];
+  overhead: number;
+  problemKind: string; // SOME_FIELDS_EMPTY, ALL_FIELDS_EMPTY, NO_FIELDS, SOME_FIELDS_UNUSED_HI_BYTES;
 }
 
 export interface AggregateValue {
@@ -125,19 +137,20 @@ export interface FundamentalStats {
 
 export interface HeapDumpAnalysisResult {
   // Reference Chains
-  collectionClusters: Collections[][];
-  duplicateArrayClusters: DupArrays[][];
-  duplicateStringClusters: DupStrings[][];
-  highSizeObjectClusters: HighSizeObjects[][];
+  problemCollections: ProblemCollection[];
+  duplicateArrays: DuplicateArray[];
+  duplicateStrings: DuplicateString[];
+  highSizeObjects: HighSizeObjects[];
+  weakHashMapClusters: WeakHashMapEntry[];
 
   // Object Histogram
-  objectHistogram: ObjectHistogramEntry[];
+  objectHistogram: HistogramEntry[];
 
   // Problem Fields
-  nullProblemFields: ProblemFieldsEntry[];
-  nearNullProblemFields: ProblemFieldsEntry[];
-  fullBytesFields: ProblemFieldsEntry[];
-  highBytesFields: ProblemFieldsEntry[];
+  nullProblemFields: ProblemField[];
+  nearNullProblemFields: ProblemField[];
+  fullBytesFields: ProblemField[];
+  highBytesFields: ProblemField[];
 
   // Classloader Stats
   classLoaderInstanceStats: AggregateValue[];
