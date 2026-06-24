@@ -284,8 +284,8 @@ const dupStringsColumns: TableColumn[] = [
     sortable: true,
   },
   {
-    title: 'Non Duplicate Arrays',
-    keyPaths: ['nonDupArrays'],
+    title: 'Non Duplicate Strings',
+    keyPaths: ['nonDupStrings'],
     sortable: true,
   },
 ];
@@ -604,16 +604,6 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
           }
           return t;
         });
-      }),
-    );
-  }, [addSubscription, context.target, setTarget]);
-
-  React.useEffect(() => {
-    addSubscription(
-      context.target.target().subscribe((t) => {
-        setTarget(t);
-        setAnalysisResult(undefined);
-        setSelectedHeapDump('');
       }),
     );
   }, [addSubscription, context.target, setTarget]);
@@ -1614,8 +1604,8 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
                     data={analysisResult?.classLoaderInstanceStats.map((t) => {
                       return { data: t.value, count: t.count };
                     })}
-                    title="Class Loader Instances"
-                    description="Class Loader Instance Statistics"
+                    title="Class Loader Instance Statistics"
+                    description="Class Loader Instance Memory Statistics"
                   />
                 </CardBody>
               </Card>
@@ -1628,15 +1618,15 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
                     data={analysisResult?.classLoaderClassStats.map((t) => {
                       return { data: t.value, count: t.count };
                     })}
-                    title="Class Loader Classes"
-                    description="Class Loader Class Statistics"
+                    title="Class Loader Class Statistics"
+                    description="Class Loader Class Memory Statistics"
                   />
                 </CardBody>
               </Card>
             </GridItem>
           </Grid>
         </Tab>
-        <Tab eventKey={1} title={<TabTitleText>Problem Fields</TabTitleText>}>
+        <Tab eventKey={1} name="Problem Fields" title={<TabTitleText>Problem Fields</TabTitleText>}>
           <Grid hasGutter>
             <GridItem>
               <Card>
