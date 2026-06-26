@@ -14,10 +14,35 @@
  * limitations under the License.
  */
 
+import { DatetimeFormat } from '@i18n/datetime';
 import { KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
-import { LABEL_TEXT_MAXWIDTH } from '@app/utils/utils';
+import useDayjs, { Dayjs } from '@app/utils/hooks/useDayjs';
+import { formatDuration, LABEL_TEXT_MAXWIDTH } from '@app/utils/utils';
 import { Label } from '@patternfly/react-core';
 import * as React from 'react';
+
+export const formatLabelValue = (label: KeyValue, dayjs: Dayjs, datetimeContext: DatetimeFormat): string => {
+  if (label.key === 'startTime') {
+    try {
+      const millis = Number(label.value);
+      if (!isNaN(millis)) {
+        return dayjs(millis).tz(datetimeContext.timeZone.full).format('L LTS z');
+      }
+    } catch (_e) {
+      // fall through
+    }
+  } else if (label.key === 'duration') {
+    try {
+      const millis = Number(label.value);
+      if (!isNaN(millis)) {
+        return formatDuration(millis, 1);
+      }
+    } catch (_e) {
+      // fall through
+    }
+  }
+  return label.value;
+};
 
 export interface ClickableLabelCellProps {
   label: KeyValue;
@@ -26,9 +51,15 @@ export interface ClickableLabelCellProps {
 }
 
 export const ClickableLabel: React.FC<ClickableLabelCellProps> = ({ label, isSelected, onLabelClick }) => {
+  const [dayjs, datetimeContext] = useDayjs();
   const labelColor = React.useMemo(() => (isSelected ? 'blue' : 'grey'), [isSelected]);
 
   const handleLabelClicked = React.useCallback(() => onLabelClick(label), [label, onLabelClick]);
+
+  const displayValue = React.useMemo(
+    () => formatLabelValue(label, dayjs, datetimeContext),
+    [label, dayjs, datetimeContext],
+  );
 
   return (
     <>
@@ -39,7 +70,7 @@ export const ClickableLabel: React.FC<ClickableLabelCellProps> = ({ label, isSel
         key={label.key}
         color={labelColor}
       >
-        {keyValueToString(label)}
+        {`${label.key}=${displayValue}`}
       </Label>
     </>
   );
