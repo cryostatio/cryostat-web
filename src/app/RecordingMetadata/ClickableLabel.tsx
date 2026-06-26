@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { DatetimeFormat } from '@i18n/datetime';
 import { KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
 import useDayjs, { Dayjs } from '@app/utils/hooks/useDayjs';
 import { formatDuration, LABEL_TEXT_MAXWIDTH } from '@app/utils/utils';
+import { DatetimeFormat } from '@i18n/datetime';
 import { Label } from '@patternfly/react-core';
 import * as React from 'react';
 
