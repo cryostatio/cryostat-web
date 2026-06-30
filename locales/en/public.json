@@ -214,6 +214,12 @@
     },
     "TITLE": "{{chartKind}} (last {{duration}}s, every {{period}}s)"
   },
+  "CollectionsTable": {
+    "SEARCH_PLACEHOLDER": "Search by class, overhead, etc...",
+    "ARIA_LABELS": {
+      "SEARCH_INPUT": "collections-table-search"
+    }
+  },
   "ClickableAutomatedAnalysisLabel": {
     "ARIA_LABELS": {
       "POPOVER": "automated-analysis-description-popover"
@@ -557,6 +563,12 @@
     "DESCRIPTION": "The page you're trying to find was either removed, moved or maybe the URL isn't quite right. Try returning home or visit one of the following pages below.",
     "HOME_REDIRECT_BUTTON_CONTENT": "Return to home page",
     "TITLE": "404: We couldn't find that page"
+  },
+  "ProblemFieldsTable": {
+    "SEARCH_PLACEHOLDER": "Search by class, overhead, etc...",
+    "ARIA_LABELS": {
+      "SEARCH_INPUT": "collections-table-search"
+    }
   },
   "QuickStarts": {
     "CATALOG_PAGE": {

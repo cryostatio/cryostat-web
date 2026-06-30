@@ -22,6 +22,7 @@ import AsyncProfiler from './AsyncProfiler/AsyncProfiler';
 import CreateAsyncProfilerSession from './AsyncProfiler/CreateAsyncProfilerSession';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
+import { HeapDumpAnalysis } from './Diagnostics/Analysis/HeapDumps/HeapDumpAnalysis';
 import ThreadDumpAnalysis from './Diagnostics/Analysis/ThreadDumpAnalysis';
 import { AnalyzeHeapDumps } from './Diagnostics/AnalyzeHeapDumps';
 import AnalyzeThreadDumps from './Diagnostics/AnalyzeThreadDumps';
@@ -218,10 +219,19 @@ const diagnosticsRoutes: IAppRoute[] = [
   },
   {
     component: AnalyzeHeapDumps,
-    label: 'Heap Dumps',
+    label: 'Heap Dump Archives',
     path: toPath('/heapdumps'),
-    title: 'Heap Dumps',
+    title: 'Heap Dump Archives',
     description: 'Create and view heap dumps on single target JVMs.',
+    navGroup: DIAGNOSTICS,
+    navSubgroup: ANALYZE,
+  },
+  {
+    component: HeapDumpAnalysis,
+    label: 'Analyze Heap Dumps',
+    path: toPath('/analyze-heap-dumps'),
+    title: 'Analyze Heap Dumps',
+    description: 'Analyze Heap Dump Data',
     navGroup: DIAGNOSTICS,
     navSubgroup: ANALYZE,
   },
