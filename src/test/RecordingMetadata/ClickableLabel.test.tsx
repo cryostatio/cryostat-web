@@ -18,6 +18,7 @@ import '@testing-library/jest-dom';
 import { Palette } from '@app/Settings/types';
 import { KeyValue } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
+import dayjs, { defaultDatetimeFormat } from '@i18n/datetime';
 import { cleanup, screen } from '@testing-library/react';
 import { of } from 'rxjs';
 import { render } from '../utils';
@@ -34,6 +35,7 @@ const onLabelClick = jest.fn((_label: KeyValue) => {
 
 jest.spyOn(defaultServices.settings, 'palette').mockReturnValue(of(Palette.DEFAULT));
 jest.spyOn(defaultServices.settings, 'largeUi').mockReturnValue(of(false));
+jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
 
 describe('<ClickableLabel />', () => {
   afterEach(cleanup);
@@ -110,5 +112,62 @@ describe('<ClickableLabel />', () => {
 
     expect(onLabelClick).toHaveBeenCalledTimes(1);
     expect(onLabelClick).toHaveBeenCalledWith(mockLabel);
+  });
+
+  it('should format startTime label as a human-readable datetime', async () => {
+    const startTimeMillis = 1782483737600;
+    const startTimeLabel: KeyValue = { key: 'startTime', value: String(startTimeMillis) };
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <ClickableLabel label={startTimeLabel} isSelected={false} onLabelClick={onLabelClick} />,
+          },
+        ],
+      },
+    });
+
+    const expectedText = `startTime=${dayjs(startTimeMillis).tz(defaultDatetimeFormat.timeZone.full).format('L LTS z')}`;
+    const displayedLabel = screen.getByText(expectedText);
+    expect(displayedLabel).toBeInTheDocument();
+    expect(displayedLabel).toBeVisible();
+  });
+
+  it('should format duration label as a humanized duration string', async () => {
+    const durationLabel: KeyValue = { key: 'duration', value: '90203' };
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <ClickableLabel label={durationLabel} isSelected={false} onLabelClick={onLabelClick} />,
+          },
+        ],
+      },
+    });
+
+    const displayedLabel = screen.getByText(/^duration=/);
+    expect(displayedLabel).toBeInTheDocument();
+    expect(displayedLabel).toBeVisible();
+    expect(displayedLabel.textContent).not.toBe('duration=90203');
+  });
+
+  it('should fall back to raw value for startTime label with non-numeric value', async () => {
+    const badLabel: KeyValue = { key: 'startTime', value: 'not-a-timestamp' };
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <ClickableLabel label={badLabel} isSelected={false} onLabelClick={onLabelClick} />,
+          },
+        ],
+      },
+    });
+
+    const displayedLabel = screen.getByText('startTime=not-a-timestamp');
+    expect(displayedLabel).toBeInTheDocument();
+    expect(displayedLabel).toBeVisible();
   });
 });
