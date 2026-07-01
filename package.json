@@ -107,7 +107,7 @@
     "@types/lodash": "4.17.24",
     "@types/react": "17.0.93",
     "dayjs": "1.11.21",
-    "echarts": "5.6.0",
+    "echarts": "6.1.0",
     "humanize-duration": "3.33.2",
     "i18next": "25.10.10",
     "i18next-browser-languagedetector": "8.2.1",
