@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
+import { useSort } from '@app/utils/hooks/useSort';
 import { formatBytes, hashCode, sortResources, TableColumn } from '@app/utils/utils';
-import {
-  ProblemCollection,
-  HeapDumpAnalysisResult,
-  ProblemField,
-  ProblemClass,
-  HighSizeObjects,
-  ObjectEntry,
-  DuplicateString,
-  AggregateValue,
-} from './types';
-import React from 'react';
 import {
   Card,
   CardTitle,
@@ -37,6 +27,7 @@ import {
   ToolbarItem,
   ToolbarItemVariant,
 } from '@patternfly/react-core';
+import { TopologyIcon } from '@patternfly/react-icons';
 import {
   ExpandableRowContent,
   SortByDirection,
@@ -48,10 +39,14 @@ import {
   Thead,
   Tr,
 } from '@patternfly/react-table';
-import { useSort } from '@app/utils/hooks/useSort';
 import { t } from 'i18next';
 import _ from 'lodash';
-import { TopologyIcon } from '@patternfly/react-icons';
+import React from 'react';
+import {
+  HeapDumpAnalysisResult,
+  DuplicateString,
+  AggregateValue,
+} from './types';
 
 interface DupStringRowData {
   dupStringInfo: DuplicateString;
@@ -330,7 +325,7 @@ export const DupStringsTable: React.FC<DupStringsTableProps> = (props: DupString
     } else {
       return emptyTableState('No Duplicate Strings Found');
     }
-  }, [displayedDupStringRowData, emptyTableState, onDupStringRowToggle]);
+  }, [currentPage, filterStringsByText.length, filterText, getSortParams, onCurrentPage, onFilterTextChange, onPerPage, perPage, displayedDupStringRowData, emptyTableState, onDupStringRowToggle]);
 
   return <>{dupStringsTable}</>;
 };

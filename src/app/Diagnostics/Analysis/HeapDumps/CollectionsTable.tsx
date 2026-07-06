@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
+import { useSort } from '@app/utils/hooks/useSort';
 import { formatBytes, hashCode, sortResources, TableColumn } from '@app/utils/utils';
-import { ProblemCollection, HeapDumpAnalysisResult, ProblemField, ProblemClass } from './types';
-import React from 'react';
 import {
   Card,
   CardTitle,
@@ -29,6 +28,7 @@ import {
   ToolbarItemVariant,
   Tooltip,
 } from '@patternfly/react-core';
+import { TopologyIcon } from '@patternfly/react-icons';
 import {
   ExpandableRowContent,
   SortByDirection,
@@ -40,10 +40,10 @@ import {
   Thead,
   Tr,
 } from '@patternfly/react-table';
-import { useSort } from '@app/utils/hooks/useSort';
 import { t } from 'i18next';
 import _ from 'lodash';
-import { TopologyIcon } from '@patternfly/react-icons';
+import React from 'react';
+import { ProblemCollection, HeapDumpAnalysisResult, ProblemClass } from './types';
 
 interface CollectionRowData {
   collectionInfo: ProblemCollection;
@@ -240,7 +240,7 @@ export const CollectionsTable: React.FC<CollectionsTableProps> = (props: Collect
         </Table>
       </Card>
     );
-  }, []);
+  }, [parseProblemType]);
 
   const displayedCollectionRowData = React.useMemo(() => {
     const offset = (currentPage - 1) * perPage;
@@ -369,7 +369,7 @@ export const CollectionsTable: React.FC<CollectionsTableProps> = (props: Collect
     } else {
       return emptyTableState('No Problem Collections Found');
     }
-  }, [displayedCollectionRowData, emptyTableState, onCollectionRowToggle]);
+  }, [currentPage, filterCollectionsByText.length, filterText, getSortParams, onCurrentPage, onFilterTextChange, onPerPage, perPage, displayedCollectionRowData, emptyTableState, onCollectionRowToggle]);
 
   return <>{collectionsTable}</>;
 };

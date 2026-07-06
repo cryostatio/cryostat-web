@@ -21,7 +21,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { formatBytes, hashCode, sortResources, TableColumn } from '@app/utils/utils';
+import { formatBytes, sortResources, TableColumn } from '@app/utils/utils';
 import {
   Card,
   CardBody,
@@ -43,7 +43,6 @@ import {
 } from '@patternfly/react-core';
 import { TopologyIcon } from '@patternfly/react-icons';
 import {
-  ExpandableRowContent,
   SortByDirection,
   Table,
   TableVariant,
@@ -53,21 +52,21 @@ import {
   Thead,
   Tr,
 } from '@patternfly/react-table';
+import { t } from 'i18next';
+import _ from 'lodash';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { concatMap, EMPTY, finalize, first, map, of } from 'rxjs';
 import { AggregateDataCard } from '../AggregateDataCard.tsx';
+import { CollectionsTable } from './CollectionsTable';
+import { DupArraysTable } from './DupArraysTable';
+import { DupStringsTable } from './DupStringsTable';
 import { HeapDumpSelector } from './HeapDumpSelector';
+import { HighSizeObjectsTable } from './HighSizeObjectsTable';
 import { ProblemFieldTable } from './ProblemFieldTable';
 import { HeapDumpAnalysisResult, HistogramEntry } from './types';
-import _ from 'lodash';
-import { CollectionsTable } from './CollectionsTable';
-import { HighSizeObjectsTable } from './HighSizeObjectsTable';
-import { DupStringsTable } from './DupStringsTable';
-import { DupArraysTable } from './DupArraysTable';
 import { WeakHashMapsTable } from './WeakHashMapsTable';
-import { t } from 'i18next';
 
 export interface HeapDumpAnalysisProps {}
 
@@ -577,32 +576,11 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
     );
   }, [analysisResult]);
 
-  const histogramRows = React.useMemo(
-    () =>
-      analysisResult?.objectHistogram.map((h: HistogramEntry) => (
-        <Tr key={`object-histogram`}>
-          <Td key={`clazz`} dataLabel={objectHistogramTableColumns[0].title}>
-            {h.clazz ? h.clazz : 'N/A'}
-          </Td>
-          <Td key={`numInstances`} dataLabel={objectHistogramTableColumns[1].title}>
-            {h.numInstances ? h.numInstances : 'N/A'}
-          </Td>
-          <Td key={`inclusive`} dataLabel={objectHistogramTableColumns[2].title}>
-            {h.inclusiveSize ? formatBytes(h.inclusiveSize) : 'N/A'}
-          </Td>
-          <Td key={`shallow`} dataLabel={objectHistogramTableColumns[3].title}>
-            {h.shallowSize ? formatBytes(h.shallowSize) : 'N/A'}
-          </Td>
-        </Tr>
-      )),
-    [analysisResult],
-  );
-
   const objectHistogramTable = React.useMemo(() => {
     return (
       <Card>
         <CardTitle>Object Histogram</CardTitle>
-        {histogramRows?.length ? (
+        {displayedObjectHistogramRowData.length ? (
           <Table aria-label="Object Histogram" variant={TableVariant.compact}>
             <Toolbar id="histogram-toolbar">
               <ToolbarContent>
@@ -681,7 +659,7 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
         )}
       </Card>
     );
-  }, [emptyTableState, displayedObjectHistogramRowData]);
+  }, [currentPage, filterObjectsByText.length, filterText, getSortParams, onCurrentPage, onFilterTextChange, onPerPage, perPage, emptyTableState, displayedObjectHistogramRowData]);
 
   var view;
   if (isAnalysisLoading || (analysisResult == null && hasPendingPrefill)) {

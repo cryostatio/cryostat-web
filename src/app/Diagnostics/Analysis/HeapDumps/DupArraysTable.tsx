@@ -13,18 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useSort } from '@app/utils/hooks/useSort';
 import { formatBytes, hashCode, sortResources, TableColumn } from '@app/utils/utils';
-import {
-  ProblemCollection,
-  HeapDumpAnalysisResult,
-  ProblemField,
-  ProblemClass,
-  HighSizeObjects,
-  ObjectEntry,
-  DuplicateArray,
-  AggregateValue,
-} from './types';
-import React from 'react';
 import {
   Card,
   CardTitle,
@@ -36,6 +26,7 @@ import {
   ToolbarItem,
   ToolbarItemVariant,
 } from '@patternfly/react-core';
+import { TopologyIcon } from '@patternfly/react-icons';
 import {
   ExpandableRowContent,
   SortByDirection,
@@ -47,10 +38,14 @@ import {
   Thead,
   Tr,
 } from '@patternfly/react-table';
-import { useSort } from '@app/utils/hooks/useSort';
 import { t } from 'i18next';
 import _ from 'lodash';
-import { TopologyIcon } from '@patternfly/react-icons';
+import React from 'react';
+import {
+  HeapDumpAnalysisResult,
+  DuplicateArray,
+  AggregateValue,
+} from './types';
 
 interface DupArrayRowData {
   dupArrayInfo: DuplicateArray;
@@ -314,7 +309,7 @@ export const DupArraysTable: React.FC<DupArraysTableProps> = (props: DupArraysTa
     } else {
       return emptyTableState('No Duplicate Arrays Found');
     }
-  }, [displayedDupArrayRowData, emptyTableState, onDupArrayRowToggle]);
+  }, [currentPage, filterArraysByText.length, filterText, getSortParams, onCurrentPage, onFilterTextChange, onPerPage, perPage, displayedDupArrayRowData, emptyTableState, onDupArrayRowToggle]);
 
   return <>{dupArraysTable}</>;
 };

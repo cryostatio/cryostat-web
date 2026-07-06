@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useSort } from '@app/utils/hooks/useSort';
 import { formatBytes, hashCode, sortResources, TableColumn } from '@app/utils/utils';
-import { HeapDumpAnalysisResult, WeakHashMapEntry } from './types';
-import React from 'react';
 import {
   Card,
   CardTitle,
@@ -27,6 +26,7 @@ import {
   ToolbarItem,
   ToolbarItemVariant,
 } from '@patternfly/react-core';
+import { TopologyIcon } from '@patternfly/react-icons';
 import {
   ExpandableRowContent,
   SortByDirection,
@@ -38,10 +38,10 @@ import {
   Thead,
   Tr,
 } from '@patternfly/react-table';
-import { useSort } from '@app/utils/hooks/useSort';
 import { t } from 'i18next';
 import _ from 'lodash';
-import { TopologyIcon } from '@patternfly/react-icons';
+import React from 'react';
+import { HeapDumpAnalysisResult, WeakHashMapEntry } from './types';
 
 interface WeakHashMapRowData {
   weakHashMapInfo: WeakHashMapEntry;
@@ -287,7 +287,7 @@ export const WeakHashMapsTable: React.FC<WeakHashMapsTableProps> = (props: WeakH
     } else {
       return emptyTableState('No Weak HashMaps Found');
     }
-  }, [displayedWeakHashMapRowData, emptyTableState, onWeakHashMapRowToggle]);
+  }, [currentPage, filterHashMapsByText.length, filterText, getSortParams, onCurrentPage, onFilterTextChange, onPerPage, perPage, displayedWeakHashMapRowData, emptyTableState, onWeakHashMapRowToggle]);
 
   return <>{weakHashMapTable}</>;
 };

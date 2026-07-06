@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
+import { useSort } from '@app/utils/hooks/useSort';
 import { formatBytes, hashCode, sortResources, TableColumn } from '@app/utils/utils';
-import {
-  ProblemCollection,
-  HeapDumpAnalysisResult,
-  ProblemField,
-  ProblemClass,
-  HighSizeObjects,
-  ObjectEntry,
-} from './types';
-import React from 'react';
 import {
   Card,
   CardTitle,
@@ -35,6 +27,7 @@ import {
   ToolbarItem,
   ToolbarItemVariant,
 } from '@patternfly/react-core';
+import { TopologyIcon } from '@patternfly/react-icons';
 import {
   ExpandableRowContent,
   SortByDirection,
@@ -46,10 +39,14 @@ import {
   Thead,
   Tr,
 } from '@patternfly/react-table';
-import { useSort } from '@app/utils/hooks/useSort';
 import { t } from 'i18next';
 import _ from 'lodash';
-import { TopologyIcon } from '@patternfly/react-icons';
+import React from 'react';
+import {
+  HeapDumpAnalysisResult,
+  HighSizeObjects,
+  ObjectEntry,
+} from './types';
 
 interface HighSizeObjsRowData {
   highSizeObjsInfo: HighSizeObjects;
@@ -165,32 +162,6 @@ export const HighSizeObjectsTable: React.FC<HighSizeObjectsTableProps> = (props:
           <Card>
             <CardTitle>High Size Object Details</CardTitle>
             <Table aria-label="High Size Object" variant={TableVariant.compact}>
-              <Toolbar id="event-types-toolbar">
-                <ToolbarContent>
-                  <ToolbarItem>
-                    <SearchInput
-                      style={{ minWidth: '38ch' }}
-                      name="eventFilter"
-                      id="eventFilter"
-                      type="search"
-                      placeholder={t('CollectionsTable.SEARCH_PLACEHOLDER')}
-                      aria-label={t('CollectionsTable.ARIA_LABELS.SEARCH_INPUT')}
-                      onChange={onFilterTextChange}
-                      value={filterText}
-                    />
-                  </ToolbarItem>
-                  <ToolbarItem variant={ToolbarItemVariant.pagination}>
-                    <Pagination
-                      itemCount={filterObjectsByText.length}
-                      page={currentPage}
-                      perPage={perPage}
-                      onSetPage={onCurrentPage}
-                      widgetId="collections-pagination"
-                      onPerPageSelect={onPerPage}
-                    />
-                  </ToolbarItem>
-                </ToolbarContent>
-              </Toolbar>
               <Thead>
                 <Tr>
                   {highSizeObjectsSubColumns.map(({ title }) => (
@@ -347,7 +318,7 @@ export const HighSizeObjectsTable: React.FC<HighSizeObjectsTableProps> = (props:
     } else {
       return emptyTableState('No High Size Objects Detected');
     }
-  }, [displayedHighSizeObjsRowData, getSortParams, emptyTableState, onHighSizeObjsRowToggle]);
+  }, [currentPage, filterObjectsByText.length, filterText, onCurrentPage, onFilterTextChange, onPerPage, perPage, displayedHighSizeObjsRowData, getSortParams, emptyTableState, onHighSizeObjsRowToggle]);
 
   return <>{highSizeObjsTable}</>;
 };
