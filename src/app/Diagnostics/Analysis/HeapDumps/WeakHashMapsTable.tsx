@@ -213,7 +213,7 @@ export const WeakHashMapsTable: React.FC<WeakHashMapsTableProps> = (props: WeakH
   const weakHashMapTable = React.useMemo(() => {
     if (displayedWeakHashMapRowData.length) {
       return (
-        <Table aria-label="Weak HashMaps" variant={TableVariant.compact}>
+        <>
           <Toolbar id="event-types-toolbar">
             <ToolbarContent>
               <ToolbarItem>
@@ -240,49 +240,51 @@ export const WeakHashMapsTable: React.FC<WeakHashMapsTableProps> = (props: WeakH
               </ToolbarItem>
             </ToolbarContent>
           </Toolbar>
-          <Thead>
-            <Tr>
-              <Th key="table-header-expand" />
-              {weakHashMapColumns.map(({ title, sortable }, index) => (
-                <Th key={`weak-hashmaps-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
-                  {title}
-                </Th>
-              ))}
-            </Tr>
-          </Thead>
-          {displayedWeakHashMapRowData.map((c: WeakHashMapRowData, index) => (
-            <Tbody key={`weak-hashmap-row-pair-${index}`} isExpanded={c.isExpanded}>
-              <Tr key={`weak-hashmap-row-${index}`}>
-                <Td
-                  key={`weak-hashmap-row-expandable`}
-                  expand={{
-                    rowIndex: index,
-                    isExpanded: c.isExpanded,
-                    expandId: `expandable-weak-hashmap-row-${index}`,
-                    onToggle: () => onWeakHashMapRowToggle(c.weakHashMapInfo),
-                  }}
-                />
-                <Td key={`weak-hashmap-class-and-field-${index}`} colSpan={1} dataLabel={weakHashMapColumns[0].title}>
-                  {c.weakHashMapInfo.classAndField !== undefined ? c.weakHashMapInfo.classAndField : 'N/A'}
-                </Td>
-                <Td key={`weak-hashmap-defining-class-${index}`} colSpan={1} dataLabel={weakHashMapColumns[1].title}>
-                  {c.weakHashMapInfo.definingClass !== undefined ? c.weakHashMapInfo.definingClass : 'N/A'}
-                </Td>
-                <Td key={`weak-hashmap-overhead-${index}`} colSpan={1} dataLabel={weakHashMapColumns[2].title}>
-                  {c.weakHashMapInfo.overhead !== undefined ? formatBytes(c.weakHashMapInfo.overhead) : 'N/A'}
-                </Td>
-                <Td key={`weak-hashmap-bad-objs-${index}`} colSpan={1} dataLabel={weakHashMapColumns[3].title}>
-                  {c.weakHashMapInfo.badObjs != null ? c.weakHashMapInfo.badObjs : 'N/A'}
-                </Td>
+          <Table aria-label="Weak HashMaps" variant={TableVariant.compact}>
+            <Thead>
+              <Tr>
+                <Th key="table-header-expand" />
+                {weakHashMapColumns.map(({ title, sortable }, index) => (
+                  <Th key={`weak-hashmaps-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                    {title}
+                  </Th>
+                ))}
               </Tr>
-              <Tr key={`weak-hashmap-row-${index}-expandable-child`} isExpanded={c.isExpanded}>
-                <Td dataLabel="weak-hashmap-details" colSpan={weakHashMapColumns.length}>
-                  <ExpandableRowContent>{c.children}</ExpandableRowContent>
-                </Td>
-              </Tr>
-            </Tbody>
-          ))}
-        </Table>
+            </Thead>
+            {displayedWeakHashMapRowData.map((c: WeakHashMapRowData, index) => (
+              <Tbody key={`weak-hashmap-row-pair-${index}`} isExpanded={c.isExpanded}>
+                <Tr key={`weak-hashmap-row-${index}`}>
+                  <Td
+                    key={`weak-hashmap-row-expandable`}
+                    expand={{
+                      rowIndex: index,
+                      isExpanded: c.isExpanded,
+                      expandId: `expandable-weak-hashmap-row-${index}`,
+                      onToggle: () => onWeakHashMapRowToggle(c.weakHashMapInfo),
+                    }}
+                  />
+                  <Td key={`weak-hashmap-class-and-field-${index}`} colSpan={1} dataLabel={weakHashMapColumns[0].title}>
+                    {c.weakHashMapInfo.classAndField !== undefined ? c.weakHashMapInfo.classAndField : 'N/A'}
+                  </Td>
+                  <Td key={`weak-hashmap-defining-class-${index}`} colSpan={1} dataLabel={weakHashMapColumns[1].title}>
+                    {c.weakHashMapInfo.definingClass !== undefined ? c.weakHashMapInfo.definingClass : 'N/A'}
+                  </Td>
+                  <Td key={`weak-hashmap-overhead-${index}`} colSpan={1} dataLabel={weakHashMapColumns[2].title}>
+                    {c.weakHashMapInfo.overhead !== undefined ? formatBytes(c.weakHashMapInfo.overhead) : 'N/A'}
+                  </Td>
+                  <Td key={`weak-hashmap-bad-objs-${index}`} colSpan={1} dataLabel={weakHashMapColumns[3].title}>
+                    {c.weakHashMapInfo.badObjs != null ? c.weakHashMapInfo.badObjs : 'N/A'}
+                  </Td>
+                </Tr>
+                <Tr key={`weak-hashmap-row-${index}-expandable-child`} isExpanded={c.isExpanded}>
+                  <Td dataLabel="weak-hashmap-details" colSpan={weakHashMapColumns.length}>
+                    <ExpandableRowContent>{c.children}</ExpandableRowContent>
+                  </Td>
+                </Tr>
+              </Tbody>
+            ))}
+          </Table>
+        </>
       );
     } else {
       return emptyTableState('No Weak HashMaps Found');

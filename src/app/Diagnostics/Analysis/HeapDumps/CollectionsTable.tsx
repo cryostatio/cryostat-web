@@ -295,7 +295,7 @@ export const CollectionsTable: React.FC<CollectionsTableProps> = (props: Collect
   const collectionsTable = React.useMemo(() => {
     if (displayedCollectionRowData) {
       return (
-        <Table aria-label="Problem Collections" variant={TableVariant.compact}>
+        <>
           <Toolbar id="collections-toolbar">
             <ToolbarContent>
               <ToolbarItem>
@@ -322,52 +322,54 @@ export const CollectionsTable: React.FC<CollectionsTableProps> = (props: Collect
               </ToolbarItem>
             </ToolbarContent>
           </Toolbar>
-          <Thead>
-            <Tr>
-              <Th key="table-header-expand" />
-              {collectionsColumns.map(({ title, sortable }, index) => (
-                <Th key={`collections-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
-                  {title}
-                </Th>
-              ))}
-            </Tr>
-          </Thead>
-          {displayedCollectionRowData.map((c: CollectionRowData, index) => (
-            <Tbody key={`collection-row-pair-${index}`} isExpanded={c.isExpanded}>
-              <Tr key={`collection-row-${index}`}>
-                <Td
-                  key={`collection-row-expandable`}
-                  expand={{
-                    rowIndex: index,
-                    isExpanded: c.isExpanded,
-                    expandId: `expandable-collection-row-${index}`,
-                    onToggle: () => onCollectionRowToggle(c.collectionInfo),
-                  }}
-                />
-                <Td key={`collection-class-and-field-${index}`} colSpan={1} dataLabel={collectionsColumns[0].title}>
-                  {c.collectionInfo.classAndField !== undefined ? c.collectionInfo.classAndField : 'N/A'}
-                </Td>
-                <Td key={`collection-defining-class-${index}`} colSpan={1} dataLabel={collectionsColumns[1].title}>
-                  {c.collectionInfo.definingClass !== undefined ? c.collectionInfo.definingClass : 'N/A'}
-                </Td>
-                <Td key={`collection-overhead-${index}`} colSpan={1} dataLabel={collectionsColumns[2].title}>
-                  {c.collectionInfo.overhead !== undefined ? formatBytes(c.collectionInfo.overhead) : 'N/A'}
-                </Td>
-                <Td key={`collection-bad-objs-${index}`} colSpan={1} dataLabel={collectionsColumns[3].title}>
-                  {c.collectionInfo.badObjs != null ? c.collectionInfo.badObjs : 'N/A'}
-                </Td>
-                <Td key={`collection-goodCollections-${index}`} colSpan={1} dataLabel={collectionsColumns[4].title}>
-                  {c.collectionInfo.goodCollections !== undefined ? c.collectionInfo.goodCollections : 'N/A'}
-                </Td>
+          <Table aria-label="Problem Collections" variant={TableVariant.compact}>
+            <Thead>
+              <Tr>
+                <Th key="table-header-expand" />
+                {collectionsColumns.map(({ title, sortable }, index) => (
+                  <Th key={`collections-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                    {title}
+                  </Th>
+                ))}
               </Tr>
-              <Tr key={`collection-row-${index}-expandable-child`} isExpanded={c.isExpanded}>
-                <Td dataLabel="collection-details" colSpan={collectionsColumns.length}>
-                  <ExpandableRowContent>{c.children}</ExpandableRowContent>
-                </Td>
-              </Tr>
-            </Tbody>
-          ))}
-        </Table>
+            </Thead>
+            {displayedCollectionRowData.map((c: CollectionRowData, index) => (
+              <Tbody key={`collection-row-pair-${index}`} isExpanded={c.isExpanded}>
+                <Tr key={`collection-row-${index}`}>
+                  <Td
+                    key={`collection-row-expandable`}
+                    expand={{
+                      rowIndex: index,
+                      isExpanded: c.isExpanded,
+                      expandId: `expandable-collection-row-${index}`,
+                      onToggle: () => onCollectionRowToggle(c.collectionInfo),
+                    }}
+                  />
+                  <Td key={`collection-class-and-field-${index}`} colSpan={1} dataLabel={collectionsColumns[0].title}>
+                    {c.collectionInfo.classAndField !== undefined ? c.collectionInfo.classAndField : 'N/A'}
+                  </Td>
+                  <Td key={`collection-defining-class-${index}`} colSpan={1} dataLabel={collectionsColumns[1].title}>
+                    {c.collectionInfo.definingClass !== undefined ? c.collectionInfo.definingClass : 'N/A'}
+                  </Td>
+                  <Td key={`collection-overhead-${index}`} colSpan={1} dataLabel={collectionsColumns[2].title}>
+                    {c.collectionInfo.overhead !== undefined ? formatBytes(c.collectionInfo.overhead) : 'N/A'}
+                  </Td>
+                  <Td key={`collection-bad-objs-${index}`} colSpan={1} dataLabel={collectionsColumns[3].title}>
+                    {c.collectionInfo.badObjs != null ? c.collectionInfo.badObjs : 'N/A'}
+                  </Td>
+                  <Td key={`collection-goodCollections-${index}`} colSpan={1} dataLabel={collectionsColumns[4].title}>
+                    {c.collectionInfo.goodCollections !== undefined ? c.collectionInfo.goodCollections : 'N/A'}
+                  </Td>
+                </Tr>
+                <Tr key={`collection-row-${index}-expandable-child`} isExpanded={c.isExpanded}>
+                  <Td dataLabel="collection-details" colSpan={collectionsColumns.length}>
+                    <ExpandableRowContent>{c.children}</ExpandableRowContent>
+                  </Td>
+                </Tr>
+              </Tbody>
+            ))}
+          </Table>
+        </>
       );
     } else {
       return emptyTableState('No Problem Collections Found');

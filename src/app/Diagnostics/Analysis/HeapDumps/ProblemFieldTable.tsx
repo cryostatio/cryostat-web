@@ -256,7 +256,7 @@ export const ProblemFieldTable: React.FC<ProblemFieldTableProps> = (props: Probl
   const problemFieldTable = React.useMemo(() => {
     if (displayedProblemFieldRowData.length) {
       return (
-        <Table aria-label="Problem Field Table" variant={TableVariant.compact}>
+        <>
           <Toolbar id="event-types-toolbar">
             <ToolbarContent>
               <ToolbarItem>
@@ -283,54 +283,56 @@ export const ProblemFieldTable: React.FC<ProblemFieldTableProps> = (props: Probl
               </ToolbarItem>
             </ToolbarContent>
           </Toolbar>
-          <Thead>
-            <Tr>
-              <Th key="table-header-expand" />
-              {problemFieldColumns.map(({ title, sortable }, index) => (
-                <Th key={`problem-field-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
-                  {title}
-                </Th>
-              ))}
-            </Tr>
-          </Thead>
-          {displayedProblemFieldRowData.map((d: ProblemFieldRowData, index) => (
-            <Tbody key={`field-row-pair-${index}`} isExpanded={d.isExpanded}>
-              <Tr key={`field-row-${index}`}>
-                <Td
-                  key={`field-row-expandable`}
-                  expand={{
-                    rowIndex: index,
-                    isExpanded: d.isExpanded,
-                    expandId: `expandable-field-row-${index}`,
-                    onToggle: () => onProblemFieldRowToggle(d.problemFieldsInfo),
-                  }}
-                />
-                <Td key={`field-clazz-${index}`} colSpan={1} dataLabel={problemFieldColumns[0].title}>
-                  {d.problemFieldsInfo.clazz ? d.problemFieldsInfo.clazz : 'N/A'}
-                </Td>
-                <Td key={`field-instances-${index}`} colSpan={1} dataLabel={problemFieldColumns[1].title}>
-                  {d.problemFieldsInfo.numInstances ? d.problemFieldsInfo.numInstances : 'N/A'}
-                </Td>
-                <Td key={`field-overhead-${index}`} colSpan={1} dataLabel={problemFieldColumns[2].title}>
-                  {d.problemFieldsInfo.overhead !== undefined ? formatBytes(d.problemFieldsInfo.overhead) : 'N/A'}
-                </Td>
-                <Td
-                  key={`field-problem-kind-${index}`}
-                  colSpan={1}
-                  dataLabel={problemFieldColumns[3].title}
-                  tooltip={<Tooltip content={parseProblemType(d.problemFieldsInfo.problemKind)} />}
-                >
-                  {d.problemFieldsInfo.problemKind != null ? d.problemFieldsInfo.problemKind : 'N/A'}
-                </Td>
+          <Table aria-label="Problem Field Table" variant={TableVariant.compact}>
+            <Thead>
+              <Tr>
+                <Th key="table-header-expand" />
+                {problemFieldColumns.map(({ title, sortable }, index) => (
+                  <Th key={`problem-field-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                    {title}
+                  </Th>
+                ))}
               </Tr>
-              <Tr key={`field-row-${index}-expandable-child`} isExpanded={d.isExpanded}>
-                <Td dataLabel="field-details" colSpan={problemFieldColumns.length}>
-                  <ExpandableRowContent>{d.children}</ExpandableRowContent>
-                </Td>
-              </Tr>
-            </Tbody>
-          ))}
-        </Table>
+            </Thead>
+            {displayedProblemFieldRowData.map((d: ProblemFieldRowData, index) => (
+              <Tbody key={`field-row-pair-${index}`} isExpanded={d.isExpanded}>
+                <Tr key={`field-row-${index}`}>
+                  <Td
+                    key={`field-row-expandable`}
+                    expand={{
+                      rowIndex: index,
+                      isExpanded: d.isExpanded,
+                      expandId: `expandable-field-row-${index}`,
+                      onToggle: () => onProblemFieldRowToggle(d.problemFieldsInfo),
+                    }}
+                  />
+                  <Td key={`field-clazz-${index}`} colSpan={1} dataLabel={problemFieldColumns[0].title}>
+                    {d.problemFieldsInfo.clazz ? d.problemFieldsInfo.clazz : 'N/A'}
+                  </Td>
+                  <Td key={`field-instances-${index}`} colSpan={1} dataLabel={problemFieldColumns[1].title}>
+                    {d.problemFieldsInfo.numInstances ? d.problemFieldsInfo.numInstances : 'N/A'}
+                  </Td>
+                  <Td key={`field-overhead-${index}`} colSpan={1} dataLabel={problemFieldColumns[2].title}>
+                    {d.problemFieldsInfo.overhead !== undefined ? formatBytes(d.problemFieldsInfo.overhead) : 'N/A'}
+                  </Td>
+                  <Td
+                    key={`field-problem-kind-${index}`}
+                    colSpan={1}
+                    dataLabel={problemFieldColumns[3].title}
+                    tooltip={<Tooltip content={parseProblemType(d.problemFieldsInfo.problemKind)} />}
+                  >
+                    {d.problemFieldsInfo.problemKind != null ? d.problemFieldsInfo.problemKind : 'N/A'}
+                  </Td>
+                </Tr>
+                <Tr key={`field-row-${index}-expandable-child`} isExpanded={d.isExpanded}>
+                  <Td dataLabel="field-details" colSpan={problemFieldColumns.length}>
+                    <ExpandableRowContent>{d.children}</ExpandableRowContent>
+                  </Td>
+                </Tr>
+              </Tbody>
+            ))}
+          </Table>
+        </>
       );
     } else {
       return emptyTableState('No Problem Fields Detected');

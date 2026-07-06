@@ -228,7 +228,8 @@ export const DupArraysTable: React.FC<DupArraysTableProps> = (props: DupArraysTa
   const dupArraysTable = React.useMemo(() => {
     if (displayedDupArrayRowData.length) {
       return (
-        <Table aria-label="Duplicate Arrays" variant={TableVariant.compact}>
+        <>
+          {' '}
           <Toolbar id="event-types-toolbar">
             <ToolbarContent>
               <ToolbarItem>
@@ -255,52 +256,54 @@ export const DupArraysTable: React.FC<DupArraysTableProps> = (props: DupArraysTa
               </ToolbarItem>
             </ToolbarContent>
           </Toolbar>
-          <Thead>
-            <Tr>
-              <Th key="table-header-expand" />
-              {dupArraysColumns.map(({ title, sortable }, index) => (
-                <Th key={`dup-arrays-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
-                  {title}
-                </Th>
-              ))}
-            </Tr>
-          </Thead>
-          {displayedDupArrayRowData.map((c: DupArrayRowData, index) => (
-            <Tbody key={`dup-arrays-row-pair-${index}`} isExpanded={c.isExpanded}>
-              <Tr key={`dup-arrays-row-${index}`}>
-                <Td
-                  key={`dup-arrays-row-expandable`}
-                  expand={{
-                    rowIndex: index,
-                    isExpanded: c.isExpanded,
-                    expandId: `expandable-dup-arrays-row-${index}`,
-                    onToggle: () => onDupArrayRowToggle(c.dupArrayInfo),
-                  }}
-                />
-                <Td key={`collection-class-and-field-${index}`} colSpan={1} dataLabel={dupArraysColumns[0].title}>
-                  {c.dupArrayInfo.classAndField !== undefined ? c.dupArrayInfo.classAndField : 'N/A'}
-                </Td>
-                <Td key={`dup-array-defining-class-${index}`} colSpan={1} dataLabel={dupArraysColumns[1].title}>
-                  {c.dupArrayInfo.definingClass !== undefined ? c.dupArrayInfo.definingClass : 'N/A'}
-                </Td>
-                <Td key={`dup-array-overhead-${index}`} colSpan={1} dataLabel={dupArraysColumns[2].title}>
-                  {c.dupArrayInfo.overhead !== undefined ? formatBytes(c.dupArrayInfo.overhead) : 'N/A'}
-                </Td>
-                <Td key={`dup-array-bad-objs-${index}`} colSpan={1} dataLabel={dupArraysColumns[3].title}>
-                  {c.dupArrayInfo.badObjs != null ? c.dupArrayInfo.badObjs : 'N/A'}
-                </Td>
-                <Td key={`dup-array-non-dup-arrays-${index}`} colSpan={1} dataLabel={dupArraysColumns[4].title}>
-                  {c.dupArrayInfo.nonDupArrays !== undefined ? c.dupArrayInfo.nonDupArrays : 'N/A'}
-                </Td>
+          <Table aria-label="Duplicate Arrays" variant={TableVariant.compact}>
+            <Thead>
+              <Tr>
+                <Th key="table-header-expand" />
+                {dupArraysColumns.map(({ title, sortable }, index) => (
+                  <Th key={`dup-arrays-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                    {title}
+                  </Th>
+                ))}
               </Tr>
-              <Tr key={`dup-array-row-${index}-expandable-child`} isExpanded={c.isExpanded}>
-                <Td dataLabel="dup-array-details" colSpan={dupArraysColumns.length}>
-                  <ExpandableRowContent>{c.children}</ExpandableRowContent>
-                </Td>
-              </Tr>
-            </Tbody>
-          ))}
-        </Table>
+            </Thead>
+            {displayedDupArrayRowData.map((c: DupArrayRowData, index) => (
+              <Tbody key={`dup-arrays-row-pair-${index}`} isExpanded={c.isExpanded}>
+                <Tr key={`dup-arrays-row-${index}`}>
+                  <Td
+                    key={`dup-arrays-row-expandable`}
+                    expand={{
+                      rowIndex: index,
+                      isExpanded: c.isExpanded,
+                      expandId: `expandable-dup-arrays-row-${index}`,
+                      onToggle: () => onDupArrayRowToggle(c.dupArrayInfo),
+                    }}
+                  />
+                  <Td key={`collection-class-and-field-${index}`} colSpan={1} dataLabel={dupArraysColumns[0].title}>
+                    {c.dupArrayInfo.classAndField !== undefined ? c.dupArrayInfo.classAndField : 'N/A'}
+                  </Td>
+                  <Td key={`dup-array-defining-class-${index}`} colSpan={1} dataLabel={dupArraysColumns[1].title}>
+                    {c.dupArrayInfo.definingClass !== undefined ? c.dupArrayInfo.definingClass : 'N/A'}
+                  </Td>
+                  <Td key={`dup-array-overhead-${index}`} colSpan={1} dataLabel={dupArraysColumns[2].title}>
+                    {c.dupArrayInfo.overhead !== undefined ? formatBytes(c.dupArrayInfo.overhead) : 'N/A'}
+                  </Td>
+                  <Td key={`dup-array-bad-objs-${index}`} colSpan={1} dataLabel={dupArraysColumns[3].title}>
+                    {c.dupArrayInfo.badObjs != null ? c.dupArrayInfo.badObjs : 'N/A'}
+                  </Td>
+                  <Td key={`dup-array-non-dup-arrays-${index}`} colSpan={1} dataLabel={dupArraysColumns[4].title}>
+                    {c.dupArrayInfo.nonDupArrays !== undefined ? c.dupArrayInfo.nonDupArrays : 'N/A'}
+                  </Td>
+                </Tr>
+                <Tr key={`dup-array-row-${index}-expandable-child`} isExpanded={c.isExpanded}>
+                  <Td dataLabel="dup-array-details" colSpan={dupArraysColumns.length}>
+                    <ExpandableRowContent>{c.children}</ExpandableRowContent>
+                  </Td>
+                </Tr>
+              </Tbody>
+            ))}
+          </Table>
+        </>
       );
     } else {
       return emptyTableState('No Duplicate Arrays Found');

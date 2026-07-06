@@ -571,34 +571,34 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
     return (
       <Card>
         <CardTitle>Object Histogram</CardTitle>
+        <Toolbar id="histogram-toolbar">
+          <ToolbarContent>
+            <ToolbarItem>
+              <SearchInput
+                style={{ minWidth: '38ch' }}
+                name="objectFilter"
+                id="objectFilter"
+                type="search"
+                placeholder={t('ObjectHistogram.SEARCH_PLACEHOLDER')}
+                aria-label={t('ObjectHistogram.ARIA_LABELS.SEARCH_INPUT')}
+                onChange={onFilterTextChange}
+                value={filterText}
+              />
+            </ToolbarItem>
+            <ToolbarItem variant={ToolbarItemVariant.pagination}>
+              <Pagination
+                itemCount={filterObjectsByText.length}
+                page={currentPage}
+                perPage={perPage}
+                onSetPage={onCurrentPage}
+                widgetId="object-types-pagination"
+                onPerPageSelect={onPerPage}
+              />
+            </ToolbarItem>
+          </ToolbarContent>
+        </Toolbar>
         {displayedObjectHistogramRowData.length ? (
           <Table aria-label="Object Histogram" variant={TableVariant.compact}>
-            <Toolbar id="histogram-toolbar">
-              <ToolbarContent>
-                <ToolbarItem>
-                  <SearchInput
-                    style={{ minWidth: '38ch' }}
-                    name="objectFilter"
-                    id="objectFilter"
-                    type="search"
-                    placeholder={t('ObjectHistogram.SEARCH_PLACEHOLDER')}
-                    aria-label={t('ObjectHistogram.ARIA_LABELS.SEARCH_INPUT')}
-                    onChange={onFilterTextChange}
-                    value={filterText}
-                  />
-                </ToolbarItem>
-                <ToolbarItem variant={ToolbarItemVariant.pagination}>
-                  <Pagination
-                    itemCount={filterObjectsByText.length}
-                    page={currentPage}
-                    perPage={perPage}
-                    onSetPage={onCurrentPage}
-                    widgetId="object-types-pagination"
-                    onPerPageSelect={onPerPage}
-                  />
-                </ToolbarItem>
-              </ToolbarContent>
-            </Toolbar>
             <Thead>
               <Tr>
                 {objectHistogramTableColumns.map(({ title, sortable }, index) => (

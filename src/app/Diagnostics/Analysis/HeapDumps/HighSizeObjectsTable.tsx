@@ -240,7 +240,7 @@ export const HighSizeObjectsTable: React.FC<HighSizeObjectsTableProps> = (props:
   const highSizeObjsTable = React.useMemo(() => {
     if (displayedHighSizeObjsRowData.length) {
       return (
-        <Table aria-label="High Size Objects Table" variant={TableVariant.compact}>
+        <>
           <Toolbar id="event-types-toolbar">
             <ToolbarContent>
               <ToolbarItem>
@@ -267,49 +267,51 @@ export const HighSizeObjectsTable: React.FC<HighSizeObjectsTableProps> = (props:
               </ToolbarItem>
             </ToolbarContent>
           </Toolbar>
-          <Thead>
-            <Tr>
-              <Th />
-              {highSizeObjectsColumns.map(({ title, sortable }, index) => (
-                <Th key={`high-size-objs-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
-                  {title}
-                </Th>
-              ))}
-            </Tr>
-          </Thead>
-          {displayedHighSizeObjsRowData.map((d: HighSizeObjsRowData, index) => (
-            <Tbody key={`high-size-objs-row-pair-${index}`} isExpanded={d.isExpanded}>
-              <Tr key={`high-size-objs`}>
-                <Td
-                  key={`high-size-objs-row-expandable`}
-                  expand={{
-                    rowIndex: index,
-                    isExpanded: d.isExpanded,
-                    expandId: `expandable-high-size-objs-row-${index}`,
-                    onToggle: () => onHighSizeObjsRowToggle(d.highSizeObjsInfo),
-                  }}
-                />
-                <Td key={`high-size-objs-class-and-field`} dataLabel={highSizeObjectsColumns[0].title}>
-                  {d.highSizeObjsInfo.classAndField ? d.highSizeObjsInfo.classAndField : 'N/A'}
-                </Td>
-                <Td key={`high-size-objs-class`} dataLabel={highSizeObjectsColumns[1].title}>
-                  {d.highSizeObjsInfo.definingClass ? d.highSizeObjsInfo.definingClass : 'N/A'}
-                </Td>
-                <Td key={`high-size-objs-overhead`} dataLabel={highSizeObjectsColumns[2].title}>
-                  {d.highSizeObjsInfo.overhead ? formatBytes(d.highSizeObjsInfo.overhead) : 'N/A'}
-                </Td>
-                <Td key={`high-size-objs-bad-objs`} dataLabel={highSizeObjectsColumns[3].title}>
-                  {d.highSizeObjsInfo.badObjs ? d.highSizeObjsInfo.badObjs : 'N/A'}
-                </Td>
+          <Table aria-label="High Size Objects Table" variant={TableVariant.compact}>
+            <Thead>
+              <Tr>
+                <Th />
+                {highSizeObjectsColumns.map(({ title, sortable }, index) => (
+                  <Th key={`high-size-objs-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                    {title}
+                  </Th>
+                ))}
               </Tr>
-              <Tr key={`high-size-objs-row-${index}-expandable-child`} isExpanded={d.isExpanded}>
-                <Td dataLabel="high-size-objs-subtable" colSpan={highSizeObjectsColumns.length}>
-                  <ExpandableRowContent>{d.children}</ExpandableRowContent>
-                </Td>
-              </Tr>
-            </Tbody>
-          ))}
-        </Table>
+            </Thead>
+            {displayedHighSizeObjsRowData.map((d: HighSizeObjsRowData, index) => (
+              <Tbody key={`high-size-objs-row-pair-${index}`} isExpanded={d.isExpanded}>
+                <Tr key={`high-size-objs`}>
+                  <Td
+                    key={`high-size-objs-row-expandable`}
+                    expand={{
+                      rowIndex: index,
+                      isExpanded: d.isExpanded,
+                      expandId: `expandable-high-size-objs-row-${index}`,
+                      onToggle: () => onHighSizeObjsRowToggle(d.highSizeObjsInfo),
+                    }}
+                  />
+                  <Td key={`high-size-objs-class-and-field`} dataLabel={highSizeObjectsColumns[0].title}>
+                    {d.highSizeObjsInfo.classAndField ? d.highSizeObjsInfo.classAndField : 'N/A'}
+                  </Td>
+                  <Td key={`high-size-objs-class`} dataLabel={highSizeObjectsColumns[1].title}>
+                    {d.highSizeObjsInfo.definingClass ? d.highSizeObjsInfo.definingClass : 'N/A'}
+                  </Td>
+                  <Td key={`high-size-objs-overhead`} dataLabel={highSizeObjectsColumns[2].title}>
+                    {d.highSizeObjsInfo.overhead ? formatBytes(d.highSizeObjsInfo.overhead) : 'N/A'}
+                  </Td>
+                  <Td key={`high-size-objs-bad-objs`} dataLabel={highSizeObjectsColumns[3].title}>
+                    {d.highSizeObjsInfo.badObjs ? d.highSizeObjsInfo.badObjs : 'N/A'}
+                  </Td>
+                </Tr>
+                <Tr key={`high-size-objs-row-${index}-expandable-child`} isExpanded={d.isExpanded}>
+                  <Td dataLabel="high-size-objs-subtable" colSpan={highSizeObjectsColumns.length}>
+                    <ExpandableRowContent>{d.children}</ExpandableRowContent>
+                  </Td>
+                </Tr>
+              </Tbody>
+            ))}
+          </Table>
+        </>
       );
     } else {
       return emptyTableState('No High Size Objects Detected');

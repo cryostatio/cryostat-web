@@ -241,7 +241,7 @@ export const DupStringsTable: React.FC<DupStringsTableProps> = (props: DupString
   const dupStringsTable = React.useMemo(() => {
     if (displayedDupStringRowData.length) {
       return (
-        <Table aria-label="Duplicate Strings" variant={TableVariant.compact}>
+        <>
           <Toolbar id="event-types-toolbar">
             <ToolbarContent>
               <ToolbarItem>
@@ -268,55 +268,61 @@ export const DupStringsTable: React.FC<DupStringsTableProps> = (props: DupString
               </ToolbarItem>
             </ToolbarContent>
           </Toolbar>
-          <Thead>
-            <Tr>
-              <Th key="table-header-expand" />
-              {dupStringsColumns.map(({ title, sortable }, index) => (
-                <Th key={`dup-strings-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
-                  {title}
-                </Th>
-              ))}
-            </Tr>
-          </Thead>
-          {displayedDupStringRowData.map((c: DupStringRowData, index) => (
-            <Tbody key={`dup-strings-row-pair-${index}`} isExpanded={c.isExpanded}>
-              <Tr key={`dup-strings-row-${index}`}>
-                <Td
-                  key={`dup-strings-row-expandable`}
-                  expand={{
-                    rowIndex: index,
-                    isExpanded: c.isExpanded,
-                    expandId: `expandable-dup-strings-row-${index}`,
-                    onToggle: () => onDupStringRowToggle(c.dupStringInfo),
-                  }}
-                />
-                <Td key={`dup-string-class-and-field-${index}`} colSpan={1} dataLabel={dupStringsColumns[0].title}>
-                  {c.dupStringInfo.classAndField !== undefined ? c.dupStringInfo.classAndField : 'N/A'}
-                </Td>
-                <Td key={`dup-array-defining-class-${index}`} colSpan={1} dataLabel={dupStringsColumns[1].title}>
-                  {c.dupStringInfo.definingClass !== undefined ? c.dupStringInfo.definingClass : 'N/A'}
-                </Td>
-                <Td key={`dup-array-overhead-${index}`} colSpan={1} dataLabel={dupStringsColumns[2].title}>
-                  {c.dupStringInfo.overhead !== undefined ? formatBytes(c.dupStringInfo.overhead) : 'N/A'}
-                </Td>
-                <Td key={`dup-array-bad-objs-${index}`} colSpan={1} dataLabel={dupStringsColumns[3].title}>
-                  {c.dupStringInfo.badObjs != null ? c.dupStringInfo.badObjs : 'N/A'}
-                </Td>
-                <Td key={`dup-string-backing-char-arrays-${index}`} colSpan={1} dataLabel={dupStringsColumns[4].title}>
-                  {c.dupStringInfo.dupBackingCharArrays !== undefined ? c.dupStringInfo.dupBackingCharArrays : 'N/A'}
-                </Td>
-                <Td key={`dup-array-non-dup-strings-${index}`} colSpan={1} dataLabel={dupStringsColumns[5].title}>
-                  {c.dupStringInfo.nonDupStrings !== undefined ? c.dupStringInfo.nonDupStrings : 'N/A'}
-                </Td>
+          <Table aria-label="Duplicate Strings" variant={TableVariant.compact}>
+            <Thead>
+              <Tr>
+                <Th key="table-header-expand" />
+                {dupStringsColumns.map(({ title, sortable }, index) => (
+                  <Th key={`dup-strings-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                    {title}
+                  </Th>
+                ))}
               </Tr>
-              <Tr key={`dup-string-row-${index}-expandable-child`} isExpanded={c.isExpanded}>
-                <Td dataLabel="dup-string-details" colSpan={dupStringsColumns.length}>
-                  <ExpandableRowContent>{c.children}</ExpandableRowContent>
-                </Td>
-              </Tr>
-            </Tbody>
-          ))}
-        </Table>
+            </Thead>
+            {displayedDupStringRowData.map((c: DupStringRowData, index) => (
+              <Tbody key={`dup-strings-row-pair-${index}`} isExpanded={c.isExpanded}>
+                <Tr key={`dup-strings-row-${index}`}>
+                  <Td
+                    key={`dup-strings-row-expandable`}
+                    expand={{
+                      rowIndex: index,
+                      isExpanded: c.isExpanded,
+                      expandId: `expandable-dup-strings-row-${index}`,
+                      onToggle: () => onDupStringRowToggle(c.dupStringInfo),
+                    }}
+                  />
+                  <Td key={`dup-string-class-and-field-${index}`} colSpan={1} dataLabel={dupStringsColumns[0].title}>
+                    {c.dupStringInfo.classAndField !== undefined ? c.dupStringInfo.classAndField : 'N/A'}
+                  </Td>
+                  <Td key={`dup-array-defining-class-${index}`} colSpan={1} dataLabel={dupStringsColumns[1].title}>
+                    {c.dupStringInfo.definingClass !== undefined ? c.dupStringInfo.definingClass : 'N/A'}
+                  </Td>
+                  <Td key={`dup-array-overhead-${index}`} colSpan={1} dataLabel={dupStringsColumns[2].title}>
+                    {c.dupStringInfo.overhead !== undefined ? formatBytes(c.dupStringInfo.overhead) : 'N/A'}
+                  </Td>
+                  <Td key={`dup-array-bad-objs-${index}`} colSpan={1} dataLabel={dupStringsColumns[3].title}>
+                    {c.dupStringInfo.badObjs != null ? c.dupStringInfo.badObjs : 'N/A'}
+                  </Td>
+                  <Td
+                    key={`dup-string-backing-char-arrays-${index}`}
+                    colSpan={1}
+                    dataLabel={dupStringsColumns[4].title}
+                  >
+                    {c.dupStringInfo.dupBackingCharArrays !== undefined ? c.dupStringInfo.dupBackingCharArrays : 'N/A'}
+                  </Td>
+                  <Td key={`dup-array-non-dup-strings-${index}`} colSpan={1} dataLabel={dupStringsColumns[5].title}>
+                    {c.dupStringInfo.nonDupStrings !== undefined ? c.dupStringInfo.nonDupStrings : 'N/A'}
+                  </Td>
+                </Tr>
+                <Tr key={`dup-string-row-${index}-expandable-child`} isExpanded={c.isExpanded}>
+                  <Td dataLabel="dup-string-details" colSpan={dupStringsColumns.length}>
+                    <ExpandableRowContent>{c.children}</ExpandableRowContent>
+                  </Td>
+                </Tr>
+              </Tbody>
+            ))}
+          </Table>
+        </>
       );
     } else {
       return emptyTableState('No Duplicate Strings Found');
