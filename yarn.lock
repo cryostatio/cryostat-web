@@ -5290,7 +5290,7 @@ __metadata:
     victory-voronoi-container: "npm:37.3.6"
     victory-zoom-container: "npm:37.3.6"
     wait-on: "npm:9.0.10"
-    webpack: "npm:5.108.1"
+    webpack: "npm:5.108.3"
     webpack-bundle-analyzer: "npm:5.3.0"
     webpack-cli: "npm:7.1.0"
     webpack-dev-server: "npm:5.2.6"
@@ -16440,9 +16440,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:5.108.1":
-  version: 5.108.1
-  resolution: "webpack@npm:5.108.1"
+"webpack@npm:5.108.3":
+  version: 5.108.3
+  resolution: "webpack@npm:5.108.3"
   dependencies:
     "@types/estree": "npm:^1.0.8"
     "@types/json-schema": "npm:^7.0.15"
@@ -16471,7 +16471,7 @@ __metadata:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 10/d816c66353702e0d117c1e80812f48e1c516f683dae745113437ffe9c189d23fc232d1396786ce427bd5282cdef090e5e99815c58a38393df2df0ad4641d4822
+  checksum: 10/1333c3cf78c9cc2d99c1b8d4ac1415f8303022af1e46508fa942d59757fc4b30e4f96cdd60a803bbd84c295486c7ee5554e6ec4a42b8cf39e8372b2a94d50423
   languageName: node
   linkType: hard
 
