@@ -42,11 +42,7 @@ import {
 import { t } from 'i18next';
 import _ from 'lodash';
 import React from 'react';
-import {
-  HeapDumpAnalysisResult,
-  HighSizeObjects,
-  ObjectEntry,
-} from './types';
+import { HeapDumpAnalysisResult, HighSizeObjects, ObjectEntry } from './types';
 
 interface HighSizeObjsRowData {
   highSizeObjsInfo: HighSizeObjects;
@@ -318,7 +314,19 @@ export const HighSizeObjectsTable: React.FC<HighSizeObjectsTableProps> = (props:
     } else {
       return emptyTableState('No High Size Objects Detected');
     }
-  }, [currentPage, filterObjectsByText.length, filterText, onCurrentPage, onFilterTextChange, onPerPage, perPage, displayedHighSizeObjsRowData, getSortParams, emptyTableState, onHighSizeObjsRowToggle]);
+  }, [
+    currentPage,
+    filterObjectsByText.length,
+    filterText,
+    onCurrentPage,
+    onFilterTextChange,
+    onPerPage,
+    perPage,
+    displayedHighSizeObjsRowData,
+    getSortParams,
+    emptyTableState,
+    onHighSizeObjsRowToggle,
+  ]);
 
   return <>{highSizeObjsTable}</>;
 };

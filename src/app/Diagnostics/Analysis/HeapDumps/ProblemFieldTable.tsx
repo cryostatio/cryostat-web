@@ -239,19 +239,19 @@ export const ProblemFieldTable: React.FC<ProblemFieldTableProps> = (props: Probl
 
   const parseProblemType = React.useCallback((p: string) => {
     if (p == null) {
-        return "";
-    } else if (p == "SOME_FIELDS_UNUSED_HI_BYTES") {
-        return "High overhead due to primitive fields with unused high bytes"
-    } else if (p == "NO_FIELDS") {
-        return "High overhead due to fields that are non-existent"
-    } else if (p == "ALL_FIELDS_EMPTY") {
-        return "High overhead due to all fields being null/zero/non-existent"
-    } else if (p == "SOME_FIELDS_EMPTY") {
-        return "High overhead due to some fields that are null/zero"
+      return '';
+    } else if (p == 'SOME_FIELDS_UNUSED_HI_BYTES') {
+      return 'High overhead due to primitive fields with unused high bytes';
+    } else if (p == 'NO_FIELDS') {
+      return 'High overhead due to fields that are non-existent';
+    } else if (p == 'ALL_FIELDS_EMPTY') {
+      return 'High overhead due to all fields being null/zero/non-existent';
+    } else if (p == 'SOME_FIELDS_EMPTY') {
+      return 'High overhead due to some fields that are null/zero';
     } else {
-        return "N/A"
+      return 'N/A';
     }
-  }, [])
+  }, []);
 
   const problemFieldTable = React.useMemo(() => {
     if (displayedProblemFieldRowData.length) {
@@ -314,9 +314,12 @@ export const ProblemFieldTable: React.FC<ProblemFieldTableProps> = (props: Probl
                 <Td key={`field-overhead-${index}`} colSpan={1} dataLabel={problemFieldColumns[2].title}>
                   {d.problemFieldsInfo.overhead !== undefined ? formatBytes(d.problemFieldsInfo.overhead) : 'N/A'}
                 </Td>
-                <Td key={`field-problem-kind-${index}`} colSpan={1} dataLabel={problemFieldColumns[3].title} tooltip={
-                    <Tooltip content={parseProblemType(d.problemFieldsInfo.problemKind)}/>
-                }>
+                <Td
+                  key={`field-problem-kind-${index}`}
+                  colSpan={1}
+                  dataLabel={problemFieldColumns[3].title}
+                  tooltip={<Tooltip content={parseProblemType(d.problemFieldsInfo.problemKind)} />}
+                >
                   {d.problemFieldsInfo.problemKind != null ? d.problemFieldsInfo.problemKind : 'N/A'}
                 </Td>
               </Tr>
@@ -332,7 +335,20 @@ export const ProblemFieldTable: React.FC<ProblemFieldTableProps> = (props: Probl
     } else {
       return emptyTableState('No Problem Fields Detected');
     }
-  }, [currentPage, filterFieldsByText.length, filterText, onCurrentPage, onFilterTextChange, onPerPage, parseProblemType, perPage, displayedProblemFieldRowData, getSortParams, emptyTableState, onProblemFieldRowToggle]);
+  }, [
+    currentPage,
+    filterFieldsByText.length,
+    filterText,
+    onCurrentPage,
+    onFilterTextChange,
+    onPerPage,
+    parseProblemType,
+    perPage,
+    displayedProblemFieldRowData,
+    getSortParams,
+    emptyTableState,
+    onProblemFieldRowToggle,
+  ]);
 
   return <>{problemFieldTable}</>;
 };

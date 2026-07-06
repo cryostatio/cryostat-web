@@ -42,11 +42,7 @@ import {
 import { t } from 'i18next';
 import _ from 'lodash';
 import React from 'react';
-import {
-  HeapDumpAnalysisResult,
-  DuplicateString,
-  AggregateValue,
-} from './types';
+import { HeapDumpAnalysisResult, DuplicateString, AggregateValue } from './types';
 
 interface DupStringRowData {
   dupStringInfo: DuplicateString;
@@ -325,7 +321,19 @@ export const DupStringsTable: React.FC<DupStringsTableProps> = (props: DupString
     } else {
       return emptyTableState('No Duplicate Strings Found');
     }
-  }, [currentPage, filterStringsByText.length, filterText, getSortParams, onCurrentPage, onFilterTextChange, onPerPage, perPage, displayedDupStringRowData, emptyTableState, onDupStringRowToggle]);
+  }, [
+    currentPage,
+    filterStringsByText.length,
+    filterText,
+    getSortParams,
+    onCurrentPage,
+    onFilterTextChange,
+    onPerPage,
+    perPage,
+    displayedDupStringRowData,
+    emptyTableState,
+    onDupStringRowToggle,
+  ]);
 
   return <>{dupStringsTable}</>;
 };

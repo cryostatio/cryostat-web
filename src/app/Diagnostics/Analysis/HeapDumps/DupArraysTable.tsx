@@ -41,11 +41,7 @@ import {
 import { t } from 'i18next';
 import _ from 'lodash';
 import React from 'react';
-import {
-  HeapDumpAnalysisResult,
-  DuplicateArray,
-  AggregateValue,
-} from './types';
+import { HeapDumpAnalysisResult, DuplicateArray, AggregateValue } from './types';
 
 interface DupArrayRowData {
   dupArrayInfo: DuplicateArray;
@@ -309,7 +305,19 @@ export const DupArraysTable: React.FC<DupArraysTableProps> = (props: DupArraysTa
     } else {
       return emptyTableState('No Duplicate Arrays Found');
     }
-  }, [currentPage, filterArraysByText.length, filterText, getSortParams, onCurrentPage, onFilterTextChange, onPerPage, perPage, displayedDupArrayRowData, emptyTableState, onDupArrayRowToggle]);
+  }, [
+    currentPage,
+    filterArraysByText.length,
+    filterText,
+    getSortParams,
+    onCurrentPage,
+    onFilterTextChange,
+    onPerPage,
+    perPage,
+    displayedDupArrayRowData,
+    emptyTableState,
+    onDupArrayRowToggle,
+  ]);
 
   return <>{dupArraysTable}</>;
 };

@@ -42,16 +42,7 @@ import {
   ToolbarItemVariant,
 } from '@patternfly/react-core';
 import { TopologyIcon } from '@patternfly/react-icons';
-import {
-  SortByDirection,
-  Table,
-  TableVariant,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-} from '@patternfly/react-table';
+import { SortByDirection, Table, TableVariant, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { t } from 'i18next';
 import _ from 'lodash';
 import React from 'react';
@@ -659,7 +650,18 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
         )}
       </Card>
     );
-  }, [currentPage, filterObjectsByText.length, filterText, getSortParams, onCurrentPage, onFilterTextChange, onPerPage, perPage, emptyTableState, displayedObjectHistogramRowData]);
+  }, [
+    currentPage,
+    filterObjectsByText.length,
+    filterText,
+    getSortParams,
+    onCurrentPage,
+    onFilterTextChange,
+    onPerPage,
+    perPage,
+    emptyTableState,
+    displayedObjectHistogramRowData,
+  ]);
 
   var view;
   if (isAnalysisLoading || (analysisResult == null && hasPendingPrefill)) {

@@ -287,7 +287,19 @@ export const WeakHashMapsTable: React.FC<WeakHashMapsTableProps> = (props: WeakH
     } else {
       return emptyTableState('No Weak HashMaps Found');
     }
-  }, [currentPage, filterHashMapsByText.length, filterText, getSortParams, onCurrentPage, onFilterTextChange, onPerPage, perPage, displayedWeakHashMapRowData, emptyTableState, onWeakHashMapRowToggle]);
+  }, [
+    currentPage,
+    filterHashMapsByText.length,
+    filterText,
+    getSortParams,
+    onCurrentPage,
+    onFilterTextChange,
+    onPerPage,
+    perPage,
+    displayedWeakHashMapRowData,
+    emptyTableState,
+    onWeakHashMapRowToggle,
+  ]);
 
   return <>{weakHashMapTable}</>;
 };
