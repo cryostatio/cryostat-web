@@ -108,7 +108,7 @@
     "@types/react": "17.0.93",
     "dayjs": "1.11.21",
     "echarts": "5.6.0",
-    "humanize-duration": "3.33.2",
+    "humanize-duration": "3.34.0",
     "i18next": "25.10.10",
     "i18next-browser-languagedetector": "8.2.1",
     "js-base64": "3.8.0",
