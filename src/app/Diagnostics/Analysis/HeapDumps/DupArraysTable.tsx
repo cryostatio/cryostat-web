@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { hashCode, sortResources, TableColumn } from '@app/utils/utils';
+import { formatBytes, hashCode, sortResources, TableColumn } from '@app/utils/utils';
 import {
   ProblemCollection,
   HeapDumpAnalysisResult,
@@ -154,7 +154,7 @@ export const DupArraysTable: React.FC<DupArraysTableProps> = (props: DupArraysTa
         index: sortBy.index ?? 0,
         direction: sortBy.direction ?? SortByDirection.asc,
       },
-      props.analysisResult.duplicateArrays.filter(withFilters),
+      props.analysisResult.duplicateArrays ? props.analysisResult.duplicateArrays.filter(withFilters) : [],
       dupArraysColumns,
     );
   }, [props.analysisResult, filterText, sortBy]);
@@ -219,7 +219,7 @@ export const DupArraysTable: React.FC<DupArraysTableProps> = (props: DupArraysTa
       });
     }
     return rows;
-  }, [openDupArraysRows, sortBy, dupArraysSubTable, props.analysisResult]);
+  }, [currentPage, perPage, filterArraysByText, openDupArraysRows, sortBy, dupArraysSubTable, props.analysisResult]);
 
   const onDupArrayRowToggle = React.useCallback(
     (d: DuplicateArray) => {
@@ -267,8 +267,10 @@ export const DupArraysTable: React.FC<DupArraysTableProps> = (props: DupArraysTa
           <Thead>
             <Tr>
               <Th key="table-header-expand" />
-              {dupArraysColumns.map(({ title }) => (
-                <Th key={`dup-arrays-header-${title}`}>{title}</Th>
+              {dupArraysColumns.map(({ title, sortable }, index) => (
+                <Th key={`dup-arrays-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                  {title}
+                </Th>
               ))}
             </Tr>
           </Thead>
@@ -291,7 +293,7 @@ export const DupArraysTable: React.FC<DupArraysTableProps> = (props: DupArraysTa
                   {c.dupArrayInfo.definingClass !== undefined ? c.dupArrayInfo.definingClass : 'N/A'}
                 </Td>
                 <Td key={`dup-array-overhead-${index}`} colSpan={1} dataLabel={dupArraysColumns[2].title}>
-                  {c.dupArrayInfo.overhead !== undefined ? c.dupArrayInfo.overhead : 'N/A'}
+                  {c.dupArrayInfo.overhead !== undefined ? formatBytes(c.dupArrayInfo.overhead) : 'N/A'}
                 </Td>
                 <Td key={`dup-array-bad-objs-${index}`} colSpan={1} dataLabel={dupArraysColumns[3].title}>
                   {c.dupArrayInfo.badObjs != null ? c.dupArrayInfo.badObjs : 'N/A'}

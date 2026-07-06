@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { hashCode, sortResources, TableColumn } from '@app/utils/utils';
+import { formatBytes, hashCode, sortResources, TableColumn } from '@app/utils/utils';
 import {
   ProblemCollection,
   HeapDumpAnalysisResult,
@@ -153,7 +153,7 @@ export const HighSizeObjectsTable: React.FC<HighSizeObjectsTableProps> = (props:
         index: sortBy.index ?? 0,
         direction: sortBy.direction ?? SortByDirection.asc,
       },
-      props.analysisResult.highSizeObjects.filter(withFilters),
+      props.analysisResult.highSizeObjects ? props.analysisResult.highSizeObjects.filter(withFilters) : [],
       highSizeObjectsColumns,
     );
   }, [props.analysisResult, filterText, sortBy]);
@@ -208,7 +208,7 @@ export const HighSizeObjectsTable: React.FC<HighSizeObjectsTableProps> = (props:
                       {c.numInstances ? c.numInstances : 'N/A'}
                     </Td>
                     <Td key={`overhead`} dataLabel={highSizeObjectsSubColumns[2].title}>
-                      {c.overhead ? c.overhead : 'N/A'}
+                      {c.overhead ? formatBytes(c.overhead) : 'N/A'}
                     </Td>
                   </Tr>
                 ))}
@@ -260,7 +260,15 @@ export const HighSizeObjectsTable: React.FC<HighSizeObjectsTableProps> = (props:
       });
     }
     return rows;
-  }, [openHighSizeObjRows, sortBy, highSizeObjectsSubTable, props.analysisResult]);
+  }, [
+    currentPage,
+    perPage,
+    filterObjectsByText,
+    openHighSizeObjRows,
+    sortBy,
+    highSizeObjectsSubTable,
+    props.analysisResult,
+  ]);
 
   const highSizeObjsTable = React.useMemo(() => {
     if (displayedHighSizeObjsRowData.length) {
@@ -314,16 +322,16 @@ export const HighSizeObjectsTable: React.FC<HighSizeObjectsTableProps> = (props:
                     onToggle: () => onHighSizeObjsRowToggle(d.highSizeObjsInfo),
                   }}
                 />
-                <Td key={`high-size-objs-class`} dataLabel={highSizeObjectsColumns[0].title}>
+                <Td key={`high-size-objs-class-and-field`} dataLabel={highSizeObjectsColumns[0].title}>
                   {d.highSizeObjsInfo.classAndField ? d.highSizeObjsInfo.classAndField : 'N/A'}
                 </Td>
                 <Td key={`high-size-objs-class`} dataLabel={highSizeObjectsColumns[1].title}>
                   {d.highSizeObjsInfo.definingClass ? d.highSizeObjsInfo.definingClass : 'N/A'}
                 </Td>
                 <Td key={`high-size-objs-overhead`} dataLabel={highSizeObjectsColumns[2].title}>
-                  {d.highSizeObjsInfo.overhead ? d.highSizeObjsInfo.overhead : 'N/A'}
+                  {d.highSizeObjsInfo.overhead ? formatBytes(d.highSizeObjsInfo.overhead) : 'N/A'}
                 </Td>
-                <Td key={`high-size-objs-overhead`} dataLabel={highSizeObjectsColumns[3].title}>
+                <Td key={`high-size-objs-bad-objs`} dataLabel={highSizeObjectsColumns[3].title}>
                   {d.highSizeObjsInfo.badObjs ? d.highSizeObjsInfo.badObjs : 'N/A'}
                 </Td>
               </Tr>

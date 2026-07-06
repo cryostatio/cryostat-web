@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { hashCode, sortResources, TableColumn } from '@app/utils/utils';
+import { formatBytes, hashCode, sortResources, TableColumn } from '@app/utils/utils';
 import { Field, HeapDumpAnalysisResult, ProblemField } from './types';
 import React from 'react';
 import {
@@ -188,7 +188,7 @@ export const ProblemFieldTable: React.FC<ProblemFieldTableProps> = (props: Probl
                       {f.clazz ? f.clazz : 'N/A'}
                     </Td>
                     <Td key={`overhead`} dataLabel={problemFieldSubColumns[2].title}>
-                      {f.overhead ? f.overhead : 'N/A'}
+                      {f.overhead ? formatBytes(f.overhead) : 'N/A'}
                     </Td>
                   </Tr>
                 ))}
@@ -206,7 +206,6 @@ export const ProblemFieldTable: React.FC<ProblemFieldTableProps> = (props: Probl
   const displayedProblemFieldRowData = React.useMemo(() => {
     const offset = (currentPage - 1) * perPage;
     const visibleTypes = filterFieldsByText.slice(offset, offset + perPage);
-
     const rows: ProblemFieldRowData[] = [];
     const sorted = sortResources(
       {
@@ -227,7 +226,15 @@ export const ProblemFieldTable: React.FC<ProblemFieldTableProps> = (props: Probl
       });
     }
     return rows;
-  }, [openProblemFieldRows, sortBy, problemFieldsSubTable, props.analysisResult]);
+  }, [
+    currentPage,
+    perPage,
+    filterFieldsByText,
+    openProblemFieldRows,
+    sortBy,
+    problemFieldsSubTable,
+    props.analysisResult,
+  ]);
 
   const problemFieldTable = React.useMemo(() => {
     if (displayedProblemFieldRowData.length) {
@@ -288,7 +295,7 @@ export const ProblemFieldTable: React.FC<ProblemFieldTableProps> = (props: Probl
                   {d.problemFieldsInfo.numInstances ? d.problemFieldsInfo.numInstances : 'N/A'}
                 </Td>
                 <Td key={`field-overhead-${index}`} colSpan={1} dataLabel={problemFieldColumns[2].title}>
-                  {d.problemFieldsInfo.overhead !== undefined ? d.problemFieldsInfo.overhead : 'N/A'}
+                  {d.problemFieldsInfo.overhead !== undefined ? formatBytes(d.problemFieldsInfo.overhead) : 'N/A'}
                 </Td>
                 <Td key={`field-problem-kind-${index}`} colSpan={1} dataLabel={problemFieldColumns[3].title}>
                   {d.problemFieldsInfo.problemKind != null ? d.problemFieldsInfo.problemKind : 'N/A'}

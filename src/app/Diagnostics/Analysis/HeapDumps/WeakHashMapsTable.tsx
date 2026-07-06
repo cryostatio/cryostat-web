@@ -13,18 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { hashCode, sortResources, TableColumn } from '@app/utils/utils';
-import {
-  ProblemCollection,
-  HeapDumpAnalysisResult,
-  ProblemField,
-  ProblemClass,
-  HighSizeObjects,
-  ObjectEntry,
-  DuplicateArray,
-  AggregateValue,
-  WeakHashMapEntry,
-} from './types';
+import { formatBytes, hashCode, sortResources, TableColumn } from '@app/utils/utils';
+import { HeapDumpAnalysisResult, WeakHashMapEntry } from './types';
 import React from 'react';
 import {
   Card,
@@ -137,7 +127,7 @@ export const WeakHashMapsTable: React.FC<WeakHashMapsTableProps> = (props: WeakH
         index: sortBy.index ?? 0,
         direction: sortBy.direction ?? SortByDirection.asc,
       },
-      props.analysisResult.weakHashMapClusters.filter(withFilters),
+      props.analysisResult.weakHashMapClusters ? props.analysisResult.weakHashMapClusters.filter(withFilters) : [],
       weakHashMapColumns,
     );
   }, [props.analysisResult, filterText, sortBy]);
@@ -197,7 +187,15 @@ export const WeakHashMapsTable: React.FC<WeakHashMapsTableProps> = (props: WeakH
       });
     }
     return rows;
-  }, [openWeakHashMapRows, sortBy, weakHashMapSubTable, props.analysisResult]);
+  }, [
+    currentPage,
+    perPage,
+    filterHashMapsByText,
+    openWeakHashMapRows,
+    sortBy,
+    weakHashMapSubTable,
+    props.analysisResult,
+  ]);
 
   const onWeakHashMapRowToggle = React.useCallback(
     (d: WeakHashMapEntry) => {
@@ -245,8 +243,10 @@ export const WeakHashMapsTable: React.FC<WeakHashMapsTableProps> = (props: WeakH
           <Thead>
             <Tr>
               <Th key="table-header-expand" />
-              {weakHashMapColumns.map(({ title }) => (
-                <Th key={`weak-hashmaps-header-${title}`}>{title}</Th>
+              {weakHashMapColumns.map(({ title, sortable }, index) => (
+                <Th key={`weak-hashmaps-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                  {title}
+                </Th>
               ))}
             </Tr>
           </Thead>
@@ -269,7 +269,7 @@ export const WeakHashMapsTable: React.FC<WeakHashMapsTableProps> = (props: WeakH
                   {c.weakHashMapInfo.definingClass !== undefined ? c.weakHashMapInfo.definingClass : 'N/A'}
                 </Td>
                 <Td key={`weak-hashmap-overhead-${index}`} colSpan={1} dataLabel={weakHashMapColumns[2].title}>
-                  {c.weakHashMapInfo.overhead !== undefined ? c.weakHashMapInfo.overhead : 'N/A'}
+                  {c.weakHashMapInfo.overhead !== undefined ? formatBytes(c.weakHashMapInfo.overhead) : 'N/A'}
                 </Td>
                 <Td key={`weak-hashmap-bad-objs-${index}`} colSpan={1} dataLabel={weakHashMapColumns[3].title}>
                   {c.weakHashMapInfo.badObjs != null ? c.weakHashMapInfo.badObjs : 'N/A'}

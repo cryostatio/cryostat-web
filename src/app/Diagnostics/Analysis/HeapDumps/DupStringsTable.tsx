@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { hashCode, sortResources, TableColumn } from '@app/utils/utils';
+import { formatBytes, hashCode, sortResources, TableColumn } from '@app/utils/utils';
 import {
   ProblemCollection,
   HeapDumpAnalysisResult,
@@ -160,7 +160,7 @@ export const DupStringsTable: React.FC<DupStringsTableProps> = (props: DupString
         index: sortBy.index ?? 0,
         direction: sortBy.direction ?? SortByDirection.asc,
       },
-      props.analysisResult.duplicateStrings.filter(withFilters),
+      props.analysisResult.duplicateStrings ? props.analysisResult.duplicateStrings.filter(withFilters) : [],
       dupStringsColumns,
     );
   }, [props.analysisResult, filterText, sortBy]);
@@ -232,7 +232,7 @@ export const DupStringsTable: React.FC<DupStringsTableProps> = (props: DupString
       });
     }
     return rows;
-  }, [openDupStringRows, sortBy, dupStringsSubTable, props.analysisResult]);
+  }, [currentPage, perPage, filterStringsByText, openDupStringRows, sortBy, dupStringsSubTable, props.analysisResult]);
 
   const onDupStringRowToggle = React.useCallback(
     (d: DuplicateString) => {
@@ -280,8 +280,10 @@ export const DupStringsTable: React.FC<DupStringsTableProps> = (props: DupString
           <Thead>
             <Tr>
               <Th key="table-header-expand" />
-              {dupStringsColumns.map(({ title }) => (
-                <Th key={`dup-strings-header-${title}`}>{title}</Th>
+              {dupStringsColumns.map(({ title, sortable }, index) => (
+                <Th key={`dup-strings-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                  {title}
+                </Th>
               ))}
             </Tr>
           </Thead>
@@ -304,7 +306,7 @@ export const DupStringsTable: React.FC<DupStringsTableProps> = (props: DupString
                   {c.dupStringInfo.definingClass !== undefined ? c.dupStringInfo.definingClass : 'N/A'}
                 </Td>
                 <Td key={`dup-array-overhead-${index}`} colSpan={1} dataLabel={dupStringsColumns[2].title}>
-                  {c.dupStringInfo.overhead !== undefined ? c.dupStringInfo.overhead : 'N/A'}
+                  {c.dupStringInfo.overhead !== undefined ? formatBytes(c.dupStringInfo.overhead) : 'N/A'}
                 </Td>
                 <Td key={`dup-array-bad-objs-${index}`} colSpan={1} dataLabel={dupStringsColumns[3].title}>
                   {c.dupStringInfo.badObjs != null ? c.dupStringInfo.badObjs : 'N/A'}

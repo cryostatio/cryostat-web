@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { hashCode, sortResources, TableColumn } from '@app/utils/utils';
+import { formatBytes, hashCode, sortResources, TableColumn } from '@app/utils/utils';
 import { ProblemCollection, HeapDumpAnalysisResult, ProblemField, ProblemClass } from './types';
 import React from 'react';
 import {
@@ -157,7 +157,7 @@ export const CollectionsTable: React.FC<CollectionsTableProps> = (props: Collect
         index: sortBy.index ?? 0,
         direction: sortBy.direction ?? SortByDirection.asc,
       },
-      props.analysisResult.problemCollections.filter(withFilters),
+      props.analysisResult.problemCollections ? props.analysisResult.problemCollections.filter(withFilters) : [],
       collectionsColumns,
     );
   }, [props.analysisResult, filterText, sortBy]);
@@ -217,7 +217,7 @@ export const CollectionsTable: React.FC<CollectionsTableProps> = (props: Collect
                   {c.numInstances ? c.numInstances : 'N/A'}
                 </Td>
                 <Td key={`overhead`} dataLabel={collectionsSubColumns[3].title}>
-                  {c.overhead ? c.overhead : 'N/A'}
+                  {c.overhead ? formatBytes(c.overhead) : 'N/A'}
                 </Td>
               </Tr>
             ))}
@@ -251,7 +251,15 @@ export const CollectionsTable: React.FC<CollectionsTableProps> = (props: Collect
       });
     }
     return rows;
-  }, [openCollectionsRows, sortBy, collectionsSubTable, props.analysisResult]);
+  }, [
+    currentPage,
+    perPage,
+    filterCollectionsByText,
+    openCollectionsRows,
+    sortBy,
+    collectionsSubTable,
+    props.analysisResult,
+  ]);
 
   const onCollectionRowToggle = React.useCallback(
     (d: ProblemCollection) => {
@@ -273,8 +281,10 @@ export const CollectionsTable: React.FC<CollectionsTableProps> = (props: Collect
           <Thead>
             <Tr>
               <Th key="table-header-expand" />
-              {collectionsColumns.map(({ title }) => (
-                <Th key={`collections-header-${title}`}>{title}</Th>
+              {collectionsColumns.map(({ title, sortable }, index) => (
+                <Th key={`collections-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                  {title}
+                </Th>
               ))}
             </Tr>
           </Thead>
@@ -297,7 +307,7 @@ export const CollectionsTable: React.FC<CollectionsTableProps> = (props: Collect
                   {c.collectionInfo.definingClass !== undefined ? c.collectionInfo.definingClass : 'N/A'}
                 </Td>
                 <Td key={`collection-overhead-${index}`} colSpan={1} dataLabel={collectionsColumns[2].title}>
-                  {c.collectionInfo.overhead !== undefined ? c.collectionInfo.overhead : 'N/A'}
+                  {c.collectionInfo.overhead !== undefined ? formatBytes(c.collectionInfo.overhead) : 'N/A'}
                 </Td>
                 <Td key={`collection-bad-objs-${index}`} colSpan={1} dataLabel={collectionsColumns[3].title}>
                   {c.collectionInfo.badObjs != null ? c.collectionInfo.badObjs : 'N/A'}

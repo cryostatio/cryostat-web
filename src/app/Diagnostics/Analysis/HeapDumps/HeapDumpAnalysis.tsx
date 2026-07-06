@@ -21,7 +21,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { hashCode, sortResources, TableColumn } from '@app/utils/utils';
+import { formatBytes, hashCode, sortResources, TableColumn } from '@app/utils/utils';
 import {
   Card,
   CardBody,
@@ -31,9 +31,15 @@ import {
   EmptyState,
   Grid,
   GridItem,
+  Pagination,
+  SearchInput,
   Tab,
   Tabs,
   TabTitleText,
+  Toolbar,
+  ToolbarContent,
+  ToolbarItem,
+  ToolbarItemVariant,
 } from '@patternfly/react-core';
 import { TopologyIcon } from '@patternfly/react-icons';
 import {
@@ -54,22 +60,14 @@ import { concatMap, EMPTY, finalize, first, map, of } from 'rxjs';
 import { AggregateDataCard } from '../AggregateDataCard.tsx';
 import { HeapDumpSelector } from './HeapDumpSelector';
 import { ProblemFieldTable } from './ProblemFieldTable';
-import {
-  AggregateValue,
-  DuplicateArray,
-  DuplicateString,
-  HeapDumpAnalysisResult,
-  HighSizeObjects,
-  HistogramEntry,
-  ObjectEntry,
-  WeakHashMapEntry,
-} from './types';
+import { HeapDumpAnalysisResult, HistogramEntry } from './types';
 import _ from 'lodash';
-import { CollectionsTable } from './CollectionsTable.js';
-import { HighSizeObjectsTable } from './HighSizeObjectsTable.js';
-import { DupStringsTable } from './DupStringsTable.js';
-import { DupArraysTable } from './DupArraysTable.js';
-import { WeakHashMapsTable } from './WeakHashMapsTable.js';
+import { CollectionsTable } from './CollectionsTable';
+import { HighSizeObjectsTable } from './HighSizeObjectsTable';
+import { DupStringsTable } from './DupStringsTable';
+import { DupArraysTable } from './DupArraysTable';
+import { WeakHashMapsTable } from './WeakHashMapsTable';
+import { t } from 'i18next';
 
 export interface HeapDumpAnalysisProps {}
 
@@ -90,6 +88,11 @@ interface HeapDumpPrefillStore {
 interface HeapDumpPrefill {
   jvmId?: string;
   heapDumpId?: string;
+}
+
+interface ObjectHistogramRowData {
+  objectHistogramInfo: HistogramEntry;
+  cellContents: React.ReactNode[];
 }
 
 const firstString = (...values: unknown[]): string | undefined =>
@@ -153,11 +156,82 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
   const [isAnalysisLoading, setIsAnalysisLoading] = React.useState(false);
   const [heapDumps, setHeapDumps] = React.useState<HeapDump[]>([]);
   const [sortBy, getSortParams] = useSort();
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [perPage, setPerPage] = React.useState(10);
+  const prevPerPage = React.useRef(10);
+  const [filterText, setFilterText] = React.useState('');
 
   const selectedHeapDumpJvmIdRef = React.useRef<string>();
 
   const targetAsObs = React.useMemo(() => of(target), [target]);
   const [activeTab, setActiveTab] = React.useState(0);
+
+  const onCurrentPage = React.useCallback(
+    (_: MouseEvent | React.MouseEvent, currentPage: number) => {
+      setCurrentPage(currentPage);
+    },
+    [setCurrentPage],
+  );
+
+  const onPerPage = React.useCallback(
+    (_: MouseEvent | React.MouseEvent, perPage: number) => {
+      const offset = (currentPage - 1) * prevPerPage.current;
+      prevPerPage.current = perPage;
+      setPerPage(perPage);
+      setCurrentPage(1 + Math.floor(offset / perPage));
+    },
+    [currentPage, prevPerPage, setPerPage, setCurrentPage],
+  );
+
+  const onFilterTextChange = React.useCallback(
+    (_, filterText: string) => {
+      setFilterText(filterText);
+      setCurrentPage(1);
+    },
+    [setFilterText, setCurrentPage],
+  );
+
+  const filterObjectsByText = React.useMemo(() => {
+    const reg = new RegExp(_.escapeRegExp(filterText), 'i');
+    const withFilters = (t: HistogramEntry) =>
+      filterText === '' ||
+      reg.test(t.clazz) ||
+      reg.test('' + t.inclusiveSize) ||
+      reg.test('' + t.numInstances) ||
+      reg.test('' + t.shallowSize);
+    return sortResources(
+      {
+        index: sortBy.index ?? 0,
+        direction: sortBy.direction ?? SortByDirection.asc,
+      },
+      analysisResult?.objectHistogram ? analysisResult.objectHistogram.filter(withFilters) : [],
+      objectHistogramTableColumns,
+    );
+  }, [analysisResult, filterText, sortBy]);
+
+  const displayedObjectHistogramRowData = React.useMemo(() => {
+    const offset = (currentPage - 1) * perPage;
+    const visibleTypes = filterObjectsByText.slice(offset, offset + perPage);
+
+    const rows: ObjectHistogramRowData[] = [];
+    const sorted = sortResources(
+      {
+        index: sortBy.index ?? 1,
+        direction: sortBy.direction ?? SortByDirection.asc,
+      },
+      visibleTypes,
+      objectHistogramTableColumns,
+    );
+    if (analysisResult) {
+      sorted.forEach((d: HistogramEntry) => {
+        rows.push({
+          objectHistogramInfo: d,
+          cellContents: [d.clazz, d.inclusiveSize, d.numInstances, d.shallowSize],
+        });
+      });
+    }
+    return rows;
+  }, [currentPage, perPage, filterObjectsByText, sortBy, analysisResult]);
 
   const prefill = React.useMemo(
     () =>
@@ -514,10 +588,10 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
             {h.numInstances ? h.numInstances : 'N/A'}
           </Td>
           <Td key={`inclusive`} dataLabel={objectHistogramTableColumns[2].title}>
-            {h.inclusiveSize ? h.inclusiveSize : 'N/A'}
+            {h.inclusiveSize ? formatBytes(h.inclusiveSize) : 'N/A'}
           </Td>
           <Td key={`shallow`} dataLabel={objectHistogramTableColumns[3].title}>
-            {h.shallowSize ? h.shallowSize : 'N/A'}
+            {h.shallowSize ? formatBytes(h.shallowSize) : 'N/A'}
           </Td>
         </Tr>
       )),
@@ -530,21 +604,84 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
         <CardTitle>Object Histogram</CardTitle>
         {histogramRows?.length ? (
           <Table aria-label="Object Histogram" variant={TableVariant.compact}>
+            <Toolbar id="histogram-toolbar">
+              <ToolbarContent>
+                <ToolbarItem>
+                  <SearchInput
+                    style={{ minWidth: '38ch' }}
+                    name="objectFilter"
+                    id="objectFilter"
+                    type="search"
+                    placeholder={t('ObjectHistogram.SEARCH_PLACEHOLDER')}
+                    aria-label={t('ObjectHistogram.ARIA_LABELS.SEARCH_INPUT')}
+                    onChange={onFilterTextChange}
+                    value={filterText}
+                  />
+                </ToolbarItem>
+                <ToolbarItem variant={ToolbarItemVariant.pagination}>
+                  <Pagination
+                    itemCount={filterObjectsByText.length}
+                    page={currentPage}
+                    perPage={perPage}
+                    onSetPage={onCurrentPage}
+                    widgetId="object-types-pagination"
+                    onPerPageSelect={onPerPage}
+                  />
+                </ToolbarItem>
+              </ToolbarContent>
+            </Toolbar>
             <Thead>
               <Tr>
-                {objectHistogramTableColumns.map(({ title }) => (
-                  <Th key={`histogram-${title}`}>{title}</Th>
+                {objectHistogramTableColumns.map(({ title, sortable }, index) => (
+                  <Th key={`histogram-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                    {title}
+                  </Th>
                 ))}
               </Tr>
             </Thead>
-            <Tbody>{histogramRows}</Tbody>
+            {displayedObjectHistogramRowData.map((c: ObjectHistogramRowData, index) => (
+              <Tbody key={`object-histogram-row-pair-${index}`}>
+                <Tr key={`object-histogram-row-${index}`}>
+                  <Td
+                    key={`object-histogram-clazz-${index}`}
+                    colSpan={1}
+                    dataLabel={objectHistogramTableColumns[0].title}
+                  >
+                    {c.objectHistogramInfo.clazz !== undefined ? c.objectHistogramInfo.clazz : 'N/A'}
+                  </Td>
+                  <Td
+                    key={`object-histogram-instances-${index}`}
+                    colSpan={1}
+                    dataLabel={objectHistogramTableColumns[1].title}
+                  >
+                    {c.objectHistogramInfo.numInstances !== undefined ? c.objectHistogramInfo.numInstances : 'N/A'}
+                  </Td>
+                  <Td
+                    key={`object-histogram-inclusive-size-${index}`}
+                    colSpan={1}
+                    dataLabel={objectHistogramTableColumns[2].title}
+                  >
+                    {c.objectHistogramInfo.inclusiveSize !== undefined
+                      ? formatBytes(c.objectHistogramInfo.inclusiveSize)
+                      : 'N/A'}
+                  </Td>
+                  <Td
+                    key={`weak-hashmap-bad-objs-${index}`}
+                    colSpan={1}
+                    dataLabel={objectHistogramTableColumns[3].title}
+                  >
+                    {c.objectHistogramInfo.shallowSize != null ? formatBytes(c.objectHistogramInfo.shallowSize) : 'N/A'}
+                  </Td>
+                </Tr>
+              </Tbody>
+            ))}
           </Table>
         ) : (
           emptyTableState('No Object Histogram')
         )}
       </Card>
     );
-  }, [emptyTableState, histogramRows]);
+  }, [emptyTableState, displayedObjectHistogramRowData]);
 
   var view;
   if (isAnalysisLoading || (analysisResult == null && hasPendingPrefill)) {
