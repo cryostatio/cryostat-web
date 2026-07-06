@@ -27,6 +27,7 @@ import {
   ToolbarContent,
   ToolbarItem,
   ToolbarItemVariant,
+  Tooltip,
 } from '@patternfly/react-core';
 import {
   ExpandableRowContent,
@@ -236,6 +237,22 @@ export const ProblemFieldTable: React.FC<ProblemFieldTableProps> = (props: Probl
     props.analysisResult,
   ]);
 
+  const parseProblemType = React.useCallback((p: string) => {
+    if (p == null) {
+        return "";
+    } else if (p == "SOME_FIELDS_UNUSED_HI_BYTES") {
+        return "High overhead due to primitive fields with unused high bytes"
+    } else if (p == "NO_FIELDS") {
+        return "High overhead due to fields that are non-existent"
+    } else if (p == "ALL_FIELDS_EMPTY") {
+        return "High overhead due to all fields being null/zero/non-existent"
+    } else if (p == "SOME_FIELDS_EMPTY") {
+        return "High overhead due to some fields that are null/zero"
+    } else {
+        return "N/A"
+    }
+  }, [])
+
   const problemFieldTable = React.useMemo(() => {
     if (displayedProblemFieldRowData.length) {
       return (
@@ -248,8 +265,8 @@ export const ProblemFieldTable: React.FC<ProblemFieldTableProps> = (props: Probl
                   name="eventFilter"
                   id="eventFilter"
                   type="search"
-                  placeholder={t('ProblemFieldTable.SEARCH_PLACEHOLDER')}
-                  aria-label={t('ProblemFieldTable.ARIA_LABELS.SEARCH_INPUT')}
+                  placeholder={t('ProblemFieldsTable.SEARCH_PLACEHOLDER')}
+                  aria-label={t('ProblemFieldsTable.ARIA_LABELS.SEARCH_INPUT')}
                   onChange={onFilterTextChange}
                   value={filterText}
                 />
@@ -297,7 +314,9 @@ export const ProblemFieldTable: React.FC<ProblemFieldTableProps> = (props: Probl
                 <Td key={`field-overhead-${index}`} colSpan={1} dataLabel={problemFieldColumns[2].title}>
                   {d.problemFieldsInfo.overhead !== undefined ? formatBytes(d.problemFieldsInfo.overhead) : 'N/A'}
                 </Td>
-                <Td key={`field-problem-kind-${index}`} colSpan={1} dataLabel={problemFieldColumns[3].title}>
+                <Td key={`field-problem-kind-${index}`} colSpan={1} dataLabel={problemFieldColumns[3].title} tooltip={
+                    <Tooltip content={parseProblemType(d.problemFieldsInfo.problemKind)}/>
+                }>
                   {d.problemFieldsInfo.problemKind != null ? d.problemFieldsInfo.problemKind : 'N/A'}
                 </Td>
               </Tr>

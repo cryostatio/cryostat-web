@@ -215,10 +215,10 @@
     "TITLE": "{{chartKind}} (last {{duration}}s, every {{period}}s)"
   },
   "CollectionsTable": {
-    "SEARCH_PLACEHOLDER": "Search by class, overhead, etc...",
     "ARIA_LABELS": {
       "SEARCH_INPUT": "collections-table-search"
-    }
+    },
+    "SEARCH_PLACEHOLDER": "Search by class, overhead, etc..."
   },
   "ClickableAutomatedAnalysisLabel": {
     "ARIA_LABELS": {

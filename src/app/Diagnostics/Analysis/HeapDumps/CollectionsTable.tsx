@@ -27,6 +27,7 @@ import {
   ToolbarContent,
   ToolbarItem,
   ToolbarItemVariant,
+  Tooltip,
 } from '@patternfly/react-core';
 import {
   ExpandableRowContent,
@@ -166,37 +167,48 @@ export const CollectionsTable: React.FC<CollectionsTableProps> = (props: Collect
     return <EmptyState titleText={title} icon={TopologyIcon} headingLevel="h4" />;
   }, []);
 
+
+  const parseProblemType = React.useCallback((p: string) => {
+    if (p == null) {
+        return "";
+    } else if (p == "EMPTY") {
+        return "Collection or standalone array that contains no elements, for which we cannot determine whether it has been used"
+    } else if (p == "EMPTY_UNUSED") {
+        return "Empty collection that has never contained any elements (because its modCount == 0)"
+    } else if (p == "EMPTY_USED") {
+        return "Empty collection that previously contained some elements (because its modCount != 0)"
+    } else if (p == "SPARSE_SMALL") {
+        return "Array-based collection of default or smaller capacity, has less than half slots occupied"
+    } else if (p == "SPARSE_LARGE") {
+        return "Array-based collection of larger than default capacity, has less than half slots occupied"
+    } else if (p == "SPARSE_ARRAY") {
+        return "Standalone array has less than half slots occupied"
+    } else if (p == "BOXED") {
+        return "Collection or standalone array contains boxed numbers"
+    } else if (p == "LENGTH_ZERO") {
+        return "Standalone array of length 0"
+    } else if (p == "LENGTH_ONE") {
+        return "Standalone array of length 1"
+    } else if (p == "UNUSED_HI_BYTES") {
+        return "Standalone primitive array of types short[], char[], int[] or long[] where some of the high bytes are unused in each element"
+    } else if (p == "WEAK_MAP_WITH_BACK_REFS") {
+        return "A WeakHashMap or subclass, where elements point back to keys"
+    } else if (p == "BAR") {
+        return "An array of subarrays, where the outer dimension is bigger than inner"
+    } else if (p == "LZT") {
+        return "Long zero-tail - a primitive array that ends with a series of zeros that is half the array's length or longer"
+    } else if (p == "SMALL") {
+        return "Small collections, with impl overhead too big compared to workload. They can, in principle, be replaced with arrays (or pairs of arrays for maps)"
+    }  else {
+        return "N/A"
+    }
+  }, [])
+
   const collectionsSubTable = React.useCallback((classAndOvhds: ProblemClass[]) => {
     return (
       <Card>
         <CardTitle>Collection Overhead Details</CardTitle>
         <Table aria-label="Collection Details" variant={TableVariant.compact}>
-          <Toolbar id="event-types-toolbar">
-            <ToolbarContent>
-              <ToolbarItem>
-                <SearchInput
-                  style={{ minWidth: '38ch' }}
-                  name="eventFilter"
-                  id="eventFilter"
-                  type="search"
-                  placeholder={t('CollectionsTable.SEARCH_PLACEHOLDER')}
-                  aria-label={t('CollectionsTable.ARIA_LABELS.SEARCH_INPUT')}
-                  onChange={onFilterTextChange}
-                  value={filterText}
-                />
-              </ToolbarItem>
-              <ToolbarItem variant={ToolbarItemVariant.pagination}>
-                <Pagination
-                  itemCount={filterCollectionsByText.length}
-                  page={currentPage}
-                  perPage={perPage}
-                  onSetPage={onCurrentPage}
-                  widgetId="collections-pagination"
-                  onPerPageSelect={onPerPage}
-                />
-              </ToolbarItem>
-            </ToolbarContent>
-          </Toolbar>
           <Thead>
             <Tr>
               {collectionsSubColumns.map(({ title }) => (
@@ -210,7 +222,10 @@ export const CollectionsTable: React.FC<CollectionsTableProps> = (props: Collect
                 <Td key={`clazz`} dataLabel={collectionsSubColumns[0].title}>
                   {c.clazz ? c.clazz : 'N/A'}
                 </Td>
-                <Td key={`problemKind`} dataLabel={collectionsSubColumns[1].title}>
+                <Td key={`problemKind`} dataLabel={collectionsSubColumns[1].title} 
+                tooltip={
+                    <Tooltip content={parseProblemType(c.problemKind)}/>
+                }>
                   {c.problemKind ? c.problemKind : 'N/A'}
                 </Td>
                 <Td key={`numInstances`} dataLabel={collectionsSubColumns[2].title}>
@@ -278,6 +293,32 @@ export const CollectionsTable: React.FC<CollectionsTableProps> = (props: Collect
     if (displayedCollectionRowData) {
       return (
         <Table aria-label="Problem Collections" variant={TableVariant.compact}>
+          <Toolbar id="collections-toolbar">
+            <ToolbarContent>
+              <ToolbarItem>
+                <SearchInput
+                  style={{ minWidth: '38ch' }}
+                  name="eventFilter"
+                  id="eventFilter"
+                  type="search"
+                  placeholder={t('CollectionsTable.SEARCH_PLACEHOLDER')}
+                  aria-label={t('CollectionsTable.ARIA_LABELS.SEARCH_INPUT')}
+                  onChange={onFilterTextChange}
+                  value={filterText}
+                />
+              </ToolbarItem>
+              <ToolbarItem variant={ToolbarItemVariant.pagination}>
+                <Pagination
+                  itemCount={filterCollectionsByText.length}
+                  page={currentPage}
+                  perPage={perPage}
+                  onSetPage={onCurrentPage}
+                  widgetId="collections-pagination"
+                  onPerPageSelect={onPerPage}
+                />
+              </ToolbarItem>
+            </ToolbarContent>
+          </Toolbar>
           <Thead>
             <Tr>
               <Th key="table-header-expand" />
