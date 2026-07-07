@@ -677,43 +677,12 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
             <GridItem span={3}>{compressibleStringStatsCard}</GridItem>
             <GridItem span={3}>{duplicateStringStatsCard}</GridItem>
             <GridItem span={3}>{histogramStatsCard}</GridItem>
-            <GridItem span={7}>
-              <Card>
-                <CardTitle>Class Loader Instances</CardTitle>
-                <CardBody>
-                  <AggregateDataCard
-                    data={analysisResult?.classLoaderInstanceStats.map((t) => {
-                      return { data: t.value, count: t.count };
-                    })}
-                    title="Class Loader Instance Statistics"
-                    description="Class Loader Instance Memory Statistics"
-                  />
-                </CardBody>
-              </Card>
-            </GridItem>
-            <GridItem span={7}>
-              <Card>
-                <CardTitle>Class Loader Classes</CardTitle>
-                <CardBody>
-                  <AggregateDataCard
-                    data={analysisResult?.classLoaderClassStats.map((t) => {
-                      return { data: t.value, count: t.count };
-                    })}
-                    title="Class Loader Class Statistics"
-                    description="Class Loader Class Memory Statistics"
-                  />
-                </CardBody>
-              </Card>
-            </GridItem>
           </Grid>
         </Tab>
         <Tab eventKey={1} name="Problem Fields" title={<TabTitleText>Problem Fields</TabTitleText>}>
           <Grid hasGutter>
             <GridItem>
-              <Card>
-                <CardTitle>Problem Fields</CardTitle>
-                <ProblemFieldTable analysisResult={analysisResult} />
-              </Card>
+              <ProblemFieldTable analysisResult={analysisResult} />
             </GridItem>
           </Grid>
         </Tab>
@@ -732,42 +701,54 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
         <Tab eventKey={4} title={<TabTitleText>Duplicate Arrays</TabTitleText>}>
           <Grid hasGutter>
             <GridItem>
-              <Card>
-                <CardTitle>Duplicate Arrays</CardTitle>
-                <DupArraysTable analysisResult={analysisResult} />
-              </Card>
+              <DupArraysTable analysisResult={analysisResult} />
             </GridItem>
           </Grid>
         </Tab>
         <Tab eventKey={5} title={<TabTitleText>High Size Objects</TabTitleText>}>
           <Grid hasGutter>
             <GridItem>
-              <Card>
-                <CardTitle>High Size Objects</CardTitle>
-                <HighSizeObjectsTable analysisResult={analysisResult} />
-              </Card>
+              <HighSizeObjectsTable analysisResult={analysisResult} />
             </GridItem>
           </Grid>
         </Tab>
         <Tab eventKey={6} title={<TabTitleText>Duplicate Strings</TabTitleText>}>
           <Grid hasGutter>
             <GridItem>
-              <Card>
-                <CardTitle>Duplicate Strings</CardTitle>
-                <DupStringsTable analysisResult={analysisResult} />
-              </Card>
+              <DupStringsTable analysisResult={analysisResult} />
             </GridItem>
           </Grid>
         </Tab>
         <Tab eventKey={7} title={<TabTitleText>Weak HashMaps</TabTitleText>}>
           <Grid hasGutter>
             <GridItem>
-              <Card>
-                <CardTitle>Weak HashMaps</CardTitle>
-                <WeakHashMapsTable analysisResult={analysisResult} />
-              </Card>
+              <WeakHashMapsTable analysisResult={analysisResult} />
             </GridItem>
           </Grid>
+        </Tab>
+        <Tab eventKey={8} title={<TabTitleText>Class Loader Instances</TabTitleText>}>
+          <AggregateDataCard
+            data={analysisResult?.classLoaderInstanceStats.map((t) => {
+              return { data: t.value, count: t.count };
+            })}
+            title="Class Loader Instance Statistics"
+            description="Class Loader Instance Memory Statistics"
+            width={1200}
+            height={300}
+            legendPadding={900}
+          />
+        </Tab>
+        <Tab eventKey={9} title={<TabTitleText>Class Loader Classes</TabTitleText>}>
+          <AggregateDataCard
+            data={analysisResult?.classLoaderClassStats.map((t) => {
+              return { data: t.value, count: t.count };
+            })}
+            title="Class Loader Class Statistics"
+            description="Class Loader Class Memory Statistics"
+            width={1200}
+            height={300}
+            legendPadding={900}
+          />
         </Tab>
       </Tabs>
     );

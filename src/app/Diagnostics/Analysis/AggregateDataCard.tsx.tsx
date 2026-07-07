@@ -30,12 +30,19 @@ export interface AggregateDataCardProps {
   data: { data: any; count: number }[] | undefined;
   title: string;
   description: string;
+  width?: number;
+  height?: number;
+  legendPadding?: number;
 }
 
 export const AggregateDataCard: React.FC<AggregateDataCardProps> = (props) => {
-  const legendData: ChartData[] | undefined = props.data?.map((t) => {
-    return { name: `${t.data}: ${t.count}` };
-  });
+  const legendData: ChartData[] | undefined = props.data
+    ?.sort((a, b) => {
+      return b.count - a.count;
+    })
+    .map((t) => {
+      return { name: `${t.data}: ${t.count}` };
+    });
 
   const chartData: ChartData[] | undefined = props.data?.map((t) => {
     return { x: t.data, y: t.count };
@@ -65,12 +72,12 @@ export const AggregateDataCard: React.FC<AggregateDataCardProps> = (props) => {
                 }
               />
             }
-            height={350}
-            width={900}
+            height={props.height ? props.height : 350}
+            width={props.width ? props.width : 900}
             padding={{
               bottom: 20,
               left: 20,
-              right: 140, // Adjusted to accommodate legend
+              right: props.legendPadding ? props.legendPadding : 140, // Adjusted to accommodate legend
               top: 20,
             }}
             name="chart1"
