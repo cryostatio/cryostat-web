@@ -33,6 +33,7 @@ import {
   ExpandableRowContent,
   SortByDirection,
   Table,
+  TableText,
   TableVariant,
   Tbody,
   Td,
@@ -106,10 +107,6 @@ const collectionsSubColumns: TableColumn[] = [
 export interface CollectionsTableProps {
   analysisResult: HeapDumpAnalysisResult;
 }
-
-//
-// const offset = (currentPage - 1) * perPage;
-//const visibleTypes = filterTypesByText.slice(offset, offset + perPage);
 
 export const CollectionsTable: React.FC<CollectionsTableProps> = (props: CollectionsTableProps) => {
   const [sortBy, getSortParams] = useSort();
@@ -222,12 +219,10 @@ export const CollectionsTable: React.FC<CollectionsTableProps> = (props: Collect
                   <Td key={`clazz`} dataLabel={collectionsSubColumns[0].title}>
                     {c.clazz ? c.clazz : 'N/A'}
                   </Td>
-                  <Td
-                    key={`problemKind`}
-                    dataLabel={collectionsSubColumns[1].title}
-                    tooltip={<Tooltip content={parseProblemType(c.problemKind)} />}
-                  >
-                    {c.problemKind ? c.problemKind : 'N/A'}
+                  <Td key={`problemKind`} dataLabel={collectionsSubColumns[1].title}>
+                    <Tooltip content={parseProblemType(c.problemKind)}>
+                      <TableText>{c.problemKind ? c.problemKind : 'N/A'}</TableText>
+                    </Tooltip>
                   </Td>
                   <Td key={`numInstances`} dataLabel={collectionsSubColumns[2].title}>
                     {c.numInstances ? c.numInstances : 'N/A'}

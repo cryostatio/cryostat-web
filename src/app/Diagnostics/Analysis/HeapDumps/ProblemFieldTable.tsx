@@ -33,6 +33,7 @@ import {
   ExpandableRowContent,
   SortByDirection,
   Table,
+  TableText,
   TableVariant,
   Tbody,
   Td,
@@ -315,13 +316,12 @@ export const ProblemFieldTable: React.FC<ProblemFieldTableProps> = (props: Probl
                   <Td key={`field-overhead-${index}`} colSpan={1} dataLabel={problemFieldColumns[2].title}>
                     {d.problemFieldsInfo.overhead !== undefined ? formatBytes(d.problemFieldsInfo.overhead) : 'N/A'}
                   </Td>
-                  <Td
-                    key={`field-problem-kind-${index}`}
-                    colSpan={1}
-                    dataLabel={problemFieldColumns[3].title}
-                    tooltip={<Tooltip content={parseProblemType(d.problemFieldsInfo.problemKind)} />}
-                  >
-                    {d.problemFieldsInfo.problemKind != null ? d.problemFieldsInfo.problemKind : 'N/A'}
+                  <Td key={`field-problem-kind-${index}`} colSpan={1} dataLabel={problemFieldColumns[3].title}>
+                    <Tooltip content={parseProblemType(d.problemFieldsInfo.problemKind)}>
+                      <TableText>
+                        {d.problemFieldsInfo.problemKind != null ? d.problemFieldsInfo.problemKind : 'N/A'}
+                      </TableText>
+                    </Tooltip>
                   </Td>
                 </Tr>
                 <Tr key={`field-row-${index}-expandable-child`} isExpanded={d.isExpanded}>
