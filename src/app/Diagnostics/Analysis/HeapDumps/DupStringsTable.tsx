@@ -101,6 +101,163 @@ export interface DupStringsTableProps {
   analysisResult: HeapDumpAnalysisResult;
 }
 
+export interface DupStringsSubTableProps {
+  aggregates: AggregateValue[];
+}
+
+interface AggregateRowData {
+  aggregateInfo: AggregateValue;
+  cellContents: React.ReactNode[];
+}
+
+export const DupStringsSubTable: React.FC<DupStringsSubTableProps> = (props: DupStringsSubTableProps) => {
+  const [sortBy, getSortParams] = useSort();
+  const [currentSubPage, setCurrentSubPage] = React.useState(1);
+  const [perSubPage, setPerSubPage] = React.useState(10);
+  const prevPerSubPage = React.useRef(10);
+  const [subFilterText, setSubFilterText] = React.useState('');
+
+  const emptyTableState = React.useCallback((title: string) => {
+    return <EmptyState titleText={title} icon={TopologyIcon} headingLevel="h4" />;
+  }, []);
+
+  const onCurrentSubPage = React.useCallback(
+    (_: MouseEvent | React.MouseEvent, currentPage: number) => {
+      setCurrentSubPage(currentPage);
+    },
+    [setCurrentSubPage],
+  );
+
+  const onPerSubPage = React.useCallback(
+    (_: MouseEvent | React.MouseEvent, perPage: number) => {
+      const offset = (currentSubPage - 1) * prevPerSubPage.current;
+      prevPerSubPage.current = perSubPage;
+      setPerSubPage(perPage);
+      setCurrentSubPage(1 + Math.floor(offset / perPage));
+    },
+    [currentSubPage, prevPerSubPage, perSubPage, setPerSubPage, setCurrentSubPage],
+  );
+
+  const onSubFilterTextChange = React.useCallback(
+    (_, filterText: string) => {
+      setSubFilterText(filterText);
+      setCurrentSubPage(1);
+    },
+    [setSubFilterText, setCurrentSubPage],
+  );
+
+  const filterStringsByText = React.useMemo(() => {
+    const reg = new RegExp(_.escapeRegExp(subFilterText), 'i');
+    const withFilters = (t: AggregateValue) => subFilterText === '' || reg.test(t.value) || reg.test('' + t.count);
+    return sortResources(
+      {
+        index: sortBy.index ?? 0,
+        direction: sortBy.direction ?? SortByDirection.asc,
+      },
+      props.aggregates ? props.aggregates.filter(withFilters) : [],
+      dupStringsSubColumns,
+    );
+  }, [props.aggregates, subFilterText, sortBy]);
+
+  const displayedSubRowData = React.useMemo(() => {
+    const offset = (currentSubPage - 1) * perSubPage;
+    const visibleTypes = filterStringsByText.slice(offset, offset + perSubPage);
+
+    const rows: AggregateRowData[] = [];
+    const sorted = sortResources(
+      {
+        index: sortBy.index ?? 1,
+        direction: sortBy.direction ?? SortByDirection.asc,
+      },
+      visibleTypes,
+      dupStringsSubColumns,
+    );
+    if (props.aggregates) {
+      sorted.forEach((d: AggregateValue) => {
+        rows.push({
+          aggregateInfo: d,
+          cellContents: [d.value, d.count],
+        });
+      });
+    }
+    return rows;
+  }, [currentSubPage, perSubPage, filterStringsByText, sortBy, props.aggregates]);
+
+  const dupStringsSubTable = React.useMemo(() => {
+    if (displayedSubRowData.length) {
+      return (
+        <Card>
+          <CardTitle>Duplicate String Overhead Details</CardTitle>
+          <Toolbar id="dup-strings-toolbar">
+            <ToolbarContent>
+              <ToolbarItem>
+                <SearchInput
+                  style={{ minWidth: '38ch' }}
+                  name="eventFilter"
+                  id="eventFilter"
+                  type="search"
+                  placeholder={t('CollectionsTable.SEARCH_PLACEHOLDER')}
+                  aria-label={t('CollectionsTable.ARIA_LABELS.SEARCH_INPUT')}
+                  onChange={onSubFilterTextChange}
+                  value={subFilterText}
+                />
+              </ToolbarItem>
+              <ToolbarItem variant={ToolbarItemVariant.pagination}>
+                <Pagination
+                  itemCount={filterStringsByText.length}
+                  page={currentSubPage}
+                  perPage={perSubPage}
+                  onSetPage={onCurrentSubPage}
+                  widgetId="dup-strings-sub-pagination"
+                  onPerPageSelect={onPerSubPage}
+                />
+              </ToolbarItem>
+            </ToolbarContent>
+          </Toolbar>
+          <Table aria-label="Duplicate String Details" variant={TableVariant.compact}>
+            <Thead>
+              <Tr>
+                {dupStringsSubColumns.map(({ title, sortable }, index) => (
+                  <Th key={`string-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                    {title}
+                  </Th>
+                ))}
+              </Tr>
+            </Thead>
+            <Tbody>
+              {displayedSubRowData.map((c: AggregateRowData) => (
+                <Tr key={`dup-string-subtable`}>
+                  <Td key={`value`} dataLabel={dupStringsSubColumns[0].title}>
+                    {c.aggregateInfo.value ? c.aggregateInfo.value : 'N/A'}
+                  </Td>
+                  <Td key={`count`} dataLabel={dupStringsSubColumns[1].title}>
+                    {c.aggregateInfo.count ? c.aggregateInfo.count : 'N/A'}
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </Card>
+      );
+    } else {
+      return emptyTableState('No Duplicate String Details Found');
+    }
+  }, [
+    currentSubPage,
+    perSubPage,
+    subFilterText,
+    filterStringsByText.length,
+    displayedSubRowData,
+    getSortParams,
+    onSubFilterTextChange,
+    onCurrentSubPage,
+    onPerSubPage,
+    emptyTableState,
+  ]);
+
+  return <>{dupStringsSubTable}</>;
+};
+
 export const DupStringsTable: React.FC<DupStringsTableProps> = (props: DupStringsTableProps) => {
   const [sortBy, getSortParams] = useSort();
   const [openDupStringRows, setOpenDupStringRows] = React.useState<number[]>([]);
@@ -156,42 +313,6 @@ export const DupStringsTable: React.FC<DupStringsTableProps> = (props: DupString
     );
   }, [props.analysisResult, filterText, sortBy]);
 
-  const dupStringsSubTable = React.useCallback(
-    (aggregates: AggregateValue[]) => {
-      if (aggregates.length) {
-        return (
-          <Card>
-            <CardTitle>Duplicate String Overhead Details</CardTitle>
-            <Table aria-label="Duplicate String Details" variant={TableVariant.compact}>
-              <Thead>
-                <Tr>
-                  {dupStringsSubColumns.map(({ title }) => (
-                    <Th key={`string-header-${title}`}>{title}</Th>
-                  ))}
-                </Tr>
-              </Thead>
-              <Tbody>
-                {aggregates.map((c: AggregateValue) => (
-                  <Tr key={`dup-string-subtable`}>
-                    <Td key={`value`} dataLabel={dupStringsSubColumns[0].title}>
-                      {c.value ? c.value : 'N/A'}
-                    </Td>
-                    <Td key={`count`} dataLabel={dupStringsSubColumns[1].title}>
-                      {c.count ? c.count : 'N/A'}
-                    </Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </Card>
-        );
-      } else {
-        return emptyTableState('No Duplicate String Details Found');
-      }
-    },
-    [emptyTableState],
-  );
-
   const displayedDupStringRowData = React.useMemo(() => {
     const offset = (currentPage - 1) * perPage;
     const visibleTypes = filterStringsByText.slice(offset, offset + perPage);
@@ -218,12 +339,16 @@ export const DupStringsTable: React.FC<DupStringsTableProps> = (props: DupString
             d.nonDupStrings,
           ],
           isExpanded: openDupStringRows.some((id) => id === hashCode(d.classAndField)),
-          children: dupStringsSubTable(d.aggregates),
+          children: (
+            <>
+              <DupStringsSubTable aggregates={d.aggregates} />
+            </>
+          ),
         });
       });
     }
     return rows;
-  }, [currentPage, perPage, filterStringsByText, openDupStringRows, sortBy, dupStringsSubTable, props.analysisResult]);
+  }, [currentPage, perPage, filterStringsByText, openDupStringRows, sortBy, props.analysisResult]);
 
   const onDupStringRowToggle = React.useCallback(
     (d: DuplicateString) => {

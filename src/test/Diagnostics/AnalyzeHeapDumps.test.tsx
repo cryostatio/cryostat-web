@@ -455,7 +455,7 @@ describe('<HeapDumpAnalysis />', () => {
     expect(screen.getByText('Class Loader Classes')).toBeInTheDocument();
 
     // Change Tabs
-    const fieldsTab = screen.getByRole('tab', { name: 'Problem Fields' });
+    const fieldsTab = screen.getByRole('tab', { name: 'Null Problem Fields' });
     expect(fieldsTab).toBeInTheDocument();
     expect(fieldsTab).toBeVisible();
     await act(async () => {

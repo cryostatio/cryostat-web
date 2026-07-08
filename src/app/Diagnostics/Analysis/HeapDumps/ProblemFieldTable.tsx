@@ -44,7 +44,7 @@ import {
 import { t } from 'i18next';
 import _ from 'lodash';
 import React from 'react';
-import { Field, HeapDumpAnalysisResult, ProblemField } from './types';
+import { Field, ProblemField } from './types';
 
 interface ProblemFieldRowData {
   problemFieldsInfo: ProblemField;
@@ -95,7 +95,7 @@ const problemFieldSubColumns: TableColumn[] = [
 ];
 
 export interface ProblemFieldTableProps {
-  analysisResult: HeapDumpAnalysisResult;
+  analysisResult: ProblemField[];
 }
 
 export const ProblemFieldTable: React.FC<ProblemFieldTableProps> = (props: ProblemFieldTableProps) => {
@@ -144,7 +144,7 @@ export const ProblemFieldTable: React.FC<ProblemFieldTableProps> = (props: Probl
         index: sortBy.index ?? 0,
         direction: sortBy.direction ?? SortByDirection.asc,
       },
-      props.analysisResult.nullProblemFields.filter(withFilters),
+      props.analysisResult.filter(withFilters),
       problemFieldColumns,
     );
   }, [props.analysisResult, filterText, sortBy]);

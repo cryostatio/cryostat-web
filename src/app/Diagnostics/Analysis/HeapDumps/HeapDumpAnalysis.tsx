@@ -579,8 +579,8 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
                 name="objectFilter"
                 id="objectFilter"
                 type="search"
-                placeholder={t('ObjectHistogram.SEARCH_PLACEHOLDER')}
-                aria-label={t('ObjectHistogram.ARIA_LABELS.SEARCH_INPUT')}
+                placeholder={t('CollectionsTable.SEARCH_PLACEHOLDER')}
+                aria-label={t('CollectionsTable.ARIA_LABELS.SEARCH_INPUT')}
                 onChange={onFilterTextChange}
                 value={filterText}
               />
@@ -679,10 +679,43 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
             <GridItem span={3}>{histogramStatsCard}</GridItem>
           </Grid>
         </Tab>
-        <Tab eventKey={1} name="Problem Fields" title={<TabTitleText>Problem Fields</TabTitleText>}>
+        <Tab eventKey={10} name="Null Problem Fields" title={<TabTitleText>Null Problem Fields</TabTitleText>}>
           <Grid hasGutter>
             <GridItem>
-              <ProblemFieldTable analysisResult={analysisResult} />
+              <ProblemFieldTable analysisResult={analysisResult.nullProblemFields} />
+            </GridItem>
+          </Grid>
+        </Tab>
+        <Tab
+          eventKey={11}
+          name="Near Null Problem Fields"
+          title={<TabTitleText>Near Null Problem Fields</TabTitleText>}
+        >
+          <Grid hasGutter>
+            <GridItem>
+              <ProblemFieldTable analysisResult={analysisResult.nearNullProblemFields} />
+            </GridItem>
+          </Grid>
+        </Tab>
+        <Tab
+          eventKey={12}
+          name="High Bytes Problem Fields"
+          title={<TabTitleText>High Bytes Problem Fields</TabTitleText>}
+        >
+          <Grid hasGutter>
+            <GridItem>
+              <ProblemFieldTable analysisResult={analysisResult.highBytesFields} />
+            </GridItem>
+          </Grid>
+        </Tab>
+        <Tab
+          eventKey={13}
+          name="Full Bytes Problem Fields"
+          title={<TabTitleText>Full Bytes Problem Fields</TabTitleText>}
+        >
+          <Grid hasGutter>
+            <GridItem>
+              <ProblemFieldTable analysisResult={analysisResult.fullBytesFields} />
             </GridItem>
           </Grid>
         </Tab>
