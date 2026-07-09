@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { RecordingReplace } from '@app/CreateRecording/types';
+import { HeapDumpAnalysisResult } from '@app/Diagnostics/Analysis/HeapDumps/types';
 import { AlertVariant } from '@patternfly/react-core';
 import _ from 'lodash';
 import { Observable } from 'rxjs';
@@ -541,6 +542,11 @@ export const automatedAnalysisRecordingName = 'automated-analysis';
 
 export interface CachedReportValue {
   report: AnalysisResult[];
+  timestamp: number;
+}
+
+export interface CachedHeapDumpReportValue {
+  report: HeapDumpAnalysisResult;
   timestamp: number;
 }
 

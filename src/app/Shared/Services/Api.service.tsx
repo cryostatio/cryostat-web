@@ -15,7 +15,6 @@
  */
 
 import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/types';
-import { HeapDumpAnalysisResult } from '@app/Diagnostics/Analysis/HeapDumps/types';
 import { createBlobURL } from '@app/utils/utils';
 import { ValidatedOptions } from '@patternfly/react-core';
 import _ from 'lodash';
@@ -821,44 +820,6 @@ export class ApiService {
       `diagnostics/targets/${jvmId}/threaddump/${threadDumpId}/analyze`,
       {
         method: 'POST',
-      },
-      undefined,
-      suppressNotifications,
-    ).pipe(
-      concatMap((resp) => resp.json()),
-      first(),
-    );
-  }
-
-  analyzeHeapDump(
-    jvmId: string,
-    heapDumpId: string,
-    suppressNotifications = false,
-  ): Observable<HeapDumpAnalysisResult> {
-    return this.sendRequest(
-      'beta',
-      `diagnostics/targets/${jvmId}/heapdump/${heapDumpId}/analyze`,
-      {
-        method: 'POST',
-      },
-      undefined,
-      suppressNotifications,
-    ).pipe(
-      concatMap((resp) => resp.json()),
-      first(),
-    );
-  }
-
-  getHeapDumpReport(
-    jvmId: string,
-    heapDumpId: string,
-    suppressNotifications = false,
-  ): Observable<HeapDumpAnalysisResult> {
-    return this.sendRequest(
-      'beta',
-      `diagnostics/targets/${jvmId}/heapdump/${heapDumpId}/analyze`,
-      {
-        method: 'GET',
       },
       undefined,
       suppressNotifications,

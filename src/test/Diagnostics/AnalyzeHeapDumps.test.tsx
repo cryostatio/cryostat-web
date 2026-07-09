@@ -255,7 +255,7 @@ describe('<HeapDumpAnalysis />', () => {
   });
 
   it('renders empty state', async () => {
-    jest.spyOn(defaultServices.api, 'analyzeHeapDump').mockReturnValue(of());
+    jest.spyOn(defaultServices.heapDumpReports, 'reportJson').mockReturnValue(of());
 
     render({
       routerConfigs: {
@@ -273,7 +273,9 @@ describe('<HeapDumpAnalysis />', () => {
   });
 
   it('prefills the selected heap dump from location state', async () => {
-    const analyzeSpy = jest.spyOn(defaultServices.api, 'getHeapDumpReport').mockReturnValue(of(mockHeapDumpAnalysis));
+    const analyzeSpy = jest
+      .spyOn(defaultServices.heapDumpReports, 'reportJson')
+      .mockReturnValue(of(mockHeapDumpAnalysis));
 
     render({
       routerConfigs: {
@@ -305,7 +307,9 @@ describe('<HeapDumpAnalysis />', () => {
   });
 
   it('prefills the selected heap dump from query params', async () => {
-    const analyzeSpy = jest.spyOn(defaultServices.api, 'getHeapDumpReport').mockReturnValue(of(mockHeapDumpAnalysis));
+    const analyzeSpy = jest
+      .spyOn(defaultServices.heapDumpReports, 'reportJson')
+      .mockReturnValue(of(mockHeapDumpAnalysis));
 
     render({
       routerConfigs: {
@@ -332,7 +336,9 @@ describe('<HeapDumpAnalysis />', () => {
   });
 
   it('updates the target context for a prefilled archived thread dump from another target', async () => {
-    const analyzeSpy = jest.spyOn(defaultServices.api, 'getHeapDumpReport').mockReturnValue(of(mockHeapDumpAnalysis));
+    const analyzeSpy = jest
+      .spyOn(defaultServices.heapDumpReports, 'reportJson')
+      .mockReturnValue(of(mockHeapDumpAnalysis));
     const target$ = new BehaviorSubject<Target | undefined>(mockTarget);
     jest.spyOn(defaultServices.target, 'target').mockReturnValue(target$);
     setTargetSpy = jest.spyOn(defaultServices.target, 'setTarget').mockImplementation((target) => target$.next(target));
@@ -377,7 +383,7 @@ describe('<HeapDumpAnalysis />', () => {
 
   it('shows a loading state while prefilled heap dump analysis is pending', async () => {
     const analysis$ = new Subject<HeapDumpAnalysisResult>();
-    jest.spyOn(defaultServices.api, 'getHeapDumpReport').mockReturnValue(analysis$);
+    jest.spyOn(defaultServices.heapDumpReports, 'reportJson').mockReturnValue(analysis$);
 
     render({
       routerConfigs: {
@@ -413,7 +419,7 @@ describe('<HeapDumpAnalysis />', () => {
   });
 
   it('should render the page correctly', async () => {
-    jest.spyOn(defaultServices.api, 'getHeapDumpReport').mockReturnValue(of(mockHeapDumpAnalysis));
+    jest.spyOn(defaultServices.heapDumpReports, 'reportJson').mockReturnValue(of(mockHeapDumpAnalysis));
     const { user } = render({
       routerConfigs: {
         routes: [

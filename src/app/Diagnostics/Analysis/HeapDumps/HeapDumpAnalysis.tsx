@@ -16,7 +16,7 @@
 
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { modalPrefillClearIntent, RootState } from '@app/Shared/Redux/ReduxStore';
-import { HeapDump, NotificationCategory, NullableTarget, Target } from '@app/Shared/Services/api.types';
+import { HeapDump, NullableTarget, Target } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useSort } from '@app/utils/hooks/useSort';
@@ -281,8 +281,8 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
       setIsAnalysisLoading(true);
       if (selectedJvmId) {
         addSubscription(
-          context.api
-            .getHeapDumpReport(selectedJvmId, heapDump)
+          context.heapDumpReports
+            .reportJson(selectedJvmId, heapDump)
             .pipe(finalize(() => setIsAnalysisLoading(false)))
             .subscribe({
               next: handleHeapDumpAnalysis,
@@ -290,7 +290,6 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
         );
         return;
       }
-
       addSubscription(
         targetAsObs
           .pipe(
@@ -298,7 +297,7 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
             concatMap((target: Target | undefined) => {
               if (target) {
                 selectedHeapDumpJvmIdRef.current = target.jvmId;
-                return context.api.getHeapDumpReport(target.jvmId ? target.jvmId : '', heapDump);
+                return context.heapDumpReports.reportJson(target.jvmId ? target.jvmId : '', heapDump);
               }
               return EMPTY;
             }),
@@ -309,7 +308,7 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
           }),
       );
     },
-    [addSubscription, context.api, handleHeapDumpAnalysis, targetAsObs, heapDumps],
+    [addSubscription, context.heapDumpReports, handleHeapDumpAnalysis, targetAsObs, heapDumps],
   );
 
   React.useEffect(() => {
@@ -362,22 +361,6 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
     },
     [setSelectedHeapDump, setAnalysisResult, heapDumps, target, queryHeapDumpAnalysis],
   );
-
-  React.useEffect(() => {
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.HeapDumpAnalysisSuccess).subscribe((msg) => {
-        addSubscription(
-          context.api
-            .getHeapDumpReport(msg.message.jvmId, msg.message.heapDumpId)
-            .pipe(finalize(() => setIsAnalysisLoading(false)))
-            .subscribe({
-              next: handleHeapDumpAnalysis,
-            }),
-        );
-        return;
-      }),
-    );
-  }, [addSubscription, handleHeapDumpAnalysis, setIsAnalysisLoading, context.api, context.notificationChannel]);
 
   React.useEffect(() => {
     addSubscription(
