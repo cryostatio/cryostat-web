@@ -33,6 +33,7 @@ import {
 } from '@app/Shared/Services/api.types';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { defaultServices } from '@app/Shared/Services/Services';
+import { defaultDatetimeFormat } from '@i18n/datetime';
 import { Content } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
 import * as tlr from '@testing-library/react';
@@ -182,6 +183,7 @@ jest
 
 jest.spyOn(defaultServices.settings, 'palette').mockReturnValue(of(Palette.DEFAULT));
 jest.spyOn(defaultServices.settings, 'largeUi').mockReturnValue(of(false));
+jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
 jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.PRODUCTION));
 
 jest
