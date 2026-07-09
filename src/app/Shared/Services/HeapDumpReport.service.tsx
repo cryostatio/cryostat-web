@@ -48,7 +48,7 @@ export class HeapDumpReportService {
         this.ctx.headers(headers).pipe(
           map((headers) => {
             let cfg: RequestInit = {};
-            cfg.method = 'GET';
+            cfg.method = 'POST';
             cfg.mode = 'cors';
             cfg.credentials = 'include';
             cfg.headers = headers;

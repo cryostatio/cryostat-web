@@ -244,6 +244,7 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
 
   const handleHeapDumpAnalysis = React.useCallback(
     (result: HeapDumpAnalysisResult) => {
+      setIsAnalysisLoading(false);
       setAnalysisResult(result);
     },
     [setAnalysisResult],
