@@ -148,5 +148,5 @@
     "lodash": "4.18.1",
     "dompurify": "3.4.11"
   },
-  "packageManager": "yarn@4.17.0"
+  "packageManager": "yarn@4.17.1"
 }
