@@ -388,8 +388,8 @@ class FakeReportService extends ReportService {
 }
 
 class FakeHeapDumpReportService extends HeapDumpReportService {
-  constructor(ctx: CryostatContext, notifications: NotificationService, channel: NotificationChannel) {
-    super(ctx, notifications, channel);
+  constructor(ctx: CryostatContext, channel: NotificationChannel) {
+    super(ctx, channel);
   }
 
   reportJson(_jvmId: string, _heapDump: string): Observable<HeapDumpAnalysisResult> {
@@ -579,11 +579,7 @@ class FakeApiService extends ApiService {
 const target = new FakeTargetService();
 const api = new FakeApiService(target, NotificationsInstance);
 const reports = new FakeReportService(defaultContext, NotificationsInstance, defaultServices.notificationChannel);
-const heapDumpReports = new FakeHeapDumpReportService(
-  defaultContext,
-  NotificationsInstance,
-  defaultServices.notificationChannel,
-);
+const heapDumpReports = new FakeHeapDumpReportService(defaultContext, defaultServices.notificationChannel);
 const settings = new FakeSetting();
 
 export const fakeServices: Services = {

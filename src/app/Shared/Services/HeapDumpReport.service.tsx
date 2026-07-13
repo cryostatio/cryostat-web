@@ -15,18 +15,15 @@
  */
 import { HeapDumpAnalysisResult } from '@app/Diagnostics/Analysis/HeapDumps/types';
 import { Base64 } from 'js-base64';
-import { combineLatest, concatMap, filter, first, from, map, Observable, Subject, tap } from 'rxjs';
+import { combineLatest, concatMap, filter, from, map, Observable, Subject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { CachedHeapDumpReportValue, GenerationError, NotificationCategory } from './api.types';
-import { isGenerationError, isQuotaExceededError } from './api.utils';
 import { NotificationChannel } from './NotificationChannel.service';
-import { NotificationService } from './Notifications.service';
 import { CryostatContext } from './Services';
 
 export class HeapDumpReportService {
   constructor(
     private ctx: CryostatContext,
-    private notifications: NotificationService,
     channel: NotificationChannel,
   ) {
     channel.messages(NotificationCategory.HeapDumpAnalysisSuccess).subscribe((v) => {
@@ -112,35 +109,6 @@ export class HeapDumpReportService {
                 };
                 throw ge;
               }
-            }),
-            tap({
-              next: (report) => {
-                try {
-                  sessionStorage.setItem(this.analysisKey(jvmId), JSON.stringify(report));
-                  sessionStorage.setItem(this.analysisKeyTimestamp(jvmId), Date.now().toString());
-                } catch (err) {
-                  if (isQuotaExceededError(err)) {
-                    this.notifications.warning('Report Caching Failed', err.message);
-                    this.delete(heapDumpId);
-                  } else {
-                    // see https://mmazzarolo.com/blog/2022-06-25-local-storage-status/
-                    this.notifications.warning('Report Caching Failed', 'localStorage is not available');
-                    this.delete(heapDumpId);
-                  }
-                }
-              },
-              error: (err) => {
-                if (isGenerationError(err) && err.status >= 500) {
-                  err.messageDetail.pipe(first()).subscribe((detail) => {
-                    this.notifications.warning(`Report generation failure: ${detail}`);
-                    this.deleteCachedAnalysisReport(jvmId);
-                  });
-                } else if (isGenerationError(err) && err.status == 202) {
-                  this.notifications.info('Report generation in progress', 'Report is being generated');
-                } else {
-                  this.notifications.danger(err.name, err.message);
-                }
-              },
             }),
           ),
         ),

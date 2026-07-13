@@ -57,7 +57,7 @@ const notificationChannel = new NotificationChannel(defaultContext, Notification
 const reports = new ReportService(defaultContext, NotificationsInstance, notificationChannel);
 const targets = new TargetsService(api, NotificationsInstance, notificationChannel);
 const targetAlias = new TargetAliasService(api);
-const heapDumpReports = new HeapDumpReportService(defaultContext, NotificationsInstance, notificationChannel);
+const heapDumpReports = new HeapDumpReportService(defaultContext, notificationChannel);
 
 const defaultServices: Services = {
   target,
