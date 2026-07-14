@@ -492,6 +492,8 @@ export interface Rule {
   maxAgeSeconds: number;
   maxSizeBytes: number;
   metadata: Metadata;
+  threadDump: boolean;
+  heapDump: boolean;
 }
 
 // ======================================
