@@ -197,11 +197,9 @@ export const MultiFileUpload: React.FC<MultiFileUploadProps> = ({
   );
 
   const handleSubmit = React.useCallback(() => {
-    setFileUploads((old) => {
-      const toUploads = old.filter((f) => f.error || !f.progress); // Failed or newly uploaded
-      onFileSubmit(toUploads, { getProgressUpdateCallback, onSingleSuccess, onSingleFailure });
-
-      const newFileUploads = old.map(
+    const toUploads = fileUploads.filter((f) => f.error || !f.progress); // Failed or newly uploaded
+    setFileUploads(
+      fileUploads.map(
         (f) =>
           ({
             ...f,
@@ -209,10 +207,10 @@ export const MultiFileUpload: React.FC<MultiFileUploadProps> = ({
             progress: f.progress?.progressVariant === 'success' ? f.progress : undefined,
             helperText: f.progress?.progressVariant === 'success' ? 'Already uploaded' : undefined,
           }) as FUpload,
-      );
-      return newFileUploads;
-    });
-  }, [onFileSubmit, getProgressUpdateCallback, onSingleSuccess, onSingleFailure]);
+      ),
+    );
+    onFileSubmit(toUploads, { getProgressUpdateCallback, onSingleSuccess, onSingleFailure });
+  }, [fileUploads, onFileSubmit, getProgressUpdateCallback, onSingleSuccess, onSingleFailure]);
 
   const handleCloseCancelModal = React.useCallback(() => setShowCancelPrompt(false), [setShowCancelPrompt]);
 
