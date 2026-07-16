@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { RecordingReplace } from '@app/CreateRecording/types';
+import { HeapDumpAnalysisResult } from '@app/Diagnostics/Analysis/HeapDumps/types';
 import { AlertVariant } from '@patternfly/react-core';
 import _ from 'lodash';
 import { Observable } from 'rxjs';
@@ -544,6 +545,11 @@ export interface CachedReportValue {
   timestamp: number;
 }
 
+export interface CachedHeapDumpReportValue {
+  report: HeapDumpAnalysisResult;
+  timestamp: number;
+}
+
 // [topic, { ruleName, score, description, ... }}]
 export type CategorizedRuleEvaluations = [string, AnalysisResult[]];
 
@@ -731,6 +737,7 @@ export enum NotificationCategory {
   HeapDumpFailure = 'HeapDumpFailure',
   HeapDumpDeleted = 'HeapDumpDeleted',
   HeapDumpMetadataUpdated = 'HeapDumpMetadataUpdated',
+  HeapDumpAnalysisSuccess = 'HeapDumpAnalysisSuccess',
   ThreadDumpSuccess = 'ThreadDumpSuccess',
   ThreadDumpFailure = 'ThreadDumpFailure',
   ThreadDumpDeleted = 'ThreadDumpDeleted',

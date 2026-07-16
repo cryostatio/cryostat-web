@@ -19,6 +19,7 @@ jest.mock('@app/Shared/Services/Api.service');
 jest.mock('@app/Shared/Services/Login.service');
 jest.mock('@app/Shared/Services/NotificationChannel.service');
 jest.mock('@app/Shared/Services/Report.service');
+jest.mock('@app/Shared/Services/HeapDumpReport.service')
 jest.mock('@app/Shared/Services/Settings.service');
 jest.mock('@app/Shared/Services/Target.service');
 jest.mock('@app/Shared/Services/Targets.service');

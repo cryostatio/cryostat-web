@@ -219,6 +219,12 @@
       "POPOVER": "automated-analysis-description-popover"
     }
   },
+  "CollectionsTable": {
+    "SEARCH_PLACEHOLDER": "Search by class, overhead, etc...",
+    "ARIA_LABELS": {
+      "SEARCH_INPUT": "collections-table-search"
+    }
+  },
   "CreateAsyncProfilerSession": {
     "DESCRIPTION": "async-profiler enables precise CPU-time profiling of program execution as well as VM and native memory allocations. Profiling sessions will be dumped to JFR-format binary files. Not all combinations of available events are acceptable.",
     "DURATION": "Duration",
@@ -557,6 +563,12 @@
     "DESCRIPTION": "The page you're trying to find was either removed, moved or maybe the URL isn't quite right. Try returning home or visit one of the following pages below.",
     "HOME_REDIRECT_BUTTON_CONTENT": "Return to home page",
     "TITLE": "404: We couldn't find that page"
+  },
+  "ProblemFieldsTable": {
+    "SEARCH_PLACEHOLDER": "Search by class, overhead, etc...",
+    "ARIA_LABELS": {
+      "SEARCH_INPUT": "collections-table-search"
+    }
   },
   "QuickStarts": {
     "CATALOG_PAGE": {

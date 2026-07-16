@@ -16,6 +16,7 @@
 import * as React from 'react';
 import { Observable, of } from 'rxjs';
 import { ApiService } from './Api.service';
+import { HeapDumpReportService } from './HeapDumpReport.service';
 import { LoginService } from './Login.service';
 import { NotificationChannel } from './NotificationChannel.service';
 import { NotificationsInstance } from './Notifications.service';
@@ -34,6 +35,7 @@ export interface Services {
   settings: SettingsService;
   login: LoginService;
   targetAlias: TargetAliasService;
+  heapDumpReports: HeapDumpReportService;
 }
 
 export interface CryostatContext {
@@ -55,6 +57,7 @@ const notificationChannel = new NotificationChannel(defaultContext, Notification
 const reports = new ReportService(defaultContext, NotificationsInstance, notificationChannel);
 const targets = new TargetsService(api, NotificationsInstance, notificationChannel);
 const targetAlias = new TargetAliasService(api);
+const heapDumpReports = new HeapDumpReportService(defaultContext, notificationChannel);
 
 const defaultServices: Services = {
   target,
@@ -63,6 +66,7 @@ const defaultServices: Services = {
   login,
   notificationChannel,
   reports,
+  heapDumpReports,
   targets,
   targetAlias,
 };
