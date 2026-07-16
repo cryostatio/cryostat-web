@@ -18,7 +18,7 @@ import { DateTimePickerProps } from '@app/DateTimePicker/DateTimePicker';
 import { DateTimeFilter } from '@app/Recordings/Filters/DatetimeFilter';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
-import { act, cleanup, screen, within } from '@testing-library/react';
+import { cleanup, screen, within } from '@testing-library/react';
 import { of } from 'rxjs';
 import { render, testT } from '../../utils';
 
@@ -59,9 +59,7 @@ describe('<DatetimeFilter/>', () => {
       expect(icon).toBeVisible();
     });
 
-    await act(async () => {
-      await user.click(calendarIcons[0]);
-    });
+    await user.click(calendarIcons[0]);
 
     const modal = await screen.findByRole('dialog');
     expect(modal).toBeInTheDocument();
@@ -71,9 +69,7 @@ describe('<DatetimeFilter/>', () => {
     expect(calendarContent).toBeInTheDocument();
     expect(calendarContent).toBeVisible();
 
-    await act(async () => {
-      await user.click(calendarIcons[0]);
-    });
+    await user.click(calendarIcons[0]);
 
     expect(modal).not.toBeVisible();
   });
@@ -112,9 +108,7 @@ describe('<DatetimeFilter/>', () => {
     expect(dateInput).toBeInTheDocument();
     expect(dateInput).toBeVisible();
 
-    await act(async () => {
-      await user.type(dateInput, '2023-01-24T16:06:41.945Z');
-    });
+    await user.type(dateInput, '2023-01-24T16:06:41.945Z');
 
     const searchIcon = screen.getByRole('button', { name: testT('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON') });
     expect(searchIcon).toBeInTheDocument();
@@ -143,9 +137,7 @@ describe('<DatetimeFilter/>', () => {
     });
 
     const fromInput = dateInputs[0];
-    await act(async () => {
-      await user.type(fromInput, '001/13/2023 25:13:60');
-    });
+    await user.type(fromInput, '001/13/2023 25:13:60');
 
     const searchIcon = screen.getByRole('button', { name: testT('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON') });
     expect(searchIcon).toBeInTheDocument();
@@ -178,10 +170,8 @@ describe('<DatetimeFilter/>', () => {
 
     const [fromInput, toInput] = dateInputs;
 
-    await act(async () => {
-      await user.type(fromInput, '2023-01-24T16:06:41.945Z');
-      await user.type(toInput, '2023-01-23T16:06:41.945Z');
-    });
+    await user.type(fromInput, '2023-01-24T16:06:41.945Z');
+    await user.type(toInput, '2023-01-23T16:06:41.945Z');
 
     const searchIcon = screen.getByRole('button', { name: testT('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON') });
     expect(searchIcon).toBeInTheDocument();
@@ -214,19 +204,15 @@ describe('<DatetimeFilter/>', () => {
 
     const [fromInput, toInput] = dateInputs;
 
-    await act(async () => {
-      await user.type(fromInput, '2023-01-24T16:06:41.945Z');
-      await user.type(toInput, '2023-01-25T16:06:41.945Z');
-    });
+    await user.type(fromInput, '2023-01-24T16:06:41.945Z');
+    await user.type(toInput, '2023-01-25T16:06:41.945Z');
 
     const searchIcon = screen.getByRole('button', { name: testT('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON') });
     expect(searchIcon).toBeInTheDocument();
     expect(searchIcon).toBeVisible();
     expect(searchIcon).not.toBeDisabled();
 
-    await act(async () => {
-      await user.click(searchIcon);
-    });
+    await user.click(searchIcon);
 
     expect(onDateTimeSelect).toHaveBeenCalledTimes(1);
     expect(onDateTimeSelect).toHaveBeenCalledWith({
