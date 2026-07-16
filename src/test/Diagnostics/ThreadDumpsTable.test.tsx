@@ -101,9 +101,7 @@ describe('<ThreadDumpsTable />', () => {
   let preloadedState: RootState;
 
   beforeAll(async () => {
-    await act(async () => {
-      resize(2400, 1080);
-    });
+    resize(2400, 1080);
   });
 
   beforeEach(() => {
@@ -316,10 +314,8 @@ describe('<ThreadDumpsTable />', () => {
       preloadedState: preloadedState,
     });
 
-    await tlr.act(async () => {
-      await user.click(screen.getByLabelText(testT('ThreadDumpActions.ARIA_LABELS.MENU_TOGGLE')));
-      await user.click(screen.getByText('Download Thread Dump'));
-    });
+    await user.click(screen.getByLabelText(testT('ThreadDumpActions.ARIA_LABELS.MENU_TOGGLE')));
+    await user.click(await screen.findByText('Download Thread Dump'));
 
     const downloadRequestSpy = jest.spyOn(defaultServices.api, 'downloadThreadDump');
 
@@ -347,10 +343,8 @@ describe('<ThreadDumpsTable />', () => {
       preloadedState: preloadedState,
     });
 
-    await tlr.act(async () => {
-      await user.click(screen.getByLabelText(testT('ThreadDumpActions.ARIA_LABELS.MENU_TOGGLE')));
-      await user.click(screen.getByText('Analyze Thread Dump'));
-    });
+    await user.click(screen.getByLabelText(testT('ThreadDumpActions.ARIA_LABELS.MENU_TOGGLE')));
+    await user.click(await screen.findByText('Analyze Thread Dump'));
 
     const state = {
       jvmId: mockTarget.jvmId,

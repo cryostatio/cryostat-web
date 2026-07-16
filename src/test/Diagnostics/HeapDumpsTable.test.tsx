@@ -96,9 +96,7 @@ describe('<HeapDumpsTable />', () => {
   let preloadedState: RootState;
 
   beforeAll(async () => {
-    await act(async () => {
-      resize(2400, 1080);
-    });
+    resize(2400, 1080);
   });
 
   beforeEach(() => {
@@ -311,10 +309,8 @@ describe('<HeapDumpsTable />', () => {
       preloadedState: preloadedState,
     });
 
-    await tlr.act(async () => {
-      await user.click(screen.getByLabelText(testT('HeapDumpActions.ARIA_LABELS.MENU_TOGGLE')));
-      await user.click(screen.getByText('Download Heap Dump'));
-    });
+    await user.click(screen.getByLabelText(testT('HeapDumpActions.ARIA_LABELS.MENU_TOGGLE')));
+    await user.click(await screen.findByText('Download Heap Dump'));
 
     const downloadRequestSpy = jest.spyOn(defaultServices.api, 'downloadHeapDump');
 

@@ -24,7 +24,7 @@ import {
 } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
-import { cleanup, screen, within, act } from '@testing-library/react';
+import { cleanup, screen, within } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
 import { render, testT } from '../utils';
 
@@ -136,21 +136,19 @@ describe('<AgentProbeTemplates />', () => {
       routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] },
     });
 
-    await act(async () => {
-      const uploadButton = screen.getByRole('button', { name: 'Upload' });
-      expect(uploadButton).toBeInTheDocument();
-      expect(uploadButton).toBeVisible();
+    const uploadButton = screen.getByRole('button', { name: 'Upload' });
+    expect(uploadButton).toBeInTheDocument();
+    expect(uploadButton).toBeVisible();
 
-      await user.click(uploadButton);
+    await user.click(uploadButton);
 
-      const modal = await screen.findByRole('dialog');
-      expect(modal).toBeInTheDocument();
-      expect(modal).toBeVisible();
+    const modal = await screen.findByRole('dialog');
+    expect(modal).toBeInTheDocument();
+    expect(modal).toBeVisible();
 
-      const modalTitle = within(modal).getByText('Create custom Probe Template');
-      expect(modalTitle).toBeInTheDocument();
-      expect(modalTitle).toBeVisible();
-    });
+    const modalTitle = within(modal).getByText('Create custom Probe Template');
+    expect(modalTitle).toBeInTheDocument();
+    expect(modalTitle).toBeVisible();
   });
 
   it('should upload a Probe Template when form is filled and Submit is clicked', async () => {
@@ -158,53 +156,51 @@ describe('<AgentProbeTemplates />', () => {
       routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] },
     });
 
-    await act(async () => {
-      const uploadButton = screen.getByRole('button', { name: 'Upload' });
-      expect(uploadButton).toBeInTheDocument();
-      expect(uploadButton).toBeVisible();
+    const uploadButton = screen.getByRole('button', { name: 'Upload' });
+    expect(uploadButton).toBeInTheDocument();
+    expect(uploadButton).toBeVisible();
 
-      await user.click(uploadButton);
+    await user.click(uploadButton);
 
-      const modal = await screen.findByRole('dialog');
-      expect(modal).toBeInTheDocument();
-      expect(modal).toBeVisible();
+    const modal = await screen.findByRole('dialog');
+    expect(modal).toBeInTheDocument();
+    expect(modal).toBeVisible();
 
-      const modalTitle = within(modal).getByText('Create custom Probe Template');
-      expect(modalTitle).toBeInTheDocument();
-      expect(modalTitle).toBeVisible();
+    const modalTitle = within(modal).getByText('Create custom Probe Template');
+    expect(modalTitle).toBeInTheDocument();
+    expect(modalTitle).toBeVisible();
 
-      const dropZoneText = within(modal).getByText('Drag a file here');
-      expect(dropZoneText).toBeInTheDocument();
-      expect(dropZoneText).toBeVisible();
+    const dropZoneText = within(modal).getByText('Drag a file here');
+    expect(dropZoneText).toBeInTheDocument();
+    expect(dropZoneText).toBeVisible();
 
-      const uploadButtonInModal = within(modal).getByText('Upload');
-      expect(uploadButtonInModal).toBeInTheDocument();
-      expect(uploadButtonInModal).toBeVisible();
+    const uploadButtonInModal = within(modal).getByText('Upload');
+    expect(uploadButtonInModal).toBeInTheDocument();
+    expect(uploadButtonInModal).toBeVisible();
 
-      const uploadInput = modal.querySelector("input[accept='application/xml,.xml'][type='file']") as HTMLInputElement;
-      expect(uploadInput).toBeInTheDocument();
-      expect(uploadInput).not.toBeVisible();
+    const uploadInput = modal.querySelector("input[accept='application/xml,.xml'][type='file']") as HTMLInputElement;
+    expect(uploadInput).toBeInTheDocument();
+    expect(uploadInput).not.toBeVisible();
 
-      await user.click(uploadButtonInModal);
-      await user.upload(uploadInput, mockFileUpload);
+    await user.click(uploadButtonInModal);
+    await user.upload(uploadInput, mockFileUpload);
 
-      const submitButton = within(modal).getByText('Submit');
-      expect(submitButton).toBeInTheDocument();
-      expect(submitButton).toBeVisible();
-      expect(submitButton).not.toBeDisabled();
+    const submitButton = within(modal).getByText('Submit');
+    expect(submitButton).toBeInTheDocument();
+    expect(submitButton).toBeVisible();
+    expect(submitButton).not.toBeDisabled();
 
-      await user.click(submitButton);
+    await user.click(submitButton);
 
-      expect(uploadRequestSpy).toHaveBeenCalledTimes(1);
-      expect(uploadRequestSpy).toHaveBeenCalledWith(mockFileUpload, expect.any(Function), expect.any(Subject));
+    expect(uploadRequestSpy).toHaveBeenCalledTimes(1);
+    expect(uploadRequestSpy).toHaveBeenCalledWith(mockFileUpload, expect.any(Function), expect.any(Subject));
 
-      expect(within(modal).queryByText('Submit')).not.toBeInTheDocument();
-      expect(within(modal).queryByText('Cancel')).not.toBeInTheDocument();
+    const closeButton = await within(modal).findByText('Close');
+    expect(within(modal).queryByText('Submit')).not.toBeInTheDocument();
+    expect(within(modal).queryByText('Cancel')).not.toBeInTheDocument();
 
-      const closeButton = within(modal).getByText('Close');
-      expect(closeButton).toBeInTheDocument();
-      expect(closeButton).toBeVisible();
-    });
+    expect(closeButton).toBeInTheDocument();
+    expect(closeButton).toBeVisible();
   });
 
   it('should delete a Probe Template when Delete is clicked', async () => {
@@ -213,15 +209,13 @@ describe('<AgentProbeTemplates />', () => {
       routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] },
     });
 
-    await act(async () => {
-      await user.click(screen.getByLabelText(testT('AgentProbeTemplates.ARIA_LABELS.ROW_ACTION')));
+    await user.click(screen.getByLabelText(testT('AgentProbeTemplates.ARIA_LABELS.ROW_ACTION')));
 
-      const deleteButton = await screen.findByText('Delete');
-      expect(deleteButton).toBeInTheDocument();
-      expect(deleteButton).toBeVisible();
+    const deleteButton = await screen.findByText('Delete');
+    expect(deleteButton).toBeInTheDocument();
+    expect(deleteButton).toBeVisible();
 
-      await user.click(deleteButton);
-    });
+    await user.click(deleteButton);
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toHaveBeenCalledWith('someProbeTemplate');
@@ -233,29 +227,27 @@ describe('<AgentProbeTemplates />', () => {
       routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] },
     });
 
-    await act(async () => {
-      await user.click(screen.getByLabelText(testT('AgentProbeTemplates.ARIA_LABELS.ROW_ACTION')));
+    await user.click(screen.getByLabelText(testT('AgentProbeTemplates.ARIA_LABELS.ROW_ACTION')));
 
-      const deleteButton = await screen.findByText('Delete');
-      expect(deleteButton).toBeInTheDocument();
-      expect(deleteButton).toBeVisible();
+    const deleteButton = await screen.findByText('Delete');
+    expect(deleteButton).toBeInTheDocument();
+    expect(deleteButton).toBeVisible();
 
-      await user.click(deleteButton);
+    await user.click(deleteButton);
 
-      const warningModal = await screen.findByRole('dialog');
-      expect(warningModal).toBeInTheDocument();
-      expect(warningModal).toBeVisible();
+    const warningModal = await screen.findByRole('dialog');
+    expect(warningModal).toBeInTheDocument();
+    expect(warningModal).toBeVisible();
 
-      const modalTitle = within(warningModal).getByText(DeleteProbeTemplates.title);
-      expect(modalTitle).toBeInTheDocument();
-      expect(modalTitle).toBeVisible();
+    const modalTitle = within(warningModal).getByText(DeleteProbeTemplates.title);
+    expect(modalTitle).toBeInTheDocument();
+    expect(modalTitle).toBeVisible();
 
-      const confirmButton = within(warningModal).getByText('Delete');
-      expect(confirmButton).toBeInTheDocument();
-      expect(confirmButton).toBeVisible();
+    const confirmButton = within(warningModal).getByText('Delete');
+    expect(confirmButton).toBeInTheDocument();
+    expect(confirmButton).toBeVisible();
 
-      await user.click(confirmButton);
-    });
+    await user.click(confirmButton);
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toHaveBeenCalledWith('someProbeTemplate');
@@ -267,15 +259,13 @@ describe('<AgentProbeTemplates />', () => {
       routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] },
     });
 
-    await act(async () => {
-      await user.click(screen.getByLabelText(testT('AgentProbeTemplates.ARIA_LABELS.ROW_ACTION')));
+    await user.click(screen.getByLabelText(testT('AgentProbeTemplates.ARIA_LABELS.ROW_ACTION')));
 
-      const downloadButton = await screen.findByText('Download');
-      expect(downloadButton).toBeInTheDocument();
-      expect(downloadButton).toBeVisible();
+    const downloadButton = await screen.findByText('Download');
+    expect(downloadButton).toBeInTheDocument();
+    expect(downloadButton).toBeVisible();
 
-      await user.click(downloadButton);
-    });
+    await user.click(downloadButton);
 
     expect(downloadSpy).toHaveBeenCalledTimes(1);
     expect(downloadSpy).toHaveBeenCalledWith(mockProbeTemplate);
@@ -287,16 +277,14 @@ describe('<AgentProbeTemplates />', () => {
       routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] },
     });
 
-    await act(async () => {
-      await user.click(screen.getByLabelText(testT('AgentProbeTemplates.ARIA_LABELS.ROW_ACTION')));
+    await user.click(screen.getByLabelText(testT('AgentProbeTemplates.ARIA_LABELS.ROW_ACTION')));
 
-      const insertButton = await screen.findByLabelText('insert-template');
-      expect(insertButton).toBeInTheDocument();
-      expect(insertButton).toBeVisible();
-      expect(insertButton.getAttribute('aria-disabled')).toBeNull();
+    const insertButton = await screen.findByLabelText('insert-template');
+    expect(insertButton).toBeInTheDocument();
+    expect(insertButton).toBeVisible();
+    expect(insertButton.getAttribute('aria-disabled')).toBeNull();
 
-      await user.click(insertButton);
-    });
+    await user.click(insertButton);
 
     expect(insertProbesSpy).toHaveBeenCalledTimes(1);
     expect(insertProbesSpy).toHaveBeenCalledWith(mockProbeTemplate.name);
@@ -307,14 +295,12 @@ describe('<AgentProbeTemplates />', () => {
       routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={false} /> }] },
     });
 
-    await act(async () => {
-      await user.click(screen.getByLabelText(testT('AgentProbeTemplates.ARIA_LABELS.ROW_ACTION')));
+    await user.click(screen.getByLabelText(testT('AgentProbeTemplates.ARIA_LABELS.ROW_ACTION')));
 
-      const insertButton = await screen.findByLabelText('insert-template');
-      expect(insertButton).toBeInTheDocument();
-      expect(insertButton).toBeVisible();
-      expect(insertButton.getAttribute('aria-disabled')).toBe('true');
-    });
+    const insertButton = await screen.findByLabelText('insert-template');
+    expect(insertButton).toBeInTheDocument();
+    expect(insertButton).toBeVisible();
+    expect(insertButton.getAttribute('aria-disabled')).toBe('true');
   });
 
   it('should shown empty state when table is empty', async () => {
