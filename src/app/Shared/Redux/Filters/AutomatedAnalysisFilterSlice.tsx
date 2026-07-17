@@ -19,7 +19,7 @@ import {
   AutomatedAnalysisGlobalFiltersCategories,
 } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisFilters';
 import { createAction, createReducer } from '@reduxjs/toolkit';
-import { WritableDraft } from 'immer/dist/internal';
+import { WritableDraft } from 'immer';
 import { getPersistedState } from '../utils';
 import { UpdateFilterOptions } from './Common';
 
