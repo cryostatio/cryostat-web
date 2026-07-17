@@ -40,7 +40,7 @@ import {
   Tabs,
   TabTitleText,
 } from '@patternfly/react-core';
-import { Modal, ModalProps } from '@patternfly/react-core/deprecated';
+import { Modal, ModalBody, ModalHeader, ModalProps } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import { useHover } from '@patternfly/react-topology';
@@ -226,13 +226,13 @@ export const QuickSearchModal: React.FC<QuickSearchModalProps> = ({ isOpen, onCl
       isOpen={isOpen}
       onClose={onClose}
       variant={variant}
-      titleIconVariant={QuickSearchIcon}
-      title={'Topology entity catalog'}
       className={'topology__quick-search-modal'}
       id={'topology-quick-search-modal'}
-      description={description}
     >
-      <QuickSearchPanel />
+      <ModalHeader titleIconVariant={QuickSearchIcon} title={'Topology entity catalog'} description={description} />
+      <ModalBody>
+        <QuickSearchPanel />
+      </ModalBody>
     </Modal>
   );
 };
