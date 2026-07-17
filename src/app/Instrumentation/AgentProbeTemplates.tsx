@@ -30,6 +30,9 @@ import {
   EmptyState,
   Form,
   FormGroup,
+  Modal,
+  ModalBody,
+  ModalHeader,
   Stack,
   StackItem,
   Content,
@@ -46,7 +49,6 @@ import {
   SearchInput,
   Divider,
 } from '@patternfly/react-core';
-import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { SearchIcon, EllipsisVIcon, UploadIcon } from '@patternfly/react-icons';
 import {
   ISortBy,
@@ -465,51 +467,49 @@ export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadMod
   );
 
   return (
-    <Modal
-      appendTo={portalRoot()}
-      isOpen={isOpen}
-      variant={ModalVariant.large}
-      showClose={true}
-      onClose={handleClose}
-      title="Create custom Probe Template"
-      description="Create a customized Probe Template. This is a specialized XML file typically created using JDK Mission Control, which defines a set of events to inject and their options to configure."
-    >
-      <Form>
-        <FormGroup label="Template XML" isRequired fieldId="template">
-          <MultiFileUpload
-            submitRef={submitRef}
-            abortRef={abortRef}
-            uploading={uploading}
-            dropZoneAccepts={{
-              'application/xml': ['.xml'],
-            }}
-            displayAccepts={['XML']}
-            onFileSubmit={onFileSubmit}
-            onFilesChange={onFilesChange}
-          />
-        </FormGroup>
-        <ActionGroup>
-          {allOks && numOfFiles ? (
-            <Button variant="primary" onClick={handleClose}>
-              {t('CLOSE')}
-            </Button>
-          ) : (
-            <>
-              <Button
-                variant="primary"
-                onClick={handleSubmit}
-                isDisabled={!numOfFiles || uploading}
-                {...submitButtonLoadingProps}
-              >
-                {t('SUBMIT')}
+    <Modal appendTo={portalRoot()} isOpen={isOpen} variant="large" onClose={handleClose}>
+      <ModalHeader
+        title="Create custom Probe Template"
+        description="Create a customized Probe Template. This is a specialized XML file typically created using JDK Mission Control, which defines a set of events to inject and their options to configure."
+      />
+      <ModalBody>
+        <Form>
+          <FormGroup label="Template XML" isRequired fieldId="template">
+            <MultiFileUpload
+              submitRef={submitRef}
+              abortRef={abortRef}
+              uploading={uploading}
+              dropZoneAccepts={{
+                'application/xml': ['.xml'],
+              }}
+              displayAccepts={['XML']}
+              onFileSubmit={onFileSubmit}
+              onFilesChange={onFilesChange}
+            />
+          </FormGroup>
+          <ActionGroup>
+            {allOks && numOfFiles ? (
+              <Button variant="primary" onClick={handleClose}>
+                {t('CLOSE')}
               </Button>
-              <Button variant="link" onClick={handleClose}>
-                {t('CANCEL')}
-              </Button>
-            </>
-          )}
-        </ActionGroup>
-      </Form>
+            ) : (
+              <>
+                <Button
+                  variant="primary"
+                  onClick={handleSubmit}
+                  isDisabled={!numOfFiles || uploading}
+                  {...submitButtonLoadingProps}
+                >
+                  {t('SUBMIT')}
+                </Button>
+                <Button variant="link" onClick={handleClose}>
+                  {t('CANCEL')}
+                </Button>
+              </>
+            )}
+          </ActionGroup>
+        </Form>
+      </ModalBody>
     </Modal>
   );
 };
