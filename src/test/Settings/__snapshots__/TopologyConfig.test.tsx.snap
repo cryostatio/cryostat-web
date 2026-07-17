@@ -93,7 +93,7 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
           >
             <div
               class="pf-v6-c-dual-list-selector__status-text"
-              id="dual-list-selector-pane-1784297412380t69m7m7u48-status"
+              id="topology-config-available-pane-status"
             >
               0 of 3 options selected
             </div>
@@ -104,7 +104,7 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
           >
             <ul
               aria-activedescendant=""
-              aria-labelledby="dual-list-selector-pane-1784297412380t69m7m7u48-status"
+              aria-labelledby="topology-config-available-pane-status"
               aria-multiselectable="true"
               class="pf-v6-c-dual-list-selector__list"
               role="tree"
@@ -558,7 +558,7 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
           >
             <div
               class="pf-v6-c-dual-list-selector__status-text"
-              id="dual-list-selector-pane-1784297412395fuan5x2kvb6-status"
+              id="topology-config-chosen-pane-status"
             >
               0 of 0 options selected
             </div>
