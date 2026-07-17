@@ -37,7 +37,7 @@ import { defaultDatetimeFormat } from '@i18n/datetime';
 import { Content } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
 import * as tlr from '@testing-library/react';
-import { screen, within, cleanup, act, waitFor } from '@testing-library/react';
+import { screen, within, cleanup } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
 import { basePreloadedState, DEFAULT_DIMENSIONS, render, resize, testT } from '../utils';
 

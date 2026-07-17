@@ -23,8 +23,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
 import { Content } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
-import { cleanup, screen, within, act, waitFor } from '@testing-library/react';
-import * as tlr from '@testing-library/react';
+import { cleanup, screen, within, waitFor } from '@testing-library/react';
 import { of } from 'rxjs';
 import { basePreloadedState, DEFAULT_DIMENSIONS, render, resize, testT } from '../utils';
 

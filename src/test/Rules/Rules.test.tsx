@@ -19,7 +19,7 @@ import { Rule, NotificationMessage, NotificationCategory } from '@app/Shared/Ser
 import { NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
-import { act, act as doAct, cleanup, screen, within } from '@testing-library/react';
+import { act as doAct, cleanup, screen, within } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
 import { render } from '../utils';
 

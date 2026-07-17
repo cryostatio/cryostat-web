@@ -19,7 +19,7 @@ import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { MessageType, EventTemplate, MessageMeta, NotificationMessage, Target } from '@app/Shared/Services/api.types';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
-import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, screen, within } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
 import { render, testT } from '../utils';
 
