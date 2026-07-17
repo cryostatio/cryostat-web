@@ -35,13 +35,15 @@ import {
   EmptyState,
   Form,
   FormGroup,
+  Modal,
+  ModalBody,
+  ModalHeader,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
   SearchInput,
 } from '@patternfly/react-core';
-import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
   ActionsColumn,
@@ -512,48 +514,53 @@ export const EventTemplatesUploadModal: React.FC<EventTemplatesUploadModalProps>
     <Modal
       appendTo={portalRoot()}
       isOpen={props.isOpen}
-      variant={ModalVariant.large}
-      showClose={true}
+      variant="large"
       onClose={handleClose}
-      title="Create custom Event Template"
-      description="Create a customized Event Template. This is a specialized XML file with the extension .jfc, typically created using JDK Mission Control, which defines a set of events and their options to configure. Not all customized templates are applicable to all targets -- a template may specify a custom application event type, which is only available in targets running the associated application."
+      aria-labelledby="event-template-upload-modal-title"
     >
-      <Form>
-        <FormGroup label="Template XML" isRequired fieldId="template">
-          <MultiFileUpload
-            submitRef={submitRef}
-            abortRef={abortRef}
-            uploading={uploading}
-            dropZoneAccepts={{
-              'application/xml': ['.xml', '.jfc'],
-            }}
-            displayAccepts={['XML', 'JFC']}
-            onFileSubmit={onFileSubmit}
-            onFilesChange={onFilesChange}
-          />
-        </FormGroup>
-        <ActionGroup>
-          {allOks && numOfFiles ? (
-            <Button variant="primary" onClick={handleClose}>
-              Close
-            </Button>
-          ) : (
-            <>
-              <Button
-                variant="primary"
-                onClick={handleSubmit}
-                isDisabled={!numOfFiles || uploading}
-                {...submitButtonLoadingProps}
-              >
-                {uploading ? 'Submitting' : 'Submit'}
+      <ModalHeader
+        labelId="event-template-upload-modal-title"
+        title="Create custom Event Template"
+        description="Create a customized Event Template. This is a specialized XML file with the extension .jfc, typically created using JDK Mission Control, which defines a set of events and their options to configure. Not all customized templates are applicable to all targets -- a template may specify a custom application event type, which is only available in targets running the associated application."
+      />
+      <ModalBody>
+        <Form>
+          <FormGroup label="Template XML" isRequired fieldId="template">
+            <MultiFileUpload
+              submitRef={submitRef}
+              abortRef={abortRef}
+              uploading={uploading}
+              dropZoneAccepts={{
+                'application/xml': ['.xml', '.jfc'],
+              }}
+              displayAccepts={['XML', 'JFC']}
+              onFileSubmit={onFileSubmit}
+              onFilesChange={onFilesChange}
+            />
+          </FormGroup>
+          <ActionGroup>
+            {allOks && numOfFiles ? (
+              <Button variant="primary" onClick={handleClose}>
+                Close
               </Button>
-              <Button variant="link" onClick={handleClose}>
-                Cancel
-              </Button>
-            </>
-          )}
-        </ActionGroup>
-      </Form>
+            ) : (
+              <>
+                <Button
+                  variant="primary"
+                  onClick={handleSubmit}
+                  isDisabled={!numOfFiles || uploading}
+                  {...submitButtonLoadingProps}
+                >
+                  {uploading ? 'Submitting' : 'Submit'}
+                </Button>
+                <Button variant="link" onClick={handleClose}>
+                  Cancel
+                </Button>
+              </>
+            )}
+          </ActionGroup>
+        </Form>
+      </ModalBody>
     </Modal>
   );
 };
