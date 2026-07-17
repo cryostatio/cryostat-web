@@ -29,8 +29,8 @@ import {
   of,
   ReplaySubject,
   throwError,
+  finalize,
 } from 'rxjs';
-import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
 import {
   GrafanaDatasourceUrlGetResponse,
@@ -77,6 +77,7 @@ import {
   AuditQueryParams,
   AuditRevisionsResponse,
   AuditRevisionDetail,
+  FetchFn,
 } from './api.types';
 import {
   isHttpError,
@@ -103,6 +104,8 @@ export class ApiService {
     private readonly ctx: CryostatContext,
     private readonly target: TargetService,
     private readonly notifications: NotificationService,
+    private readonly fetchFn: FetchFn = (url, init) => fetch(url, init),
+    private readonly uploadProgressTracking = true,
   ) {}
 
   testBaseServer() {
@@ -279,20 +282,7 @@ export class ApiService {
       }
     });
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
-    return this.ctx.headers().pipe(
-      concatMap((headers) =>
-        this.sendLegacyRequest('v4', 'rules', 'Rule Upload Failed', {
-          body,
-          method: 'POST',
-          headers,
-          listeners: {
-            onUploadProgress: (event) => {
-              onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
-            },
-          },
-          abortSignal,
-        }),
-      ),
+    return this.sendUploadRequest('v4', 'rules', 'Rule Upload Failed', body, onUploadProgress, abortSignal).pipe(
       map((resp) => resp.ok),
       tap({
         next: () => (window.onbeforeunload = null),
@@ -654,20 +644,14 @@ export class ApiService {
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
     const body = new window.FormData();
     body.append('template', file);
-    return this.ctx.headers().pipe(
-      concatMap((headers) =>
-        this.sendLegacyRequest('v4', 'event_templates', 'Template Upload Failed', {
-          body: body,
-          method: 'POST',
-          headers,
-          listeners: {
-            onUploadProgress: (event) => {
-              onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
-            },
-          },
-          abortSignal,
-        }),
-      ),
+    return this.sendUploadRequest(
+      'v4',
+      'event_templates',
+      'Template Upload Failed',
+      body,
+      onUploadProgress,
+      abortSignal,
+    ).pipe(
       map((resp) => resp.ok),
       tap({
         next: () => (window.onbeforeunload = null),
@@ -883,20 +867,14 @@ export class ApiService {
     const body = new window.FormData();
     body.append('probeTemplate', file);
     body.append('name', file.name);
-    return this.ctx.headers().pipe(
-      concatMap((headers) =>
-        this.sendLegacyRequest('v4', 'probes', 'Custom Probe Template Upload Failed', {
-          method: 'POST',
-          body: body,
-          headers,
-          listeners: {
-            onUploadProgress: (event) => {
-              onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
-            },
-          },
-          abortSignal,
-        }),
-      ),
+    return this.sendUploadRequest(
+      'v4',
+      'probes',
+      'Custom Probe Template Upload Failed',
+      body,
+      onUploadProgress,
+      abortSignal,
+    ).pipe(
       map((resp) => resp.ok),
       tap({
         next: () => (window.onbeforeunload = null),
@@ -1298,26 +1276,15 @@ export class ApiService {
     body.append('recording', file);
     body.append('labels', JSON.stringify(labels));
 
-    return this.ctx.headers().pipe(
-      concatMap((headers) =>
-        this.sendLegacyRequest('v4', 'recordings', 'Recording Upload Failed', {
-          method: 'POST',
-          body: body,
-          headers,
-          listeners: {
-            onUploadProgress: (event) => {
-              onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
-            },
-          },
-          abortSignal,
-        }),
-      ),
-      map((resp) => {
-        if (resp.ok) {
-          return resp.body as string;
-        }
-        throw new XMLHttpError(resp);
-      }),
+    return this.sendUploadRequest(
+      'v4',
+      'recordings',
+      'Recording Upload Failed',
+      body,
+      onUploadProgress,
+      abortSignal,
+    ).pipe(
+      concatMap((resp) => (resp instanceof Response ? resp.text() : Promise.resolve(resp.body as string))),
       tap({
         next: () => (window.onbeforeunload = null),
         error: () => (window.onbeforeunload = null),
@@ -1335,20 +1302,14 @@ export class ApiService {
 
     const body = new window.FormData();
     body.append('cert', file);
-    return this.ctx.headers().pipe(
-      concatMap((headers) =>
-        this.sendLegacyRequest('v4', 'certificates', 'Certificate Upload Failed', {
-          method: 'POST',
-          body,
-          headers,
-          listeners: {
-            onUploadProgress: (event) => {
-              onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
-            },
-          },
-          abortSignal,
-        }),
-      ),
+    return this.sendUploadRequest(
+      'v4',
+      'certificates',
+      'Certificate Upload Failed',
+      body,
+      onUploadProgress,
+      abortSignal,
+    ).pipe(
       map((resp) => resp.ok),
       tap({
         next: () => (window.onbeforeunload = null),
@@ -2303,7 +2264,7 @@ export class ApiService {
           }),
         ),
       ]).pipe(
-        concatMap((parts) => fromFetch(parts[0], parts[1])),
+        concatMap((parts) => from(this.fetchFn(parts[0], parts[1]))),
         map((resp) => {
           if (resp.ok) return resp;
           throw new HttpError(resp);
@@ -2352,6 +2313,60 @@ export class ApiService {
       this.notifications.danger(`Request failed`, error.message);
     }
     throw error;
+  }
+
+  private uploadProgressListener(onUploadProgress?: (progress: string | number) => void) {
+    if (!onUploadProgress) {
+      return undefined;
+    }
+    return {
+      onUploadProgress: (event: ProgressEvent) => {
+        onUploadProgress(Math.floor((event.loaded * 100) / event.total));
+      },
+    };
+  }
+
+  private sendUploadRequest(
+    apiVersion: ApiVersion,
+    path: string,
+    title: string,
+    body: XMLHttpRequestBodyInit,
+    onUploadProgress?: (progress: string | number) => void,
+    abortSignal?: Observable<void>,
+  ): Observable<Response | XMLHttpResponse> {
+    return this.ctx.headers().pipe(
+      concatMap((headers) => {
+        if (this.uploadProgressTracking) {
+          return this.sendLegacyRequest(apiVersion, path, title, {
+            method: 'POST',
+            body,
+            headers,
+            listeners: this.uploadProgressListener(onUploadProgress),
+            abortSignal,
+          });
+        }
+
+        onUploadProgress?.(0);
+        const controller = new AbortController();
+        const abortSubscription = abortSignal?.subscribe(() => controller.abort());
+        return this.sendRequest(
+          apiVersion,
+          path,
+          {
+            method: 'POST',
+            body,
+            headers,
+            signal: controller.signal,
+          },
+          undefined,
+          false,
+          true,
+        ).pipe(
+          tap(() => onUploadProgress?.(100)),
+          finalize(() => abortSubscription?.unsubscribe()),
+        );
+      }),
+    );
   }
 
   private sendLegacyRequest(
