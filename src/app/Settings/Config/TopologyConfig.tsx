@@ -332,6 +332,7 @@ const Component = () => {
 
     return (
       <DualListSelectorPane
+        id={isChosen ? 'topology-config-chosen-pane' : 'topology-config-available-pane'}
         title={title}
         status={status}
         searchInput={
