@@ -20,8 +20,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
-import { ActionGroup, Button, Form, FormGroup, Popover } from '@patternfly/react-core';
-import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
+import { ActionGroup, Button, Form, FormGroup, Modal, ModalBody, ModalHeader, Popover } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import { TFunction } from 'i18next';
 import * as React from 'react';
@@ -140,60 +139,58 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
   );
 
   return (
-    <Modal
-      appendTo={portalRoot()}
-      isOpen={props.visible}
-      variant={ModalVariant.large}
-      showClose={true}
-      onClose={handleClose}
-      title={t('RulesUploadModal.TITLE')}
-      description={t('RulesUploadModal.DESCRIPTION')}
-      help={
-        <Popover
-          appendTo={portalRoot()}
-          headerContent={<div>{t('RulesUploadModal.HEADER_CONTENT')}</div>}
-          bodyContent={<div>{t('CreateRule.ABOUT')}</div>}
-        >
-          <Button icon={<HelpIcon />} variant="plain" aria-label="Help" />
-        </Popover>
-      }
-    >
-      <Form>
-        <FormGroup label={t('RulesUploadModal.JSON_FILE')} isRequired fieldId="file">
-          <MultiFileUpload
-            submitRef={submitRef}
-            abortRef={abortRef}
-            uploading={uploading}
-            dropZoneAccepts={{
-              'application/json': ['.json'],
-            }}
-            displayAccepts={['JSON']}
-            onFileSubmit={onFileSubmit}
-            onFilesChange={onFilesChange}
-          />
-        </FormGroup>
-        <ActionGroup>
-          {allOks && numOfFiles ? (
-            <Button variant="primary" onClick={handleClose}>
-              {t('CLOSE')}
-            </Button>
-          ) : (
-            <>
-              <Button
-                variant="primary"
-                onClick={handleSubmit}
-                isDisabled={!numOfFiles || uploading}
-                {...submitButtonLoadingProps}
-              >
-                {t('SUBMIT')}
+    <Modal appendTo={portalRoot()} isOpen={props.visible} variant="large" onClose={handleClose}>
+      <ModalHeader
+        title={t('RulesUploadModal.TITLE')}
+        description={t('RulesUploadModal.DESCRIPTION')}
+        help={
+          <Popover
+            appendTo={portalRoot()}
+            headerContent={<div>{t('RulesUploadModal.HEADER_CONTENT')}</div>}
+            bodyContent={<div>{t('CreateRule.ABOUT')}</div>}
+          >
+            <Button icon={<HelpIcon />} variant="plain" aria-label="Help" />
+          </Popover>
+        }
+      />
+      <ModalBody>
+        <Form>
+          <FormGroup label={t('RulesUploadModal.JSON_FILE')} isRequired fieldId="file">
+            <MultiFileUpload
+              submitRef={submitRef}
+              abortRef={abortRef}
+              uploading={uploading}
+              dropZoneAccepts={{
+                'application/json': ['.json'],
+              }}
+              displayAccepts={['JSON']}
+              onFileSubmit={onFileSubmit}
+              onFilesChange={onFilesChange}
+            />
+          </FormGroup>
+          <ActionGroup>
+            {allOks && numOfFiles ? (
+              <Button variant="primary" onClick={handleClose}>
+                {t('CLOSE')}
               </Button>
-              <Button variant="link" onClick={handleClose}>
-                {t('CANCEL')}
-              </Button>
-            </>
-          )}
-        </ActionGroup>
-      </Form>
+            ) : (
+              <>
+                <Button
+                  variant="primary"
+                  onClick={handleSubmit}
+                  isDisabled={!numOfFiles || uploading}
+                  {...submitButtonLoadingProps}
+                >
+                  {t('SUBMIT')}
+                </Button>
+                <Button variant="link" onClick={handleClose}>
+                  {t('CANCEL')}
+                </Button>
+              </>
+            )}
+          </ActionGroup>
+        </Form>
+      </ModalBody>
     </Modal>
   );
 };
