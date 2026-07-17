@@ -16,8 +16,7 @@
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { portalRoot } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
-import { Button, Checkbox, Stack, Split } from '@patternfly/react-core';
-import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
+import { Button, Checkbox, Modal, ModalBody, ModalFooter, ModalHeader, Stack, Split } from '@patternfly/react-core';
 import * as React from 'react';
 import { useState } from 'react';
 import { DeleteWarningProps } from '../Modal/DeleteWarningModal';
@@ -55,15 +54,34 @@ export const RuleDeleteWarningModal = ({
   return (
     <Modal
       appendTo={portalRoot()}
-      title={warningContents?.title}
-      description={warningContents?.description}
-      aria-label={warningContents?.ariaLabel}
-      titleIconVariant="warning"
-      variant={ModalVariant.small}
+      variant="small"
       isOpen={visible}
-      showClose
       onClose={onClose}
-      actions={[
+      aria-label={warningContents?.ariaLabel}
+    >
+      <ModalHeader
+        title={warningContents?.title}
+        description={warningContents?.description}
+        titleIconVariant="warning"
+      />
+      <ModalBody>
+        <Stack hasGutter key="modal-checkboxes-stack">
+          <Checkbox
+            id="clean-rule-enabled"
+            label={t('CLEAN')}
+            description={t('RuleDeleteWarningModal.CLEAN_DESCRIPTION', { ruleName: ruleName })}
+            isChecked={clean}
+            onChange={(_, checked) => setClean(checked)}
+          />
+          <Checkbox
+            id="do-not-ask-enabled"
+            label={t('DONOT_ASK_AGAIN')}
+            isChecked={doNotAsk}
+            onChange={(_event, checked) => setDoNotAsk(checked)}
+          />
+        </Stack>
+      </ModalBody>
+      <ModalFooter>
         <Stack hasGutter key="modal-footer-stack">
           <Split key="modal-footer-split">
             <Button variant="danger" onClick={onAcceptClose}>
@@ -73,24 +91,8 @@ export const RuleDeleteWarningModal = ({
               {t('CANCEL')}
             </Button>
           </Split>
-        </Stack>,
-      ]}
-    >
-      <Stack hasGutter key="modal-checkboxes-stack">
-        <Checkbox
-          id="clean-rule-enabled"
-          label={t('CLEAN')}
-          description={t('RuleDeleteWarningModal.CLEAN_DESCRIPTION', { ruleName: ruleName })}
-          isChecked={clean}
-          onChange={(_, checked) => setClean(checked)}
-        />
-        <Checkbox
-          id="do-not-ask-enabled"
-          label={t('DONOT_ASK_AGAIN')}
-          isChecked={doNotAsk}
-          onChange={(_event, checked) => setDoNotAsk(checked)}
-        />
-      </Stack>
+        </Stack>
+      </ModalFooter>
     </Modal>
   );
 };
