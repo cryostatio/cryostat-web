@@ -16,7 +16,6 @@
 
 import { getDisplayFieldName } from '@app/utils/utils';
 import { createAction, createReducer } from '@reduxjs/toolkit';
-import { ReducerWithInitialState } from '@reduxjs/toolkit/dist/createReducer';
 import { getPersistedState } from '../utils';
 
 const _version = '1';
@@ -141,42 +140,39 @@ export const groupingOptions: [string, string][] = Object.keys(defaultTopologyCo
 
 const INITIAL_STATE: TopologyConfig = getPersistedState('TOPOLOGY_CONFIG', _version, defaultTopologyConfig);
 
-export const topologyConfigReducer: ReducerWithInitialState<TopologyConfig> = createReducer(
-  INITIAL_STATE,
-  (builder) => {
-    builder.addCase(topologyConfigSetViewModeIntent, (state, { payload }) => {
-      state.viewMode = payload.viewMode;
-    });
-    builder.addCase(topologyDisplayOptionsSetIntent, (state, { payload }) => {
-      const { category, key, value } = payload;
-      if (state.displayOptions[category]) {
-        state.displayOptions[category][key] = value;
-      } else {
-        state.displayOptions[category] = {
-          [key]: value,
-        };
-      }
+export const topologyConfigReducer = createReducer(INITIAL_STATE, (builder) => {
+  builder.addCase(topologyConfigSetViewModeIntent, (state, { payload }) => {
+    state.viewMode = payload.viewMode;
+  });
+  builder.addCase(topologyDisplayOptionsSetIntent, (state, { payload }) => {
+    const { category, key, value } = payload;
+    if (state.displayOptions[category]) {
+      state.displayOptions[category][key] = value;
+    } else {
+      state.displayOptions[category] = {
+        [key]: value,
+      };
+    }
 
-      // Special case for groupings
-      // If flattenIntermediates is true, singleGroups should also be true
-      if (category === 'groupings' && key === 'flattenIntermediates') {
-        if (value) {
-          state.displayOptions.groupings.collapseSingles = true;
-        }
+    // Special case for groupings
+    // If flattenIntermediates is true, singleGroups should also be true
+    if (category === 'groupings' && key === 'flattenIntermediates') {
+      if (value) {
+        state.displayOptions.groupings.collapseSingles = true;
       }
-    });
-    builder.addCase(topologySetIgnoreReportResultIntent, (state, { payload }) => {
-      const { id, ignore } = payload;
-      if (ignore) {
-        state.reportFilter.notIds.push(id);
-      } else {
-        state.reportFilter.notIds = state.reportFilter.notIds.filter((i) => i !== id);
-      }
-    });
-    builder.addCase(topologyResetReportResultIntent, (state) => {
-      state.reportFilter = defaultTopologyConfig.reportFilter;
-    });
-  },
-);
+    }
+  });
+  builder.addCase(topologySetIgnoreReportResultIntent, (state, { payload }) => {
+    const { id, ignore } = payload;
+    if (ignore) {
+      state.reportFilter.notIds.push(id);
+    } else {
+      state.reportFilter.notIds = state.reportFilter.notIds.filter((i) => i !== id);
+    }
+  });
+  builder.addCase(topologyResetReportResultIntent, (state) => {
+    state.reportFilter = defaultTopologyConfig.reportFilter;
+  });
+});
 
 export default topologyConfigReducer;
