@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import { portalRoot, toPath } from '@app/utils/utils';
-import { Button, Content } from '@patternfly/react-core';
-import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
+import { Button, Content, Modal, ModalBody, ModalHeader } from '@patternfly/react-core';
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom-v5-compat';
 
@@ -33,21 +32,19 @@ export const SslErrorModal: React.FC<SslErrorModalProps> = ({ visible, onDismiss
   }, [navigate, onDismiss]);
 
   return (
-    <Modal
-      appendTo={portalRoot()}
-      isOpen={visible}
-      variant={ModalVariant.medium}
-      showClose={true}
-      onClose={onDismiss}
-      title="SSL/TLS error"
-      description="The connection failed because the SSL/TLS Certificate for the target is not trusted."
-    >
-      <Content component="p">
-        To view the trusted application certificates, go to &nbsp;
-        <Button variant="primary" onClick={handleClick}>
-          Security
-        </Button>
-      </Content>
+    <Modal appendTo={portalRoot()} isOpen={visible} variant="medium" onClose={onDismiss}>
+      <ModalHeader
+        title="SSL/TLS error"
+        description="The connection failed because the SSL/TLS Certificate for the target is not trusted."
+      />
+      <ModalBody>
+        <Content component="p">
+          To view the trusted application certificates, go to &nbsp;
+          <Button variant="primary" onClick={handleClick}>
+            Security
+          </Button>
+        </Content>
+      </ModalBody>
     </Modal>
   );
 };
