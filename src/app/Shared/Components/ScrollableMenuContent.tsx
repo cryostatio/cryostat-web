@@ -18,6 +18,7 @@ import * as React from 'react';
 
 export interface ScrollableMenuContentProps {
   maxHeight?: string;
+  children?: React.ReactNode;
 }
 
 // Use case: Menu footer or search bar needs to be sticky.

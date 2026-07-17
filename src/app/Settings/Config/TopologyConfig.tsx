@@ -133,11 +133,12 @@ const Component = () => {
     extraneousIds.forEach((id) => onDelete(id));
   }, [allRules, notIds, onDelete]);
 
-  const onFilter = (option: DualListSelectorTreeItemData, input: string): boolean => {
+  const onFilter = (option: React.ReactNode, input: string): boolean => {
+    const item = option as unknown as DualListSelectorTreeItemData;
     // filter text matches any topic node's own id or text, or any topic node's childrens' id or text
-    const attrs = [option.id, option.text];
-    const isParent = (option?.children?.length ?? 0) > 0;
-    const childAttrs = [...(option?.children?.map((c) => c.id) || []), ...(option?.children?.map((c) => c.text) || [])];
+    const attrs = [item.id, item.text];
+    const isParent = (item?.children?.length ?? 0) > 0;
+    const childAttrs = [...(item?.children?.map((c) => c.id) || []), ...(item?.children?.map((c) => c.text) || [])];
     return (
       attrs.some((e) => e.toLowerCase().includes(input)) ||
       (isParent && childAttrs.some((e) => e.toLowerCase().includes(input)))
@@ -145,11 +146,11 @@ const Component = () => {
   };
 
   const onListChange = React.useCallback(
-    (_evt, newAvailableOptions: DualListSelectorTreeItemData[], newChosenOptions: DualListSelectorTreeItemData[]) => {
-      newAvailableOptions.forEach((n) => {
+    (_evt, newAvailableOptions: React.ReactNode[], newChosenOptions: React.ReactNode[]) => {
+      (newAvailableOptions as unknown as DualListSelectorTreeItemData[]).forEach((n) => {
         !!n?.children ? n.children.forEach((v) => onDelete(v.id)) : onDelete(n.id);
       });
-      newChosenOptions.forEach((n) => {
+      (newChosenOptions as unknown as DualListSelectorTreeItemData[]).forEach((n) => {
         !!n?.children ? n.children.forEach((v) => onAdd(v.id)) : onAdd(n.id);
       });
     },

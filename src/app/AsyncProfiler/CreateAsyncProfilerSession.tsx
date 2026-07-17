@@ -107,13 +107,9 @@ export const CreateAsyncProfilerSession: React.FC = () => {
   }, [addSubscription, target, context.api, convertEventsToTree, setAvailableEvents, setLoading]);
 
   const handleListChange = React.useCallback(
-    (
-      _: React.MouseEvent<HTMLElement>,
-      newAvailableOptions: DualListSelectorTreeItemData[],
-      newChosenOptions: DualListSelectorTreeItemData[],
-    ) => {
-      setAvailableEvents(newAvailableOptions.sort());
-      setSelectedEvents(newChosenOptions.sort());
+    (_: React.MouseEvent<HTMLElement>, newAvailableOptions: React.ReactNode[], newChosenOptions: React.ReactNode[]) => {
+      setAvailableEvents((newAvailableOptions as unknown as DualListSelectorTreeItemData[]).sort());
+      setSelectedEvents((newChosenOptions as unknown as DualListSelectorTreeItemData[]).sort());
     },
     [setAvailableEvents, setSelectedEvents],
   );

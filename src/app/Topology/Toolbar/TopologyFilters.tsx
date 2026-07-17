@@ -136,13 +136,7 @@ export const TopologyFilterCategorySelect: React.FC<TopologyFilterCategorySelect
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
-      <MenuToggle
-        ref={toggleRef}
-        onClick={handleToggle}
-        isExpanded={isOpen}
-        isDisabled={isDisabled}
-        placeholder={'Select a category'}
-      >
+      <MenuToggle ref={toggleRef} onClick={handleToggle} isExpanded={isOpen} isDisabled={isDisabled}>
         {`${isGroup ? 'Group' : 'Target'}: ${getDisplayFieldName(selected)}`}
       </MenuToggle>
     ),
