@@ -45,7 +45,7 @@ export const HeapDumpSelector: React.FC<HeapDumpSelectorProps> = ({ selected, he
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
       <MenuToggle
-        placeholder={'Select a Heap Dump'}
+        isPlaceholder={selected === ''}
         ref={toggleRef}
         aria-label="heap dump selector toggle"
         onClick={onToggle}
