@@ -34,6 +34,9 @@ import { portalRoot, sortResources, TableColumn } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Alert,
+  Modal,
+  ModalBody,
+  ModalHeader,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -45,7 +48,6 @@ import {
   Bullseye,
   Spinner,
 } from '@patternfly/react-core';
-import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { FileIcon, SearchIcon, TopologyIcon } from '@patternfly/react-icons';
 import {
   Table,
@@ -400,25 +402,27 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
       <Modal
         isOpen={showDetailsModal}
         onClose={() => setShowDetailsModal(false)}
-        title="Target Details"
-        variant={ModalVariant.large}
+        variant="large"
         className="target-details-modal"
         appendTo={portalRoot()}
       >
-        {loadingLineage ? (
-          <Bullseye>
-            <Spinner />
-          </Bullseye>
-        ) : wrappedTarget ? (
-          <EntityDetails
-            entity={wrappedTarget}
-            className="target-details-modal"
-            lineageClassNames="lineage-tab-wrapper"
-            hideActions={true}
-          />
-        ) : (
-          <EmptyState headingLevel="h4" icon={TopologyIcon} titleText="Target Details Unavailable"></EmptyState>
-        )}
+        <ModalHeader title="Target Details" />
+        <ModalBody>
+          {loadingLineage ? (
+            <Bullseye>
+              <Spinner />
+            </Bullseye>
+          ) : wrappedTarget ? (
+            <EntityDetails
+              entity={wrappedTarget}
+              className="target-details-modal"
+              lineageClassNames="lineage-tab-wrapper"
+              hideActions={true}
+            />
+          ) : (
+            <EmptyState headingLevel="h4" icon={TopologyIcon} titleText="Target Details Unavailable"></EmptyState>
+          )}
+        </ModalBody>
       </Modal>
       <OuterScrollContainer className="archive-table-outer-container">
         <Toolbar id="all-archives-toolbar">
