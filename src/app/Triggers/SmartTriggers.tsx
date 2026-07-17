@@ -41,6 +41,9 @@ import {
   MenuToggle,
   Checkbox,
   Button,
+  Modal,
+  ModalBody,
+  ModalHeader,
   OverflowMenuDropdownItem,
   OverflowMenu,
   OverflowMenuContent,
@@ -65,7 +68,6 @@ import {
   SplitItem,
   TextInput,
 } from '@patternfly/react-core';
-import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
 import { ISortBy, SortByDirection, Tbody, Td, ThProps, Tr } from '@patternfly/react-table';
 import { t } from 'i18next';
@@ -849,149 +851,148 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
   );
 
   return (
-    <Modal
-      isOpen={props.isOpen}
-      variant={ModalVariant.large}
-      showClose={true}
-      onClose={handleClose}
-      title="Create custom Smart Trigger"
-      description="Create a customized Smart Trigger. This is a specialized tool available in the Cryostat Agent that listens for a condition to be met for a specified Mbean, after which a recording will be started with the specified template. This is only available for targets using the Cryostat Agent."
-    >
-      <Form>
-        <FormHelperText>
-          <HelperText>
-            <HelperTextItem>{t('Triggers.AVAILABLE_MBEANS')}</HelperTextItem>
-          </HelperText>
-        </FormHelperText>
-        <FormSelect
-          value={mbeanSelectValue}
-          onChange={onMbeanChange}
-          aria-label="MBean Input"
-          ouiaId="BasicFormSelect"
-          placeholder="Select an MBean Attribute"
-        >
-          <FormSelectOption key={-1} value={''} label={'Select an MBean Attribute'} isDisabled />
-          {MBeanOptions.map((option, index) => (
-            <FormSelectOption key={index} value={option.value} label={option.label} />
-          ))}
-        </FormSelect>
-        <FormSelect
-          value={comparatorSelectValue}
-          onChange={onComparatorChange}
-          aria-label="Comparator Input"
-          ouiaId="BasicFormSelect"
-          placeholder="Select a Comparator"
-        >
-          <FormSelectOption key={-1} value={''} label={'Select a Comparator'} isDisabled />
-          {comparatorsOptions.map((option, index) => (
-            <FormSelectOption key={index} value={option.value} label={option.label} />
-          ))}
-        </FormSelect>
-        <FormGroup label="Attribute Value" isRequired fieldId="definition">
-          <TextArea
-            value={expressionInput}
-            isRequired
-            type="text"
-            id="expr"
-            aria-label="Expression Input"
-            aria-describedby="expr-helper"
-            onChange={(_event, v) => {
-              setExpressionInput(v);
-              expressionRegex.test(v)
-                ? setExpressionValid(ValidatedOptions.success)
-                : setExpressionValid(ValidatedOptions.error);
-            }}
-            validated={expressionValid}
-            autoFocus
-            autoResize
-            resizeOrientation="vertical"
-          />
-        </FormGroup>
-        <FormHelperText>
-          <Trans t={t}>Triggers.DEFINITION_HELPER_TEXT</Trans>
-        </FormHelperText>
-        <FormHelperText>
-          <HelperText>
-            <HelperTextItem variant={expressionValid}>
-              {expressionValid === ValidatedOptions.error ? t('Triggers.DEFINITION_HINT_BODY') : ''}
-            </HelperTextItem>
-          </HelperText>
-        </FormHelperText>
-        <FormGroup label={t('Triggers.DURATION')} fieldId="maxAge">
-          <Split hasGutter={true}>
-            <SplitItem>
-              <Checkbox
-                name={`duration-check`}
-                label={t('Triggers.DISABLE_DURATION')}
-                onChange={handleDisableDuration}
-                isChecked={disableDuration}
-                id={`duration-check`}
-                aria-label={`duration-check`}
-              />
-            </SplitItem>
-            <SplitItem isFilled>
-              <TextInput
-                value={formData.duration}
-                isRequired
-                type="number"
-                id="duration"
-                aria-label="Trigger Duration"
-                onChange={handleDurationChange}
-                validated={durationValid}
-                min="0"
-                isDisabled={disableDuration}
-              />
-            </SplitItem>
-            <SplitItem>
-              <FormSelect
-                className="trigger-create__form_select"
-                value={formData.durationUnit}
-                onChange={handleDurationUnitChange}
-                aria-label="Duration units Input"
-                isDisabled={disableDuration}
-              >
-                <FormSelectOption key="0" value="" label="Select a duration" isDisabled />
-                <FormSelectOption key="1" value="s" label="Seconds" />
-                <FormSelectOption key="2" value="m" label="Minutes" />
-                <FormSelectOption key="3" value="h" label="Hours" />
-              </FormSelect>
-            </SplitItem>
-          </Split>
+    <Modal isOpen={props.isOpen} variant="large" onClose={handleClose}>
+      <ModalHeader
+        title="Create custom Smart Trigger"
+        description="Create a customized Smart Trigger. This is a specialized tool available in the Cryostat Agent that listens for a condition to be met for a specified Mbean, after which a recording will be started with the specified template. This is only available for targets using the Cryostat Agent."
+      />
+      <ModalBody>
+        <Form>
           <FormHelperText>
             <HelperText>
-              <HelperTextItem>{t('Triggers.DURATION_HINT')}</HelperTextItem>
+              <HelperTextItem>{t('Triggers.AVAILABLE_MBEANS')}</HelperTextItem>
             </HelperText>
           </FormHelperText>
-        </FormGroup>
-        <FormHelperText>
-          <HelperText>
-            <HelperTextItem>{t('Triggers.TEMPLATE_SELECT')}</HelperTextItem>
-          </HelperText>
-        </FormHelperText>
-        <SelectTemplateSelectorForm
-          selected={selectedSpecifier}
-          templates={templates}
-          validated={templateValid}
-          disabled={uploading}
-          onSelect={handleTemplateChange}
-        />
-        <ActionGroup>
-          <>
-            <Button
-              aria-label="submit-button"
-              variant="primary"
-              onClick={handleSubmit}
-              isDisabled={expressionValid != ValidatedOptions.success || templateValid != ValidatedOptions.success}
-              {...submitButtonLoadingProps}
-            >
-              {uploading ? 'Submitting' : 'Submit'}
-            </Button>
-            <Button variant="link" onClick={handleClose}>
-              Cancel
-            </Button>
-          </>
-        </ActionGroup>
-      </Form>
+          <FormSelect
+            value={mbeanSelectValue}
+            onChange={onMbeanChange}
+            aria-label="MBean Input"
+            ouiaId="BasicFormSelect"
+            placeholder="Select an MBean Attribute"
+          >
+            <FormSelectOption key={-1} value={''} label={'Select an MBean Attribute'} isDisabled />
+            {MBeanOptions.map((option, index) => (
+              <FormSelectOption key={index} value={option.value} label={option.label} />
+            ))}
+          </FormSelect>
+          <FormSelect
+            value={comparatorSelectValue}
+            onChange={onComparatorChange}
+            aria-label="Comparator Input"
+            ouiaId="BasicFormSelect"
+            placeholder="Select a Comparator"
+          >
+            <FormSelectOption key={-1} value={''} label={'Select a Comparator'} isDisabled />
+            {comparatorsOptions.map((option, index) => (
+              <FormSelectOption key={index} value={option.value} label={option.label} />
+            ))}
+          </FormSelect>
+          <FormGroup label="Attribute Value" isRequired fieldId="definition">
+            <TextArea
+              value={expressionInput}
+              isRequired
+              type="text"
+              id="expr"
+              aria-label="Expression Input"
+              aria-describedby="expr-helper"
+              onChange={(_event, v) => {
+                setExpressionInput(v);
+                expressionRegex.test(v)
+                  ? setExpressionValid(ValidatedOptions.success)
+                  : setExpressionValid(ValidatedOptions.error);
+              }}
+              validated={expressionValid}
+              autoFocus
+              autoResize
+              resizeOrientation="vertical"
+            />
+          </FormGroup>
+          <FormHelperText>
+            <Trans t={t}>Triggers.DEFINITION_HELPER_TEXT</Trans>
+          </FormHelperText>
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem variant={expressionValid}>
+                {expressionValid === ValidatedOptions.error ? t('Triggers.DEFINITION_HINT_BODY') : ''}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
+          <FormGroup label={t('Triggers.DURATION')} fieldId="maxAge">
+            <Split hasGutter={true}>
+              <SplitItem>
+                <Checkbox
+                  name={`duration-check`}
+                  label={t('Triggers.DISABLE_DURATION')}
+                  onChange={handleDisableDuration}
+                  isChecked={disableDuration}
+                  id={`duration-check`}
+                  aria-label={`duration-check`}
+                />
+              </SplitItem>
+              <SplitItem isFilled>
+                <TextInput
+                  value={formData.duration}
+                  isRequired
+                  type="number"
+                  id="duration"
+                  aria-label="Trigger Duration"
+                  onChange={handleDurationChange}
+                  validated={durationValid}
+                  min="0"
+                  isDisabled={disableDuration}
+                />
+              </SplitItem>
+              <SplitItem>
+                <FormSelect
+                  className="trigger-create__form_select"
+                  value={formData.durationUnit}
+                  onChange={handleDurationUnitChange}
+                  aria-label="Duration units Input"
+                  isDisabled={disableDuration}
+                >
+                  <FormSelectOption key="0" value="" label="Select a duration" isDisabled />
+                  <FormSelectOption key="1" value="s" label="Seconds" />
+                  <FormSelectOption key="2" value="m" label="Minutes" />
+                  <FormSelectOption key="3" value="h" label="Hours" />
+                </FormSelect>
+              </SplitItem>
+            </Split>
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem>{t('Triggers.DURATION_HINT')}</HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+          </FormGroup>
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem>{t('Triggers.TEMPLATE_SELECT')}</HelperTextItem>
+            </HelperText>
+          </FormHelperText>
+          <SelectTemplateSelectorForm
+            selected={selectedSpecifier}
+            templates={templates}
+            validated={templateValid}
+            disabled={uploading}
+            onSelect={handleTemplateChange}
+          />
+          <ActionGroup>
+            <>
+              <Button
+                aria-label="submit-button"
+                variant="primary"
+                onClick={handleSubmit}
+                isDisabled={expressionValid != ValidatedOptions.success || templateValid != ValidatedOptions.success}
+                {...submitButtonLoadingProps}
+              >
+                {uploading ? 'Submitting' : 'Submit'}
+              </Button>
+              <Button variant="link" onClick={handleClose}>
+                Cancel
+              </Button>
+            </>
+          </ActionGroup>
+        </Form>
+      </ModalBody>
     </Modal>
   );
 };
