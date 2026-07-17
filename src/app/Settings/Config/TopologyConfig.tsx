@@ -25,14 +25,24 @@ import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Bullseye,
   Button,
+  DualListSelector,
+  DualListSelectorControl,
+  DualListSelectorControlsWrapper,
+  DualListSelectorList,
+  DualListSelectorPane,
+  DualListSelectorTree,
   DualListSelectorTreeItemData,
   HelperText,
   HelperTextItem,
+  SearchInput,
   Spinner,
   Stack,
   StackItem,
 } from '@patternfly/react-core';
-import { DualListSelector } from '@patternfly/react-core/deprecated';
+import AngleDoubleLeftIcon from '@patternfly/react-icons/dist/esm/icons/angle-double-left-icon';
+import AngleDoubleRightIcon from '@patternfly/react-icons/dist/esm/icons/angle-double-right-icon';
+import AngleLeftIcon from '@patternfly/react-icons/dist/esm/icons/angle-left-icon';
+import AngleRightIcon from '@patternfly/react-icons/dist/esm/icons/angle-right-icon';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { tap } from 'rxjs';
@@ -44,6 +54,13 @@ interface ReportRule {
   topic: string;
 }
 
+const getLeafIds = (node: DualListSelectorTreeItemData): string[] => {
+  if (!node.children?.length) {
+    return [node.id];
+  }
+  return node.children.flatMap(getLeafIds);
+};
+
 const Component = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
@@ -52,6 +69,10 @@ const Component = () => {
   const [loading, setLoading] = React.useState(false);
   const [allRules, setAllRules] = React.useState([] as DualListSelectorTreeItemData[]);
   const { notIds } = useSelector((state: RootState) => state.topologyConfigs.reportFilter);
+
+  const [checkedLeafIds, setCheckedLeafIds] = React.useState<string[]>([]);
+  const [availableFilter, setAvailableFilter] = React.useState('');
+  const [chosenFilter, setChosenFilter] = React.useState('');
 
   React.useEffect(() => {
     setLoading(true);
@@ -90,25 +111,60 @@ const Component = () => {
       .sort((a, b) => a.id.localeCompare(b.id));
   };
 
-  const filterTree = (
-    tree: DualListSelectorTreeItemData[],
-    predicate: (i: DualListSelectorTreeItemData) => boolean,
-  ): DualListSelectorTreeItemData[] => {
-    const a: DualListSelectorTreeItemData[] = [];
-    tree.forEach((node) => {
-      if (node.children?.some(predicate)) {
-        a.push({
-          ...node,
-          children: node.children.filter(predicate),
-        });
+  const allLeafIds = React.useMemo(() => allRules.flatMap(getLeafIds), [allRules]);
+
+  const chosenLeafIds = React.useMemo(() => allLeafIds.filter((id) => notIds.includes(id)), [allLeafIds, notIds]);
+
+  const availableLeafIds = React.useMemo(() => allLeafIds.filter((id) => !notIds.includes(id)), [allLeafIds, notIds]);
+
+  const matchesFilter = React.useCallback((nodeId: string, nodeText: string, filter: string): boolean => {
+    const f = filter.trim().toLowerCase();
+    return nodeId.toLowerCase().includes(f) || nodeText.toLowerCase().includes(f);
+  }, []);
+
+  const leavesById = React.useMemo(() => {
+    const map: Record<string, string[]> = {};
+    const build = (node: DualListSelectorTreeItemData) => {
+      map[node.id] = getLeafIds(node);
+      node.children?.forEach(build);
+    };
+    allRules.forEach(build);
+    return map;
+  }, [allRules]);
+
+  const nodeTexts = React.useMemo(() => {
+    const map: Record<string, string> = {};
+    const build = (node: DualListSelectorTreeItemData) => {
+      map[node.id] = node.text ?? node.id;
+      node.children?.forEach(build);
+    };
+    allRules.forEach(build);
+    return map;
+  }, [allRules]);
+
+  const getVisibleLeafIds = React.useCallback(
+    (leafIds: string[], filter: string): string[] => {
+      if (!filter) {
+        return leafIds;
       }
-    });
-    return a;
-  };
+      const matchingNodeIds = Object.keys(leavesById).filter((nodeId) =>
+        matchesFilter(nodeId, nodeTexts[nodeId] ?? '', filter),
+      );
+      const matchingLeafIds = matchingNodeIds.flatMap((nodeId) => leavesById[nodeId]);
+      return leafIds.filter((id) => matchingLeafIds.includes(id));
+    },
+    [leavesById, nodeTexts, matchesFilter],
+  );
 
-  const availableRules = React.useMemo(() => filterTree(allRules, (r) => !notIds.includes(r.id)), [allRules, notIds]);
+  const visibleAvailableLeafIds = React.useMemo(
+    () => getVisibleLeafIds(availableLeafIds, availableFilter),
+    [availableLeafIds, availableFilter, getVisibleLeafIds],
+  );
 
-  const selectedRules = React.useMemo(() => filterTree(allRules, (r) => notIds.includes(r.id)), [allRules, notIds]);
+  const visibleChosenLeafIds = React.useMemo(
+    () => getVisibleLeafIds(chosenLeafIds, chosenFilter),
+    [chosenLeafIds, chosenFilter, getVisibleLeafIds],
+  );
 
   const onAdd = React.useCallback((id: string) => dispatch(topologySetIgnoreReportResultIntent(id, true)), [dispatch]);
 
@@ -118,8 +174,6 @@ const Component = () => {
   );
 
   React.useEffect(() => {
-    // remove Redux state for any rules which were previously ignored by this client,
-    // and which are no longer reported by the server
     if (!allRules?.length) {
       return;
     }
@@ -133,29 +187,174 @@ const Component = () => {
     extraneousIds.forEach((id) => onDelete(id));
   }, [allRules, notIds, onDelete]);
 
-  const onFilter = (option: React.ReactNode, input: string): boolean => {
-    const item = option as unknown as DualListSelectorTreeItemData;
-    // filter text matches any topic node's own id or text, or any topic node's childrens' id or text
-    const attrs = [item.id, item.text];
-    const isParent = (item?.children?.length ?? 0) > 0;
-    const childAttrs = [...(item?.children?.map((c) => c.id) || []), ...(item?.children?.map((c) => c.text) || [])];
-    return (
-      attrs.some((e) => e.toLowerCase().includes(input)) ||
-      (isParent && childAttrs.some((e) => e.toLowerCase().includes(input)))
-    );
-  };
+  const moveChecked = React.useCallback(
+    (toChosen: boolean) => {
+      const visibleCheckedAvailable = checkedLeafIds.filter((id) => visibleAvailableLeafIds.includes(id));
+      const visibleCheckedChosen = checkedLeafIds.filter((id) => visibleChosenLeafIds.includes(id));
+      if (toChosen) {
+        visibleCheckedAvailable.forEach(onAdd);
+        setCheckedLeafIds((prev) => prev.filter((id) => !visibleCheckedAvailable.includes(id)));
+      } else {
+        visibleCheckedChosen.forEach(onDelete);
+        setCheckedLeafIds((prev) => prev.filter((id) => !visibleCheckedChosen.includes(id)));
+      }
+    },
+    [checkedLeafIds, visibleAvailableLeafIds, visibleChosenLeafIds, onAdd, onDelete],
+  );
 
-  const onListChange = React.useCallback(
-    (_evt, newAvailableOptions: React.ReactNode[], newChosenOptions: React.ReactNode[]) => {
-      (newAvailableOptions as unknown as DualListSelectorTreeItemData[]).forEach((n) => {
-        !!n?.children ? n.children.forEach((v) => onDelete(v.id)) : onDelete(n.id);
-      });
-      (newChosenOptions as unknown as DualListSelectorTreeItemData[]).forEach((n) => {
-        !!n?.children ? n.children.forEach((v) => onAdd(v.id)) : onAdd(n.id);
+  const moveAll = React.useCallback(
+    (toChosen: boolean) => {
+      if (toChosen) {
+        visibleAvailableLeafIds.forEach(onAdd);
+      } else {
+        visibleChosenLeafIds.forEach(onDelete);
+      }
+    },
+    [visibleAvailableLeafIds, visibleChosenLeafIds, onAdd, onDelete],
+  );
+
+  const areAllDescendantsChecked = React.useCallback(
+    (node: DualListSelectorTreeItemData, isChosen: boolean): boolean => {
+      const leaves = leavesById[node.id] ?? [];
+      return leaves.every(
+        (id) => checkedLeafIds.includes(id) && (isChosen ? chosenLeafIds.includes(id) : availableLeafIds.includes(id)),
+      );
+    },
+    [leavesById, checkedLeafIds, chosenLeafIds, availableLeafIds],
+  );
+
+  const areSomeDescendantsChecked = React.useCallback(
+    (node: DualListSelectorTreeItemData, isChosen: boolean): boolean => {
+      const leaves = leavesById[node.id] ?? [];
+      return leaves.some(
+        (id) => checkedLeafIds.includes(id) && (isChosen ? chosenLeafIds.includes(id) : availableLeafIds.includes(id)),
+      );
+    },
+    [leavesById, checkedLeafIds, chosenLeafIds, availableLeafIds],
+  );
+
+  const isNodeChecked = React.useCallback(
+    (node: DualListSelectorTreeItemData, isChosen: boolean): boolean | null => {
+      if (areAllDescendantsChecked(node, isChosen)) return true;
+      if (areSomeDescendantsChecked(node, isChosen)) return null;
+      return false;
+    },
+    [areAllDescendantsChecked, areSomeDescendantsChecked],
+  );
+
+  const onOptionCheck = React.useCallback(
+    (
+      _event: React.MouseEvent | React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent,
+      isChecked: boolean,
+      node: DualListSelectorTreeItemData,
+      isChosen: boolean,
+    ) => {
+      const nodeLeaves = (leavesById[node.id] ?? []).filter((id) =>
+        isChosen ? visibleChosenLeafIds.includes(id) : visibleAvailableLeafIds.includes(id),
+      );
+      setCheckedLeafIds((prev) => {
+        const others = prev.filter((id) => !nodeLeaves.includes(id));
+        return isChecked ? [...others, ...nodeLeaves] : others;
       });
     },
-    [onAdd, onDelete],
+    [leavesById, visibleAvailableLeafIds, visibleChosenLeafIds],
   );
+
+  const buildOptions = React.useCallback(
+    (
+      isChosen: boolean,
+      nodes: DualListSelectorTreeItemData[],
+      hasParentMatch: boolean,
+    ): DualListSelectorTreeItemData[] => {
+      const filter = isChosen ? chosenFilter : availableFilter;
+      const paneLeafIds = isChosen ? chosenLeafIds : availableLeafIds;
+
+      return nodes.flatMap((node) => {
+        const descendantLeaves = (leavesById[node.id] ?? []).filter((id) => paneLeafIds.includes(id));
+        const hasMatchingChildren =
+          filter &&
+          (leavesById[node.id] ?? []).some(
+            (id) => paneLeafIds.includes(id) && matchesFilter(id, nodeTexts[id] ?? '', filter),
+          );
+        const isFilterMatch =
+          filter && matchesFilter(node.id, nodeTexts[node.id] ?? '', filter) && descendantLeaves.length > 0;
+        const isDisplayed =
+          (!filter && descendantLeaves.length > 0) ||
+          hasMatchingChildren ||
+          (hasParentMatch && descendantLeaves.length > 0) ||
+          isFilterMatch;
+
+        if (isDisplayed) {
+          const checked = isNodeChecked(node, isChosen);
+          return [
+            {
+              id: node.id,
+              text: node.text,
+              isChecked: checked === true,
+              checkProps: { 'aria-label': `Select ${node.text ?? node.id}` },
+              hasBadge: (node.children?.length ?? 0) > 0,
+              badgeProps: { isRead: true },
+              defaultExpanded: filter ? true : node.defaultExpanded,
+              children: node.children
+                ? buildOptions(isChosen, node.children, isFilterMatch || hasParentMatch)
+                : undefined,
+            },
+          ];
+        }
+        if (node.children?.length) {
+          return buildOptions(isChosen, node.children, hasParentMatch);
+        }
+        return [];
+      });
+    },
+    [
+      chosenFilter,
+      availableFilter,
+      chosenLeafIds,
+      availableLeafIds,
+      leavesById,
+      nodeTexts,
+      matchesFilter,
+      isNodeChecked,
+    ],
+  );
+
+  const buildPane = (isChosen: boolean): React.ReactNode => {
+    const options = buildOptions(isChosen, allRules, false);
+    const visibleLeafIds = isChosen ? visibleChosenLeafIds : visibleAvailableLeafIds;
+    const numSelected = checkedLeafIds.filter((id) => visibleLeafIds.includes(id)).length;
+    const status = `${numSelected} of ${visibleLeafIds.length} options selected`;
+    const filter = isChosen ? chosenFilter : availableFilter;
+    const setFilter = isChosen ? setChosenFilter : setAvailableFilter;
+    const title = isChosen
+      ? t('SETTINGS.TOPOLOGY.CHOSEN_OPTIONS_TITLE')
+      : t('SETTINGS.TOPOLOGY.ANALYZED_OPTIONS_TITLE');
+
+    return (
+      <DualListSelectorPane
+        title={title}
+        status={status}
+        searchInput={
+          <SearchInput
+            value={filter}
+            onChange={(_evt, val) => setFilter(val)}
+            onClear={() => setFilter('')}
+            aria-label={isChosen ? 'Search chosen options' : 'Search available options'}
+          />
+        }
+        isChosen={isChosen}
+      >
+        {options.length > 0 && (
+          <DualListSelectorList>
+            <DualListSelectorTree
+              data={options}
+              onOptionCheck={(e, isChecked, itemData) => onOptionCheck(e, isChecked, itemData, isChosen)}
+            />
+          </DualListSelectorList>
+        )}
+      </DualListSelectorPane>
+    );
+  };
 
   const onReset = React.useCallback(() => {
     dispatch(topologyResetReportResultIntent());
@@ -174,16 +373,36 @@ const Component = () => {
             <Spinner />
           </Bullseye>
         ) : (
-          <DualListSelector
-            isTree
-            isSearchable
-            filterOption={onFilter}
-            availableOptionsTitle={t('SETTINGS.TOPOLOGY.ANALYZED_OPTIONS_TITLE')}
-            chosenOptionsTitle={t('SETTINGS.TOPOLOGY.CHOSEN_OPTIONS_TITLE')}
-            availableOptions={availableRules}
-            chosenOptions={selectedRules}
-            onListChange={onListChange}
-          />
+          <DualListSelector isTree>
+            {buildPane(false)}
+            <DualListSelectorControlsWrapper>
+              <DualListSelectorControl
+                isDisabled={!checkedLeafIds.some((id) => visibleAvailableLeafIds.includes(id))}
+                onClick={() => moveChecked(true)}
+                aria-label="Add selected"
+                icon={<AngleRightIcon />}
+              />
+              <DualListSelectorControl
+                isDisabled={visibleAvailableLeafIds.length === 0}
+                onClick={() => moveAll(true)}
+                aria-label="Add all"
+                icon={<AngleDoubleRightIcon />}
+              />
+              <DualListSelectorControl
+                isDisabled={visibleChosenLeafIds.length === 0}
+                onClick={() => moveAll(false)}
+                aria-label="Remove all"
+                icon={<AngleDoubleLeftIcon />}
+              />
+              <DualListSelectorControl
+                isDisabled={!checkedLeafIds.some((id) => visibleChosenLeafIds.includes(id))}
+                onClick={() => moveChecked(false)}
+                aria-label="Remove selected"
+                icon={<AngleLeftIcon />}
+              />
+            </DualListSelectorControlsWrapper>
+            {buildPane(true)}
+          </DualListSelector>
         )}
       </StackItem>
       <StackItem>
