@@ -5252,7 +5252,7 @@ __metadata:
     imagemin: "npm:9.0.1"
     jest: "npm:30.4.2"
     jest-environment-jsdom: "npm:30.4.1"
-    js-base64: "npm:3.9.0"
+    js-base64: "npm:3.9.1"
     license-check-and-add: "npm:4.0.5"
     lodash: "npm:4.18.1"
     marked: "npm:15.0.12"
@@ -10520,10 +10520,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-base64@npm:3.9.0":
-  version: 3.9.0
-  resolution: "js-base64@npm:3.9.0"
-  checksum: 10/1bf238877149d22cea6944afede7353464e8113cb20a4e160f7328344bfcf9fdf3df76232e89013a2858b839e356e62cac60c996cdf5e0810bd0e2606ae08433
+"js-base64@npm:3.9.1":
+  version: 3.9.1
+  resolution: "js-base64@npm:3.9.1"
+  checksum: 10/9621ab0474a3bd8c7d4c777eec8e9826e260572c5c6748822138beb50735f920e0900416fd65f5b882087940b4a73f145c2356a350fa3a5a6e5432f7b24bdc4c
   languageName: node
   linkType: hard
 
