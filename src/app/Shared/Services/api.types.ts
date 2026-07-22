@@ -672,6 +672,28 @@ export interface AsyncProfilerStatus {
 }
 
 // ======================================
+// GC log resources
+// ======================================
+
+export interface GcLoggingStatus {
+  enabled: boolean;
+  what?: string;
+  decorators?: string;
+}
+
+export interface GcLog {
+  gcLogId: string;
+  jvmId: string;
+  size: number;
+  downloadUrl?: string;
+}
+
+export interface GcLogDirectory {
+  jvmId: string;
+  gcLogs: GcLog[];
+}
+
+// ======================================
 // Notification resources
 // ======================================
 
@@ -755,6 +777,8 @@ export enum NotificationCategory {
   AsyncProfileCreated = 'AsyncProfilerCreated',
   AsyncProfileStopped = 'AsyncProfilerStopped',
   AsyncProfileDeleted = 'AsyncProfilerDeleted',
+  GcLogUploaded = 'GcLogUploaded',
+  GcLogDeleted = 'GcLogDeleted',
 }
 
 export enum CloseStatus {
