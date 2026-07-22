@@ -440,6 +440,8 @@
     "TABLE_TITLE": "GC Logs",
     "PULL_TOOLTIP": "Pull log from Agent",
     "PULL_ARIA": "Pull GC log from Agent into storage",
+    "PULL_NO_CONTENT_TITLE": "No GC Log Content",
+    "PULL_NO_CONTENT_MESSAGE": "The Agent had no GC log content to retrieve.",
     "DELETE": "Delete",
     "DELETING": "Deleting",
     "DOWNLOAD": "Download",

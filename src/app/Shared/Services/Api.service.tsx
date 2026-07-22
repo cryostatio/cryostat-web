@@ -2241,11 +2241,11 @@ export class ApiService {
     );
   }
 
-  pullGcLog(target: Target): Observable<GcLog> {
+  pullGcLog(target: Target): Observable<GcLog | null> {
     return this.sendRequest('beta', `diagnostics/targets/${target.id}/gclogging/pull`, {
       method: 'POST',
     }).pipe(
-      concatMap((resp) => resp.json()),
+      concatMap((resp) => (resp.status === 204 ? Promise.resolve(null) : resp.json())),
       first(),
     );
   }
