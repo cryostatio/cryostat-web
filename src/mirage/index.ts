@@ -1076,7 +1076,10 @@ export const startMirage = ({ environment = 'development' } = {}) => {
 
       // ── GC logging in-memory state ─────────────────────────────────────────────
       const gcLoggingState: Record<string, { enabled: boolean; what: string; decorators: string }> = {};
-      const gcLogsList: Record<string, Array<{ gcLogId: string; jvmId: string; size: number }>> = {};
+      const gcLogsList: Record<
+        string,
+        Array<{ gcLogId: string; jvmId: string; size: number; lastModified: number }>
+      > = {};
 
       this.get('api/beta/diagnostics/targets/:targetId/gclogging', (_schema, request) => {
         const state = gcLoggingState[request.params.targetId];
@@ -1118,7 +1121,12 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         const { targetId } = request.params;
         const jvmId = '1234';
         const gcLogId = `gclog-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-        const entry = { gcLogId, jvmId, size: Math.floor(Math.random() * 512 * 1024) + 1024 };
+        const entry = {
+          gcLogId,
+          jvmId,
+          size: Math.floor(Math.random() * 512 * 1024) + 1024,
+          lastModified: Math.floor(Date.now() / 1000),
+        };
         if (!gcLogsList[targetId]) {
           gcLogsList[targetId] = [];
         }
