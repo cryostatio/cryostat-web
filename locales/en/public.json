@@ -428,6 +428,10 @@
       "THREADS": "Thread Dump"
     }
   },
+  "GcLogs": {
+    "PAGE_TITLE": "GC Logs",
+    "AGENT_REQUIRED": "GC log collection requires the Cryostat Agent."
+  },
   "HeapDumps": {
     "SEARCH_PLACEHOLDER": "Search Heap Dumps",
     "DELETION_FAILURE_CATEGORY": "Heap Dump Deletion Failure",
