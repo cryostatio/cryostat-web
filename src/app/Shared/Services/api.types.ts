@@ -685,6 +685,7 @@ export interface GcLog {
   gcLogId: string;
   jvmId: string;
   size: number;
+  lastModified?: number;
   downloadUrl?: string;
 }
 
