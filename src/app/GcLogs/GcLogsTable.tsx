@@ -166,7 +166,7 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.GcLogDeleted).subscribe((msg) => {
-        setGcLogs((old) => old.filter((l) => l.gcLogId !== msg.message.gcLogId));
+        setGcLogs((old) => old.filter((l) => l.gcLogId !== msg.message.gcLog.gcLogId));
       }),
     );
   }, [addSubscription, context.notificationChannel]);
