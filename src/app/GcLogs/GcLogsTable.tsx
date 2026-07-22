@@ -18,6 +18,7 @@ import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { RowAction } from '@app/Recordings/RecordingActions';
 import { LoadingProps } from '@app/Shared/Components/types';
 import { GcLog, NotificationCategory, NullableTarget, Target } from '@app/Shared/Services/api.types';
+import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { ColumnConfig, DiagnosticsTable } from '@app/Diagnostics/DiagnosticsTable';
 import useDayjs from '@app/utils/hooks/useDayjs';
@@ -92,6 +93,7 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
 }) => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
+  const notifications = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
 
   const [gcLogs, setGcLogs] = React.useState<GcLog[]>([]);
@@ -291,11 +293,16 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
           concatMap((t: Target | undefined) => (t ? context.api.pullGcLog(t) : of(null))),
         )
         .subscribe({
-          next: () => setActionLoadings((old) => ({ ...old, PULL: false })),
+          next: (gcLog) => {
+            setActionLoadings((old) => ({ ...old, PULL: false }));
+            if (gcLog === null) {
+              notifications.info(t('GcLogs.PULL_NO_CONTENT_TITLE'), t('GcLogs.PULL_NO_CONTENT_MESSAGE'));
+            }
+          },
           error: () => setActionLoadings((old) => ({ ...old, PULL: false })),
         }),
     );
-  }, [addSubscription, propsTarget, context.api]);
+  }, [addSubscription, propsTarget, context.api, notifications, t]);
 
   const toolbar = React.useMemo(
     () => (
