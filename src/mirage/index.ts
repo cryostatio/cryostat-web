@@ -1137,7 +1137,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
               category: 'GcLogUploaded',
               type: { type: 'application', subType: 'json' },
             },
-            message: { gcLogId, jvmId },
+            message: { jvmId, gcLog: entry },
           }),
         );
         return new Response(200, {}, entry);
@@ -1164,7 +1164,10 @@ export const startMirage = ({ environment = 'development' } = {}) => {
                   category: 'GcLogDeleted',
                   type: { type: 'application', subType: 'json' },
                 },
-                message: { gcLogId, jvmId: removed.jvmId },
+                message: {
+                  jvmId: removed.jvmId,
+                  gcLog: { jvmId: removed.jvmId, gcLogId, size: removed.size, lastModified: removed.lastModified },
+                },
               }),
             );
           }

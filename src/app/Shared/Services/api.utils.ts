@@ -606,7 +606,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.success,
       title: 'GC Log pulled',
-      body: (evt) => `GC Log ${evt.message.gcLogId} pulled from target ${evt.message.jvmId}`,
+      body: (evt) => `GC Log ${evt.message.gcLog.gcLogId} pulled from target ${evt.message.jvmId}`,
     } as NotificationMessageMapper,
   ],
   [
@@ -614,7 +614,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.success,
       title: 'GC Log deleted',
-      body: (evt) => `GC Log ${evt.message.gcLogId} was deleted`,
+      body: (evt) => `GC Log ${evt.message.gcLog.gcLogId} was deleted`,
     } as NotificationMessageMapper,
   ],
 ]);
