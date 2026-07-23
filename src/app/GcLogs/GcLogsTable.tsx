@@ -80,6 +80,8 @@ export interface GcLogsTableProps {
   jvmId?: string;
   /** Pull button is only enabled when GC logging is active on the target */
   gcLoggingEnabled?: boolean;
+  /** The log file path reported by the GC logging status */
+  gcLogFilePath?: string;
 }
 
 export const GcLogsTable: React.FC<GcLogsTableProps> = ({
@@ -88,6 +90,7 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
   gcLogs: propGcLogs,
   jvmId,
   gcLoggingEnabled = false,
+  gcLogFilePath,
 }) => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
@@ -292,9 +295,10 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
         handleDelete={handleDeleteSelected}
         handlePull={isNestedTable ? undefined : handlePull}
         gcLoggingEnabled={gcLoggingEnabled}
+        gcLogFilePath={gcLogFilePath}
       />
     ),
-    [checkedIndices, actionLoadings, handleDeleteSelected, handlePull, isNestedTable, gcLoggingEnabled],
+    [checkedIndices, actionLoadings, handleDeleteSelected, handlePull, isNestedTable, gcLoggingEnabled, gcLogFilePath],
   );
 
   const columnConfig: ColumnConfig = React.useMemo(
@@ -330,12 +334,15 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
 
 // ── Toolbar ───────────────────────────────────────────────────────────────────
 
+const GC_LOG_STREAM_PATHS = ['/dev/stdout', '/dev/stderr'];
+
 interface GcLogsToolbarProps {
   checkedIndices: number[];
   actionLoadings: Record<GcLogTableActions, boolean>;
   handleDelete: () => void;
   handlePull?: () => void;
   gcLoggingEnabled?: boolean;
+  gcLogFilePath?: string;
 }
 
 const GcLogsToolbar: React.FC<GcLogsToolbarProps> = ({
@@ -344,6 +351,7 @@ const GcLogsToolbar: React.FC<GcLogsToolbarProps> = ({
   handleDelete,
   handlePull,
   gcLoggingEnabled = false,
+  gcLogFilePath,
 }) => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
@@ -372,6 +380,10 @@ const GcLogsToolbar: React.FC<GcLogsToolbarProps> = ({
 
   const pullButton = React.useMemo(() => {
     if (!handlePull) return null;
+    const isPullDisabled =
+      actionLoadings['PULL'] ||
+      !gcLoggingEnabled ||
+      (gcLogFilePath !== undefined && GC_LOG_STREAM_PATHS.includes(gcLogFilePath));
     return {
       default: (
         <Tooltip content={t('GcLogs.PULL_TOOLTIP')} appendTo={portalRoot}>
@@ -380,7 +392,7 @@ const GcLogsToolbar: React.FC<GcLogsToolbarProps> = ({
             aria-label={t('GcLogs.PULL_ARIA')}
             onClick={handlePull}
             isLoading={actionLoadings['PULL']}
-            isDisabled={actionLoadings['PULL'] || !gcLoggingEnabled}
+            isDisabled={isPullDisabled}
           >
             <ImportIcon />
           </Button>
@@ -393,7 +405,7 @@ const GcLogsToolbar: React.FC<GcLogsToolbarProps> = ({
       ),
       key: 'pull-log',
     };
-  }, [handlePull, actionLoadings, gcLoggingEnabled, t]);
+  }, [handlePull, actionLoadings, gcLoggingEnabled, gcLogFilePath, t]);
 
   const deleteButton = React.useMemo(
     () => ({
