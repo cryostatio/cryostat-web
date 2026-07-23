@@ -32,6 +32,7 @@ export const GcLogs: React.FC = () => {
 
   const [target, setTarget] = React.useState<NullableTarget>(undefined);
   const [gcLoggingEnabled, setGcLoggingEnabled] = React.useState(false);
+  const [gcLogFilePath, setGcLogFilePath] = React.useState<string | undefined>(undefined);
   const targetAsObs = React.useMemo(() => of(target), [target]);
 
   React.useEffect(() => {
@@ -40,6 +41,7 @@ export const GcLogs: React.FC = () => {
 
   const fetchStatus = React.useCallback(() => {
     setGcLoggingEnabled(false);
+    setGcLogFilePath(undefined);
     if (!target) {
       return;
     }
@@ -47,8 +49,12 @@ export const GcLogs: React.FC = () => {
       context.api.getGcLoggingStatus(target, true).subscribe({
         next: (s) => {
           setGcLoggingEnabled(s.enabled);
+          setGcLogFilePath(s.logFilePath);
         },
-        error: () => setGcLoggingEnabled(false),
+        error: () => {
+          setGcLoggingEnabled(false);
+          setGcLogFilePath(undefined);
+        },
       }),
     );
   }, [addSubscription, context.api, target]);
@@ -69,7 +75,7 @@ export const GcLogs: React.FC = () => {
         </Bullseye>
       ) : (
         <Bullseye>
-          <GcLogsTable target={targetAsObs} gcLoggingEnabled={gcLoggingEnabled} />
+          <GcLogsTable target={targetAsObs} gcLoggingEnabled={gcLoggingEnabled} gcLogFilePath={gcLogFilePath} />
         </Bullseye>
       )}
     </TargetView>
