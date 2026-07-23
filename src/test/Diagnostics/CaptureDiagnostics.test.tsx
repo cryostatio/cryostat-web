@@ -16,11 +16,11 @@
 import { CaptureDiagnostics } from '@app/Diagnostics/CaptureDiagnostics';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { screen } from '@testing-library/react';
-import { testT, render, mockMediaQueryList } from '@test/utils';
 import { defaultDatetimeFormat } from '@i18n/datetime';
-import { NEVER, of } from 'rxjs';
+import { testT, render, mockMediaQueryList } from '@test/utils';
+import { screen } from '@testing-library/react';
 import * as React from 'react';
+import { NEVER, of } from 'rxjs';
 
 jest.mock('@app/TargetView/TargetView', () => ({
   TargetView: jest.fn((props) => <>{props.children}</>),

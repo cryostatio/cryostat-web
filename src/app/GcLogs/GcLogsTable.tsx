@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ColumnConfig, DiagnosticsTable } from '@app/Diagnostics/DiagnosticsTable';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { RowAction } from '@app/Recordings/RecordingActions';
-import { LoadingProps } from '@app/Shared/Components/types';
 import { GcLog, NotificationCategory, NullableTarget, Target } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { ColumnConfig, DiagnosticsTable } from '@app/Diagnostics/DiagnosticsTable';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { formatBytes, hashCode, portalRoot, TableColumn } from '@app/utils/utils';
@@ -48,8 +47,7 @@ import {
   Tooltip,
 } from '@patternfly/react-core';
 import { EllipsisVIcon, ImportIcon } from '@patternfly/react-icons';
-import { ISortBy, SortByDirection, Table, Tbody, Td, ThProps, Tr } from '@patternfly/react-table';
-import _ from 'lodash';
+import { ISortBy, SortByDirection, Tbody, Td, ThProps, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { concatMap, first, forkJoin, Observable, of } from 'rxjs';
 
@@ -230,24 +228,6 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
       );
     },
     [addSubscription, propsTarget, context.api],
-  );
-
-  const handleDeleteGcLog = React.useCallback(
-    (gcLog: GcLog) => {
-      if (jvmId) {
-        addSubscription(context.api.deleteArchivedGcLogFromPath(jvmId, gcLog.gcLogId).pipe(first()).subscribe());
-      } else {
-        addSubscription(
-          propsTarget
-            .pipe(
-              first(),
-              concatMap((t: Target | undefined) => (t ? context.api.deleteGcLog(t, gcLog.gcLogId) : of(false))),
-            )
-            .subscribe(),
-        );
-      }
-    },
-    [addSubscription, propsTarget, jvmId, context.api],
   );
 
   const handleDeleteSelected = React.useCallback(() => {
