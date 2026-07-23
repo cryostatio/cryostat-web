@@ -17,7 +17,7 @@ import { GcLoggingModal } from '@app/GcLogs/GcLoggingModal';
 import { GcLoggingStatusSummary } from '@app/GcLogs/GcLoggingStatusCard';
 import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { FeatureFlag } from '@app/Shared/Components/FeatureFlag';
-import { GcLoggingStatus, Target } from '@app/Shared/Services/api.types';
+import { GcLoggingStatus, NullableTarget } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -39,22 +39,28 @@ import {
 import { ListIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 
-export interface GcCaptureCardProps {
-  target: Target;
-}
+export interface GcCaptureCardProps {}
 
-export const GcCaptureCard: React.FC<GcCaptureCardProps> = ({ target }) => {
+export const GcCaptureCard: React.FC<GcCaptureCardProps> = () => {
   const { t } = useCryostatTranslation();
   const serviceContext = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
 
+  const [target, setTarget] = React.useState<NullableTarget>(undefined);
   const [status, setStatus] = React.useState<GcLoggingStatus | undefined>(undefined);
   const [isLoadingStatus, setIsLoadingStatus] = React.useState(true);
   const [runningGc, setRunningGc] = React.useState(false);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
+  React.useEffect(() => {
+    addSubscription(serviceContext.target.target().subscribe(setTarget));
+  }, [addSubscription, serviceContext.target]);
+
   const fetchStatus = React.useCallback(() => {
+    if (!target) {
+      return;
+    }
     setIsLoadingStatus(true);
     addSubscription(
       serviceContext.api.getGcLoggingStatus(target, true).subscribe({
@@ -157,7 +163,6 @@ export const GcCaptureCard: React.FC<GcCaptureCardProps> = ({ target }) => {
         <GcLoggingModal
           isOpen={isModalOpen}
           onClose={handleModalClose}
-          target={target}
           mode={modalMode}
           currentWhat={status?.what}
           currentDecorators={status?.decorators}
