@@ -389,6 +389,7 @@ export const GcLoggingModal: React.FC<GcLoggingModalProps> = ({
             chosenOptions={chosenWhat}
             onListChange={handleWhatListChange as any}
             id="gc-logging-what-selector"
+            isSearchable
           />
         </FormGroup>
         <FormGroup fieldId="gc-logging-decorators" label={t('GcLoggingModal.DECORATORS_LABEL')}>
@@ -415,6 +416,7 @@ export const GcLoggingModal: React.FC<GcLoggingModalProps> = ({
             chosenOptions={chosenDecorators}
             onListChange={handleDecoratorListChange as any}
             id="gc-logging-decorators-selector"
+            isSearchable
           />
         </FormGroup>
         <ActionGroup>
