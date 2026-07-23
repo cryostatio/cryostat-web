@@ -34,6 +34,73 @@ import {
 import * as React from 'react';
 import { GcLoggingModal } from './GcLoggingModal';
 
+export interface GcLoggingStatusSummaryProps {
+  status?: GcLoggingStatus;
+  isLoading: boolean;
+}
+
+export const GcLoggingStatusSummary: React.FC<GcLoggingStatusSummaryProps> = ({ status, isLoading }) => {
+  const { t } = useCryostatTranslation();
+
+  const whatLabels = React.useMemo(() => (status?.what ? status.what.split('+').filter(Boolean) : []), [status]);
+
+  const decoratorLabels = React.useMemo(
+    () => (status?.decorators ? status.decorators.split(',').filter(Boolean) : []),
+    [status],
+  );
+
+  if (isLoading) {
+    return <Spinner size="md" />;
+  }
+
+  return (
+    <DescriptionList isHorizontal isCompact>
+      <DescriptionListGroup>
+        <DescriptionListTerm>{t('GcLoggingStatusCard.STATUS_LABEL')}</DescriptionListTerm>
+        <DescriptionListDescription>
+          {status?.enabled ? t('GcLoggingStatusCard.ENABLED') : t('GcLoggingStatusCard.DISABLED')}
+        </DescriptionListDescription>
+      </DescriptionListGroup>
+      {status?.enabled && (
+        <>
+          <DescriptionListGroup>
+            <DescriptionListTerm>{t('GcLoggingStatusCard.WHAT_LABEL')}</DescriptionListTerm>
+            <DescriptionListDescription>
+              {whatLabels.length ? (
+                <LabelGroup>
+                  {whatLabels.map((v) => (
+                    <Label key={v} color="blue" isCompact>
+                      {v}
+                    </Label>
+                  ))}
+                </LabelGroup>
+              ) : (
+                '—'
+              )}
+            </DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
+            <DescriptionListTerm>{t('GcLoggingStatusCard.DECORATORS_LABEL')}</DescriptionListTerm>
+            <DescriptionListDescription>
+              {decoratorLabels.length ? (
+                <LabelGroup>
+                  {decoratorLabels.map((v) => (
+                    <Label key={v} color="grey" isCompact>
+                      {v}
+                    </Label>
+                  ))}
+                </LabelGroup>
+              ) : (
+                '—'
+              )}
+            </DescriptionListDescription>
+          </DescriptionListGroup>
+        </>
+      )}
+    </DescriptionList>
+  );
+};
+
 export interface GcLoggingStatusCardProps {
   target: Target;
   onStatusChange?: (enabled: boolean) => void;
@@ -71,13 +138,6 @@ export const GcLoggingStatusCard: React.FC<GcLoggingStatusCardProps> = ({ target
     fetchStatus();
   }, [fetchStatus]);
 
-  const whatLabels = React.useMemo(() => (status?.what ? status.what.split('+').filter(Boolean) : []), [status]);
-
-  const decoratorLabels = React.useMemo(
-    () => (status?.decorators ? status.decorators.split(',').filter(Boolean) : []),
-    [status],
-  );
-
   const modalMode = status?.enabled ? 'reconfigure' : 'enable';
   const actionLabel = status?.enabled
     ? t('GcLoggingStatusCard.RECONFIGURE_BUTTON')
@@ -87,63 +147,16 @@ export const GcLoggingStatusCard: React.FC<GcLoggingStatusCardProps> = ({ target
     <>
       <Card isCompact>
         <CardBody>
-          {isLoading ? (
-            <Spinner size="md" />
-          ) : (
-            <Split hasGutter isWrappable>
-              <SplitItem isFilled>
-                <DescriptionList isHorizontal isCompact>
-                  <DescriptionListGroup>
-                    <DescriptionListTerm>{t('GcLoggingStatusCard.STATUS_LABEL')}</DescriptionListTerm>
-                    <DescriptionListDescription>
-                      {status?.enabled ? t('GcLoggingStatusCard.ENABLED') : t('GcLoggingStatusCard.DISABLED')}
-                    </DescriptionListDescription>
-                  </DescriptionListGroup>
-                  {status?.enabled && (
-                    <>
-                      <DescriptionListGroup>
-                        <DescriptionListTerm>{t('GcLoggingStatusCard.WHAT_LABEL')}</DescriptionListTerm>
-                        <DescriptionListDescription>
-                          {whatLabels.length ? (
-                            <LabelGroup>
-                              {whatLabels.map((v) => (
-                                <Label key={v} color="blue" isCompact>
-                                  {v}
-                                </Label>
-                              ))}
-                            </LabelGroup>
-                          ) : (
-                            '—'
-                          )}
-                        </DescriptionListDescription>
-                      </DescriptionListGroup>
-                      <DescriptionListGroup>
-                        <DescriptionListTerm>{t('GcLoggingStatusCard.DECORATORS_LABEL')}</DescriptionListTerm>
-                        <DescriptionListDescription>
-                          {decoratorLabels.length ? (
-                            <LabelGroup>
-                              {decoratorLabels.map((v) => (
-                                <Label key={v} color="grey" isCompact>
-                                  {v}
-                                </Label>
-                              ))}
-                            </LabelGroup>
-                          ) : (
-                            '—'
-                          )}
-                        </DescriptionListDescription>
-                      </DescriptionListGroup>
-                    </>
-                  )}
-                </DescriptionList>
-              </SplitItem>
-              <SplitItem>
-                <Button variant="secondary" size="sm" onClick={() => setIsModalOpen(true)} isDisabled={isLoading}>
-                  {actionLabel}
-                </Button>
-              </SplitItem>
-            </Split>
-          )}
+          <Split hasGutter isWrappable>
+            <SplitItem isFilled>
+              <GcLoggingStatusSummary status={status} isLoading={isLoading} />
+            </SplitItem>
+            <SplitItem>
+              <Button variant="secondary" size="sm" onClick={() => setIsModalOpen(true)} isDisabled={isLoading}>
+                {actionLabel}
+              </Button>
+            </SplitItem>
+          </Split>
         </CardBody>
       </Card>
       {isModalOpen && (

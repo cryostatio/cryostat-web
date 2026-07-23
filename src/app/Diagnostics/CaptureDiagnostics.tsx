@@ -15,22 +15,39 @@
  */
 import { MBeanMetricsChartCard } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartCard';
 import { DiagnosticsCard } from '@app/Dashboard/Diagnostics/DiagnosticsCard';
+import { NullableTarget } from '@app/Shared/Services/api.types';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
-import { Grid, GridItem } from '@patternfly/react-core';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { Grid, GridItem, Stack, StackItem } from '@patternfly/react-core';
 import * as React from 'react';
+import { GcCaptureCard } from './GcCaptureCard';
 
 export interface CaptureDiagnosticsProps {}
 
 export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props }) => {
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+  const [target, setTarget] = React.useState<NullableTarget>(undefined);
+
+  React.useEffect(() => {
+    addSubscription(context.target.target().subscribe(setTarget));
+  }, [addSubscription, context.target]);
+
   return (
     <TargetView {...props} pageTitle="Diagnostics">
       <Grid hasGutter>
-        <GridItem span={3}>
-          <DiagnosticsCard span={3} dashboardId={0} headerDisabled={true} isResizable={false} isDraggable={false} />
+        <GridItem span={4}>
+          <Stack hasGutter>
+            <StackItem>{target ? <GcCaptureCard target={target} /> : null}</StackItem>
+            <StackItem>
+              <DiagnosticsCard span={4} dashboardId={0} isResizable={false} isDraggable={false} />
+            </StackItem>
+          </Stack>
         </GridItem>
-        <GridItem span={9}>
+        <GridItem span={8}>
           <MBeanMetricsChartCard
-            span={9}
+            span={8}
             chartKind="Heap Memory Usage"
             themeColor="blue"
             duration={300}

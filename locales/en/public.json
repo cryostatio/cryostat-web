@@ -420,8 +420,8 @@
     "DIAGNOSTICS_ACTION_FAILURE": "Diagnostics Failure: {{kind}}",
     "DIAGNOSTICS_CARD_DESCRIPTION": "Perform diagnostic operations on the target.",
     "DIAGNOSTICS_CARD_DESCRIPTION_FULL": "Perform diagonstic operations from a list of supported operations on the target.",
-    "DIAGNOSTICS_CARD_TITLE": "Diagnostics",
-    "DIAGNOSTICS_GC_BUTTON": "Invoke Garbage Collection",
+    "DIAGNOSTICS_CARD_TITLE": "Dump Collection",
+    "DIAGNOSTICS_GC_BUTTON": "Invoke GC",
     "DIAGNOSTICS_HEAP_DUMP_BUTTON": "Invoke Heap Dump",
     "DIAGNOSTICS_HEAP_DUMP_BUTTON_DISABLED": "Heap Dump collection requires the Cryostat Agent",
     "DIAGNOSTICS_HEAP_REDIRECT_BUTTON": "View collected Heap Dumps",
@@ -435,7 +435,7 @@
     }
   },
   "GcLogs": {
-    "PAGE_TITLE": "GC Logs",
+    "PAGE_TITLE": "GC Log Archives",
     "AGENT_REQUIRED": "GC log collection requires the Cryostat Agent.",
     "TABLE_TITLE": "GC Logs",
     "PULL_TOOLTIP": "Pull log from Agent",
@@ -449,6 +449,9 @@
       "ROW_ACTION": "gc-log-action-menu",
       "ACTION_TOGGLE": "gc-log-actions-toggle"
     }
+  },
+  "GcCaptureCard": {
+    "TITLE": "Garbage Collection and Logging"
   },
   "GcLoggingModal": {
     "ENABLE_TITLE": "Enable GC Logging",

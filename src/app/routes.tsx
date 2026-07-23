@@ -238,9 +238,9 @@ const diagnosticsRoutes: IAppRoute[] = [
   },
   {
     component: GcLogs,
-    label: 'GC Logs',
+    label: 'GC Log Archives',
     path: toPath('/gc-logs'),
-    title: 'GC Logs',
+    title: 'GC Log Archives',
     description: 'Manage GC logging sessions and view collected GC log archives.',
     navGroup: DIAGNOSTICS,
     navSubgroup: ANALYZE,
