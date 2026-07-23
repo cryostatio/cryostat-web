@@ -18,12 +18,11 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
-import { Bullseye, EmptyState, EmptyStateBody, EmptyStateVariant, Grid, GridItem } from '@patternfly/react-core';
+import { Bullseye, EmptyState, EmptyStateBody, EmptyStateVariant } from '@patternfly/react-core';
 import { DisconnectedIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { of } from 'rxjs';
 import { AllTargetsGcLogsTable } from './AllTargetsGcLogsTable';
-import { GcLoggingStatusCard } from './GcLoggingStatusCard';
 import { GcLogsTable } from './GcLogsTable';
 
 export const GcLogs: React.FC = () => {
@@ -39,11 +38,26 @@ export const GcLogs: React.FC = () => {
     addSubscription(context.target.target().subscribe(setTarget));
   }, [addSubscription, context.target]);
 
-  React.useEffect(() => {
+  const fetchStatus = React.useCallback(() => {
     setGcLoggingEnabled(false);
-  }, [target]);
+    if (!target) {
+      return;
+    }
+    addSubscription(
+      context.api.getGcLoggingStatus(target, true).subscribe({
+        next: (s) => {
+          setGcLoggingEnabled(s.enabled);
+        },
+        error: () => setGcLoggingEnabled(false),
+      }),
+    );
+  }, [addSubscription, context.api, target]);
 
-  const isAgentTarget = Boolean(target?.agent);
+  React.useEffect(() => {
+    fetchStatus();
+  }, [target, fetchStatus]);
+
+  const isAgentTarget = React.useMemo(() => Boolean(target?.agent), [target]);
 
   return (
     <TargetView pageTitle={t('GcLogs.PAGE_TITLE')} noSelectionContent={<AllTargetsGcLogsTable />}>
@@ -54,14 +68,9 @@ export const GcLogs: React.FC = () => {
           </EmptyState>
         </Bullseye>
       ) : (
-        <Grid hasGutter>
-          <GridItem span={4}>
-            <GcLoggingStatusCard target={target} onStatusChange={setGcLoggingEnabled} />
-          </GridItem>
-          <GridItem span={12}>
-            <GcLogsTable target={targetAsObs} gcLoggingEnabled={gcLoggingEnabled} />
-          </GridItem>
-        </Grid>
+        <Bullseye>
+          <GcLogsTable target={targetAsObs} gcLoggingEnabled={gcLoggingEnabled} />
+        </Bullseye>
       )}
     </TargetView>
   );

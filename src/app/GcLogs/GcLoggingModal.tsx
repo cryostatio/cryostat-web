@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Target } from '@app/Shared/Services/api.types';
+import { NullableTarget } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
@@ -51,7 +51,6 @@ const DECORATOR_OPTIONS = [
 export interface GcLoggingModalProps {
   isOpen: boolean;
   onClose: () => void;
-  target: Target;
   mode: 'enable' | 'reconfigure';
   currentWhat?: string;
   currentDecorators?: string;
@@ -60,7 +59,6 @@ export interface GcLoggingModalProps {
 export const GcLoggingModal: React.FC<GcLoggingModalProps> = ({
   isOpen,
   onClose,
-  target,
   mode,
   currentWhat,
   currentDecorators,
@@ -68,6 +66,12 @@ export const GcLoggingModal: React.FC<GcLoggingModalProps> = ({
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
+
+  const [target, setTarget] = React.useState<NullableTarget>(undefined);
+
+  React.useEffect(() => {
+    addSubscription(context.target.target().subscribe(setTarget));
+  }, [addSubscription, context.target]);
 
   const initChosenWhat = React.useMemo(
     () => (mode === 'reconfigure' && currentWhat ? currentWhat.split('+').filter(Boolean) : ['gc']),
@@ -156,6 +160,9 @@ export const GcLoggingModal: React.FC<GcLoggingModalProps> = ({
   );
 
   const handleSubmit = React.useCallback(() => {
+    if (!target) {
+      return;
+    }
     setIsSubmitting(true);
     let req$;
     if (!enabled) {

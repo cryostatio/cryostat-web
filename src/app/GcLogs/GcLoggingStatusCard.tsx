@@ -103,10 +103,9 @@ export const GcLoggingStatusSummary: React.FC<GcLoggingStatusSummaryProps> = ({ 
 
 export interface GcLoggingStatusCardProps {
   target: Target;
-  onStatusChange?: (enabled: boolean) => void;
 }
 
-export const GcLoggingStatusCard: React.FC<GcLoggingStatusCardProps> = ({ target, onStatusChange }) => {
+export const GcLoggingStatusCard: React.FC<GcLoggingStatusCardProps> = ({ target }) => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
@@ -122,12 +121,11 @@ export const GcLoggingStatusCard: React.FC<GcLoggingStatusCardProps> = ({ target
         next: (s) => {
           setStatus(s);
           setIsLoading(false);
-          onStatusChange?.(s.enabled);
         },
         error: () => setIsLoading(false),
       }),
     );
-  }, [addSubscription, context.api, target, onStatusChange]);
+  }, [addSubscription, context.api, target]);
 
   React.useEffect(() => {
     fetchStatus();
@@ -163,7 +161,6 @@ export const GcLoggingStatusCard: React.FC<GcLoggingStatusCardProps> = ({ target
         <GcLoggingModal
           isOpen={isModalOpen}
           onClose={handleModalClose}
-          target={target}
           mode={modalMode}
           currentWhat={status?.what}
           currentDecorators={status?.decorators}
