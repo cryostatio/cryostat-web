@@ -18,7 +18,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
-import { Bullseye, EmptyState, EmptyStateBody, EmptyStateVariant } from '@patternfly/react-core';
+import { Bullseye, EmptyState, EmptyStateBody, EmptyStateVariant, Grid, GridItem } from '@patternfly/react-core';
 import { DisconnectedIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { of } from 'rxjs';
@@ -74,9 +74,11 @@ export const GcLogs: React.FC = () => {
           </EmptyState>
         </Bullseye>
       ) : (
-        <Bullseye>
-          <GcLogsTable target={targetAsObs} gcLoggingEnabled={gcLoggingEnabled} gcLogFilePath={gcLogFilePath} />
-        </Bullseye>
+        <Grid hasGutter>
+          <GridItem>
+            <GcLogsTable target={targetAsObs} gcLoggingEnabled={gcLoggingEnabled} gcLogFilePath={gcLogFilePath} />
+          </GridItem>
+        </Grid>
       )}
     </TargetView>
   );
