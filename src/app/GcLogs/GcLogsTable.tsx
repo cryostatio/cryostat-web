@@ -100,7 +100,10 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
   const [gcLogs, setGcLogs] = React.useState<GcLog[]>([]);
   const [checkedIndices, setCheckedIndices] = React.useState<number[]>([]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
-  const [sortBy, setSortBy] = React.useState<ISortBy>({});
+  const [sortBy, setSortBy] = React.useState<ISortBy>({
+    index: 1,
+    direction: SortByDirection.desc,
+  });
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [actionLoadings, setActionLoadings] = React.useState<Record<GcLogTableActions, boolean>>({
