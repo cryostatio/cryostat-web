@@ -1089,7 +1089,11 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         if (!state || !state.enabled) {
           return new Response(200, {}, { enabled: false });
         }
-        return new Response(200, {}, { enabled: true, what: state.what, decorators: state.decorators });
+        return new Response(
+          200,
+          {},
+          { enabled: true, logFilePath: state.logFilePath, what: state.what, decorators: state.decorators },
+        );
       });
 
       this.post('api/beta/diagnostics/targets/:targetId/gclogging', (_schema, request) => {
