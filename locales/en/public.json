@@ -474,6 +474,7 @@
     "STATUS_LABEL": "Status",
     "ENABLED": "Enabled",
     "DISABLED": "Disabled",
+    "LOG_FILE_PATH_LABEL": "Log File Path",
     "WHAT_LABEL": "What",
     "DECORATORS_LABEL": "Decorators",
     "ENABLE_BUTTON": "Enable",

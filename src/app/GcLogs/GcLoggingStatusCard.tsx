@@ -64,6 +64,20 @@ export const GcLoggingStatusSummary: React.FC<GcLoggingStatusSummaryProps> = ({ 
       {status?.enabled && (
         <>
           <DescriptionListGroup>
+            <DescriptionListTerm>{t('GcLoggingStatusCard.LOG_FILE_PATH_LABEL')}</DescriptionListTerm>
+            <DescriptionListDescription>
+              {status.logFilePath ? (
+                <LabelGroup>
+                  <Label key="logFilePath" color="green" isCompact>
+                    {status.logFilePath}
+                  </Label>
+                </LabelGroup>
+              ) : (
+                '—'
+              )}
+            </DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
             <DescriptionListTerm>{t('GcLoggingStatusCard.WHAT_LABEL')}</DescriptionListTerm>
             <DescriptionListDescription>
               {whatLabels.length ? (

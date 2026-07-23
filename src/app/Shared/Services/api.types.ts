@@ -677,6 +677,7 @@ export interface AsyncProfilerStatus {
 
 export interface GcLoggingStatus {
   enabled: boolean;
+  logFilePath?: string;
   what?: string;
   decorators?: string;
 }

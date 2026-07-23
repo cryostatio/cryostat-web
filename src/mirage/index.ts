@@ -1075,7 +1075,10 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       });
 
       // ── GC logging in-memory state ─────────────────────────────────────────────
-      const gcLoggingState: Record<string, { enabled: boolean; what: string; decorators: string }> = {};
+      const gcLoggingState: Record<
+        string,
+        { enabled: boolean; logFilePath: string; what: string; decorators: string }
+      > = {};
       const gcLogsList: Record<
         string,
         Array<{ gcLogId: string; jvmId: string; size: number; lastModified: number }>
@@ -1096,7 +1099,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         }
         const what = (request.queryParams as Record<string, string>)['what'] || 'gc';
         const decorators = (request.queryParams as Record<string, string>)['decorators'] || 'time,level';
-        gcLoggingState[targetId] = { enabled: true, what, decorators };
+        gcLoggingState[targetId] = { enabled: true, logFilePath: '/tmp/gc.log', what, decorators };
         return new Response(200, {}, { enabled: true, what, decorators });
       });
 
@@ -1108,7 +1111,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         const what = (request.queryParams as Record<string, string>)['what'] || gcLoggingState[targetId].what;
         const decorators =
           (request.queryParams as Record<string, string>)['decorators'] || gcLoggingState[targetId].decorators;
-        gcLoggingState[targetId] = { enabled: true, what, decorators };
+        gcLoggingState[targetId] = { enabled: true, logFilePath: '/tmp/gc.log', what, decorators };
         return new Response(200, {}, { enabled: true, what, decorators });
       });
 
