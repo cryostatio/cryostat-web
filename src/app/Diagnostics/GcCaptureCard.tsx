@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GcLoggingStatus, Target } from '@app/Shared/Services/api.types';
+import { GcLoggingModal } from '@app/GcLogs/GcLoggingModal';
+import { GcLoggingStatusSummary } from '@app/GcLogs/GcLoggingStatusCard';
 import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { FeatureFlag } from '@app/Shared/Components/FeatureFlag';
-import { FeatureLevel } from '@app/Shared/Services/service.types';
+import { GcLoggingStatus, Target } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
@@ -36,8 +38,6 @@ import {
 } from '@patternfly/react-core';
 import { ListIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { GcLoggingModal } from '@app/GcLogs/GcLoggingModal';
-import { GcLoggingStatusSummary } from '@app/GcLogs/GcLoggingStatusCard';
 
 export interface GcCaptureCardProps {
   target: Target;
