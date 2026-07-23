@@ -1639,6 +1639,66 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               </span>
             </label>
           </div>
+          <div
+            class="pf-v6-l-stack__item"
+          >
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-49"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="GcLogUploaded"
+            >
+              <input
+                aria-labelledby="GcLogUploaded-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="GcLogUploaded"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="GcLogUploaded-label"
+              >
+                GC Log pulled
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
+          >
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-50"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="GcLogDeleted"
+            >
+              <input
+                aria-labelledby="GcLogDeleted-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="GcLogDeleted"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="GcLogDeleted-label"
+              >
+                GC Log deleted
+              </span>
+            </label>
+          </div>
         </div>
       </div>
     </div>
