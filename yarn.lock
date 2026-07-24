@@ -5264,7 +5264,7 @@ __metadata:
     monaco-editor-webpack-plugin: "npm:7.1.1"
     nanoid: "npm:5.1.16"
     npm-run-all2: "npm:9.0.2"
-    prettier: "npm:3.8.5"
+    prettier: "npm:3.9.6"
     prop-types: "npm:15.8.1"
     raw-loader: "npm:4.0.2"
     react: "npm:17.0.2"
@@ -12723,12 +12723,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:3.8.5":
-  version: 3.8.5
-  resolution: "prettier@npm:3.8.5"
+"prettier@npm:3.9.6":
+  version: 3.9.6
+  resolution: "prettier@npm:3.9.6"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10/61b59be2f6fdb06850aa8add77a4c3ea31d9536ae25ee9206cdd7a52de968276270a69f4bb71a6e23cbe7bfe6705a74eebdfae2022659c4ccea246e45c290c94
+  checksum: 10/1dd1a1e0e40ec3b91cda9d294c4a95022aef61880ca3f441aad99b1252279f58a766c4cece81132c01550dcff1fd445efbd8812ea4a2374313e7fc6c8136f11f
   languageName: node
   linkType: hard
 
