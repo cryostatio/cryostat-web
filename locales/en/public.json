@@ -445,6 +445,7 @@
     "DELETE": "Delete",
     "DELETING": "Deleting",
     "DOWNLOAD": "Download",
+    "EDIT_LABELS": "Edit Labels",
     "ARIA_LABELS": {
       "ROW_ACTION": "gc-log-action-menu",
       "ACTION_TOGGLE": "gc-log-actions-toggle"
@@ -509,6 +510,11 @@
       "SEARCH_INPUT": "thread-dump-search-input"
     },
     "NO_ARCHIVES": "No Thread Dumps"
+  },
+  "GcLogFilters": {
+    "ARIA_LABELS": {
+      "MENU_TOGGLE": "gc-log-filters-toggle"
+    }
   },
   "ThreadDumpFilters": {
     "ARIA_LABELS": {

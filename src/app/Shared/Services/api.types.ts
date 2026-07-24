@@ -688,6 +688,7 @@ export interface GcLog {
   size: number;
   lastModified?: number;
   downloadUrl?: string;
+  metadata?: Metadata;
 }
 
 export interface GcLogDirectory {
@@ -781,6 +782,7 @@ export enum NotificationCategory {
   AsyncProfileDeleted = 'AsyncProfilerDeleted',
   GcLogUploaded = 'GcLogUploaded',
   GcLogDeleted = 'GcLogDeleted',
+  GcLogMetadataUpdated = 'GcLogMetadataUpdated',
 }
 
 export enum CloseStatus {

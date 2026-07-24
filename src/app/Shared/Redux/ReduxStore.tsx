@@ -20,6 +20,7 @@ import navMenuConfigReducer, * as navMenuConfigSlice from './Configurations/NavM
 import topologyConfigReducer, * as topologyConfigSlice from './Configurations/TopologyConfigSlice';
 import archiveFiltersReducer, * as archiveFiltersSlice from './Filters/ArchiveFiltersSlice';
 import automatedAnalysisFilterReducer, * as automatedAnalysisFilterSlice from './Filters/AutomatedAnalysisFilterSlice';
+import GcLogFilterReducer from './Filters/GcLogFilterSlice';
 import HeapDumpFilterReducer from './Filters/HeapDumpFilterSlice';
 import recordingFilterReducer, * as recordingFilterSlice from './Filters/RecordingFilterSlice';
 import ThreadDumpFilterReducer from './Filters/ThreadDumpFilterSlice';
@@ -101,6 +102,7 @@ export const rootReducer = combineReducers({
   recordingFilters: recordingFilterReducer,
   heapDumpFilters: HeapDumpFilterReducer,
   threadDumpFilters: ThreadDumpFilterReducer,
+  gcLogFilters: GcLogFilterReducer,
   archiveFilters: archiveFiltersReducer,
   automatedAnalysisFilters: automatedAnalysisFilterReducer,
   topologyConfigs: topologyConfigReducer,

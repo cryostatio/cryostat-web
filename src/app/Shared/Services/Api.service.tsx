@@ -2284,6 +2284,34 @@ export class ApiService {
     return this.doGet<GcLogDirectory[]>('diagnostics/fs/gclogs', 'beta', undefined, suppressNotifications);
   }
 
+  postGcLogMetadataForJvmId(jvmId: string, gcLogId: string, labels: KeyValue[]): Observable<GcLog> {
+    return this.ctx.headers({ 'Content-Type': 'application/json' }).pipe(
+      concatMap((headers) =>
+        this.sendRequest('beta', `diagnostics/fs/gclogs/${jvmId}/${gcLogId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ labels: this.transformLabelsToObject(labels) }),
+          headers,
+        }),
+      ),
+      concatMap((resp) => resp.json()),
+      first(),
+    );
+  }
+
+  postGcLogMetadata(target: Target, gcLogId: string, labels: KeyValue[]): Observable<GcLog> {
+    return this.ctx.headers({ 'Content-Type': 'application/json' }).pipe(
+      concatMap((headers) =>
+        this.sendRequest('beta', `diagnostics/targets/${target.id}/gclogs/${gcLogId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ labels: this.transformLabelsToObject(labels) }),
+          headers,
+        }),
+      ),
+      concatMap((resp) => resp.json()),
+      first(),
+    );
+  }
+
   downloadLayoutTemplate(template: LayoutTemplate): void {
     const stringifiedSerializedLayout = this.stringifyLayoutTemplate(template);
     const filename = `cryostat-dashboard-${template.name}.json`;

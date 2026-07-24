@@ -156,6 +156,28 @@ export const AllTargetsGcLogsTable: React.FC<AllTargetsGcLogsTableProps> = () =>
     );
   }, [addSubscription, context.notificationChannel, refreshDirectories]);
 
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.GcLogMetadataUpdated).subscribe((event) => {
+        const updatedGcLogInfo = event.message;
+        setGcLogsForTargets((current) =>
+          current.map((entry) => ({
+            ...entry,
+            gcLogs: entry.gcLogs.map((gcLog) => {
+              if (gcLog.gcLogId === updatedGcLogInfo.gcLog.gcLogId) {
+                return {
+                  ...gcLog,
+                  metadata: { ...(gcLog.metadata ?? {}), labels: updatedGcLogInfo?.gcLog?.metadata?.labels ?? [] },
+                };
+              }
+              return gcLog;
+            }),
+          })),
+        );
+      }),
+    );
+  }, [addSubscription, context.notificationChannel, setGcLogsForTargets]);
+
   const handleSearchInput = React.useCallback((_, searchInput: string) => setSearchText(searchInput), [setSearchText]);
 
   const handleSearchInputClear = React.useCallback(() => setSearchText(''), [setSearchText]);
