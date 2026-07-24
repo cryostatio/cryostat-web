@@ -617,4 +617,12 @@ export const messageKeys = new Map([
       body: (evt) => `GC Log ${evt.message.gcLog.gcLogId} was deleted`,
     } as NotificationMessageMapper,
   ],
+  [
+    NotificationCategory.GcLogMetadataUpdated,
+    {
+      variant: AlertVariant.success,
+      title: 'GC Log metadata updated',
+      body: (evt) => `${evt.message.gcLog.gcLogId} in target ${evt.message.jvmId} metadata was updated`,
+    } as NotificationMessageMapper,
+  ],
 ]);

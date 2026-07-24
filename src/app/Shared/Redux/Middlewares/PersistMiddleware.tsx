@@ -20,6 +20,7 @@ import { enumValues as NavMenuConfigActions } from '../Configurations/NavMenuCon
 import { enumValues as TopologyConfigActions } from '../Configurations/TopologyConfigSlice';
 import { enumValues as ArchiveFilterActions } from '../Filters/ArchiveFiltersSlice';
 import { enumValues as AutomatedAnalysisFilterActions } from '../Filters/AutomatedAnalysisFilterSlice';
+import { enumValues as GcLogFilterActions } from '../Filters/GcLogFilterSlice';
 import { enumValues as HeapDumpFilterActions } from '../Filters/HeapDumpFilterSlice';
 import { enumValues as RecordingFilterActions } from '../Filters/RecordingFilterSlice';
 import { enumValues as ThreadDumpFilterActions } from '../Filters/ThreadDumpFilterSlice';
@@ -46,6 +47,8 @@ export const persistMiddleware: Middleware<{}, RootState> =
       saveToLocalStorage('TARGET_HEAP_DUMP_FILTERS', rootState.heapDumpFilters);
     } else if (actionSet(ThreadDumpFilterActions as Set<string>)) {
       saveToLocalStorage('TARGET_THREAD_DUMP_FILTERS', rootState.threadDumpFilters);
+    } else if (actionSet(GcLogFilterActions as Set<string>)) {
+      saveToLocalStorage('TARGET_GC_LOG_FILTERS', rootState.gcLogFilters);
     } else if (actionSet(NavMenuConfigActions as Set<string>)) {
       saveToLocalStorage('NAV_MENU_CFG', rootState.navMenuConfigs);
     } else if (actionSet(DashboardConfigActions as Set<string>)) {
