@@ -78,7 +78,7 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({
         heapDumps.forEach((r: HeapDump) => {
           const idx = hashCode(r.heapDumpId);
           if (checkedIndices.includes(idx)) {
-            const updatedLabels = [...r.metadata.labels, ...commonLabels].filter(
+            const updatedLabels = [...(r.metadata?.labels ?? []), ...commonLabels].filter(
               (label) => !includesLabel(toDelete, label),
             );
             if (directory) {
@@ -120,7 +120,7 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({
       heapDumps.forEach((r: HeapDump) => {
         const idx = hashCode(r.heapDumpId);
         if (checkedIndices.includes(idx)) {
-          allHeapDumpLabels.push(r.metadata.labels);
+          allHeapDumpLabels.push(r.metadata?.labels ?? []);
         }
       });
 
@@ -191,7 +191,7 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({
               const updatedHeapDump = {
                 ...heapDump,
                 metadata: {
-                  labels: event.message.heapDump.metadata.labels,
+                  labels: event.message.heapDump.metadata?.labels ?? [],
                 },
               };
               return updatedHeapDump;

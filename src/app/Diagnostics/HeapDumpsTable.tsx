@@ -188,7 +188,10 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({
         setHeapDumps((oldHeapDumps) => {
           return oldHeapDumps.map((heapDump) => {
             if (heapDump.heapDumpId === event.message.heapDump.heapDumpId) {
-              const updatedHeapDump = { ...heapDump, metadata: { labels: event.message.heapDump.metadata.labels } };
+              const updatedHeapDump = {
+                ...heapDump,
+                metadata: { labels: event.message.heapDump.metadata?.labels ?? [] },
+              };
               return updatedHeapDump;
             }
             return heapDump;
@@ -667,7 +670,7 @@ export const HeapDumpRow: React.FC<HeapDumpRowProps> = ({
               updateFilters: updateFilters,
               labelFilters: labelFilters,
             }}
-            labels={heapDump.metadata.labels}
+            labels={heapDump.metadata?.labels ?? []}
           />
         </Td>
         <Td key={`heap-dump-table-row-${index}_4`} dataLabel={tableColumns[3].title}>

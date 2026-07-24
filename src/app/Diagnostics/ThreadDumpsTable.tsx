@@ -165,7 +165,7 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({
             if (threadDump.threadDumpId === event.message.threadDump.threadDumpId) {
               const updatedThreadDump = {
                 ...threadDump,
-                metadata: { labels: event.message.threadDump.metadata.labels },
+                metadata: { labels: event.message.threadDump.metadata?.labels ?? [] },
               };
               return updatedThreadDump;
             }
@@ -669,7 +669,7 @@ export const ThreadDumpRow: React.FC<ThreadDumpRowProps> = ({
               updateFilters: updateFilters,
               labelFilters: labelFilters,
             }}
-            labels={threadDump.metadata.labels}
+            labels={threadDump.metadata?.labels ?? []}
           />
         </Td>
         <Td key={`thread-dump-table-row-${index}_4`} dataLabel={tableColumns[3].title}>
