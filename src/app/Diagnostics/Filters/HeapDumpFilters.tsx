@@ -222,7 +222,7 @@ export const filterHeapDumps = (heapDumps: any[], filters: HeapDumpFiltersCatego
 
   if (filters.Label.length) {
     filtered = filtered.filter((heapDump) => {
-      const heapDumpLabels = heapDump.metadata.labels.map((label: KeyValue) => keyValueToString(label));
+      const heapDumpLabels = (heapDump.metadata?.labels ?? []).map((label: KeyValue) => keyValueToString(label));
       return filters.Label.some((filterLabel) => heapDumpLabels.includes(filterLabel));
     });
   }

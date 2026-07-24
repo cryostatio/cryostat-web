@@ -78,7 +78,7 @@ export const BulkEditThreadDumpLabels: React.FC<BulkEditLabelsProps> = ({
         threadDumps.forEach((r: ThreadDump) => {
           const idx = hashCode(r.threadDumpId);
           if (checkedIndices.includes(idx)) {
-            const updatedLabels = [...r.metadata.labels, ...commonLabels].filter(
+            const updatedLabels = [...(r.metadata?.labels ?? []), ...commonLabels].filter(
               (label) => !includesLabel(toDelete, label),
             );
             if (directory) {
@@ -124,7 +124,7 @@ export const BulkEditThreadDumpLabels: React.FC<BulkEditLabelsProps> = ({
       threadDumps.forEach((r: ThreadDump) => {
         const idx = hashCode(r.threadDumpId);
         if (checkedIndices.includes(idx)) {
-          allThreadDumpLabels.push(r.metadata.labels);
+          allThreadDumpLabels.push(r.metadata?.labels ?? []);
         }
       });
 
@@ -189,7 +189,7 @@ export const BulkEditThreadDumpLabels: React.FC<BulkEditLabelsProps> = ({
               const updatedThreadDump = {
                 ...threadDump,
                 metadata: {
-                  labels: event.message.threadDump.metadata.labels,
+                  labels: event.message.threadDump.metadata?.labels ?? [],
                 },
               };
               return updatedThreadDump;

@@ -273,7 +273,7 @@ export interface ThreadDump {
   jvmId?: string;
   lastModified?: number;
   size: number;
-  metadata: Metadata;
+  metadata?: Metadata;
 }
 
 export interface StackFrame {
@@ -369,7 +369,7 @@ export interface HeapDump {
   jvmId?: string;
   lastModified?: number;
   size: number;
-  metadata: Metadata;
+  metadata?: Metadata;
 }
 
 export interface ActiveRecordingsFilterInput {

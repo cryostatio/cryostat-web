@@ -236,7 +236,7 @@ export const filterThreadDumps = (threadDumps: any[], filters: ThreadDumpFilters
 
   if (filters.Label.length) {
     filtered = filtered.filter((threadDump) => {
-      const threadDumpLabels = threadDump.metadata.labels.map((label: KeyValue) => keyValueToString(label));
+      const threadDumpLabels = (threadDump.metadata?.labels ?? []).map((label: KeyValue) => keyValueToString(label));
       return filters.Label.some((filterLabel) => threadDumpLabels.includes(filterLabel));
     });
   }
