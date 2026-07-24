@@ -27,8 +27,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useModalFromLocationState } from '@app/utils/hooks/useModalFromLocationState';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
-import { Bullseye, Card, CardBody } from '@patternfly/react-core';
-import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
+import { Bullseye, Card, CardBody, Modal, ModalBody, ModalHeader } from '@patternfly/react-core';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { debounceTime } from 'rxjs';
@@ -163,14 +162,9 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
         </Card>
         <></>
       </BreadcrumbPage>
-      <Modal
-        appendTo={portalRoot()}
-        isOpen={createTargetModalOpen}
-        variant={ModalVariant.large}
-        title="Create Custom Target"
-        onClose={closeCreateTargetModal}
-      >
-        {createTargetModalOpen ? <CreateTarget onClose={closeCreateTargetModal} /> : null}
+      <Modal appendTo={portalRoot()} isOpen={createTargetModalOpen} variant="large" onClose={closeCreateTargetModal}>
+        <ModalHeader title="Create Custom Target" />
+        <ModalBody>{createTargetModalOpen ? <CreateTarget onClose={closeCreateTargetModal} /> : null}</ModalBody>
       </Modal>
     </>
   );

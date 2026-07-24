@@ -26,8 +26,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
 import { Content } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
-import { cleanup, screen, within, act, waitFor } from '@testing-library/react';
-import * as tlr from '@testing-library/react';
+import { cleanup, screen, within, waitFor } from '@testing-library/react';
 import { of } from 'rxjs';
 import { basePreloadedState, DEFAULT_DIMENSIONS, render, resize, testT } from '../utils';
 
@@ -101,9 +100,7 @@ describe('<ThreadDumpsTable />', () => {
   let preloadedState: RootState;
 
   beforeAll(async () => {
-    await act(async () => {
-      resize(2400, 1080);
-    });
+    resize(2400, 1080);
   });
 
   beforeEach(() => {
@@ -316,10 +313,8 @@ describe('<ThreadDumpsTable />', () => {
       preloadedState: preloadedState,
     });
 
-    await tlr.act(async () => {
-      await user.click(screen.getByLabelText(testT('ThreadDumpActions.ARIA_LABELS.MENU_TOGGLE')));
-      await user.click(screen.getByText('Download Thread Dump'));
-    });
+    await user.click(screen.getByLabelText(testT('ThreadDumpActions.ARIA_LABELS.MENU_TOGGLE')));
+    await user.click(await screen.findByText('Download Thread Dump'));
 
     const downloadRequestSpy = jest.spyOn(defaultServices.api, 'downloadThreadDump');
 
@@ -347,10 +342,8 @@ describe('<ThreadDumpsTable />', () => {
       preloadedState: preloadedState,
     });
 
-    await tlr.act(async () => {
-      await user.click(screen.getByLabelText(testT('ThreadDumpActions.ARIA_LABELS.MENU_TOGGLE')));
-      await user.click(screen.getByText('Analyze Thread Dump'));
-    });
+    await user.click(screen.getByLabelText(testT('ThreadDumpActions.ARIA_LABELS.MENU_TOGGLE')));
+    await user.click(await screen.findByText('Analyze Thread Dump'));
 
     const state = {
       jvmId: mockTarget.jvmId,

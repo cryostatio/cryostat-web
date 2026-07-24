@@ -31,12 +31,14 @@ import {
   FormSection,
   HelperText,
   HelperTextItem,
+  Modal,
+  ModalBody,
+  ModalHeader,
   TextInput,
   Title,
   TitleSizes,
   ValidatedOptions,
 } from '@patternfly/react-core';
-import { Modal } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DEFAULT_DASHBOARD_NAME } from './const';
@@ -212,13 +214,14 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
       width={isCreateModal ? '80%' : '40%'}
       appendTo={portalRoot()}
       isOpen={props.visible}
-      showClose={false}
-      header={header}
     >
-      <Form onSubmit={(e) => e.preventDefault()}>
-        {formGroup}
-        {actionGroup}
-      </Form>
+      <ModalHeader>{header}</ModalHeader>
+      <ModalBody>
+        <Form onSubmit={(e) => e.preventDefault()}>
+          {formGroup}
+          {actionGroup}
+        </Form>
+      </ModalBody>
     </Modal>
   );
 };

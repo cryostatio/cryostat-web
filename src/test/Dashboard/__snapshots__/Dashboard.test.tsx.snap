@@ -428,7 +428,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <path
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="fill: none; stroke: var(--pf-v6-chart-theme--blue--ColorScale--100, #0066cc); pointer-events: stroke; width: 42px; opacity: 1; stroke-width: 2;"
+                                  style="fill: none; stroke: var(--pf-v6-chart-theme--blue--ColorScale--100, #0066cc); pointer-events: stroke; opacity: 1; stroke-width: 2; width: 42px;"
                                 />
                               </g>
                             </g>

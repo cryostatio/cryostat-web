@@ -16,8 +16,17 @@
 import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
-import { Bullseye, Button, ClipboardCopy, Spinner, Split, SplitItem } from '@patternfly/react-core';
-import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
+import {
+  Bullseye,
+  Button,
+  ClipboardCopy,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  Spinner,
+  Split,
+  SplitItem,
+} from '@patternfly/react-core';
 import { TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { MatchExpressionVisualizer } from './MatchExpressionVisualizer';
@@ -50,19 +59,17 @@ export const MatchExpressionDisplay: React.FC<MatchExpressionDisplayProps> = ({ 
     <Split hasGutter>
       <SplitItem>
         <Button icon={<TopologyIcon />} variant="plain" onClick={handleClick} />
-        <Modal
-          variant={ModalVariant.medium}
-          title={t('MATCH_EXPRESSION_VISUALIZER.TITLE')}
-          isOpen={showModal}
-          onClose={handleClose}
-        >
-          {loading ? (
-            <Bullseye>
-              <Spinner />
-            </Bullseye>
-          ) : (
-            <MatchExpressionVisualizer defaultGraphView={false} />
-          )}
+        <Modal variant="medium" isOpen={showModal} onClose={handleClose}>
+          <ModalHeader title={t('MATCH_EXPRESSION_VISUALIZER.TITLE')} />
+          <ModalBody>
+            {loading ? (
+              <Bullseye>
+                <Spinner />
+              </Bullseye>
+            ) : (
+              <MatchExpressionVisualizer defaultGraphView={false} />
+            )}
+          </ModalBody>
         </Modal>
       </SplitItem>
       <SplitItem isFilled>

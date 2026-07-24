@@ -18,8 +18,7 @@ import { NullableTarget, Target } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { toPath } from '@app/utils/utils';
-import { Content } from '@patternfly/react-core';
-import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
+import { Content, Modal, ModalBody, ModalHeader } from '@patternfly/react-core';
 import * as React from 'react';
 import { Observable, filter, first, map, mergeMap } from 'rxjs';
 import { CredentialAuthForm } from './CredentialAuthForm';
@@ -61,24 +60,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onProps
   );
 
   return (
-    <Modal
-      isOpen={visible}
-      variant={ModalVariant.large}
-      showClose={!loading}
-      onClose={onDismiss}
-      title="Authentication Required"
-      description={
-        <Content component="p">
-          This Target JVM requires authentication. The credentials you provide here will be passed from Cryostat to the
-          target when establishing JMX connections. Enter credentials specific to this target, or go to{' '}
-          <CryostatLink onClick={onDismiss} to={toPath('/security')}>
-            Security
-          </CryostatLink>{' '}
-          to add a credential matching multiple targets.
-        </Content>
-      }
-    >
-      <CredentialAuthForm onSave={onSave} onDismiss={onDismiss} focus={true} loading={loading} />
+    <Modal isOpen={visible} variant="large" onClose={!loading ? onDismiss : undefined}>
+      <ModalHeader
+        title="Authentication Required"
+        description={
+          <Content component="p">
+            This Target JVM requires authentication. The credentials you provide here will be passed from Cryostat to
+            the target when establishing JMX connections. Enter credentials specific to this target, or go to{' '}
+            <CryostatLink onClick={onDismiss} to={toPath('/security')}>
+              Security
+            </CryostatLink>{' '}
+            to add a credential matching multiple targets.
+          </Content>
+        }
+      />
+      <ModalBody>
+        <CredentialAuthForm onSave={onSave} onDismiss={onDismiss} focus={true} loading={loading} />
+      </ModalBody>
     </Modal>
   );
 };

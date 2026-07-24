@@ -15,8 +15,7 @@
  */
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { portalRoot } from '@app/utils/utils';
-import { Button, Checkbox, Stack, Split } from '@patternfly/react-core';
-import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
+import { Button, Checkbox, Modal, ModalBody, ModalFooter, ModalHeader, Stack, Split } from '@patternfly/react-core';
 import * as React from 'react';
 import { useState } from 'react';
 import { DeleteOrDisableWarningType } from './types';
@@ -65,15 +64,25 @@ export const DeleteWarningModal: React.FC<DeleteWarningProps> = ({
   return (
     <Modal
       appendTo={portalRoot()}
-      title={`${realWarningType?.title}`}
-      description={realWarningType?.description}
       aria-label={realWarningType?.ariaLabel}
-      titleIconVariant="warning"
-      variant={ModalVariant.medium}
+      variant="medium"
       isOpen={visible}
-      showClose
       onClose={onInnerClose}
-      actions={[
+    >
+      <ModalHeader
+        title={`${realWarningType?.title}`}
+        description={realWarningType?.description}
+        titleIconVariant="warning"
+      />
+      <ModalBody>
+        <Checkbox
+          id="do-not-ask-enabled"
+          label="Don't ask me again"
+          isChecked={doNotAsk}
+          onChange={(_event, val) => setDoNotAsk(val)}
+        />
+      </ModalBody>
+      <ModalFooter>
         <Stack hasGutter key="modal-footer-stack">
           <Split key="modal-footer-split">
             <Button variant="danger" onClick={onAcceptClose}>
@@ -83,15 +92,8 @@ export const DeleteWarningModal: React.FC<DeleteWarningProps> = ({
               Cancel
             </Button>
           </Split>
-        </Stack>,
-      ]}
-    >
-      <Checkbox
-        id="do-not-ask-enabled"
-        label="Don't ask me again"
-        isChecked={doNotAsk}
-        onChange={(_event, val) => setDoNotAsk(val)}
-      />
+        </Stack>
+      </ModalFooter>
     </Modal>
   );
 };

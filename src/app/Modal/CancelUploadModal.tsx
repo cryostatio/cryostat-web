@@ -15,8 +15,7 @@
  */
 
 import { portalRoot } from '@app/utils/utils';
-import { Button } from '@patternfly/react-core';
-import { Modal } from '@patternfly/react-core/deprecated';
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from '@patternfly/react-core';
 import * as React from 'react';
 
 export interface CancelUploadModalProps {
@@ -29,23 +28,17 @@ export interface CancelUploadModalProps {
 
 export const CancelUploadModal: React.FC<CancelUploadModalProps> = ({ visible, onYes, onNo, title, message }) => {
   return (
-    <Modal
-      appendTo={portalRoot()}
-      width={'40%'}
-      isOpen={visible}
-      showClose={true}
-      onClose={onNo}
-      title={title}
-      actions={[
+    <Modal appendTo={portalRoot()} width={'40%'} isOpen={visible} onClose={onNo}>
+      <ModalHeader title={title} />
+      <ModalBody>{message}</ModalBody>
+      <ModalFooter>
         <Button key={'Yes'} variant="primary" onClick={onYes}>
           Yes
-        </Button>,
+        </Button>
         <Button key={'No'} variant="secondary" onClick={onNo}>
           No
-        </Button>,
-      ]}
-    >
-      {message}
+        </Button>
+      </ModalFooter>
     </Modal>
   );
 };

@@ -73,7 +73,7 @@ import {
   MenuToggle,
   MenuToggleElement,
 } from '@patternfly/react-core';
-import { Modal } from '@patternfly/react-core/deprecated';
+import { Modal } from '@patternfly/react-core';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { TFunction } from 'i18next';
 import { nanoid } from 'nanoid';
@@ -217,8 +217,6 @@ export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
         isOpen={showWizard}
         width={'90%'}
         className="card-catalog__wizard-modal"
-        hasNoBodyWrapper
-        showClose={false}
         appendTo={portalRoot()}
       >
         <Wizard

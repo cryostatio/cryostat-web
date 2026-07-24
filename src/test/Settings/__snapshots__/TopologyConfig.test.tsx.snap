@@ -78,7 +78,7 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
                       </svg>
                     </span>
                     <input
-                      aria-label="Available search input"
+                      aria-label="Search available options"
                       class="pf-v6-c-text-input-group__text-input"
                       type="text"
                       value=""
@@ -93,9 +93,9 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
           >
             <div
               class="pf-v6-c-dual-list-selector__status-text"
-              id="pf-random-id-0-available-pane-status"
+              id="topology-config-available-pane-status"
             >
-              0 of 3 items selected
+              0 of 3 options selected
             </div>
           </div>
           <div
@@ -104,7 +104,7 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
           >
             <ul
               aria-activedescendant=""
-              aria-labelledby="pf-random-id-0-available-pane-status"
+              aria-labelledby="topology-config-available-pane-status"
               aria-multiselectable="true"
               class="pf-v6-c-dual-list-selector__list"
               role="tree"
@@ -152,6 +152,7 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
                         class="pf-v6-c-dual-list-selector__item-check"
                       >
                         <input
+                          aria-label="Select biased_locking"
                           tabindex="-1"
                           type="checkbox"
                         />
@@ -165,7 +166,7 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
                         class="pf-v6-c-dual-list-selector__item-count"
                       >
                         <span
-                          class="pf-v6-c-badge pf-m-unread"
+                          class="pf-v6-c-badge pf-m-read"
                         >
                           1
                         </span>
@@ -197,6 +198,7 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
                             class="pf-v6-c-dual-list-selector__item-check"
                           >
                             <input
+                              aria-label="Select Biased Locking Revocation"
                               tabindex="-1"
                               type="checkbox"
                             />
@@ -255,6 +257,7 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
                         class="pf-v6-c-dual-list-selector__item-check"
                       >
                         <input
+                          aria-label="Select vm_operations"
                           tabindex="-1"
                           type="checkbox"
                         />
@@ -268,7 +271,7 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
                         class="pf-v6-c-dual-list-selector__item-count"
                       >
                         <span
-                          class="pf-v6-c-badge pf-m-unread"
+                          class="pf-v6-c-badge pf-m-read"
                         >
                           2
                         </span>
@@ -300,6 +303,7 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
                             class="pf-v6-c-dual-list-selector__item-check"
                           >
                             <input
+                              aria-label="Select Biased Locking Revocation Pauses"
                               tabindex="-1"
                               type="checkbox"
                             />
@@ -333,6 +337,7 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
                             class="pf-v6-c-dual-list-selector__item-check"
                           >
                             <input
+                              aria-label="Select VMOperation Peak Duration"
                               tabindex="-1"
                               type="checkbox"
                             />
@@ -352,7 +357,7 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
           </div>
         </div>
         <div
-          aria-label="Selector controls"
+          aria-label="Controls for moving options between lists"
           class="pf-v6-c-dual-list-selector__controls"
           role="group"
           tabindex="0"
@@ -372,7 +377,7 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
               type="button"
             >
               <span
-                class="pf-v6-c-button__text"
+                class="pf-v6-c-button__icon"
               >
                 <svg
                   aria-hidden="true"
@@ -404,7 +409,7 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
               type="button"
             >
               <span
-                class="pf-v6-c-button__text"
+                class="pf-v6-c-button__icon"
               >
                 <svg
                   aria-hidden="true"
@@ -437,7 +442,7 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
               type="button"
             >
               <span
-                class="pf-v6-c-button__text"
+                class="pf-v6-c-button__icon"
               >
                 <svg
                   aria-hidden="true"
@@ -470,7 +475,7 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
               type="button"
             >
               <span
-                class="pf-v6-c-button__text"
+                class="pf-v6-c-button__icon"
               >
                 <svg
                   aria-hidden="true"
@@ -538,7 +543,7 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
                       </svg>
                     </span>
                     <input
-                      aria-label="Chosen search input"
+                      aria-label="Search chosen options"
                       class="pf-v6-c-text-input-group__text-input"
                       type="text"
                       value=""
@@ -553,9 +558,9 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
           >
             <div
               class="pf-v6-c-dual-list-selector__status-text"
-              id="pf-random-id-0-chosen-pane-status"
+              id="topology-config-chosen-pane-status"
             >
-              0 of 0 items selected
+              0 of 0 options selected
             </div>
           </div>
           <div
