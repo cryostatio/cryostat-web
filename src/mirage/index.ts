@@ -1068,7 +1068,14 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       // ── Thread dump in-memory state ────────────────────────────────────────────
       const threadDumpsList: Record<
         string,
-        Array<{ threadDumpId: string; jvmId: string; downloadUrl: string; size: number; lastModified: number; metadata: { labels: any[] } }>
+        Array<{
+          threadDumpId: string;
+          jvmId: string;
+          downloadUrl: string;
+          size: number;
+          lastModified: number;
+          metadata: { labels: any[] };
+        }>
       > = {};
 
       this.post('api/beta/diagnostics/targets/:targetId/threaddump', (_schema, request) => {
@@ -1104,35 +1111,29 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       });
 
       this.get('api/beta/diagnostics/targets/:targetId/threaddump/:threadDumpId', (_schema, request) => {
-        return new Response(
-          303,
-          { Location: `data:text/plain,mock-thread-dump-${request.params.threadDumpId}` },
-        );
+        return new Response(303, { Location: `data:text/plain,mock-thread-dump-${request.params.threadDumpId}` });
       });
 
-      this.post(
-        'api/beta/diagnostics/targets/:targetId/threaddump/:threadDumpId/analyze',
-        (_schema, _request) => {
-          return new Response(
-            200,
-            {},
-            {
-              aggregateThreadStates: [
-                { data: 'RUNNABLE', count: 3 },
-                { data: 'TIMED_WAITING', count: 2 },
-              ],
-              aggregateLockInfo: [],
-              aggregateStackTraces: [],
-              runningMethods: [],
-              deadlockInfos: [],
-              threads: [],
-              specificFindings: [],
-              jniInfo: {},
-              jvmInfo: 'Mock JVM Info',
-            },
-          );
-        },
-      );
+      this.post('api/beta/diagnostics/targets/:targetId/threaddump/:threadDumpId/analyze', (_schema, _request) => {
+        return new Response(
+          200,
+          {},
+          {
+            aggregateThreadStates: [
+              { data: 'RUNNABLE', count: 3 },
+              { data: 'TIMED_WAITING', count: 2 },
+            ],
+            aggregateLockInfo: [],
+            aggregateStackTraces: [],
+            runningMethods: [],
+            deadlockInfos: [],
+            threads: [],
+            specificFindings: [],
+            jniInfo: {},
+            jvmInfo: 'Mock JVM Info',
+          },
+        );
+      });
 
       this.del('api/beta/diagnostics/targets/:targetId/threaddump/:threadDumpId', (_schema, request) => {
         const { targetId, threadDumpId } = request.params;
@@ -1149,7 +1150,12 @@ export const startMirage = ({ environment = 'development' } = {}) => {
                 },
                 message: {
                   jvmId: removed.jvmId,
-                  threadDump: { jvmId: removed.jvmId, threadDumpId, size: removed.size, lastModified: removed.lastModified },
+                  threadDump: {
+                    jvmId: removed.jvmId,
+                    threadDumpId,
+                    size: removed.size,
+                    lastModified: removed.lastModified,
+                  },
                 },
               }),
             );
@@ -1195,7 +1201,14 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       // ── Heap dump in-memory state ──────────────────────────────────────────────
       const heapDumpsList: Record<
         string,
-        Array<{ heapDumpId: string; jvmId: string; downloadUrl: string; size: number; lastModified: number; metadata: { labels: any[] } }>
+        Array<{
+          heapDumpId: string;
+          jvmId: string;
+          downloadUrl: string;
+          size: number;
+          lastModified: number;
+          metadata: { labels: any[] };
+        }>
       > = {};
 
       this.post('api/beta/diagnostics/targets/:targetId/heapdump', (_schema, request) => {
@@ -1231,10 +1244,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       });
 
       this.get('api/beta/diagnostics/targets/:targetId/heapdump/:heapDumpId', (_schema, request) => {
-        return new Response(
-          303,
-          { Location: `data:text/plain,mock-heap-dump-${request.params.heapDumpId}` },
-        );
+        return new Response(303, { Location: `data:text/plain,mock-heap-dump-${request.params.heapDumpId}` });
       });
 
       this.del('api/beta/diagnostics/targets/:targetId/heapdump/:heapDumpId', (_schema, request) => {
@@ -1252,7 +1262,12 @@ export const startMirage = ({ environment = 'development' } = {}) => {
                 },
                 message: {
                   jvmId: removed.jvmId,
-                  heapDump: { jvmId: removed.jvmId, heapDumpId, size: removed.size, lastModified: removed.lastModified },
+                  heapDump: {
+                    jvmId: removed.jvmId,
+                    heapDumpId,
+                    size: removed.size,
+                    lastModified: removed.lastModified,
+                  },
                 },
               }),
             );
