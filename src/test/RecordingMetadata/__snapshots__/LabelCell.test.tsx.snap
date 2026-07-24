@@ -8,7 +8,6 @@ exports[`<LabelCell /> renders correctly 1`] = `
     <div
       class="pf-v6-c-label-group__main"
     >
-      
       <ul
         aria-label="Label group category"
         class="pf-v6-c-label-group__list"

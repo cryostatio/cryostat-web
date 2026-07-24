@@ -18,7 +18,7 @@ import { DateTimeRange } from '@app/Recordings/Filters/DatetimeFilter';
 import { RecordingFiltersCategories } from '@app/Recordings/RecordingFilters';
 import dayjs from '@i18n/datetime';
 import { createAction, createReducer } from '@reduxjs/toolkit';
-import { WritableDraft } from 'immer/dist/internal';
+import { WritableDraft } from 'immer';
 import { getPersistedState } from '../utils';
 import { UpdateFilterOptions } from './Common';
 

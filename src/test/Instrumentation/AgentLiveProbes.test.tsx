@@ -24,7 +24,7 @@ import {
 } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
-import { act, cleanup, screen, within } from '@testing-library/react';
+import { cleanup, screen, within } from '@testing-library/react';
 import { of } from 'rxjs';
 import { render, testT } from '../utils';
 
@@ -182,27 +182,25 @@ describe('<AgentLiveProbes />', () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'removeProbes').mockReturnValue(of(true));
     const { user } = render({ routerConfigs: { routes: [{ path: '/events', element: <AgentLiveProbes /> }] } });
 
-    await act(async () => {
-      const removeButton = screen.getByText('Remove all probes');
-      expect(removeButton).toBeInTheDocument();
-      expect(removeButton).toBeVisible();
+    const removeButton = screen.getByText('Remove all probes');
+    expect(removeButton).toBeInTheDocument();
+    expect(removeButton).toBeVisible();
 
-      await user.click(removeButton);
+    await user.click(removeButton);
 
-      const warningModal = await screen.findByRole('dialog');
-      expect(warningModal).toBeInTheDocument();
-      expect(warningModal).toBeVisible();
+    const warningModal = await screen.findByRole('dialog');
+    expect(warningModal).toBeInTheDocument();
+    expect(warningModal).toBeVisible();
 
-      const modalTitle = within(warningModal).getByText(DeleteActiveProbes.title);
-      expect(modalTitle).toBeInTheDocument();
-      expect(modalTitle).toBeVisible();
+    const modalTitle = within(warningModal).getByText(DeleteActiveProbes.title);
+    expect(modalTitle).toBeInTheDocument();
+    expect(modalTitle).toBeVisible();
 
-      const confirmButton = within(warningModal).getByText('Delete');
-      expect(confirmButton).toBeInTheDocument();
-      expect(confirmButton).toBeVisible();
+    const confirmButton = within(warningModal).getByText('Delete');
+    expect(confirmButton).toBeInTheDocument();
+    expect(confirmButton).toBeVisible();
 
-      await user.click(confirmButton);
-    });
+    await user.click(confirmButton);
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
   });

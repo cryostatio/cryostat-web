@@ -35,6 +35,9 @@ import {
   GridItem,
   HelperText,
   HelperTextItem,
+  Modal,
+  ModalBody,
+  ModalHeader,
   Popover,
   Tab,
   Tabs,
@@ -43,7 +46,6 @@ import {
   TextArea,
   ValidatedOptions,
 } from '@patternfly/react-core';
-import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { FlaskIcon, HelpIcon, TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
@@ -80,43 +82,45 @@ export const CreateCredentialModal: React.FC<CreateCredentialModalProps> = ({
   return (
     <Modal
       isOpen={visible}
-      tabIndex={0} // enable keyboard-accessible scrolling
-      variant={ModalVariant.large}
+      variant="large"
       width="90vw"
-      showClose={!inProgress}
       className="add-credential-modal"
       appendTo={portalRoot()}
-      onClose={onDismiss}
-      title={t('CreateCredentialModal.MODAL_TITLE')}
-      description={t('CreateCredentialModal.MODAL_DESCRIPTION')}
+      onClose={!inProgress ? onDismiss : undefined}
     >
-      <SearchExprServiceContext.Provider value={matchExpreRef.current}>
-        <CredentialContext.Provider value={credentialRef.current}>
-          <TestPoolContext.Provider value={testPoolRef.current}>
-            <Grid hasGutter style={{ height: '100%' }}>
-              <GridItem xl={4}>
-                <Card isFullHeight>
-                  <CardBody className="overflow-auto">
-                    <AuthForm
-                      {...props}
-                      onDismiss={onDismiss}
-                      onPropsSave={onPropsSave}
-                      progressChange={setInProgress}
-                    />
-                  </CardBody>
-                </Card>
-              </GridItem>
-              <GridItem xl={8}>
-                <Card isFullHeight>
-                  <CardBody className="overflow-auto">
-                    <FormHelper />
-                  </CardBody>
-                </Card>
-              </GridItem>
-            </Grid>
-          </TestPoolContext.Provider>
-        </CredentialContext.Provider>
-      </SearchExprServiceContext.Provider>
+      <ModalHeader
+        title={t('CreateCredentialModal.MODAL_TITLE')}
+        description={t('CreateCredentialModal.MODAL_DESCRIPTION')}
+      />
+      <ModalBody tabIndex={0}>
+        <SearchExprServiceContext.Provider value={matchExpreRef.current}>
+          <CredentialContext.Provider value={credentialRef.current}>
+            <TestPoolContext.Provider value={testPoolRef.current}>
+              <Grid hasGutter style={{ height: '100%' }}>
+                <GridItem xl={4}>
+                  <Card isFullHeight>
+                    <CardBody className="overflow-auto">
+                      <AuthForm
+                        {...props}
+                        onDismiss={onDismiss}
+                        onPropsSave={onPropsSave}
+                        progressChange={setInProgress}
+                      />
+                    </CardBody>
+                  </Card>
+                </GridItem>
+                <GridItem xl={8}>
+                  <Card isFullHeight>
+                    <CardBody className="overflow-auto">
+                      <FormHelper />
+                    </CardBody>
+                  </Card>
+                </GridItem>
+              </Grid>
+            </TestPoolContext.Provider>
+          </CredentialContext.Provider>
+        </SearchExprServiceContext.Provider>
+      </ModalBody>
     </Modal>
   );
 };

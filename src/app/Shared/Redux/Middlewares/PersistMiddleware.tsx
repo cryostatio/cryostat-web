@@ -34,28 +34,30 @@ export const persistMiddleware: Middleware<{}, RootState> =
     const result = next(action);
     // Extract new state here
     const rootState = getState();
-    if (ArchiveFilterActions.has(action.type)) {
+    const actionType = (action as { type: string }).type;
+    const actionSet = (s: Set<string>) => s.has(actionType);
+    if (actionSet(ArchiveFilterActions as Set<string>)) {
       saveToLocalStorage('ARCHIVE_FILTERS', rootState.archiveFilters);
-    } else if (AutomatedAnalysisFilterActions.has(action.type)) {
+    } else if (actionSet(AutomatedAnalysisFilterActions as Set<string>)) {
       saveToLocalStorage('AUTOMATED_ANALYSIS_FILTERS', rootState.automatedAnalysisFilters);
-    } else if (RecordingFilterActions.has(action.type)) {
+    } else if (actionSet(RecordingFilterActions as Set<string>)) {
       saveToLocalStorage('TARGET_RECORDING_FILTERS', rootState.recordingFilters);
-    } else if (HeapDumpFilterActions.has(action.type)) {
+    } else if (actionSet(HeapDumpFilterActions as Set<string>)) {
       saveToLocalStorage('TARGET_HEAP_DUMP_FILTERS', rootState.heapDumpFilters);
-    } else if (ThreadDumpFilterActions.has(action.type)) {
+    } else if (actionSet(ThreadDumpFilterActions as Set<string>)) {
       saveToLocalStorage('TARGET_THREAD_DUMP_FILTERS', rootState.threadDumpFilters);
-    } else if (NavMenuConfigActions.has(action.type)) {
+    } else if (actionSet(NavMenuConfigActions as Set<string>)) {
       saveToLocalStorage('NAV_MENU_CFG', rootState.navMenuConfigs);
-    } else if (DashboardConfigActions.has(action.type)) {
+    } else if (actionSet(DashboardConfigActions as Set<string>)) {
       saveToLocalStorage('DASHBOARD_CFG', rootState.dashboardConfigs);
-    } else if (TopologyConfigActions.has(action.type)) {
+    } else if (actionSet(TopologyConfigActions as Set<string>)) {
       saveToLocalStorage('TOPOLOGY_CONFIG', rootState.topologyConfigs);
-    } else if (TopologyFilterActions.has(action.type)) {
+    } else if (actionSet(TopologyFilterActions as Set<string>)) {
       saveToLocalStorage('TOPOLOGY_FILTERS', rootState.topologyFilters);
-    } else if (ModalPrefillActions.has(action.type)) {
+    } else if (actionSet(ModalPrefillActions as Set<string>)) {
       // Intentionally not persisted — transient state for modal open/prefill
     } else {
-      console.warn(`Action ${action.type} does not persist state.`);
+      console.warn(`Action ${actionType} does not persist state.`);
     }
     return result;
   };
