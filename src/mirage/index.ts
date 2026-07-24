@@ -1006,20 +1006,22 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           }
           case 'AllTargetsHeapDumps':
           case 'HeapDumpCountForTarget':
-          case 'HeapDumpsForTarget':
+          case 'HeapDumpsForTarget': {
+            const targetId = target?.id?.toString() ?? '1';
+            const hdumps = heapDumpsList[targetId] ?? [];
             data = {
               targetNodes: [
                 {
                   target: {
-                    id: 1,
+                    id: target?.id ?? 1,
                     agent: true,
-                    alias: 'Fake Target',
-                    connectUrl: 'http://fake-target.local:1234',
-                    jvmId: '1234',
+                    alias: target?.alias ?? 'Fake Target',
+                    connectUrl: target?.connectUrl ?? 'http://fake-target.local:1234',
+                    jvmId: target?.jvmId ?? '1234',
                     heapDumps: {
-                      data: [],
+                      data: hdumps,
                       aggregate: {
-                        count: 0,
+                        count: hdumps.length,
                       },
                     },
                   },
@@ -1027,27 +1029,31 @@ export const startMirage = ({ environment = 'development' } = {}) => {
               ],
             };
             break;
+          }
           case 'AllTargetsThreadDumps':
           case 'ThreadDumpCountForTarget':
-          case 'ThreadDumpsForTarget':
+          case 'ThreadDumpsForTarget': {
+            const targetId = target?.id?.toString() ?? '1';
+            const tdumps = threadDumpsList[targetId] ?? [];
             data = {
               targetNodes: [
                 {
                   target: {
-                    id: 1,
+                    id: target?.id ?? 1,
                     agent: true,
-                    alias: 'Fake Target',
-                    connectUrl: 'http://fake-target.local:1234',
-                    jvmId: '1234',
+                    alias: target?.alias ?? 'Fake Target',
+                    connectUrl: target?.connectUrl ?? 'http://fake-target.local:1234',
+                    jvmId: target?.jvmId ?? '1234',
                     threadDumps: {
-                      data: [],
-                      aggregate: { count: 0 },
+                      data: tdumps,
+                      aggregate: { count: tdumps.length },
                     },
                   },
                 },
               ],
             };
             break;
+          }
           default: {
             const msg = `${JSON.stringify(request.url)} (query: '${name}') currently unsupported in demo`;
             console.error(msg);
@@ -1059,20 +1065,396 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       this.get('api/v4/tls/certs', () => {
         return new Response(200, {}, ['/truststore/additional-app.crt']);
       });
-      this.get('api/beta/diagnostics/fs/threaddumps', () => []);
-      this.get('api/beta/diagnostics/targets/:jvmId/threaddump/:threadDumpId', () => []);
-      this.get('api/beta/diagnostics/fs/heapdumps', () => []);
-      this.get('api/beta/diagnostics/targets/:targetId/threaddump', () => []);
-      this.get('api/beta/diagnostics/targets/:targetId/heapdump', () => []);
-      this.post('api/beta/diagnostics/targets/:targetId/threaddump', () => {
-        return new Response(400, {}, 'Unsupported in Demo');
+      // ── Thread dump in-memory state ────────────────────────────────────────────
+      const threadDumpsList: Record<
+        string,
+        Array<{
+          threadDumpId: string;
+          jvmId: string;
+          downloadUrl: string;
+          size: number;
+          lastModified: number;
+          metadata: { labels: any[] };
+        }>
+      > = {};
+
+      this.post('api/beta/diagnostics/targets/:targetId/threaddump', (_schema, request) => {
+        const { targetId } = request.params;
+        const jvmId = '1234';
+        const threadDumpId = `threaddump-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+        const entry = {
+          threadDumpId,
+          jvmId,
+          downloadUrl: `api/beta/diagnostics/targets/${targetId}/threaddump/${threadDumpId}`,
+          size: Math.floor(Math.random() * 128 * 1024) + 1024,
+          lastModified: Math.floor(Date.now() / 1000),
+          metadata: { labels: [] },
+        };
+        if (!threadDumpsList[targetId]) {
+          threadDumpsList[targetId] = [];
+        }
+        threadDumpsList[targetId].push(entry);
+        websocket.send(
+          JSON.stringify({
+            meta: {
+              category: 'ThreadDumpSuccess',
+              type: { type: 'application', subType: 'json' },
+            },
+            message: { jvmId, threadDump: entry },
+          }),
+        );
+        return new Response(200, {}, entry);
       });
-      this.post('api/beta/diagnostics/targets/:targetId/heapdump', () => {
-        return new Response(400, {}, 'Unsupported in Demo');
+
+      this.get('api/beta/diagnostics/targets/:targetId/threaddump', (_schema, request) => {
+        return new Response(200, {}, threadDumpsList[request.params.targetId] ?? []);
       });
+
+      this.get('api/beta/diagnostics/targets/:targetId/threaddump/:threadDumpId', (_schema, request) => {
+        return new Response(303, { Location: `data:text/plain,mock-thread-dump-${request.params.threadDumpId}` });
+      });
+
+      this.post('api/beta/diagnostics/targets/:targetId/threaddump/:threadDumpId/analyze', (_schema, _request) => {
+        return new Response(
+          200,
+          {},
+          {
+            aggregateThreadStates: [
+              { data: 'RUNNABLE', count: 3 },
+              { data: 'TIMED_WAITING', count: 2 },
+            ],
+            aggregateLockInfo: [],
+            aggregateStackTraces: [],
+            runningMethods: [],
+            deadlockInfos: [],
+            threads: [],
+            specificFindings: [],
+            jniInfo: {},
+            jvmInfo: 'Mock JVM Info',
+          },
+        );
+      });
+
+      this.del('api/beta/diagnostics/targets/:targetId/threaddump/:threadDumpId', (_schema, request) => {
+        const { targetId, threadDumpId } = request.params;
+        const list = threadDumpsList[targetId];
+        if (list) {
+          const idx = list.findIndex((e) => e.threadDumpId === threadDumpId);
+          if (idx !== -1) {
+            const removed = list.splice(idx, 1)[0];
+            websocket.send(
+              JSON.stringify({
+                meta: {
+                  category: 'ThreadDumpDeleted',
+                  type: { type: 'application', subType: 'json' },
+                },
+                message: {
+                  jvmId: removed.jvmId,
+                  threadDump: {
+                    jvmId: removed.jvmId,
+                    threadDumpId,
+                    size: removed.size,
+                    lastModified: removed.lastModified,
+                  },
+                },
+              }),
+            );
+          }
+        }
+        return new Response(204);
+      });
+
+      this.get('api/beta/diagnostics/fs/threaddumps', () => {
+        const grouped: Array<{ jvmId: string; threadDumps: Array<{ threadDumpId: string; size: number }> }> = [];
+        for (const targetId of Object.keys(threadDumpsList)) {
+          const dumps = threadDumpsList[targetId];
+          if (dumps.length === 0) continue;
+          const jvmId = dumps[0].jvmId;
+          grouped.push({ jvmId, threadDumps: dumps.map(({ threadDumpId, size }) => ({ threadDumpId, size })) });
+        }
+        return new Response(200, {}, grouped);
+      });
+
+      this.del('api/beta/diagnostics/fs/threaddumps/:jvmId/:threadDumpId', (_schema, request) => {
+        const { jvmId, threadDumpId } = request.params;
+        for (const targetId of Object.keys(threadDumpsList)) {
+          const list = threadDumpsList[targetId];
+          const idx = list.findIndex((e) => e.threadDumpId === threadDumpId && e.jvmId === jvmId);
+          if (idx !== -1) {
+            list.splice(idx, 1);
+            websocket.send(
+              JSON.stringify({
+                meta: {
+                  category: 'ThreadDumpDeleted',
+                  type: { type: 'application', subType: 'json' },
+                },
+                message: { threadDumpId, jvmId },
+              }),
+            );
+            break;
+          }
+        }
+        return new Response(204);
+      });
+      // ── End thread dumps ────────────────────────────────────────────────────────
+
+      // ── Heap dump in-memory state ──────────────────────────────────────────────
+      const heapDumpsList: Record<
+        string,
+        Array<{
+          heapDumpId: string;
+          jvmId: string;
+          downloadUrl: string;
+          size: number;
+          lastModified: number;
+          metadata: { labels: any[] };
+        }>
+      > = {};
+
+      this.post('api/beta/diagnostics/targets/:targetId/heapdump', (_schema, request) => {
+        const { targetId } = request.params;
+        const jvmId = '1234';
+        const heapDumpId = `heapdump-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+        const entry = {
+          heapDumpId,
+          jvmId,
+          downloadUrl: `api/beta/diagnostics/targets/${targetId}/heapdump/${heapDumpId}`,
+          size: Math.floor(Math.random() * 50 * 1024 * 1024) + 1024 * 1024,
+          lastModified: Math.floor(Date.now() / 1000),
+          metadata: { labels: [] },
+        };
+        if (!heapDumpsList[targetId]) {
+          heapDumpsList[targetId] = [];
+        }
+        heapDumpsList[targetId].push(entry);
+        websocket.send(
+          JSON.stringify({
+            meta: {
+              category: 'HeapDumpSuccess',
+              type: { type: 'application', subType: 'json' },
+            },
+            message: { jvmId, heapDump: entry },
+          }),
+        );
+        return new Response(200, {}, entry);
+      });
+
+      this.get('api/beta/diagnostics/targets/:targetId/heapdump', (_schema, request) => {
+        return new Response(200, {}, heapDumpsList[request.params.targetId] ?? []);
+      });
+
+      this.get('api/beta/diagnostics/targets/:targetId/heapdump/:heapDumpId', (_schema, request) => {
+        return new Response(303, { Location: `data:text/plain,mock-heap-dump-${request.params.heapDumpId}` });
+      });
+
+      this.del('api/beta/diagnostics/targets/:targetId/heapdump/:heapDumpId', (_schema, request) => {
+        const { targetId, heapDumpId } = request.params;
+        const list = heapDumpsList[targetId];
+        if (list) {
+          const idx = list.findIndex((e) => e.heapDumpId === heapDumpId);
+          if (idx !== -1) {
+            const removed = list.splice(idx, 1)[0];
+            websocket.send(
+              JSON.stringify({
+                meta: {
+                  category: 'HeapDumpDeleted',
+                  type: { type: 'application', subType: 'json' },
+                },
+                message: {
+                  jvmId: removed.jvmId,
+                  heapDump: {
+                    jvmId: removed.jvmId,
+                    heapDumpId,
+                    size: removed.size,
+                    lastModified: removed.lastModified,
+                  },
+                },
+              }),
+            );
+          }
+        }
+        return new Response(204);
+      });
+
+      this.get('api/beta/diagnostics/fs/heapdumps', () => {
+        const grouped: Array<{ jvmId: string; heapDumps: Array<{ heapDumpId: string; size: number }> }> = [];
+        for (const targetId of Object.keys(heapDumpsList)) {
+          const dumps = heapDumpsList[targetId];
+          if (dumps.length === 0) continue;
+          const jvmId = dumps[0].jvmId;
+          grouped.push({ jvmId, heapDumps: dumps.map(({ heapDumpId, size }) => ({ heapDumpId, size })) });
+        }
+        return new Response(200, {}, grouped);
+      });
+
+      this.del('api/beta/diagnostics/fs/heapdumps/:jvmId/:heapDumpId', (_schema, request) => {
+        const { jvmId, heapDumpId } = request.params;
+        for (const targetId of Object.keys(heapDumpsList)) {
+          const list = heapDumpsList[targetId];
+          const idx = list.findIndex((e) => e.heapDumpId === heapDumpId && e.jvmId === jvmId);
+          if (idx !== -1) {
+            list.splice(idx, 1);
+            websocket.send(
+              JSON.stringify({
+                meta: {
+                  category: 'HeapDumpDeleted',
+                  type: { type: 'application', subType: 'json' },
+                },
+                message: { heapDumpId, jvmId },
+              }),
+            );
+            break;
+          }
+        }
+        return new Response(204);
+      });
+      // ── End heap dumps ─────────────────────────────────────────────────────────
       this.post('api/beta/diagnostics/targets/:targetId/gc', () => {
         return new Response(204);
       });
+
+      // ── GC logging in-memory state ─────────────────────────────────────────────
+      const gcLoggingState: Record<
+        string,
+        { enabled: boolean; logFilePath: string; what: string; decorators: string }
+      > = {};
+      const gcLogsList: Record<
+        string,
+        Array<{ gcLogId: string; jvmId: string; size: number; lastModified: number }>
+      > = {};
+
+      this.get('api/beta/diagnostics/targets/:targetId/gclogging', (_schema, request) => {
+        const state = gcLoggingState[request.params.targetId];
+        if (!state || !state.enabled) {
+          return new Response(200, {}, { enabled: false });
+        }
+        return new Response(
+          200,
+          {},
+          { enabled: true, logFilePath: state.logFilePath, what: state.what, decorators: state.decorators },
+        );
+      });
+
+      this.post('api/beta/diagnostics/targets/:targetId/gclogging', (_schema, request) => {
+        const { targetId } = request.params;
+        if (gcLoggingState[targetId]?.enabled) {
+          return new Response(409, {}, 'GC logging already active');
+        }
+        const what = (request.queryParams as Record<string, string>)['what'] || 'gc';
+        const decorators = (request.queryParams as Record<string, string>)['decorators'] || 'time,level';
+        gcLoggingState[targetId] = { enabled: true, logFilePath: '/tmp/gc.log', what, decorators };
+        return new Response(200, {}, { enabled: true, what, decorators });
+      });
+
+      this.patch('api/beta/diagnostics/targets/:targetId/gclogging', (_schema, request) => {
+        const { targetId } = request.params;
+        if (!gcLoggingState[targetId]?.enabled) {
+          return new Response(409, {}, 'GC logging not active');
+        }
+        const what = (request.queryParams as Record<string, string>)['what'] || gcLoggingState[targetId].what;
+        const decorators =
+          (request.queryParams as Record<string, string>)['decorators'] || gcLoggingState[targetId].decorators;
+        gcLoggingState[targetId] = { enabled: true, logFilePath: '/tmp/gc.log', what, decorators };
+        return new Response(200, {}, { enabled: true, what, decorators });
+      });
+
+      this.del('api/beta/diagnostics/targets/:targetId/gclogging', (_schema, request) => {
+        delete gcLoggingState[request.params.targetId];
+        return new Response(204);
+      });
+
+      this.post('api/beta/diagnostics/targets/:targetId/gclogging/pull', (_schema, request) => {
+        const { targetId } = request.params;
+        const jvmId = '1234';
+        const gcLogId = `gclog-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+        const entry = {
+          gcLogId,
+          jvmId,
+          size: Math.floor(Math.random() * 512 * 1024) + 1024,
+          lastModified: Math.floor(Date.now() / 1000),
+        };
+        if (!gcLogsList[targetId]) {
+          gcLogsList[targetId] = [];
+        }
+        gcLogsList[targetId].push(entry);
+        websocket.send(
+          JSON.stringify({
+            meta: {
+              category: 'GcLogUploaded',
+              type: { type: 'application', subType: 'json' },
+            },
+            message: { jvmId, gcLog: entry },
+          }),
+        );
+        return new Response(200, {}, entry);
+      });
+
+      this.get('api/beta/diagnostics/targets/:targetId/gclogs', (_schema, request) => {
+        return new Response(200, {}, gcLogsList[request.params.targetId] ?? []);
+      });
+
+      this.get('api/beta/diagnostics/targets/:targetId/gclogs/:gcLogId', (_schema, request) => {
+        return new Response(303, { Location: `data:text/plain,mock-gc-log-${request.params.gcLogId}` });
+      });
+
+      this.del('api/beta/diagnostics/targets/:targetId/gclogs/:gcLogId', (_schema, request) => {
+        const { targetId, gcLogId } = request.params;
+        const list = gcLogsList[targetId];
+        if (list) {
+          const idx = list.findIndex((e) => e.gcLogId === gcLogId);
+          if (idx !== -1) {
+            const removed = list.splice(idx, 1)[0];
+            websocket.send(
+              JSON.stringify({
+                meta: {
+                  category: 'GcLogDeleted',
+                  type: { type: 'application', subType: 'json' },
+                },
+                message: {
+                  jvmId: removed.jvmId,
+                  gcLog: { jvmId: removed.jvmId, gcLogId, size: removed.size, lastModified: removed.lastModified },
+                },
+              }),
+            );
+          }
+        }
+        return new Response(204);
+      });
+
+      this.get('api/beta/diagnostics/fs/gclogs', () => {
+        const grouped: Array<{ jvmId: string; gcLogs: Array<{ gcLogId: string; size: number }> }> = [];
+        for (const targetId of Object.keys(gcLogsList)) {
+          const logs = gcLogsList[targetId];
+          if (logs.length === 0) continue;
+          const jvmId = logs[0].jvmId;
+          grouped.push({ jvmId, gcLogs: logs.map(({ gcLogId, size }) => ({ gcLogId, size })) });
+        }
+        return new Response(200, {}, grouped);
+      });
+
+      this.del('api/beta/diagnostics/fs/gclogs/:jvmId/:gcLogId', (_schema, request) => {
+        const { jvmId, gcLogId } = request.params;
+        for (const targetId of Object.keys(gcLogsList)) {
+          const list = gcLogsList[targetId];
+          const idx = list.findIndex((e) => e.gcLogId === gcLogId && e.jvmId === jvmId);
+          if (idx !== -1) {
+            list.splice(idx, 1);
+            websocket.send(
+              JSON.stringify({
+                meta: {
+                  category: 'GcLogDeleted',
+                  type: { type: 'application', subType: 'json' },
+                },
+                message: { gcLogId, jvmId },
+              }),
+            );
+            break;
+          }
+        }
+        return new Response(204);
+      });
+      // ── End GC logging ─────────────────────────────────────────────────────────
+
       this.get('api/beta/targets/:targetId/smart_triggers', (schema) => schema.all(Resource.SMART_TRIGGER).models);
       this.delete('api/beta/targets/:targetId/smart_triggers/:uuid', (schema, request) => {
         const smartTriggerId = request.params.uuid;

@@ -118,6 +118,36 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               data-ouia-component-id="OUIA-Generated-Switch-2"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
+              for="DeleteGcLog"
+            >
+              <input
+                aria-labelledby="DeleteGcLog-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="DeleteGcLog"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="DeleteGcLog-label"
+              >
+                Delete GC Log
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
+          >
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-3"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
               for="DeleteActiveRecordings"
             >
               <input
@@ -145,7 +175,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-3"
+              data-ouia-component-id="OUIA-Generated-Switch-4"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="DeleteArchivedRecordings"
@@ -175,7 +205,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-4"
+              data-ouia-component-id="OUIA-Generated-Switch-5"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="DeleteAutomatedRules"
@@ -205,7 +235,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-5"
+              data-ouia-component-id="OUIA-Generated-Switch-6"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="DisableAutomatedRules"
@@ -235,7 +265,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-6"
+              data-ouia-component-id="OUIA-Generated-Switch-7"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="DeleteEventTemplates"
@@ -265,7 +295,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-7"
+              data-ouia-component-id="OUIA-Generated-Switch-8"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="DeleteProbeTemplates"
@@ -295,7 +325,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-8"
+              data-ouia-component-id="OUIA-Generated-Switch-9"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="DeleteAsyncProfile"
@@ -325,7 +355,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-9"
+              data-ouia-component-id="OUIA-Generated-Switch-10"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="DeleteHeapDump"
@@ -355,7 +385,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-10"
+              data-ouia-component-id="OUIA-Generated-Switch-11"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="DeleteThreadDump"
@@ -385,7 +415,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-11"
+              data-ouia-component-id="OUIA-Generated-Switch-12"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="DeleteActiveProbes"
@@ -415,7 +445,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-12"
+              data-ouia-component-id="OUIA-Generated-Switch-13"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="DeleteSmartTrigger"
@@ -445,7 +475,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-13"
+              data-ouia-component-id="OUIA-Generated-Switch-14"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="DeleteCredentials"
@@ -475,7 +505,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-14"
+              data-ouia-component-id="OUIA-Generated-Switch-15"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="DeleteCustomTargets"
@@ -505,7 +535,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-15"
+              data-ouia-component-id="OUIA-Generated-Switch-16"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="DeleteDashboardLayout"
@@ -535,7 +565,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-16"
+              data-ouia-component-id="OUIA-Generated-Switch-17"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="DeleteLayoutTemplate"
@@ -565,7 +595,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-17"
+              data-ouia-component-id="OUIA-Generated-Switch-18"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="ClearDashboardLayout"

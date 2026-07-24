@@ -28,6 +28,7 @@ import { AnalyzeHeapDumps } from './Diagnostics/AnalyzeHeapDumps';
 import AnalyzeThreadDumps from './Diagnostics/AnalyzeThreadDumps';
 import CaptureDiagnostics from './Diagnostics/CaptureDiagnostics';
 import Events from './Events/Events';
+import GcLogs from './GcLogs/GcLogs';
 import Instrumentation from './Instrumentation/Instrumentation';
 import NotFound from './NotFound/NotFound';
 import QuickStarts from './QuickStarts/QuickStartsCatalogPage';
@@ -234,6 +235,16 @@ const diagnosticsRoutes: IAppRoute[] = [
     description: 'Analyze Heap Dump Data',
     navGroup: DIAGNOSTICS,
     navSubgroup: ANALYZE,
+  },
+  {
+    component: GcLogs,
+    label: 'GC Log Archives',
+    path: toPath('/gc-logs'),
+    title: 'GC Log Archives',
+    description: 'Manage GC logging sessions and view collected GC log archives.',
+    navGroup: DIAGNOSTICS,
+    navSubgroup: ANALYZE,
+    featureLevel: FeatureLevel.BETA,
   },
 ];
 

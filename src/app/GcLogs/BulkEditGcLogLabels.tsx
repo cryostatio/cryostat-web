@@ -16,14 +16,7 @@
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
 import { includesLabel } from '@app/RecordingMetadata/utils';
 import { LoadingProps } from '@app/Shared/Components/types';
-import {
-  NotificationCategory,
-  Target,
-  KeyValue,
-  HeapDump,
-  NullableTarget,
-  HeapDumpDirectory,
-} from '@app/Shared/Services/api.types';
+import { NotificationCategory, Target, KeyValue, GcLog, NullableTarget } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode } from '@app/utils/utils';
@@ -42,23 +35,23 @@ import {
 import * as React from 'react';
 import { combineLatest, concatMap, filter, first, forkJoin, Observable, of } from 'rxjs';
 
-export interface BulkEditLabelsProps {
+export interface BulkEditGcLogLabelsProps {
   checkedIndices: number[];
   target: Observable<NullableTarget>;
-  directory?: HeapDumpDirectory;
-  directoryHeapDumps?: HeapDump[];
+  jvmId?: string;
+  directoryGcLogs?: GcLog[];
   closePanelFn?: () => void;
 }
 
-export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({
+export const BulkEditGcLogLabels: React.FC<BulkEditGcLogLabelsProps> = ({
   checkedIndices,
   target: propsTarget,
-  directory,
-  directoryHeapDumps,
+  jvmId,
+  directoryGcLogs,
   closePanelFn,
 }) => {
   const context = React.useContext(ServiceContext);
-  const [heapDumps, setHeapDumps] = React.useState<HeapDump[]>([]);
+  const [gcLogs, setGcLogs] = React.useState<GcLog[]>([]);
   const [commonLabels, setCommonLabels] = React.useState<KeyValue[]>([]);
   const [savedCommonLabels, setSavedCommonLabels] = React.useState<KeyValue[]>([]);
   const [valid, setValid] = React.useState(ValidatedOptions.default);
@@ -75,16 +68,16 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({
     const toDelete = savedCommonLabels.filter((label) => !includesLabel(commonLabels, label));
     addSubscription(
       propsTarget.pipe(filter((t) => !!t)).subscribe((t) => {
-        heapDumps.forEach((r: HeapDump) => {
-          const idx = hashCode(r.heapDumpId);
+        gcLogs.forEach((r: GcLog) => {
+          const idx = hashCode(r.gcLogId);
           if (checkedIndices.includes(idx)) {
             const updatedLabels = [...(r.metadata?.labels ?? []), ...commonLabels].filter(
               (label) => !includesLabel(toDelete, label),
             );
-            if (directory) {
-              tasks.push(context.api.postHeapDumpMetadataForJvmId(directory.jvmId, r.heapDumpId, updatedLabels));
+            if (jvmId) {
+              tasks.push(context.api.postGcLogMetadataForJvmId(jvmId, r.gcLogId, updatedLabels).pipe(first()));
             } else {
-              tasks.push(context.api.postHeapDumpMetadata(r.heapDumpId, updatedLabels, t).pipe(first()));
+              tasks.push(context.api.postGcLogMetadata(t as Target, r.gcLogId, updatedLabels).pipe(first()));
             }
           }
         });
@@ -101,11 +94,11 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({
     context.api,
     handlePostUpdate,
     propsTarget,
-    directory,
+    jvmId,
     commonLabels,
     savedCommonLabels,
     checkedIndices,
-    heapDumps,
+    gcLogs,
   ]);
 
   const handleCancel = React.useCallback(() => {
@@ -115,98 +108,89 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({
 
   const updateCommonLabels = React.useCallback(
     (setLabels: (l: KeyValue[]) => void) => {
-      const allHeapDumpLabels: KeyValue[][] = [];
+      const allGcLogLabels: KeyValue[][] = [];
 
-      heapDumps.forEach((r: HeapDump) => {
-        const idx = hashCode(r.heapDumpId);
+      gcLogs.forEach((r: GcLog) => {
+        const idx = hashCode(r.gcLogId);
         if (checkedIndices.includes(idx)) {
-          allHeapDumpLabels.push(r.metadata?.labels ?? []);
+          allGcLogLabels.push(r.metadata?.labels ?? []);
         }
       });
 
       const updatedCommonLabels =
-        allHeapDumpLabels.length > 0
-          ? allHeapDumpLabels.reduce(
-              (prev, curr) => prev.filter((label) => includesLabel(curr, label)),
-              allHeapDumpLabels[0],
-            )
+        allGcLogLabels.length > 0
+          ? allGcLogLabels.reduce((prev, curr) => prev.filter((label) => includesLabel(curr, label)), allGcLogLabels[0])
           : [];
 
       setLabels(updatedCommonLabels);
     },
-    [heapDumps, checkedIndices],
+    [gcLogs, checkedIndices],
   );
 
-  const refreshHeapDumpsList = React.useCallback(() => {
-    let observable: Observable<HeapDump[]>;
-    if (directory) {
-      observable = of(directoryHeapDumps ?? []);
+  const refreshGcLogsList = React.useCallback(() => {
+    let observable: Observable<GcLog[]>;
+    if (jvmId) {
+      observable = of(directoryGcLogs ?? []);
     } else {
       observable = propsTarget.pipe(
         filter((target) => !!target),
-        concatMap((target: Target) => {
-          return context.api.getTargetHeapDumps(target);
-        }),
+        concatMap((target: Target) => context.api.getGcLogs(target)),
         first(),
       );
     }
-    addSubscription(
-      observable.subscribe((value) => {
-        setHeapDumps(value);
-      }),
-    );
-  }, [addSubscription, propsTarget, directory, directoryHeapDumps, context.api]);
+    addSubscription(observable.subscribe((value) => setGcLogs(value)));
+  }, [addSubscription, propsTarget, jvmId, directoryGcLogs, context.api]);
 
   const saveButtonLoadingProps = React.useMemo(
     () =>
       ({
         spinnerAriaValueText: 'Saving',
-        spinnerAriaLabel: 'saving-heap-dump-labels',
+        spinnerAriaLabel: 'saving-gc-log-labels',
         isLoading: loading,
       }) as LoadingProps,
     [loading],
   );
 
   React.useEffect(() => {
-    addSubscription(propsTarget.subscribe(refreshHeapDumpsList));
-  }, [addSubscription, context, propsTarget, refreshHeapDumpsList]);
+    addSubscription(propsTarget.subscribe(refreshGcLogsList));
+  }, [addSubscription, propsTarget, refreshGcLogsList]);
 
-  // Depends only on HeapDumpMetadataUpdated notifications
-  // since updates on list of heap dumps will mount a completely new BulkEditLabels.
+  // Depends only on GcLogMetadataUpdated notifications
+  // since updates on list of gc logs will mount a completely new BulkEditGcLogLabels.
   React.useEffect(() => {
     addSubscription(
       combineLatest([
         propsTarget,
-        context.notificationChannel.messages(NotificationCategory.HeapDumpMetadataUpdated),
+        context.notificationChannel.messages(NotificationCategory.GcLogMetadataUpdated),
       ]).subscribe((parts) => {
         const currentTarget = parts[0];
         const event = parts[1];
 
         const isMatch =
-          currentTarget?.jvmId === event.message.jvmId || currentTarget?.jvmId === event.message.heapDump.jvmId;
+          currentTarget?.jvmId === event.message.jvmId || currentTarget?.jvmId === event.message.gcLog.jvmId;
 
-        setHeapDumps((oldHeapDumps) => {
-          return oldHeapDumps.map((heapDump) => {
-            if (isMatch && heapDump.heapDumpId === event.message.heapDump.heapDumpId) {
-              const updatedHeapDump = {
-                ...heapDump,
+        setGcLogs((oldGcLogs) => {
+          return oldGcLogs.map((gcLog) => {
+            if (isMatch && gcLog.gcLogId === event.message.gcLog.gcLogId) {
+              const updatedGcLog = {
+                ...gcLog,
                 metadata: {
-                  labels: event.message.heapDump.metadata?.labels ?? [],
+                  labels: event.message.gcLog.metadata?.labels ?? [],
                 },
               };
-              return updatedHeapDump;
+              return updatedGcLog;
             }
-            return heapDump;
+            return gcLog;
           });
         });
       }),
     );
-  }, [addSubscription, propsTarget, context.notificationChannel, setHeapDumps]);
+  }, [addSubscription, propsTarget, context.notificationChannel, setGcLogs]);
 
   React.useEffect(() => {
     updateCommonLabels(setCommonLabels);
     updateCommonLabels(setSavedCommonLabels);
-  }, [heapDumps, setCommonLabels, setSavedCommonLabels, updateCommonLabels]);
+  }, [gcLogs, setCommonLabels, setSavedCommonLabels, updateCommonLabels]);
 
   return (
     <>
@@ -217,8 +201,8 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({
         <StackItem>
           <HelperText>
             <HelperTextItem>
-              Labels present on all selected Heap Dumps will appear here. Editing the labels will affect all selected
-              Heap Dumps. Specify labels with format <Label isCompact>key=value</Label>.
+              Labels present on all selected GC Logs will appear here. Editing the labels will affect all selected GC
+              Logs. Specify labels with format <Label isCompact>key=value</Label>.
             </HelperTextItem>
           </HelperText>
         </StackItem>

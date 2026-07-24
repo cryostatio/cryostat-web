@@ -15,12 +15,10 @@
  */
 
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
-import { allowedHeapDumpFilters } from '@app/Shared/Redux/Filters/HeapDumpFilterSlice';
-import { HeapDumpUpdateCategoryIntent } from '@app/Shared/Redux/Filters/HeapDumpFilterSlice';
+import { allowedGcLogFilters, GcLogUpdateCategoryIntent } from '@app/Shared/Redux/Filters/GcLogFilterSlice';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { HeapDump, KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
+import { GcLog, KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
 import useDayjs, { Dayjs } from '@app/utils/hooks/useDayjs';
-// import dayjs from '@i18n/datetime';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ToolbarFilter,
@@ -38,10 +36,10 @@ import { FilterIcon } from '@patternfly/react-icons';
 import { TFunction } from 'i18next';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { LabelFilter } from './LabelFilter';
-import { NameFilter } from './NameFilter';
+import { GcLogLabelFilter } from './GcLogLabelFilter';
+import { GcLogNameFilter } from './GcLogNameFilter';
 
-export interface HeapDumpFiltersCategories {
+export interface GcLogFiltersCategories {
   Name: string[];
   Label: string[];
 }
@@ -61,19 +59,17 @@ export const getCategoryChipDisplay = (t: TFunction, dayjs: Dayjs, category: str
   return `${value}`;
 };
 
-export const categoryIsDate = (fieldKey: string) => /date/i.test(fieldKey);
-
-export interface HeapDumpFiltersProps {
+export interface GcLogFiltersProps {
   target: string;
   breakpoint?: 'md' | 'lg' | 'xl' | '2xl';
-  heapDumps: HeapDump[];
-  filters: HeapDumpFiltersCategories;
+  gcLogs: GcLog[];
+  filters: GcLogFiltersCategories;
   updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
 }
 
-export const HeapDumpFilters: React.FC<HeapDumpFiltersProps> = ({
+export const GcLogFilters: React.FC<GcLogFiltersProps> = ({
   target,
-  heapDumps,
+  gcLogs,
   filters,
   breakpoint = 'xl',
   updateFilters,
@@ -83,9 +79,9 @@ export const HeapDumpFilters: React.FC<HeapDumpFiltersProps> = ({
   const dispatch = useDispatch<StateDispatch>();
 
   const currentCategory = useSelector((state: RootState) => {
-    const targetHeapDumpFilters = state.heapDumpFilters.list.filter((targetFilter) => targetFilter.target === target);
-    if (!targetHeapDumpFilters.length) return 'Name'; // Target is not yet loaded
-    return targetHeapDumpFilters[0].archived.selectedCategory;
+    const targetGcLogFilters = state.gcLogFilters.list.filter((targetFilter) => targetFilter.target === target);
+    if (!targetGcLogFilters.length) return 'Name'; // Target is not yet loaded
+    return targetGcLogFilters[0].archived.selectedCategory;
   });
 
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = React.useState(false);
@@ -97,7 +93,7 @@ export const HeapDumpFilters: React.FC<HeapDumpFiltersProps> = ({
   const onCategorySelect = React.useCallback(
     (category) => {
       setIsCategoryDropdownOpen(false);
-      dispatch(HeapDumpUpdateCategoryIntent(target, category));
+      dispatch(GcLogUpdateCategoryIntent(target, category));
     },
     [dispatch, setIsCategoryDropdownOpen, target],
   );
@@ -140,7 +136,7 @@ export const HeapDumpFilters: React.FC<HeapDumpFiltersProps> = ({
                 <FilterIcon />
               </Icon>
             }
-            aria-label={t('HeapDumpFilters.ARIA_LABELS.MENU_TOGGLE')}
+            aria-label={t('GcLogFilters.ARIA_LABELS.MENU_TOGGLE')}
             onClick={() => onCategoryToggle()}
           >
             {getCategoryDisplay(t, currentCategory)}
@@ -154,7 +150,7 @@ export const HeapDumpFilters: React.FC<HeapDumpFiltersProps> = ({
         }}
       >
         <DropdownList>
-          {allowedHeapDumpFilters.map((cat) => (
+          {allowedGcLogFilters.map((cat) => (
             <DropdownItem key={cat} onClick={() => onCategorySelect(cat)} value={cat}>
               {getCategoryDisplay(t, cat)}
             </DropdownItem>
@@ -166,10 +162,10 @@ export const HeapDumpFilters: React.FC<HeapDumpFiltersProps> = ({
 
   const filterDropdownItems = React.useMemo(
     () => [
-      <NameFilter key={'name'} heapDumps={heapDumps} onSubmit={onNameInput} filteredNames={filters.Name} />,
-      <LabelFilter key={'label'} heapDumps={heapDumps} onSubmit={onLabelInput} filteredLabels={filters.Label} />,
+      <GcLogNameFilter key={'name'} gcLogs={gcLogs} onSubmit={onNameInput} filteredNames={filters.Name} />,
+      <GcLogLabelFilter key={'label'} gcLogs={gcLogs} onSubmit={onLabelInput} filteredLabels={filters.Label} />,
     ],
-    [heapDumps, filters.Name, filters.Label, onNameInput, onLabelInput],
+    [gcLogs, filters.Name, filters.Label, onNameInput, onLabelInput],
   );
 
   return (
@@ -188,10 +184,10 @@ export const HeapDumpFilters: React.FC<HeapDumpFiltersProps> = ({
         {Object.keys(filters).map((filterKey, idx) => (
           <ToolbarFilter
             key={`${filterKey}-filter`}
-            className="heap-dump-filter__toolbar-filter"
+            className="gc-log-filter__toolbar-filter"
             labels={filters[filterKey].map((v: unknown, index) => {
               const display = getCategoryChipDisplay(t, dayjs, filterKey, v);
-              return { node: display, key: index }; // Use key to keep value index
+              return { node: display, key: index };
             })}
             deleteLabel={onDelete}
             deleteLabelGroup={onDeleteGroup}
@@ -209,21 +205,21 @@ export const HeapDumpFilters: React.FC<HeapDumpFiltersProps> = ({
   );
 };
 
-export const filterHeapDumps = (heapDumps: any[], filters: HeapDumpFiltersCategories) => {
-  if (!heapDumps || !heapDumps.length) {
-    return heapDumps;
+export const filterGcLogs = (gcLogs: any[], filters: GcLogFiltersCategories) => {
+  if (!gcLogs || !gcLogs.length) {
+    return gcLogs;
   }
 
-  let filtered = heapDumps;
+  let filtered = gcLogs;
 
   if (filters.Name.length) {
-    filtered = filtered.filter((r) => filters.Name.includes(r.heapDumpId));
+    filtered = filtered.filter((r) => filters.Name.includes(r.gcLogId));
   }
 
   if (filters.Label.length) {
-    filtered = filtered.filter((heapDump) => {
-      const heapDumpLabels = (heapDump.metadata?.labels ?? []).map((label: KeyValue) => keyValueToString(label));
-      return filters.Label.some((filterLabel) => heapDumpLabels.includes(filterLabel));
+    filtered = filtered.filter((gcLog) => {
+      const gcLogLabels = (gcLog.metadata?.labels ?? []).map((label: KeyValue) => keyValueToString(label));
+      return filters.Label.some((filterLabel) => gcLogLabels.includes(filterLabel));
     });
   }
 

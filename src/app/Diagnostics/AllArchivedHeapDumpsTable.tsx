@@ -222,7 +222,10 @@ export const AllArchivedHeapDumpsTable: React.FC<AllArchivedHeapDumpsTableProps>
               if (heapDump.heapDumpId === updatedHeapDumpInfo.heapDump.heapDumpId) {
                 return {
                   ...heapDump,
-                  metadata: { ...heapDump.metadata, labels: updatedHeapDumpInfo?.heapDump?.metadata?.labels },
+                  metadata: {
+                    ...(heapDump.metadata ?? {}),
+                    labels: updatedHeapDumpInfo?.heapDump?.metadata?.labels ?? [],
+                  },
                 };
               }
               return heapDump;

@@ -74,6 +74,9 @@ import {
   SmartTrigger,
   AsyncProfilerStatus,
   AsyncProfile,
+  GcLoggingStatus,
+  GcLog,
+  GcLogDirectory,
   AuditQueryParams,
   AuditRevisionsResponse,
   AuditRevisionDetail,
@@ -2196,6 +2199,115 @@ export class ApiService {
     }).pipe(
       map((resp) => resp.ok),
       catchError(() => of(false)),
+      first(),
+    );
+  }
+
+  getGcLoggingStatus(target: Target, suppressNotifications = false): Observable<GcLoggingStatus> {
+    return this.doGet<GcLoggingStatus>(
+      `diagnostics/targets/${target.id}/gclogging`,
+      'beta',
+      undefined,
+      suppressNotifications,
+    );
+  }
+
+  enableGcLogging(target: Target, what: string, decorators: string): Observable<boolean> {
+    const params = new URLSearchParams({ what, decorators });
+    return this.sendRequest('beta', `diagnostics/targets/${target.id}/gclogging?${params}`, {
+      method: 'POST',
+    }).pipe(
+      map((resp) => resp.ok),
+      first(),
+    );
+  }
+
+  reconfigureGcLogging(target: Target, what: string, decorators: string): Observable<boolean> {
+    const params = new URLSearchParams({ what, decorators });
+    return this.sendRequest('beta', `diagnostics/targets/${target.id}/gclogging?${params}`, {
+      method: 'PATCH',
+    }).pipe(
+      map((resp) => resp.ok),
+      first(),
+    );
+  }
+
+  disableGcLogging(target: Target): Observable<boolean> {
+    return this.sendRequest('beta', `diagnostics/targets/${target.id}/gclogging`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
+      first(),
+    );
+  }
+
+  pullGcLog(target: Target): Observable<GcLog | null> {
+    return this.sendRequest('beta', `diagnostics/targets/${target.id}/gclogging/pull`, {
+      method: 'POST',
+    }).pipe(
+      concatMap((resp) => (resp.status === 204 ? Promise.resolve(null) : resp.json())),
+      first(),
+    );
+  }
+
+  getGcLogs(target: Target, suppressNotifications = false): Observable<GcLog[]> {
+    return this.doGet<GcLog[]>(`diagnostics/targets/${target.id}/gclogs`, 'beta', undefined, suppressNotifications);
+  }
+
+  downloadGcLog(target: Target, gcLog: GcLog): void {
+    this.ctx
+      .url(gcLog.downloadUrl ?? `/api/beta/diagnostics/targets/${target.id}/gclogs/${gcLog.gcLogId}`)
+      .subscribe((resourceUrl) =>
+        this.downloadFile(resourceUrl, new URLSearchParams({ filename: gcLog.gcLogId }), gcLog.gcLogId),
+      );
+  }
+
+  deleteGcLog(target: Target, gcLogId: string): Observable<boolean> {
+    return this.sendRequest('beta', `diagnostics/targets/${target.id}/gclogs/${gcLogId}`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
+      first(),
+    );
+  }
+
+  deleteArchivedGcLogFromPath(jvmId: string, gcLogId: string): Observable<boolean> {
+    return this.sendRequest('beta', `diagnostics/fs/gclogs/${jvmId}/${gcLogId}`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
+      first(),
+    );
+  }
+
+  getAllGcLogs(suppressNotifications = false): Observable<GcLogDirectory[]> {
+    return this.doGet<GcLogDirectory[]>('diagnostics/fs/gclogs', 'beta', undefined, suppressNotifications);
+  }
+
+  postGcLogMetadataForJvmId(jvmId: string, gcLogId: string, labels: KeyValue[]): Observable<GcLog> {
+    return this.ctx.headers({ 'Content-Type': 'application/json' }).pipe(
+      concatMap((headers) =>
+        this.sendRequest('beta', `diagnostics/fs/gclogs/${jvmId}/${gcLogId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ labels: this.transformLabelsToObject(labels) }),
+          headers,
+        }),
+      ),
+      concatMap((resp) => resp.json()),
+      first(),
+    );
+  }
+
+  postGcLogMetadata(target: Target, gcLogId: string, labels: KeyValue[]): Observable<GcLog> {
+    return this.ctx.headers({ 'Content-Type': 'application/json' }).pipe(
+      concatMap((headers) =>
+        this.sendRequest('beta', `diagnostics/targets/${target.id}/gclogs/${gcLogId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ labels: this.transformLabelsToObject(labels) }),
+          headers,
+        }),
+      ),
+      concatMap((resp) => resp.json()),
       first(),
     );
   }

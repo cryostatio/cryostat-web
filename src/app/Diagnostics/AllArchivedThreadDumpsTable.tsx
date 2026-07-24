@@ -223,7 +223,10 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
               if (threadDump.threadDumpId === updatedThreadDumpInfo.threadDump.threadDumpId) {
                 return {
                   ...threadDump,
-                  metadata: { ...threadDump.metadata, labels: updatedThreadDumpInfo?.threadDump?.metadata?.labels },
+                  metadata: {
+                    ...(threadDump.metadata ?? {}),
+                    labels: updatedThreadDumpInfo?.threadDump?.metadata?.labels ?? [],
+                  },
                 };
               }
               return threadDump;

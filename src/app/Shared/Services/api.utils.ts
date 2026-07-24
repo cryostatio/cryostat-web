@@ -601,4 +601,28 @@ export const messageKeys = new Map([
       body: (evt) => `async-profiler remote file ${evt.message.id} was deleted`,
     } as NotificationMessageMapper,
   ],
+  [
+    NotificationCategory.GcLogUploaded,
+    {
+      variant: AlertVariant.success,
+      title: 'GC Log pulled',
+      body: (evt) => `GC Log ${evt.message.gcLog.gcLogId} pulled from target ${evt.message.jvmId}`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.GcLogDeleted,
+    {
+      variant: AlertVariant.success,
+      title: 'GC Log deleted',
+      body: (evt) => `GC Log ${evt.message.gcLog.gcLogId} was deleted`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.GcLogMetadataUpdated,
+    {
+      variant: AlertVariant.success,
+      title: 'GC Log metadata updated',
+      body: (evt) => `${evt.message.gcLog.gcLogId} in target ${evt.message.jvmId} metadata was updated`,
+    } as NotificationMessageMapper,
+  ],
 ]);

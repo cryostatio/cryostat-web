@@ -273,7 +273,7 @@ export interface ThreadDump {
   jvmId?: string;
   lastModified?: number;
   size: number;
-  metadata: Metadata;
+  metadata?: Metadata;
 }
 
 export interface StackFrame {
@@ -369,7 +369,7 @@ export interface HeapDump {
   jvmId?: string;
   lastModified?: number;
   size: number;
-  metadata: Metadata;
+  metadata?: Metadata;
 }
 
 export interface ActiveRecordingsFilterInput {
@@ -672,6 +672,31 @@ export interface AsyncProfilerStatus {
 }
 
 // ======================================
+// GC log resources
+// ======================================
+
+export interface GcLoggingStatus {
+  enabled: boolean;
+  logFilePath?: string;
+  what?: string;
+  decorators?: string;
+}
+
+export interface GcLog {
+  gcLogId: string;
+  jvmId: string;
+  size: number;
+  lastModified?: number;
+  downloadUrl?: string;
+  metadata?: Metadata;
+}
+
+export interface GcLogDirectory {
+  jvmId: string;
+  gcLogs: GcLog[];
+}
+
+// ======================================
 // Notification resources
 // ======================================
 
@@ -755,6 +780,9 @@ export enum NotificationCategory {
   AsyncProfileCreated = 'AsyncProfilerCreated',
   AsyncProfileStopped = 'AsyncProfilerStopped',
   AsyncProfileDeleted = 'AsyncProfilerDeleted',
+  GcLogUploaded = 'GcLogUploaded',
+  GcLogDeleted = 'GcLogDeleted',
+  GcLogMetadataUpdated = 'GcLogMetadataUpdated',
 }
 
 export enum CloseStatus {

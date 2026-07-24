@@ -57,6 +57,12 @@
     "SEARCH_PLACEHOLDER": "Find by JVM ID or alias...",
     "TARGET_DISPLAY": "{{alias}} ({{connectUrl}})"
   },
+  "AllTargetsGcLogsTable": {
+    "HIDE_TARGET_WITH_ZERO_LOGS": "Hide targets with zero GC Logs",
+    "SEARCH_PLACEHOLDER": "Find by JVM ID...",
+    "NO_ARCHIVES": "No GC Logs",
+    "ERROR_TITLE": "Error retrieving GC Logs"
+  },
   "DirectoryNameCell": {
     "LOADING_TARGET_INFO": "Loading target information",
     "VIEW_TARGET_DETAILS": "View target details"
@@ -414,8 +420,8 @@
     "DIAGNOSTICS_ACTION_FAILURE": "Diagnostics Failure: {{kind}}",
     "DIAGNOSTICS_CARD_DESCRIPTION": "Perform diagnostic operations on the target.",
     "DIAGNOSTICS_CARD_DESCRIPTION_FULL": "Perform diagonstic operations from a list of supported operations on the target.",
-    "DIAGNOSTICS_CARD_TITLE": "Diagnostics",
-    "DIAGNOSTICS_GC_BUTTON": "Invoke Garbage Collection",
+    "DIAGNOSTICS_CARD_TITLE": "Dump Collection",
+    "DIAGNOSTICS_GC_BUTTON": "Invoke GC",
     "DIAGNOSTICS_HEAP_DUMP_BUTTON": "Invoke Heap Dump",
     "DIAGNOSTICS_HEAP_DUMP_BUTTON_DISABLED": "Heap Dump collection requires the Cryostat Agent",
     "DIAGNOSTICS_HEAP_REDIRECT_BUTTON": "View collected Heap Dumps",
@@ -427,6 +433,53 @@
       "HEAP_DUMP": "Heap Dump",
       "THREADS": "Thread Dump"
     }
+  },
+  "GcLogs": {
+    "PAGE_TITLE": "GC Log Archives",
+    "AGENT_REQUIRED": "GC log collection requires the Cryostat Agent.",
+    "TABLE_TITLE": "GC Logs",
+    "PULL_TOOLTIP": "Pull log from Agent",
+    "PULL_ARIA": "Pull GC log from Agent into storage",
+    "PULL_NO_CONTENT_TITLE": "No GC Log Content",
+    "PULL_NO_CONTENT_MESSAGE": "The Agent had no GC log content to retrieve.",
+    "DELETE": "Delete",
+    "DELETING": "Deleting",
+    "DOWNLOAD": "Download",
+    "EDIT_LABELS": "Edit Labels",
+    "ARIA_LABELS": {
+      "ROW_ACTION": "gc-log-action-menu",
+      "ACTION_TOGGLE": "gc-log-actions-toggle"
+    }
+  },
+  "GcCaptureCard": {
+    "TITLE": "Garbage Collection and Logging"
+  },
+  "GcLoggingModal": {
+    "ENABLE_TITLE": "Enable GC Logging",
+    "RECONFIGURE_TITLE": "Reconfigure GC Logging",
+    "ENABLE_SUBMIT": "Enable",
+    "RECONFIGURE_SUBMIT": "Save",
+    "ENABLED_LABEL": "GC Logging",
+    "ENABLED_ON": "Enabled",
+    "ENABLED_OFF": "Disabled",
+    "WHAT_LABEL": "What to log",
+    "WHAT_CUSTOM_ARIA": "Custom what value",
+    "WHAT_CUSTOM_PLACEHOLDER": "Enter custom value…",
+    "DECORATORS_LABEL": "Decorators",
+    "DECORATORS_CUSTOM_ARIA": "Custom decorator value",
+    "DECORATORS_CUSTOM_PLACEHOLDER": "Enter custom value…",
+    "ADD_CUSTOM": "Add",
+    "CUSTOM_HELPER_TEXT": "Custom values are passed verbatim to the JVM and may not be recognised."
+  },
+  "GcLoggingStatusCard": {
+    "STATUS_LABEL": "Status",
+    "ENABLED": "Enabled",
+    "DISABLED": "Disabled",
+    "LOG_FILE_PATH_LABEL": "Log File Path",
+    "WHAT_LABEL": "What",
+    "DECORATORS_LABEL": "Decorators",
+    "ENABLE_BUTTON": "Enable",
+    "RECONFIGURE_BUTTON": "Reconfigure"
   },
   "HeapDumps": {
     "SEARCH_PLACEHOLDER": "Search Heap Dumps",
@@ -457,6 +510,11 @@
       "SEARCH_INPUT": "thread-dump-search-input"
     },
     "NO_ARCHIVES": "No Thread Dumps"
+  },
+  "GcLogFilters": {
+    "ARIA_LABELS": {
+      "MENU_TOGGLE": "gc-log-filters-toggle"
+    }
   },
   "ThreadDumpFilters": {
     "ARIA_LABELS": {
