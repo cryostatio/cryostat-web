@@ -61,6 +61,8 @@ export function isTargetMetadata(metadata: Metadata | TargetMetadata): metadata 
 
 export type SimpleResponse = Pick<Response, 'ok' | 'status'>;
 
+export type FetchFn = (url: string, init?: RequestInit) => Promise<Response>;
+
 export interface XMLHttpResponse {
   body: unknown;
   headers: object;
