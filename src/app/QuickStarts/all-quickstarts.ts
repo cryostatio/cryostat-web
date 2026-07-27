@@ -16,6 +16,7 @@
 import { QuickStart } from '@patternfly/quickstarts';
 import AutomatedRulesQuickStart from './quickstarts/automated-rules-quickstart';
 import DashboardQuickStart from './quickstarts/dashboard-quickstart';
+import GcLogsQuickStart from './quickstarts/diagnostics/gc-logs-quickstart';
 import HeapDumpQuickstart from './quickstarts/diagnostics/heap-dump-quickstart';
 import ThreadDumpQuickStart from './quickstarts/diagnostics/thread-dump-quickstart';
 import GenericQuickStart from './quickstarts/generic-quickstart';
@@ -35,4 +36,5 @@ export const allQuickStarts: QuickStart[] = [
   CustomTargetQuickstart,
   ThreadDumpQuickStart,
   HeapDumpQuickstart,
+  GcLogsQuickStart,
 ];

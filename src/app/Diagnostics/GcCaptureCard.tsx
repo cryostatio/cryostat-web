@@ -112,7 +112,7 @@ export const GcCaptureCard: React.FC<GcCaptureCardProps> = () => {
 
   return (
     <>
-      <Card isCompact isFullHeight>
+      <Card isCompact isFullHeight data-quickstart-id="gc-capture-status-card">
         <CardHeader>
           <CardTitle>{t('GcCaptureCard.TITLE')}</CardTitle>
         </CardHeader>
@@ -138,7 +138,12 @@ export const GcCaptureCard: React.FC<GcCaptureCardProps> = () => {
                 </SplitItem>
                 <FeatureFlag level={FeatureLevel.BETA}>
                   <SplitItem>
-                    <Button variant="secondary" onClick={() => setIsModalOpen(true)} isDisabled={isLoadingStatus}>
+                    <Button
+                      variant="secondary"
+                      onClick={() => setIsModalOpen(true)}
+                      isDisabled={isLoadingStatus}
+                      data-quickstart-id="gc-capture-configure-btn"
+                    >
                       {actionLabel}
                     </Button>
                   </SplitItem>

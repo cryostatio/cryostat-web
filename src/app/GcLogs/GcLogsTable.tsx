@@ -535,6 +535,7 @@ const GcLogsToolbar: React.FC<GcLogsToolbarProps> = ({
             onClick={handlePull}
             isLoading={actionLoadings['PULL']}
             isDisabled={isPullDisabled}
+            data-quickstart-id="gc-logs-pull-btn"
           >
             <ImportIcon />
           </Button>
@@ -552,7 +553,12 @@ const GcLogsToolbar: React.FC<GcLogsToolbarProps> = ({
   const editLabelsButton = React.useMemo(
     () => ({
       default: (
-        <Button variant="secondary" onClick={handleEditLabels} isDisabled={!checkedIndices.length}>
+        <Button
+          variant="secondary"
+          onClick={handleEditLabels}
+          isDisabled={!checkedIndices.length}
+          data-quickstart-id="gc-logs-edit-labels-btn"
+        >
           {t('GcLogs.EDIT_LABELS')}
         </Button>
       ),
@@ -574,6 +580,7 @@ const GcLogsToolbar: React.FC<GcLogsToolbarProps> = ({
           onClick={handleDeleteButton}
           isDisabled={!checkedIndices.length || actionLoadings['DELETE']}
           isLoading={actionLoadings['DELETE']}
+          data-quickstart-id="gc-logs-delete-btn"
         >
           {actionLoadings['DELETE'] ? t('GcLogs.DELETING') : t('GcLogs.DELETE')}
         </Button>
@@ -682,6 +689,7 @@ const GcLogRow: React.FC<GcLogRowProps> = ({
         isExpanded={isOpen}
         variant="plain"
         aria-label={t('GcLogs.ARIA_LABELS.ROW_ACTION')}
+        data-quickstart-id="gc-log-row-kebab"
       >
         <EllipsisVIcon />
       </MenuToggle>
