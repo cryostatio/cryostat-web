@@ -35,6 +35,7 @@ import {
   SplitItem,
   Stack,
   StackItem,
+  Tooltip,
 } from '@patternfly/react-core';
 import { ListIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -150,11 +151,14 @@ export const GcCaptureCard: React.FC<GcCaptureCardProps> = () => {
                   <SplitItem>
                     <ActionList>
                       <ActionListItem>
-                        <Button
-                          variant="primary"
-                          component={(props) => <CryostatLink {...props} to="/gc-logs" />}
-                          icon={<ListIcon />}
-                        />
+                        <Tooltip content={t('GcLogs.TABLE_TITLE')}>
+                          <Button
+                            variant="primary"
+                            aria-label={t('GcLogs.TABLE_TITLE')}
+                            component={(props) => <CryostatLink {...props} to="/gc-logs" />}
+                            icon={<ListIcon />}
+                          />
+                        </Tooltip>
                       </ActionListItem>
                     </ActionList>
                   </SplitItem>

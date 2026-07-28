@@ -26,6 +26,8 @@ import {
   FormHelperText,
   HelperText,
   HelperTextItem,
+  InputGroup,
+  InputGroupItem,
   Switch,
   TextInput,
 } from '@patternfly/react-core';
@@ -366,19 +368,23 @@ export const GcLoggingModal: React.FC<GcLoggingModalProps> = ({
           </FormGroup>
         )}
         <FormGroup fieldId="gc-logging-what" label={t('GcLoggingModal.WHAT_LABEL')}>
-          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            <TextInput
-              id="gc-logging-what-custom"
-              aria-label={t('GcLoggingModal.WHAT_CUSTOM_ARIA')}
-              placeholder={t('GcLoggingModal.WHAT_CUSTOM_PLACEHOLDER')}
-              value={customWhatInput}
-              onChange={(_evt, v) => setCustomWhatInput(v)}
-              onKeyDown={handleWhatKeyDown}
-            />
-            <Button variant="secondary" onClick={addCustomWhat} isDisabled={!customWhatInput.trim()}>
-              {t('GcLoggingModal.ADD_CUSTOM')}
-            </Button>
-          </div>
+          <InputGroup>
+            <InputGroupItem isFill>
+              <TextInput
+                id="gc-logging-what-custom"
+                aria-label={t('GcLoggingModal.WHAT_CUSTOM_ARIA')}
+                placeholder={t('GcLoggingModal.WHAT_CUSTOM_PLACEHOLDER')}
+                value={customWhatInput}
+                onChange={(_evt, v) => setCustomWhatInput(v)}
+                onKeyDown={handleWhatKeyDown}
+              />
+            </InputGroupItem>
+            <InputGroupItem>
+              <Button variant="secondary" onClick={addCustomWhat} isDisabled={!customWhatInput.trim()}>
+                {t('GcLoggingModal.ADD_CUSTOM')}
+              </Button>
+            </InputGroupItem>
+          </InputGroup>
           <FormHelperText>
             <HelperText>
               <HelperTextItem>{t('GcLoggingModal.CUSTOM_HELPER_TEXT')}</HelperTextItem>
@@ -393,19 +399,23 @@ export const GcLoggingModal: React.FC<GcLoggingModalProps> = ({
           />
         </FormGroup>
         <FormGroup fieldId="gc-logging-decorators" label={t('GcLoggingModal.DECORATORS_LABEL')}>
-          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            <TextInput
-              id="gc-logging-decorators-custom"
-              aria-label={t('GcLoggingModal.DECORATORS_CUSTOM_ARIA')}
-              placeholder={t('GcLoggingModal.DECORATORS_CUSTOM_PLACEHOLDER')}
-              value={customDecoratorInput}
-              onChange={(_evt, v) => setCustomDecoratorInput(v)}
-              onKeyDown={handleDecoratorKeyDown}
-            />
-            <Button variant="secondary" onClick={addCustomDecorator} isDisabled={!customDecoratorInput.trim()}>
-              {t('GcLoggingModal.ADD_CUSTOM')}
-            </Button>
-          </div>
+          <InputGroup>
+            <InputGroupItem isFill>
+              <TextInput
+                id="gc-logging-decorators-custom"
+                aria-label={t('GcLoggingModal.DECORATORS_CUSTOM_ARIA')}
+                placeholder={t('GcLoggingModal.DECORATORS_CUSTOM_PLACEHOLDER')}
+                value={customDecoratorInput}
+                onChange={(_evt, v) => setCustomDecoratorInput(v)}
+                onKeyDown={handleDecoratorKeyDown}
+              />
+            </InputGroupItem>
+            <InputGroupItem>
+              <Button variant="secondary" onClick={addCustomDecorator} isDisabled={!customDecoratorInput.trim()}>
+                {t('GcLoggingModal.ADD_CUSTOM')}
+              </Button>
+            </InputGroupItem>
+          </InputGroup>
           <FormHelperText>
             <HelperText>
               <HelperTextItem>{t('GcLoggingModal.CUSTOM_HELPER_TEXT')}</HelperTextItem>

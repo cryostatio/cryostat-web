@@ -237,7 +237,8 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
         propsTarget,
         context.notificationChannel.messages(NotificationCategory.GcLogMetadataUpdated),
       ]).subscribe(([currentTarget, event]) => {
-        if (currentTarget?.jvmId !== event.message.jvmId && currentTarget?.jvmId !== event.message.gcLog.jvmId) {
+        const targetJvmId = jvmId ?? currentTarget?.jvmId;
+        if (targetJvmId !== event.message.jvmId && targetJvmId !== event.message.gcLog.jvmId) {
           return;
         }
         setGcLogs((old) =>
@@ -250,7 +251,7 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
         );
       }),
     );
-  }, [addSubscription, propsTarget, context.notificationChannel]);
+  }, [addSubscription, propsTarget, jvmId, context.notificationChannel]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) return;

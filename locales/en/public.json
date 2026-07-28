@@ -420,7 +420,7 @@
   "DiagnosticsCard": {
     "DIAGNOSTICS_ACTION_FAILURE": "Diagnostics Failure: {{kind}}",
     "DIAGNOSTICS_CARD_DESCRIPTION": "Perform diagnostic operations on the target.",
-    "DIAGNOSTICS_CARD_DESCRIPTION_FULL": "Perform diagonstic operations from a list of supported operations on the target.",
+    "DIAGNOSTICS_CARD_DESCRIPTION_FULL": "Perform diagnostic operations from a list of supported operations on the target.",
     "DIAGNOSTICS_CARD_TITLE": "Dump Collection",
     "DIAGNOSTICS_GC_BUTTON": "Invoke GC",
     "DIAGNOSTICS_HEAP_DUMP_BUTTON": "Invoke Heap Dump",
@@ -434,6 +434,12 @@
       "HEAP_DUMP": "Heap Dump",
       "THREADS": "Thread Dump"
     }
+  },
+  "BulkEditGcLogLabels": {
+    "TITLE": "Edit labels",
+    "HELPER_TEXT": "Labels present on all selected GC Logs will appear here. Editing the labels will affect all selected GC Logs. Specify labels with format",
+    "SAVE": "Save",
+    "SAVING": "Saving"
   },
   "GcLogs": {
     "PAGE_TITLE": "GC Log Archives",

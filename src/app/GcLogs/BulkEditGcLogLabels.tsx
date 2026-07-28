@@ -20,6 +20,7 @@ import { NotificationCategory, Target, KeyValue, GcLog, NullableTarget } from '@
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionList,
   ActionListItem,
@@ -50,6 +51,7 @@ export const BulkEditGcLogLabels: React.FC<BulkEditGcLogLabelsProps> = ({
   directoryGcLogs,
   closePanelFn,
 }) => {
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const [gcLogs, setGcLogs] = React.useState<GcLog[]>([]);
   const [commonLabels, setCommonLabels] = React.useState<KeyValue[]>([]);
@@ -196,13 +198,12 @@ export const BulkEditGcLogLabels: React.FC<BulkEditGcLogLabelsProps> = ({
     <>
       <Stack hasGutter>
         <StackItem>
-          <Title headingLevel="h2">Edit labels</Title>
+          <Title headingLevel="h2">{t('BulkEditGcLogLabels.TITLE')}</Title>
         </StackItem>
         <StackItem>
           <HelperText>
             <HelperTextItem>
-              Labels present on all selected GC Logs will appear here. Editing the labels will affect all selected GC
-              Logs. Specify labels with format <Label isCompact>key=value</Label>.
+              {t('BulkEditGcLogLabels.HELPER_TEXT')} <Label isCompact>key=value</Label>.
             </HelperTextItem>
           </HelperText>
         </StackItem>
@@ -223,12 +224,12 @@ export const BulkEditGcLogLabels: React.FC<BulkEditGcLogLabelsProps> = ({
                 isDisabled={valid != ValidatedOptions.success || loading}
                 {...saveButtonLoadingProps}
               >
-                {loading ? 'Saving' : 'Save'}
+                {loading ? t('BulkEditGcLogLabels.SAVING') : t('BulkEditGcLogLabels.SAVE')}
               </Button>
             </ActionListItem>
             <ActionListItem>
               <Button variant="secondary" onClick={handleCancel} isDisabled={loading}>
-                Cancel
+                {t('CANCEL')}
               </Button>
             </ActionListItem>
           </ActionList>

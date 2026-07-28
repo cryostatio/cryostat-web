@@ -48,6 +48,8 @@ export interface DiagnosticsCardProps extends DashboardCardTypeProps {
   headerDisabled?: boolean;
 }
 
+// Note: DashboardCardTypeProps fields (span, dashboardId, isDraggable, isResizable, isFullHeight, actions)
+// are accepted for Dashboard compatibility but this card manages its own layout and does not render them.
 export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = ({ headerDisabled = false }) => {
   const { t } = useCryostatTranslation();
   const serviceContext = React.useContext(ServiceContext);
