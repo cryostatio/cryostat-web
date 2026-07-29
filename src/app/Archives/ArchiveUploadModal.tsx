@@ -28,10 +28,12 @@ import {
   FormGroup,
   Icon,
   Content,
+  Modal,
+  ModalBody,
+  ModalHeader,
   Tooltip,
   ValidatedOptions,
 } from '@patternfly/react-core';
-import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { forkJoin, Observable, of } from 'rxjs';
@@ -144,98 +146,97 @@ export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose,
   );
 
   return (
-    <Modal
-      isOpen={props.visible}
-      variant={ModalVariant.large}
-      showClose={true}
-      onClose={handleClose}
-      title="Re-Upload Archived Recording"
-      description={
-        <Content component="p">
-          <span>
-            Select a JDK Flight Recorder file to re-upload. Files must be .jfr binary format and follow the naming
-            convention used by Cryostat when archiving Recordings
-          </span>{' '}
-          <Tooltip
-            content={
-              <Content component="p">
-                Archive naming conventions: <b>target-name_recordingName_timestamp.jfr</b>.
-                <br />
-                For example: io-cryostat-Cryostat_profiling_timestamp.jfr
-              </Content>
-            }
-            appendTo={portalRoot()}
-          >
-            <sup style={{ cursor: 'pointer' }}>
-              <b>[?]</b>
-            </sup>
-          </Tooltip>
-          <span>.</span>
-        </Content>
-      }
-    >
-      <Form>
-        <FormGroup label="JFR File" isRequired fieldId="file">
-          <MultiFileUpload
-            submitRef={submitRef}
-            abortRef={abortRef}
-            uploading={uploading}
-            dropZoneAccepts={{
-              'application/octet-stream': ['.jfr'],
-            }}
-            displayAccepts={['JFR']}
-            onFileSubmit={onFileSubmit}
-            onFilesChange={onFilesChange}
-          />
-        </FormGroup>
-        <ExpandableSection toggleTextExpanded="Hide metadata options" toggleTextCollapsed="Show metadata options">
-          <FormGroup
-            label="Labels"
-            fieldId="labels"
-            labelHelp={
-              <Tooltip
-                content={
-                  <Content component="p">Unique key-value pairs containing information about the recording.</Content>
-                }
-                appendTo={portalRoot()}
-              >
-                <Icon>
-                  <HelpIcon />
-                </Icon>
-              </Tooltip>
-            }
-          >
-            <RecordingLabelFields
-              isUploadable
-              labels={labels}
-              setLabels={setLabels}
-              setValid={setValid}
-              isDisabled={uploading}
+    <Modal isOpen={props.visible} variant="large" onClose={handleClose}>
+      <ModalHeader
+        title="Re-Upload Archived Recording"
+        description={
+          <Content component="p">
+            <span>
+              Select a JDK Flight Recorder file to re-upload. Files must be .jfr binary format and follow the naming
+              convention used by Cryostat when archiving Recordings
+            </span>{' '}
+            <Tooltip
+              content={
+                <Content component="p">
+                  Archive naming conventions: <b>target-name_recordingName_timestamp.jfr</b>.
+                  <br />
+                  For example: io-cryostat-Cryostat_profiling_timestamp.jfr
+                </Content>
+              }
+              appendTo={portalRoot()}
+            >
+              <sup style={{ cursor: 'pointer' }}>
+                <b>[?]</b>
+              </sup>
+            </Tooltip>
+            <span>.</span>
+          </Content>
+        }
+      />
+      <ModalBody>
+        <Form>
+          <FormGroup label="JFR File" isRequired fieldId="file">
+            <MultiFileUpload
+              submitRef={submitRef}
+              abortRef={abortRef}
+              uploading={uploading}
+              dropZoneAccepts={{
+                'application/octet-stream': ['.jfr'],
+              }}
+              displayAccepts={['JFR']}
+              onFileSubmit={onFileSubmit}
+              onFilesChange={onFilesChange}
             />
           </FormGroup>
-        </ExpandableSection>
-        <ActionGroup>
-          {allOks && numOfFiles ? (
-            <Button variant="primary" onClick={handleClose}>
-              Close
-            </Button>
-          ) : (
-            <>
-              <Button
-                variant="primary"
-                onClick={handleSubmit}
-                isDisabled={!numOfFiles || valid !== ValidatedOptions.success || uploading}
-                {...submitButtonLoadingProps}
-              >
-                {uploading ? 'Submitting' : 'Submit'}
+          <ExpandableSection toggleTextExpanded="Hide metadata options" toggleTextCollapsed="Show metadata options">
+            <FormGroup
+              label="Labels"
+              fieldId="labels"
+              labelHelp={
+                <Tooltip
+                  content={
+                    <Content component="p">Unique key-value pairs containing information about the recording.</Content>
+                  }
+                  appendTo={portalRoot()}
+                >
+                  <Icon>
+                    <HelpIcon />
+                  </Icon>
+                </Tooltip>
+              }
+            >
+              <RecordingLabelFields
+                isUploadable
+                labels={labels}
+                setLabels={setLabels}
+                setValid={setValid}
+                isDisabled={uploading}
+              />
+            </FormGroup>
+          </ExpandableSection>
+          <ActionGroup>
+            {allOks && numOfFiles ? (
+              <Button variant="primary" onClick={handleClose}>
+                Close
               </Button>
-              <Button variant="link" onClick={handleClose}>
-                Cancel
-              </Button>
-            </>
-          )}
-        </ActionGroup>
-      </Form>
+            ) : (
+              <>
+                <Button
+                  variant="primary"
+                  onClick={handleSubmit}
+                  isDisabled={!numOfFiles || valid !== ValidatedOptions.success || uploading}
+                  {...submitButtonLoadingProps}
+                >
+                  {uploading ? 'Submitting' : 'Submit'}
+                </Button>
+                <Button variant="link" onClick={handleClose}>
+                  Cancel
+                </Button>
+              </>
+            )}
+          </ActionGroup>
+        </Form>
+      </ModalBody>
     </Modal>
   );
 };

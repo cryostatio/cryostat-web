@@ -19,8 +19,7 @@ import { TargetView } from '@app/TargetView/TargetView';
 import { useModalFromLocationState } from '@app/utils/hooks/useModalFromLocationState';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
-import { Card, CardBody } from '@patternfly/react-core';
-import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
+import { Card, CardBody, Modal, ModalBody, ModalHeader } from '@patternfly/react-core';
 import * as React from 'react';
 import { ActiveRecordingsTable } from './ActiveRecordingsTable';
 
@@ -44,11 +43,13 @@ export const Recordings: React.FC = () => {
       <Modal
         appendTo={portalRoot()}
         isOpen={createRecordingModalOpen}
-        variant={ModalVariant.large}
-        title="Create Recording"
+        variant="large"
         onClose={closeCreateRecordingModal}
       >
-        {createRecordingModalOpen ? <CreateRecording onClose={closeCreateRecordingModal} /> : null}
+        <ModalHeader title="Create Recording" />
+        <ModalBody>
+          {createRecordingModalOpen ? <CreateRecording onClose={closeCreateRecordingModal} /> : null}
+        </ModalBody>
       </Modal>
     </TargetView>
   );

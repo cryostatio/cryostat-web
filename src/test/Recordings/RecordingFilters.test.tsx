@@ -30,7 +30,7 @@ import { Target, ActiveRecording, RecordingState, ArchivedRecording } from '@app
 import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
 import { Toolbar, ToolbarContent } from '@patternfly/react-core';
-import { cleanup, screen, within, act, waitFor } from '@testing-library/react';
+import { act, cleanup, screen, within, waitFor } from '@testing-library/react';
 import { TFunction } from 'i18next';
 import { of } from 'rxjs';
 import { basePreloadedState, render, testT } from '../utils';
@@ -249,13 +249,12 @@ describe('<RecordingFilters />', () => {
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
-    await act(async () => {
-      await user.click(selectedItem);
-    });
+    await user.click(selectedItem);
+    act(() => jest.runAllTimers());
 
     const categoryMenu = await screen.findByRole('menu');
     expect(categoryMenu).toBeInTheDocument();
-    expect(categoryMenu).toBeVisible();
+    await waitFor(() => expect(categoryMenu).toBeVisible());
 
     activeCategoryOptions.forEach((category) => {
       const option = within(categoryMenu).getByText(getCategoryDisplay(testT as TFunction, category));
@@ -298,13 +297,12 @@ describe('<RecordingFilters />', () => {
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
-    await act(async () => {
-      await user.click(selectedItem);
-    });
+    await user.click(selectedItem);
+    act(() => jest.runAllTimers());
 
     const categoryMenu = await screen.findByRole('menu');
     expect(categoryMenu).toBeInTheDocument();
-    expect(categoryMenu).toBeVisible();
+    await waitFor(() => expect(categoryMenu).toBeVisible());
 
     archivedCategoryOptions.forEach((category) => {
       const option = within(categoryMenu).getByText(getCategoryDisplay(testT as TFunction, category));
@@ -347,17 +345,14 @@ describe('<RecordingFilters />', () => {
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
-    await act(async () => {
-      await user.click(selectedItem);
-    });
+    await user.click(selectedItem);
+    act(() => jest.runAllTimers());
 
     const categoryMenu = await screen.findByRole('menu');
     expect(categoryMenu).toBeInTheDocument();
-    expect(categoryMenu).toBeVisible();
+    await waitFor(() => expect(categoryMenu).toBeVisible());
 
-    await act(async () => {
-      await user.click(selectedItem); // Click again
-    });
+    await user.click(selectedItem); // Click again
 
     await waitFor(() => expect(screen.queryByRole('menu')).not.toBeInTheDocument());
   });
@@ -396,21 +391,18 @@ describe('<RecordingFilters />', () => {
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
-    await act(async () => {
-      await user.click(selectedItem);
-    });
+    await user.click(selectedItem);
+    act(() => jest.runAllTimers());
 
     const categoryMenu = await screen.findByRole('menu');
     expect(categoryMenu).toBeInTheDocument();
-    expect(categoryMenu).toBeVisible();
+    await waitFor(() => expect(categoryMenu).toBeVisible());
 
     const toSelectItem = within(categoryMenu).getByText(getCategoryDisplay(testT as TFunction, 'Name'));
     expect(toSelectItem).toBeInTheDocument();
     expect(toSelectItem).toBeVisible();
 
-    await act(async () => {
-      await user.click(toSelectItem);
-    });
+    await user.click(toSelectItem);
 
     selectedItem = within(categoryToggle).getByText(testT('NAME'));
     expect(selectedItem).toBeInTheDocument();

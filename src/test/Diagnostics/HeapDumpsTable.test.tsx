@@ -23,8 +23,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
 import { Content } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
-import { cleanup, screen, within, act, waitFor } from '@testing-library/react';
-import * as tlr from '@testing-library/react';
+import { cleanup, screen, within, waitFor } from '@testing-library/react';
 import { of } from 'rxjs';
 import { basePreloadedState, DEFAULT_DIMENSIONS, render, resize, testT } from '../utils';
 
@@ -96,9 +95,7 @@ describe('<HeapDumpsTable />', () => {
   let preloadedState: RootState;
 
   beforeAll(async () => {
-    await act(async () => {
-      resize(2400, 1080);
-    });
+    resize(2400, 1080);
   });
 
   beforeEach(() => {
@@ -311,10 +308,8 @@ describe('<HeapDumpsTable />', () => {
       preloadedState: preloadedState,
     });
 
-    await tlr.act(async () => {
-      await user.click(screen.getByLabelText(testT('HeapDumpActions.ARIA_LABELS.MENU_TOGGLE')));
-      await user.click(screen.getByText('Download Heap Dump'));
-    });
+    await user.click(screen.getByLabelText(testT('HeapDumpActions.ARIA_LABELS.MENU_TOGGLE')));
+    await user.click(await screen.findByText('Download Heap Dump'));
 
     const downloadRequestSpy = jest.spyOn(defaultServices.api, 'downloadHeapDump');
 

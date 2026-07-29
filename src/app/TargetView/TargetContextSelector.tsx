@@ -250,7 +250,6 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
             <SplitItem>
               <Dropdown
                 className={className}
-                placeholder={t('TargetContextSelector.TOGGLE_PLACEHOLDER')}
                 isOpen={isTargetOpen}
                 onOpenChange={setIsTargetOpen}
                 onOpenChangeKeys={['Escape']}

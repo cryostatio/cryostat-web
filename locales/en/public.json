@@ -226,9 +226,10 @@
     }
   },
   "CreateAsyncProfilerSession": {
+    "CHOSEN_EVENTS": "Chosen events",
     "DESCRIPTION": "async-profiler enables precise CPU-time profiling of program execution as well as VM and native memory allocations. Profiling sessions will be dumped to JFR-format binary files. Not all combinations of available events are acceptable.",
     "DURATION": "Duration",
-    "EVENTS": "Events"
+    "EVENTS": "Available events"
   },
   "CreateCredentialModal": {
     "ARIA_LABELS": {

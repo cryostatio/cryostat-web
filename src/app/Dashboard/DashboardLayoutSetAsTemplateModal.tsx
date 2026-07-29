@@ -27,10 +27,12 @@ import {
   FormHelperText,
   HelperText,
   HelperTextItem,
+  Modal,
+  ModalBody,
+  ModalHeader,
   TextArea,
   TextInput,
 } from '@patternfly/react-core';
-import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { ValidatedOptions } from '@patternfly/react-core/dist/js/helpers';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -146,82 +148,80 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
   );
 
   return (
-    <Modal
-      appendTo={portalRoot()}
-      isOpen={props.visible}
-      variant={ModalVariant.medium}
-      showClose={true}
-      onClose={handleClose}
-      title={
-        downloadModal
-          ? t('DashboardLayoutSetAsTemplateModal.DOWNLOAD.TITLE')
-          : t('DashboardLayoutSetAsTemplateModal.SET_TEMPLATE.TITLE')
-      }
-      description={
-        downloadModal
-          ? t(`DashboardLayoutSetAsTemplateModal.DOWNLOAD.DESCRIPTION`)
-          : t(`DashboardLayoutSetAsTemplateModal.SET_TEMPLATE.DESCRIPTION`)
-      }
-    >
-      <Form onSubmit={(e) => e.preventDefault()}>
-        <FormGroup label={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.NAME.LABEL')} fieldId="name" isRequired>
-          <FormHelperText>
-            <HelperText>
-              <HelperTextItem variant={nameValidated}>
-                {nameValidated === ValidatedOptions.error
-                  ? nameErrorMessage
-                  : t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.NAME.HELPER_TEXT')}
-              </HelperTextItem>
-            </HelperText>
-          </FormHelperText>
-          <TextInput
-            isRequired
-            type="text"
-            id="name"
-            name="name"
-            aria-describedby={'name-helper'}
-            value={name}
-            onChange={handleNameChange}
-            autoFocus={true}
-            autoComplete="on"
-            validated={nameValidated}
-            placeholder={currLayout.name}
-          />
-        </FormGroup>
-        <FormGroup label={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.LABEL')} fieldId="description">
-          <FormHelperText>
-            <HelperText>
-              <HelperTextItem variant={descriptionValidated}>
-                {descriptionValidated === ValidatedOptions.error
-                  ? descriptionErrorMessage
-                  : t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.HELPER_TEXT')}
-              </HelperTextItem>
-            </HelperText>
-          </FormHelperText>
-          <TextArea
-            type="text"
-            id="description"
-            name="description"
-            aria-describedby={'description-helper'}
-            value={description}
-            onChange={handleDescriptionChange}
-            validated={descriptionValidated}
-            placeholder={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.PLACEHOLDER')}
-          />
-        </FormGroup>
-        <ActionGroup>
-          <Button
-            variant="primary"
-            onClick={handleSubmit}
-            isDisabled={nameValidated !== ValidatedOptions.success || descriptionValidated === ValidatedOptions.error}
-          >
-            {downloadModal ? t('DOWNLOAD') : t('SUBMIT')}
-          </Button>
-          <Button variant="link" onClick={handleClose}>
-            {t('CANCEL')}
-          </Button>
-        </ActionGroup>
-      </Form>
+    <Modal appendTo={portalRoot()} isOpen={props.visible} variant="medium" onClose={handleClose}>
+      <ModalHeader
+        title={
+          downloadModal
+            ? t('DashboardLayoutSetAsTemplateModal.DOWNLOAD.TITLE')
+            : t('DashboardLayoutSetAsTemplateModal.SET_TEMPLATE.TITLE')
+        }
+        description={
+          downloadModal
+            ? t(`DashboardLayoutSetAsTemplateModal.DOWNLOAD.DESCRIPTION`)
+            : t(`DashboardLayoutSetAsTemplateModal.SET_TEMPLATE.DESCRIPTION`)
+        }
+      />
+      <ModalBody>
+        <Form onSubmit={(e) => e.preventDefault()}>
+          <FormGroup label={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.NAME.LABEL')} fieldId="name" isRequired>
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem variant={nameValidated}>
+                  {nameValidated === ValidatedOptions.error
+                    ? nameErrorMessage
+                    : t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.NAME.HELPER_TEXT')}
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+            <TextInput
+              isRequired
+              type="text"
+              id="name"
+              name="name"
+              aria-describedby={'name-helper'}
+              value={name}
+              onChange={handleNameChange}
+              autoFocus={true}
+              autoComplete="on"
+              validated={nameValidated}
+              placeholder={currLayout.name}
+            />
+          </FormGroup>
+          <FormGroup label={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.LABEL')} fieldId="description">
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem variant={descriptionValidated}>
+                  {descriptionValidated === ValidatedOptions.error
+                    ? descriptionErrorMessage
+                    : t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.HELPER_TEXT')}
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+            <TextArea
+              type="text"
+              id="description"
+              name="description"
+              aria-describedby={'description-helper'}
+              value={description}
+              onChange={handleDescriptionChange}
+              validated={descriptionValidated}
+              placeholder={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.PLACEHOLDER')}
+            />
+          </FormGroup>
+          <ActionGroup>
+            <Button
+              variant="primary"
+              onClick={handleSubmit}
+              isDisabled={nameValidated !== ValidatedOptions.success || descriptionValidated === ValidatedOptions.error}
+            >
+              {downloadModal ? t('DOWNLOAD') : t('SUBMIT')}
+            </Button>
+            <Button variant="link" onClick={handleClose}>
+              {t('CANCEL')}
+            </Button>
+          </ActionGroup>
+        </Form>
+      </ModalBody>
     </Modal>
   );
 };

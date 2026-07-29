@@ -301,7 +301,6 @@ exports[`<Reports /> renders correctly 1`] = `
                                 1
                               </b>
                                
-                              
                             </div>
                             <div
                               class="pf-v6-c-pagination__page-menu"
@@ -331,7 +330,6 @@ exports[`<Reports /> renders correctly 1`] = `
                                     1
                                   </b>
                                    
-                                  
                                 </span>
                                 <span
                                   class="pf-v6-c-menu-toggle__controls"
