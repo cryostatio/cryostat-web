@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GcLoggingStatus, Target } from '@app/Shared/Services/api.types';
+import { UnifiedLoggingStatus, Target } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
@@ -32,14 +32,14 @@ import {
   SplitItem,
 } from '@patternfly/react-core';
 import * as React from 'react';
-import { GcLoggingModal } from './GcLoggingModal';
+import { UnifiedLoggingModal } from './UnifiedLoggingModal';
 
-export interface GcLoggingStatusSummaryProps {
-  status?: GcLoggingStatus;
+export interface UnifiedLoggingStatusSummaryProps {
+  status?: UnifiedLoggingStatus;
   isLoading: boolean;
 }
 
-export const GcLoggingStatusSummary: React.FC<GcLoggingStatusSummaryProps> = ({ status, isLoading }) => {
+export const UnifiedLoggingStatusSummary: React.FC<UnifiedLoggingStatusSummaryProps> = ({ status, isLoading }) => {
   const { t } = useCryostatTranslation();
 
   const whatLabels = React.useMemo(() => (status?.what ? status.what.split('+').filter(Boolean) : []), [status]);
@@ -56,15 +56,15 @@ export const GcLoggingStatusSummary: React.FC<GcLoggingStatusSummaryProps> = ({ 
   return (
     <DescriptionList isHorizontal isCompact>
       <DescriptionListGroup>
-        <DescriptionListTerm>{t('GcLoggingStatusCard.STATUS_LABEL')}</DescriptionListTerm>
+        <DescriptionListTerm>{t('UnifiedLoggingStatusCard.STATUS_LABEL')}</DescriptionListTerm>
         <DescriptionListDescription>
-          {status?.enabled ? t('GcLoggingStatusCard.ENABLED') : t('GcLoggingStatusCard.DISABLED')}
+          {status?.enabled ? t('UnifiedLoggingStatusCard.ENABLED') : t('UnifiedLoggingStatusCard.DISABLED')}
         </DescriptionListDescription>
       </DescriptionListGroup>
       {status?.enabled && (
         <>
           <DescriptionListGroup>
-            <DescriptionListTerm>{t('GcLoggingStatusCard.LOG_FILE_PATH_LABEL')}</DescriptionListTerm>
+            <DescriptionListTerm>{t('UnifiedLoggingStatusCard.LOG_FILE_PATH_LABEL')}</DescriptionListTerm>
             <DescriptionListDescription>
               {status.logFilePath ? (
                 <LabelGroup>
@@ -78,7 +78,7 @@ export const GcLoggingStatusSummary: React.FC<GcLoggingStatusSummaryProps> = ({ 
             </DescriptionListDescription>
           </DescriptionListGroup>
           <DescriptionListGroup>
-            <DescriptionListTerm>{t('GcLoggingStatusCard.WHAT_LABEL')}</DescriptionListTerm>
+            <DescriptionListTerm>{t('UnifiedLoggingStatusCard.WHAT_LABEL')}</DescriptionListTerm>
             <DescriptionListDescription>
               {whatLabels.length ? (
                 <LabelGroup>
@@ -94,7 +94,7 @@ export const GcLoggingStatusSummary: React.FC<GcLoggingStatusSummaryProps> = ({ 
             </DescriptionListDescription>
           </DescriptionListGroup>
           <DescriptionListGroup>
-            <DescriptionListTerm>{t('GcLoggingStatusCard.DECORATORS_LABEL')}</DescriptionListTerm>
+            <DescriptionListTerm>{t('UnifiedLoggingStatusCard.DECORATORS_LABEL')}</DescriptionListTerm>
             <DescriptionListDescription>
               {decoratorLabels.length ? (
                 <LabelGroup>
@@ -115,23 +115,23 @@ export const GcLoggingStatusSummary: React.FC<GcLoggingStatusSummaryProps> = ({ 
   );
 };
 
-export interface GcLoggingStatusCardProps {
+export interface UnifiedLoggingStatusCardProps {
   target: Target;
 }
 
-export const GcLoggingStatusCard: React.FC<GcLoggingStatusCardProps> = ({ target }) => {
+export const UnifiedLoggingStatusCard: React.FC<UnifiedLoggingStatusCardProps> = ({ target }) => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
-  const [status, setStatus] = React.useState<GcLoggingStatus | undefined>(undefined);
+  const [status, setStatus] = React.useState<UnifiedLoggingStatus | undefined>(undefined);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const fetchStatus = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.api.getGcLoggingStatus(target, true).subscribe({
+      context.api.getUnifiedLoggingStatus(target, true).subscribe({
         next: (s) => {
           setStatus(s);
           setIsLoading(false);
@@ -152,8 +152,8 @@ export const GcLoggingStatusCard: React.FC<GcLoggingStatusCardProps> = ({ target
 
   const modalMode = status?.enabled ? 'reconfigure' : 'enable';
   const actionLabel = status?.enabled
-    ? t('GcLoggingStatusCard.RECONFIGURE_BUTTON')
-    : t('GcLoggingStatusCard.ENABLE_BUTTON');
+    ? t('UnifiedLoggingStatusCard.RECONFIGURE_BUTTON')
+    : t('UnifiedLoggingStatusCard.ENABLE_BUTTON');
 
   return (
     <>
@@ -161,7 +161,7 @@ export const GcLoggingStatusCard: React.FC<GcLoggingStatusCardProps> = ({ target
         <CardBody>
           <Split hasGutter isWrappable>
             <SplitItem isFilled>
-              <GcLoggingStatusSummary status={status} isLoading={isLoading} />
+              <UnifiedLoggingStatusSummary status={status} isLoading={isLoading} />
             </SplitItem>
             <SplitItem>
               <Button variant="secondary" size="sm" onClick={() => setIsModalOpen(true)} isDisabled={isLoading}>
@@ -172,7 +172,7 @@ export const GcLoggingStatusCard: React.FC<GcLoggingStatusCardProps> = ({ target
         </CardBody>
       </Card>
       {isModalOpen && (
-        <GcLoggingModal
+        <UnifiedLoggingModal
           isOpen={isModalOpen}
           onClose={handleModalClose}
           mode={modalMode}
@@ -184,4 +184,4 @@ export const GcLoggingStatusCard: React.FC<GcLoggingStatusCardProps> = ({ target
   );
 };
 
-export default GcLoggingStatusCard;
+export default UnifiedLoggingStatusCard;

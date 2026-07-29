@@ -22,17 +22,17 @@ import { Bullseye, EmptyState, EmptyStateBody, EmptyStateVariant, Grid, GridItem
 import { DisconnectedIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { of } from 'rxjs';
-import { AllTargetsGcLogsTable } from './AllTargetsGcLogsTable';
-import { GcLogsTable } from './GcLogsTable';
+import { AllTargetsUnifiedLogsTable } from './AllTargetsUnifiedLogsTable';
+import { UnifiedLogsTable } from './UnifiedLogsTable';
 
-export const GcLogs: React.FC = () => {
+export const UnifiedLogs: React.FC = () => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
   const [target, setTarget] = React.useState<NullableTarget>(undefined);
-  const [gcLoggingEnabled, setGcLoggingEnabled] = React.useState(false);
-  const [gcLogFilePath, setGcLogFilePath] = React.useState<string | undefined>(undefined);
+  const [loggingEnabled, setLoggingEnabled] = React.useState(false);
+  const [logFilePath, setLogFilePath] = React.useState<string | undefined>(undefined);
   const targetAsObs = React.useMemo(() => of(target), [target]);
 
   React.useEffect(() => {
@@ -40,20 +40,20 @@ export const GcLogs: React.FC = () => {
   }, [addSubscription, context.target]);
 
   const fetchStatus = React.useCallback(() => {
-    setGcLoggingEnabled(false);
-    setGcLogFilePath(undefined);
+    setLoggingEnabled(false);
+    setLogFilePath(undefined);
     if (!target) {
       return;
     }
     addSubscription(
-      context.api.getGcLoggingStatus(target, true).subscribe({
+      context.api.getUnifiedLoggingStatus(target, true).subscribe({
         next: (s) => {
-          setGcLoggingEnabled(s.enabled);
-          setGcLogFilePath(s.logFilePath);
+          setLoggingEnabled(s.enabled);
+          setLogFilePath(s.logFilePath);
         },
         error: () => {
-          setGcLoggingEnabled(false);
-          setGcLogFilePath(undefined);
+          setLoggingEnabled(false);
+          setLogFilePath(undefined);
         },
       }),
     );
@@ -66,17 +66,17 @@ export const GcLogs: React.FC = () => {
   const isAgentTarget = React.useMemo(() => Boolean(target?.agent), [target]);
 
   return (
-    <TargetView pageTitle={t('GcLogs.PAGE_TITLE')} noSelectionContent={<AllTargetsGcLogsTable />}>
+    <TargetView pageTitle={t('UnifiedLogs.PAGE_TITLE')} noSelectionContent={<AllTargetsUnifiedLogsTable />}>
       {!target ? null : !isAgentTarget ? (
         <Bullseye>
           <EmptyState variant={EmptyStateVariant.sm} icon={DisconnectedIcon}>
-            <EmptyStateBody>{t('GcLogs.AGENT_REQUIRED')}</EmptyStateBody>
+            <EmptyStateBody>{t('UnifiedLogs.AGENT_REQUIRED')}</EmptyStateBody>
           </EmptyState>
         </Bullseye>
       ) : (
         <Grid hasGutter>
           <GridItem>
-            <GcLogsTable target={targetAsObs} gcLoggingEnabled={gcLoggingEnabled} gcLogFilePath={gcLogFilePath} />
+            <UnifiedLogsTable target={targetAsObs} loggingEnabled={loggingEnabled} logFilePath={logFilePath} />
           </GridItem>
         </Grid>
       )}
@@ -84,4 +84,4 @@ export const GcLogs: React.FC = () => {
   );
 };
 
-export default GcLogs;
+export default UnifiedLogs;

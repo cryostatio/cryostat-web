@@ -74,9 +74,9 @@ import {
   SmartTrigger,
   AsyncProfilerStatus,
   AsyncProfile,
-  GcLoggingStatus,
-  GcLog,
-  GcLogDirectory,
+  UnifiedLoggingStatus,
+  UnifiedLog,
+  UnifiedLogDirectory,
   AuditQueryParams,
   AuditRevisionsResponse,
   AuditRevisionDetail,
@@ -2164,18 +2164,18 @@ export class ApiService {
     );
   }
 
-  getGcLoggingStatus(target: Target, suppressNotifications = false): Observable<GcLoggingStatus> {
-    return this.doGet<GcLoggingStatus>(
-      `diagnostics/targets/${target.id}/gclogging`,
+  getUnifiedLoggingStatus(target: Target, suppressNotifications = false): Observable<UnifiedLoggingStatus> {
+    return this.doGet<UnifiedLoggingStatus>(
+      `diagnostics/targets/${target.id}/unified-logging`,
       'beta',
       undefined,
       suppressNotifications,
     );
   }
 
-  enableGcLogging(target: Target, what: string, decorators: string): Observable<boolean> {
+  enableUnifiedLogging(target: Target, what: string, decorators: string): Observable<boolean> {
     const params = new URLSearchParams({ what, decorators });
-    return this.sendRequest('beta', `diagnostics/targets/${target.id}/gclogging?${params}`, {
+    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logging?${params}`, {
       method: 'POST',
     }).pipe(
       map((resp) => resp.ok),
@@ -2183,9 +2183,9 @@ export class ApiService {
     );
   }
 
-  reconfigureGcLogging(target: Target, what: string, decorators: string): Observable<boolean> {
+  reconfigureUnifiedLogging(target: Target, what: string, decorators: string): Observable<boolean> {
     const params = new URLSearchParams({ what, decorators });
-    return this.sendRequest('beta', `diagnostics/targets/${target.id}/gclogging?${params}`, {
+    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logging?${params}`, {
       method: 'PATCH',
     }).pipe(
       map((resp) => resp.ok),
@@ -2193,8 +2193,8 @@ export class ApiService {
     );
   }
 
-  disableGcLogging(target: Target): Observable<boolean> {
-    return this.sendRequest('beta', `diagnostics/targets/${target.id}/gclogging`, {
+  disableUnifiedLogging(target: Target): Observable<boolean> {
+    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logging`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -2202,8 +2202,8 @@ export class ApiService {
     );
   }
 
-  pullGcLog(target: Target): Observable<GcLog | null> {
-    return this.sendRequest('beta', `diagnostics/targets/${target.id}/gclogging/pull`, {
+  pullUnifiedLog(target: Target): Observable<UnifiedLog | null> {
+    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logging/pull`, {
       method: 'POST',
     }).pipe(
       concatMap((resp) => (resp.status === 204 ? Promise.resolve(null) : resp.json())),
@@ -2211,20 +2211,25 @@ export class ApiService {
     );
   }
 
-  getGcLogs(target: Target, suppressNotifications = false): Observable<GcLog[]> {
-    return this.doGet<GcLog[]>(`diagnostics/targets/${target.id}/gclogs`, 'beta', undefined, suppressNotifications);
+  getUnifiedLogs(target: Target, suppressNotifications = false): Observable<UnifiedLog[]> {
+    return this.doGet<UnifiedLog[]>(
+      `diagnostics/targets/${target.id}/unified-logs`,
+      'beta',
+      undefined,
+      suppressNotifications,
+    );
   }
 
-  downloadGcLog(target: Target, gcLog: GcLog): void {
+  downloadUnifiedLog(target: Target, log: UnifiedLog): void {
     this.ctx
-      .url(gcLog.downloadUrl ?? `/api/beta/diagnostics/targets/${target.id}/gclogs/${gcLog.gcLogId}`)
+      .url(log.downloadUrl ?? `/api/beta/diagnostics/targets/${target.id}/unified-logs/${log.logId}`)
       .subscribe((resourceUrl) =>
-        this.downloadFile(resourceUrl, new URLSearchParams({ filename: gcLog.gcLogId }), gcLog.gcLogId),
+        this.downloadFile(resourceUrl, new URLSearchParams({ filename: log.logId }), log.logId),
       );
   }
 
-  deleteGcLog(target: Target, gcLogId: string): Observable<boolean> {
-    return this.sendRequest('beta', `diagnostics/targets/${target.id}/gclogs/${gcLogId}`, {
+  deleteUnifiedLog(target: Target, logId: string): Observable<boolean> {
+    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logs/${logId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -2232,8 +2237,8 @@ export class ApiService {
     );
   }
 
-  deleteArchivedGcLogFromPath(jvmId: string, gcLogId: string): Observable<boolean> {
-    return this.sendRequest('beta', `diagnostics/fs/gclogs/${jvmId}/${gcLogId}`, {
+  deleteArchivedUnifiedLogFromPath(jvmId: string, logId: string): Observable<boolean> {
+    return this.sendRequest('beta', `diagnostics/fs/unified-logs/${jvmId}/${logId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -2241,14 +2246,14 @@ export class ApiService {
     );
   }
 
-  getAllGcLogs(suppressNotifications = false): Observable<GcLogDirectory[]> {
-    return this.doGet<GcLogDirectory[]>('diagnostics/fs/gclogs', 'beta', undefined, suppressNotifications);
+  getAllUnifiedLogs(suppressNotifications = false): Observable<UnifiedLogDirectory[]> {
+    return this.doGet<UnifiedLogDirectory[]>('diagnostics/fs/unified-logs', 'beta', undefined, suppressNotifications);
   }
 
-  postGcLogMetadataForJvmId(jvmId: string, gcLogId: string, labels: KeyValue[]): Observable<GcLog> {
+  postUnifiedLogMetadataForJvmId(jvmId: string, logId: string, labels: KeyValue[]): Observable<UnifiedLog> {
     return this.ctx.headers({ 'Content-Type': 'application/json' }).pipe(
       concatMap((headers) =>
-        this.sendRequest('beta', `diagnostics/fs/gclogs/${jvmId}/${gcLogId}`, {
+        this.sendRequest('beta', `diagnostics/fs/unified-logs/${jvmId}/${logId}`, {
           method: 'PATCH',
           body: JSON.stringify({ labels: this.transformLabelsToObject(labels) }),
           headers,
@@ -2259,10 +2264,10 @@ export class ApiService {
     );
   }
 
-  postGcLogMetadata(target: Target, gcLogId: string, labels: KeyValue[]): Observable<GcLog> {
+  postUnifiedLogMetadata(target: Target, logId: string, labels: KeyValue[]): Observable<UnifiedLog> {
     return this.ctx.headers({ 'Content-Type': 'application/json' }).pipe(
       concatMap((headers) =>
-        this.sendRequest('beta', `diagnostics/targets/${target.id}/gclogs/${gcLogId}`, {
+        this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logs/${logId}`, {
           method: 'PATCH',
           body: JSON.stringify({ labels: this.transformLabelsToObject(labels) }),
           headers,

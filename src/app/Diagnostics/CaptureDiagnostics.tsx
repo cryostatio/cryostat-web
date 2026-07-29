@@ -18,7 +18,7 @@ import { DiagnosticsCard } from '@app/Dashboard/Diagnostics/DiagnosticsCard';
 import { TargetView } from '@app/TargetView/TargetView';
 import { Grid, GridItem, Stack, StackItem } from '@patternfly/react-core';
 import * as React from 'react';
-import { GcCaptureCard } from './GcCaptureCard';
+import { UnifiedLoggingCaptureCard } from './UnifiedLoggingCaptureCard';
 
 export interface CaptureDiagnosticsProps {}
 
@@ -29,7 +29,7 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
         <GridItem span={4}>
           <Stack hasGutter>
             <StackItem>
-              <GcCaptureCard />
+              <UnifiedLoggingCaptureCard />
             </StackItem>
             <StackItem>
               <DiagnosticsCard span={4} dashboardId={0} isResizable={false} isDraggable={false} />

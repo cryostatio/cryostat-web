@@ -602,27 +602,27 @@ export const messageKeys = new Map([
     } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.GcLogUploaded,
+    NotificationCategory.UnifiedLogUploaded,
     {
       variant: AlertVariant.success,
-      title: 'GC Log pulled',
-      body: (evt) => `GC Log ${evt.message.gcLog.gcLogId} pulled from target ${evt.message.jvmId}`,
+      title: 'Log pulled',
+      body: (evt) => `Log ${evt.message.unifiedLog.logId} pulled from target ${evt.message.jvmId}`,
     } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.GcLogDeleted,
+    NotificationCategory.UnifiedLogDeleted,
     {
       variant: AlertVariant.success,
-      title: 'GC Log deleted',
-      body: (evt) => `GC Log ${evt.message.gcLog.gcLogId} was deleted`,
+      title: 'Log deleted',
+      body: (evt) => `Log ${evt.message.unifiedLog.logId} was deleted`,
     } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.GcLogMetadataUpdated,
+    NotificationCategory.UnifiedLogMetadataUpdated,
     {
       variant: AlertVariant.success,
-      title: 'GC Log metadata updated',
-      body: (evt) => `${evt.message.gcLog.gcLogId} in target ${evt.message.jvmId} metadata was updated`,
+      title: 'Log metadata updated',
+      body: (evt) => `${evt.message.unifiedLog.logId} in target ${evt.message.jvmId} metadata was updated`,
     } as NotificationMessageMapper,
   ],
 ]);

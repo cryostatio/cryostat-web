@@ -15,9 +15,9 @@
  */
 
 import { defaultArchiveFilters } from '@app/Shared/Redux/Filters/ArchiveFiltersSlice';
-import { defaultGcLogFilters } from '@app/Shared/Redux/Filters/GcLogFilterSlice';
 import { defaultHeapDumpFilters } from '@app/Shared/Redux/Filters/HeapDumpFilterSlice';
 import { defaultThreadDumpFilters } from '@app/Shared/Redux/Filters/ThreadDumpFilterSlice';
+import { defaultUnifiedLogFilters } from '@app/Shared/Redux/Filters/UnifiedLogFilterSlice';
 import {
   defaultAutomatedAnalysisFilters,
   defaultNavMenuConfigs,
@@ -171,7 +171,7 @@ export const basePreloadedState: RootState = {
   recordingFilters: defaultRecordingFilters,
   heapDumpFilters: defaultHeapDumpFilters,
   threadDumpFilters: defaultThreadDumpFilters,
-  gcLogFilters: defaultGcLogFilters,
+  unifiedLogFilters: defaultUnifiedLogFilters,
   automatedAnalysisFilters: defaultAutomatedAnalysisFilters,
   archiveFilters: defaultArchiveFilters,
   topologyConfigs: defaultTopologyConfig,

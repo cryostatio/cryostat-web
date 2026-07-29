@@ -28,7 +28,6 @@ import { AnalyzeHeapDumps } from './Diagnostics/AnalyzeHeapDumps';
 import AnalyzeThreadDumps from './Diagnostics/AnalyzeThreadDumps';
 import CaptureDiagnostics from './Diagnostics/CaptureDiagnostics';
 import Events from './Events/Events';
-import GcLogs from './GcLogs/GcLogs';
 import Instrumentation from './Instrumentation/Instrumentation';
 import NotFound from './NotFound/NotFound';
 import QuickStarts from './QuickStarts/QuickStartsCatalogPage';
@@ -44,6 +43,7 @@ import { DefaultFallBack, ErrorBoundary } from './Shared/Components/ErrorBoundar
 import { FeatureLevel } from './Shared/Services/service.types';
 import Topology from './Topology/Topology';
 import CaptureSmartTriggers from './Triggers/CaptureSmartTriggers';
+import UnifiedLogs from './UnifiedLogs/UnifiedLogs';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
 import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
@@ -237,11 +237,11 @@ const diagnosticsRoutes: IAppRoute[] = [
     navSubgroup: ANALYZE,
   },
   {
-    component: GcLogs,
-    label: 'GC Log Archives',
-    path: toPath('/gc-logs'),
-    title: 'GC Log Archives',
-    description: 'Manage GC logging sessions and view collected GC log archives.',
+    component: UnifiedLogs,
+    label: 'Unified Log Archives',
+    path: toPath('/unified-logs'),
+    title: 'Unified Log Archives',
+    description: 'Manage Unified Logging sessions and view collected log archives.',
     navGroup: DIAGNOSTICS,
     navSubgroup: ANALYZE,
     featureLevel: FeatureLevel.BETA,

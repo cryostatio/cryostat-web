@@ -16,7 +16,7 @@
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
 import { includesLabel } from '@app/RecordingMetadata/utils';
 import { LoadingProps } from '@app/Shared/Components/types';
-import { NotificationCategory, Target, KeyValue, GcLog, NullableTarget } from '@app/Shared/Services/api.types';
+import { NotificationCategory, Target, KeyValue, UnifiedLog, NullableTarget } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode } from '@app/utils/utils';
@@ -36,24 +36,24 @@ import {
 import * as React from 'react';
 import { combineLatest, concatMap, filter, first, forkJoin, Observable, of } from 'rxjs';
 
-export interface BulkEditGcLogLabelsProps {
+export interface BulkEditUnifiedLogLabelsProps {
   checkedIndices: number[];
   target: Observable<NullableTarget>;
   jvmId?: string;
-  directoryGcLogs?: GcLog[];
+  directoryUnifiedLogs?: UnifiedLog[];
   closePanelFn?: () => void;
 }
 
-export const BulkEditGcLogLabels: React.FC<BulkEditGcLogLabelsProps> = ({
+export const BulkEditUnifiedLogLabels: React.FC<BulkEditUnifiedLogLabelsProps> = ({
   checkedIndices,
   target: propsTarget,
   jvmId,
-  directoryGcLogs,
+  directoryUnifiedLogs,
   closePanelFn,
 }) => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
-  const [gcLogs, setGcLogs] = React.useState<GcLog[]>([]);
+  const [unifiedLogs, setUnifiedLogs] = React.useState<UnifiedLog[]>([]);
   const [commonLabels, setCommonLabels] = React.useState<KeyValue[]>([]);
   const [savedCommonLabels, setSavedCommonLabels] = React.useState<KeyValue[]>([]);
   const [valid, setValid] = React.useState(ValidatedOptions.default);
@@ -70,16 +70,16 @@ export const BulkEditGcLogLabels: React.FC<BulkEditGcLogLabelsProps> = ({
     const toDelete = savedCommonLabels.filter((label) => !includesLabel(commonLabels, label));
     addSubscription(
       propsTarget.pipe(filter((t) => !!t)).subscribe((t) => {
-        gcLogs.forEach((r: GcLog) => {
-          const idx = hashCode(r.gcLogId);
+        unifiedLogs.forEach((r: UnifiedLog) => {
+          const idx = hashCode(r.logId);
           if (checkedIndices.includes(idx)) {
             const updatedLabels = [...(r.metadata?.labels ?? []), ...commonLabels].filter(
               (label) => !includesLabel(toDelete, label),
             );
             if (jvmId) {
-              tasks.push(context.api.postGcLogMetadataForJvmId(jvmId, r.gcLogId, updatedLabels).pipe(first()));
+              tasks.push(context.api.postUnifiedLogMetadataForJvmId(jvmId, r.logId, updatedLabels).pipe(first()));
             } else {
-              tasks.push(context.api.postGcLogMetadata(t as Target, r.gcLogId, updatedLabels).pipe(first()));
+              tasks.push(context.api.postUnifiedLogMetadata(t as Target, r.logId, updatedLabels).pipe(first()));
             }
           }
         });
@@ -100,7 +100,7 @@ export const BulkEditGcLogLabels: React.FC<BulkEditGcLogLabelsProps> = ({
     commonLabels,
     savedCommonLabels,
     checkedIndices,
-    gcLogs,
+    unifiedLogs,
   ]);
 
   const handleCancel = React.useCallback(() => {
@@ -110,100 +110,103 @@ export const BulkEditGcLogLabels: React.FC<BulkEditGcLogLabelsProps> = ({
 
   const updateCommonLabels = React.useCallback(
     (setLabels: (l: KeyValue[]) => void) => {
-      const allGcLogLabels: KeyValue[][] = [];
+      const allUnifiedLogLabels: KeyValue[][] = [];
 
-      gcLogs.forEach((r: GcLog) => {
-        const idx = hashCode(r.gcLogId);
+      unifiedLogs.forEach((r: UnifiedLog) => {
+        const idx = hashCode(r.logId);
         if (checkedIndices.includes(idx)) {
-          allGcLogLabels.push(r.metadata?.labels ?? []);
+          allUnifiedLogLabels.push(r.metadata?.labels ?? []);
         }
       });
 
       const updatedCommonLabels =
-        allGcLogLabels.length > 0
-          ? allGcLogLabels.reduce((prev, curr) => prev.filter((label) => includesLabel(curr, label)), allGcLogLabels[0])
+        allUnifiedLogLabels.length > 0
+          ? allUnifiedLogLabels.reduce(
+              (prev, curr) => prev.filter((label) => includesLabel(curr, label)),
+              allUnifiedLogLabels[0],
+            )
           : [];
 
       setLabels(updatedCommonLabels);
     },
-    [gcLogs, checkedIndices],
+    [unifiedLogs, checkedIndices],
   );
 
-  const refreshGcLogsList = React.useCallback(() => {
-    let observable: Observable<GcLog[]>;
+  const refreshUnifiedLogsList = React.useCallback(() => {
+    let observable: Observable<UnifiedLog[]>;
     if (jvmId) {
-      observable = of(directoryGcLogs ?? []);
+      observable = of(directoryUnifiedLogs ?? []);
     } else {
       observable = propsTarget.pipe(
         filter((target) => !!target),
-        concatMap((target: Target) => context.api.getGcLogs(target)),
+        concatMap((target: Target) => context.api.getUnifiedLogs(target)),
         first(),
       );
     }
-    addSubscription(observable.subscribe((value) => setGcLogs(value)));
-  }, [addSubscription, propsTarget, jvmId, directoryGcLogs, context.api]);
+    addSubscription(observable.subscribe((value) => setUnifiedLogs(value)));
+  }, [addSubscription, propsTarget, jvmId, directoryUnifiedLogs, context.api]);
 
   const saveButtonLoadingProps = React.useMemo(
     () =>
       ({
         spinnerAriaValueText: 'Saving',
-        spinnerAriaLabel: 'saving-gc-log-labels',
+        spinnerAriaLabel: 'saving-unified-log-labels',
         isLoading: loading,
       }) as LoadingProps,
     [loading],
   );
 
   React.useEffect(() => {
-    addSubscription(propsTarget.subscribe(refreshGcLogsList));
-  }, [addSubscription, propsTarget, refreshGcLogsList]);
+    addSubscription(propsTarget.subscribe(refreshUnifiedLogsList));
+  }, [addSubscription, propsTarget, refreshUnifiedLogsList]);
 
-  // Depends only on GcLogMetadataUpdated notifications
-  // since updates on list of gc logs will mount a completely new BulkEditGcLogLabels.
+  // Depends only on UnigiedLogMetadataUpdated notifications
+  // since updates on list of logs will mount a completely new BulkEditUnifiedLogLabels.
   React.useEffect(() => {
     addSubscription(
       combineLatest([
         propsTarget,
-        context.notificationChannel.messages(NotificationCategory.GcLogMetadataUpdated),
+        context.notificationChannel.messages(NotificationCategory.UnifiedLogMetadataUpdated),
       ]).subscribe((parts) => {
         const currentTarget = parts[0];
         const event = parts[1];
 
         const isMatch =
-          currentTarget?.jvmId === event.message.jvmId || currentTarget?.jvmId === event.message.gcLog.jvmId;
+          currentTarget?.jvmId === event.message.jvmId || currentTarget?.jvmId === event.message.unifiedLog.jvmId;
 
-        setGcLogs((oldGcLogs) => {
-          return oldGcLogs.map((gcLog) => {
-            if (isMatch && gcLog.gcLogId === event.message.gcLog.gcLogId) {
-              const updatedGcLog = {
-                ...gcLog,
+        setUnifiedLogs((oldUnifiedLogs) => {
+          return oldUnifiedLogs.map((unifiedLog) => {
+            if (isMatch && unifiedLog.logId === event.message.unifiedLog.logId) {
+              const updatedUnifiedLog = {
+                ...unifiedLog,
                 metadata: {
-                  labels: event.message.gcLog.metadata?.labels ?? [],
+                  labels: event.message.unifiedLog.metadata?.labels ?? [],
                 },
               };
-              return updatedGcLog;
+              return updatedUnifiedLog;
             }
-            return gcLog;
+            return unifiedLog;
           });
         });
       }),
     );
-  }, [addSubscription, propsTarget, context.notificationChannel, setGcLogs]);
+  }, [addSubscription, propsTarget, context.notificationChannel, setUnifiedLogs]);
 
   React.useEffect(() => {
     updateCommonLabels(setCommonLabels);
     updateCommonLabels(setSavedCommonLabels);
-  }, [gcLogs, setCommonLabels, setSavedCommonLabels, updateCommonLabels]);
+  }, [unifiedLogs, setCommonLabels, setSavedCommonLabels, updateCommonLabels]);
 
   return (
     <>
       <Stack hasGutter>
         <StackItem>
-          <Title headingLevel="h2">{t('BulkEditGcLogLabels.TITLE')}</Title>
+          <Title headingLevel="h2">{t('BulkEditUnifiedLogLabels.TITLE')}</Title>
         </StackItem>
         <StackItem>
           <HelperText>
             <HelperTextItem>
-              {t('BulkEditGcLogLabels.HELPER_TEXT')} <Label isCompact>key=value</Label>.
+              {t('BulkEditUnifiedLogLabels.HELPER_TEXT')} <Label isCompact>key=value</Label>.
             </HelperTextItem>
           </HelperText>
         </StackItem>
@@ -224,7 +227,7 @@ export const BulkEditGcLogLabels: React.FC<BulkEditGcLogLabelsProps> = ({
                 isDisabled={valid != ValidatedOptions.success || loading}
                 {...saveButtonLoadingProps}
               >
-                {loading ? t('BulkEditGcLogLabels.SAVING') : t('BulkEditGcLogLabels.SAVE')}
+                {loading ? t('BulkEditUnifiedLogLabels.SAVING') : t('BulkEditUnifiedLogLabels.SAVE')}
               </Button>
             </ActionListItem>
             <ActionListItem>

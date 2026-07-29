@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GcLog, NullableTarget } from '@app/Shared/Services/api.types';
+import { UnifiedLog, NullableTarget } from '@app/Shared/Services/api.types';
 import {
   DrawerActions,
   DrawerCloseButton,
@@ -23,21 +23,21 @@ import {
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { Observable } from 'rxjs';
-import { BulkEditGcLogLabels } from './BulkEditGcLogLabels';
+import { BulkEditUnifiedLogLabels } from './BulkEditUnifiedLogLabels';
 
-export interface GcLogLabelsPanelProps {
+export interface UnifiedLogLabelsPanelProps {
   setShowPanel: (showPanel: React.SetStateAction<boolean>) => void;
   checkedIndices: number[];
   target: Observable<NullableTarget>;
   jvmId?: string;
-  directoryGcLogs?: GcLog[];
+  directoryUnifiedLogs?: UnifiedLog[];
 }
 
-export const GcLogLabelsPanel: React.FC<GcLogLabelsPanelProps> = ({
+export const UnifiedLogLabelsPanel: React.FC<UnifiedLogLabelsPanelProps> = ({
   checkedIndices,
   target: propsTarget,
   jvmId,
-  directoryGcLogs,
+  directoryUnifiedLogs,
   setShowPanel,
 }) => {
   return (
@@ -52,11 +52,11 @@ export const GcLogLabelsPanel: React.FC<GcLogLabelsPanelProps> = ({
         </DrawerActions>
       </DrawerHead>
       <DrawerPanelBody>
-        <BulkEditGcLogLabels
+        <BulkEditUnifiedLogLabels
           checkedIndices={checkedIndices}
           target={propsTarget}
           jvmId={jvmId}
-          directoryGcLogs={directoryGcLogs}
+          directoryUnifiedLogs={directoryUnifiedLogs}
           closePanelFn={() => setShowPanel(false)}
         />
       </DrawerPanelBody>

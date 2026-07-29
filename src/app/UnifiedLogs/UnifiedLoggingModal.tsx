@@ -216,7 +216,7 @@ const DECORATOR_OPTIONS = [
   'tags',
 ];
 
-export interface GcLoggingModalProps {
+export interface UnifiedLoggingModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: 'enable' | 'reconfigure';
@@ -224,7 +224,7 @@ export interface GcLoggingModalProps {
   currentDecorators?: string;
 }
 
-export const GcLoggingModal: React.FC<GcLoggingModalProps> = ({
+export const UnifiedLoggingModal: React.FC<UnifiedLoggingModalProps> = ({
   isOpen,
   onClose,
   mode,
@@ -334,11 +334,11 @@ export const GcLoggingModal: React.FC<GcLoggingModalProps> = ({
     setIsSubmitting(true);
     let req$;
     if (!enabled) {
-      req$ = context.api.disableGcLogging(target);
+      req$ = context.api.disableUnifiedLogging(target);
     } else if (mode === 'enable') {
-      req$ = context.api.enableGcLogging(target, chosenWhat.join('+'), chosenDecorators.join(','));
+      req$ = context.api.enableUnifiedLogging(target, chosenWhat.join('+'), chosenDecorators.join(','));
     } else {
-      req$ = context.api.reconfigureGcLogging(target, chosenWhat.join('+'), chosenDecorators.join(','));
+      req$ = context.api.reconfigureUnifiedLogging(target, chosenWhat.join('+'), chosenDecorators.join(','));
     }
     addSubscription(
       req$.pipe(first()).subscribe({
@@ -351,29 +351,30 @@ export const GcLoggingModal: React.FC<GcLoggingModalProps> = ({
     );
   }, [addSubscription, context.api, enabled, mode, target, chosenWhat, chosenDecorators, onClose]);
 
-  const title = mode === 'enable' ? t('GcLoggingModal.ENABLE_TITLE') : t('GcLoggingModal.RECONFIGURE_TITLE');
-  const submitLabel = mode === 'enable' ? t('GcLoggingModal.ENABLE_SUBMIT') : t('GcLoggingModal.RECONFIGURE_SUBMIT');
+  const title = mode === 'enable' ? t('UnifiedLoggingModal.ENABLE_TITLE') : t('UnifiedLoggingModal.RECONFIGURE_TITLE');
+  const submitLabel =
+    mode === 'enable' ? t('UnifiedLoggingModal.ENABLE_SUBMIT') : t('UnifiedLoggingModal.RECONFIGURE_SUBMIT');
 
   return (
     <Modal appendTo={portalRoot} isOpen={isOpen} onClose={onClose} title={title} variant={ModalVariant.medium}>
       <Form>
         {mode === 'reconfigure' && (
-          <FormGroup fieldId="gc-logging-enabled" label={t('GcLoggingModal.ENABLED_LABEL')}>
+          <FormGroup fieldId="unified-logging-enabled" label={t('UnifiedLoggingModal.ENABLED_LABEL')}>
             <Switch
-              id="gc-logging-enabled"
+              id="unified-logging-enabled"
               isChecked={enabled}
               onChange={(_evt: React.FormEvent<HTMLInputElement>, checked: boolean) => setEnabled(checked)}
-              label={enabled ? t('GcLoggingModal.ENABLED_ON') : t('GcLoggingModal.ENABLED_OFF')}
+              label={enabled ? t('UnifiedLoggingModal.ENABLED_ON') : t('UnifiedLoggingModal.ENABLED_OFF')}
             />
           </FormGroup>
         )}
-        <FormGroup fieldId="gc-logging-what" label={t('GcLoggingModal.WHAT_LABEL')}>
+        <FormGroup fieldId="unified-logging-what" label={t('UnifiedLoggingModal.WHAT_LABEL')}>
           <InputGroup>
             <InputGroupItem isFill>
               <TextInput
-                id="gc-logging-what-custom"
-                aria-label={t('GcLoggingModal.WHAT_CUSTOM_ARIA')}
-                placeholder={t('GcLoggingModal.WHAT_CUSTOM_PLACEHOLDER')}
+                id="unified-logging-what-custom"
+                aria-label={t('UnifiedLoggingModal.WHAT_CUSTOM_ARIA')}
+                placeholder={t('UnifiedLoggingModal.WHAT_CUSTOM_PLACEHOLDER')}
                 value={customWhatInput}
                 onChange={(_evt, v) => setCustomWhatInput(v)}
                 onKeyDown={handleWhatKeyDown}
@@ -381,30 +382,30 @@ export const GcLoggingModal: React.FC<GcLoggingModalProps> = ({
             </InputGroupItem>
             <InputGroupItem>
               <Button variant="secondary" onClick={addCustomWhat} isDisabled={!customWhatInput.trim()}>
-                {t('GcLoggingModal.ADD_CUSTOM')}
+                {t('UnifiedLoggingModal.ADD_CUSTOM')}
               </Button>
             </InputGroupItem>
           </InputGroup>
           <FormHelperText>
             <HelperText>
-              <HelperTextItem>{t('GcLoggingModal.CUSTOM_HELPER_TEXT')}</HelperTextItem>
+              <HelperTextItem>{t('UnifiedLoggingModal.CUSTOM_HELPER_TEXT')}</HelperTextItem>
             </HelperText>
           </FormHelperText>
           <DualListSelector
             availableOptions={availableWhat}
             chosenOptions={chosenWhat}
             onListChange={handleWhatListChange as any}
-            id="gc-logging-what-selector"
+            id="unified-logging-what-selector"
             isSearchable
           />
         </FormGroup>
-        <FormGroup fieldId="gc-logging-decorators" label={t('GcLoggingModal.DECORATORS_LABEL')}>
+        <FormGroup fieldId="unified-logging-decorators" label={t('UnifiedLoggingModal.DECORATORS_LABEL')}>
           <InputGroup>
             <InputGroupItem isFill>
               <TextInput
-                id="gc-logging-decorators-custom"
-                aria-label={t('GcLoggingModal.DECORATORS_CUSTOM_ARIA')}
-                placeholder={t('GcLoggingModal.DECORATORS_CUSTOM_PLACEHOLDER')}
+                id="unified-logging-decorators-custom"
+                aria-label={t('UnifiedLoggingModal.DECORATORS_CUSTOM_ARIA')}
+                placeholder={t('UnifiedLoggingModal.DECORATORS_CUSTOM_PLACEHOLDER')}
                 value={customDecoratorInput}
                 onChange={(_evt, v) => setCustomDecoratorInput(v)}
                 onKeyDown={handleDecoratorKeyDown}
@@ -412,20 +413,20 @@ export const GcLoggingModal: React.FC<GcLoggingModalProps> = ({
             </InputGroupItem>
             <InputGroupItem>
               <Button variant="secondary" onClick={addCustomDecorator} isDisabled={!customDecoratorInput.trim()}>
-                {t('GcLoggingModal.ADD_CUSTOM')}
+                {t('UnifiedLoggingModal.ADD_CUSTOM')}
               </Button>
             </InputGroupItem>
           </InputGroup>
           <FormHelperText>
             <HelperText>
-              <HelperTextItem>{t('GcLoggingModal.CUSTOM_HELPER_TEXT')}</HelperTextItem>
+              <HelperTextItem>{t('UnifiedLoggingModal.CUSTOM_HELPER_TEXT')}</HelperTextItem>
             </HelperText>
           </FormHelperText>
           <DualListSelector
             availableOptions={availableDecorators}
             chosenOptions={chosenDecorators}
             onListChange={handleDecoratorListChange as any}
-            id="gc-logging-decorators-selector"
+            id="unified-logging-decorators-selector"
             isSearchable
           />
         </FormGroup>
@@ -447,4 +448,4 @@ export const GcLoggingModal: React.FC<GcLoggingModalProps> = ({
   );
 };
 
-export default GcLoggingModal;
+export default UnifiedLoggingModal;

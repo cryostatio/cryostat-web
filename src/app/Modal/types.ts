@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 export enum DeleteOrDisableWarningType {
-  DeleteGcLog = 'DeleteGcLog',
+  DeleteUnifiedLog = 'DeleteUnifiedLog',
   DeleteActiveRecordings = 'DeleteActiveRecordings',
   DeleteArchivedRecordings = 'DeleteArchivedRecordings',
   DeleteAutomatedRules = 'DeleteAutomatedRules',
@@ -169,16 +169,16 @@ export const DeleteAsyncProfile: DeleteOrDisableWarning = {
   ariaLabel: 'async-profiler delete warning',
 };
 
-export const DeleteGcLog: DeleteOrDisableWarning = {
-  id: DeleteOrDisableWarningType.DeleteGcLog,
-  title: 'Permanently delete this GC log?',
-  label: 'Delete GC Log',
-  description: `If you click Delete, this GC log file will be removed from storage.`,
-  ariaLabel: 'GC Log delete warning',
+export const DeleteUnifiedLog: DeleteOrDisableWarning = {
+  id: DeleteOrDisableWarningType.DeleteUnifiedLog,
+  title: 'Permanently delete this log?',
+  label: 'Delete Log',
+  description: `If you click Delete, this log file will be removed from storage.`,
+  ariaLabel: 'Log delete warning',
 };
 
 export const DeleteWarningKinds: DeleteOrDisableWarning[] = [
-  DeleteGcLog,
+  DeleteUnifiedLog,
   DeleteActiveRecordings,
   DeleteArchivedRecordings,
   DeleteAutomatedRules,

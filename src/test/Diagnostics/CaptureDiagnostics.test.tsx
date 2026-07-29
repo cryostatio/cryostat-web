@@ -42,7 +42,7 @@ describe('<CaptureDiagnostics />', () => {
   beforeEach(() => {
     jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(target));
     jest
-      .spyOn(defaultServices.api, 'getGcLoggingStatus')
+      .spyOn(defaultServices.api, 'getUnifiedLoggingStatus')
       .mockReturnValue(of({ enabled: true, what: 'gc+safepoint', decorators: 'time,level' }));
     jest.spyOn(defaultServices.api, 'getThreadDumps').mockReturnValue(of([]));
     jest.spyOn(defaultServices.api, 'getHeapDumps').mockReturnValue(of([]));
@@ -65,12 +65,12 @@ describe('<CaptureDiagnostics />', () => {
     });
 
     expect(await screen.findByRole('button', { name: testT('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON') })).toBeVisible();
-    expect(screen.getByText(testT('GcCaptureCard.TITLE'))).toBeVisible();
+    expect(screen.getByText(testT('UnifiedLoggingCaptureCard.TITLE'))).toBeVisible();
     expect(screen.getByText(testT('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE'))).toBeVisible();
-    expect(screen.queryByText(testT('GcLoggingStatusCard.STATUS_LABEL'))).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: testT('GcLoggingStatusCard.ENABLE_BUTTON') })).not.toBeInTheDocument();
+    expect(screen.queryByText(testT('UnifiedLoggingStatusCard.STATUS_LABEL'))).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: testT('UnifiedLoggingStatusCard.ENABLE_BUTTON') })).not.toBeInTheDocument();
     expect(
-      screen.queryByRole('button', { name: testT('GcLoggingStatusCard.RECONFIGURE_BUTTON') }),
+      screen.queryByRole('button', { name: testT('UnifiedLoggingStatusCard.RECONFIGURE_BUTTON') }),
     ).not.toBeInTheDocument();
   });
 
@@ -83,11 +83,11 @@ describe('<CaptureDiagnostics />', () => {
       },
     });
 
-    expect(screen.getByText(testT('GcCaptureCard.TITLE'))).toBeVisible();
+    expect(screen.getByText(testT('UnifiedLoggingCaptureCard.TITLE'))).toBeVisible();
     expect(screen.getByText(testT('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE'))).toBeVisible();
-    expect(await screen.findByText(testT('GcLoggingStatusCard.STATUS_LABEL'))).toBeVisible();
-    expect(screen.getByText(testT('GcLoggingStatusCard.ENABLED'))).toBeVisible();
-    expect(screen.getByRole('button', { name: testT('GcLoggingStatusCard.RECONFIGURE_BUTTON') })).toBeVisible();
+    expect(await screen.findByText(testT('UnifiedLoggingStatusCard.STATUS_LABEL'))).toBeVisible();
+    expect(screen.getByText(testT('UnifiedLoggingStatusCard.ENABLED'))).toBeVisible();
+    expect(screen.getByRole('button', { name: testT('UnifiedLoggingStatusCard.RECONFIGURE_BUTTON') })).toBeVisible();
     expect(screen.getByRole('button', { name: testT('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON') })).toBeVisible();
     expect(screen.getByRole('button', { name: testT('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON') })).toBeVisible();
   });

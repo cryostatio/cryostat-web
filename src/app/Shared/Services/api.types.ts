@@ -674,18 +674,18 @@ export interface AsyncProfilerStatus {
 }
 
 // ======================================
-// GC log resources
+// Unified Logging resources
 // ======================================
 
-export interface GcLoggingStatus {
+export interface UnifiedLoggingStatus {
   enabled: boolean;
   logFilePath?: string;
   what?: string;
   decorators?: string;
 }
 
-export interface GcLog {
-  gcLogId: string;
+export interface UnifiedLog {
+  logId: string;
   jvmId: string;
   size: number;
   lastModified?: number;
@@ -693,9 +693,9 @@ export interface GcLog {
   metadata?: Metadata;
 }
 
-export interface GcLogDirectory {
+export interface UnifiedLogDirectory {
   jvmId: string;
-  gcLogs: GcLog[];
+  logs: UnifiedLog[];
 }
 
 // ======================================
@@ -782,9 +782,9 @@ export enum NotificationCategory {
   AsyncProfileCreated = 'AsyncProfilerCreated',
   AsyncProfileStopped = 'AsyncProfilerStopped',
   AsyncProfileDeleted = 'AsyncProfilerDeleted',
-  GcLogUploaded = 'GcLogUploaded',
-  GcLogDeleted = 'GcLogDeleted',
-  GcLogMetadataUpdated = 'GcLogMetadataUpdated',
+  UnifiedLogUploaded = 'UnifiedLogUploaded',
+  UnifiedLogDeleted = 'UnifiedLogDeleted',
+  UnifiedLogMetadataUpdated = 'UnifiedLogMetadataUpdated',
 }
 
 export enum CloseStatus {

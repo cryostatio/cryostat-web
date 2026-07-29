@@ -1647,13 +1647,13 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               data-ouia-component-id="OUIA-Generated-Switch-49"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
-              for="GcLogUploaded"
+              for="UnifiedLogUploaded"
             >
               <input
-                aria-labelledby="GcLogUploaded-label"
+                aria-labelledby="UnifiedLogUploaded-label"
                 checked=""
                 class="pf-v6-c-switch__input"
-                id="GcLogUploaded"
+                id="UnifiedLogUploaded"
                 role="switch"
                 type="checkbox"
               />
@@ -1663,9 +1663,9 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               <span
                 aria-hidden="true"
                 class="pf-v6-c-switch__label"
-                id="GcLogUploaded-label"
+                id="UnifiedLogUploaded-label"
               >
-                GC Log pulled
+                Log pulled
               </span>
             </label>
           </div>
@@ -1677,13 +1677,13 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               data-ouia-component-id="OUIA-Generated-Switch-50"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
-              for="GcLogDeleted"
+              for="UnifiedLogDeleted"
             >
               <input
-                aria-labelledby="GcLogDeleted-label"
+                aria-labelledby="UnifiedLogDeleted-label"
                 checked=""
                 class="pf-v6-c-switch__input"
-                id="GcLogDeleted"
+                id="UnifiedLogDeleted"
                 role="switch"
                 type="checkbox"
               />
@@ -1693,9 +1693,9 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               <span
                 aria-hidden="true"
                 class="pf-v6-c-switch__label"
-                id="GcLogDeleted-label"
+                id="UnifiedLogDeleted-label"
               >
-                GC Log deleted
+                Log deleted
               </span>
             </label>
           </div>
@@ -1707,13 +1707,13 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               data-ouia-component-id="OUIA-Generated-Switch-51"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
-              for="GcLogMetadataUpdated"
+              for="UnifiedLogMetadataUpdated"
             >
               <input
-                aria-labelledby="GcLogMetadataUpdated-label"
+                aria-labelledby="UnifiedLogMetadataUpdated-label"
                 checked=""
                 class="pf-v6-c-switch__input"
-                id="GcLogMetadataUpdated"
+                id="UnifiedLogMetadataUpdated"
                 role="switch"
                 type="checkbox"
               />
@@ -1723,9 +1723,9 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               <span
                 aria-hidden="true"
                 class="pf-v6-c-switch__label"
-                id="GcLogMetadataUpdated-label"
+                id="UnifiedLogMetadataUpdated-label"
               >
-                GC Log metadata updated
+                Log metadata updated
               </span>
             </label>
           </div>

@@ -16,7 +16,7 @@
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
-import { GcLog, GcLogDirectory, NotificationCategory } from '@app/Shared/Services/api.types';
+import { UnifiedLog, UnifiedLogDirectory, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -50,7 +50,7 @@ import {
 import _ from 'lodash';
 import * as React from 'react';
 import { of } from 'rxjs';
-import { GcLogsTable } from './GcLogsTable';
+import { UnifiedLogsTable } from './UnifiedLogsTable';
 
 const tableColumns: TableColumn[] = [
   {
@@ -67,20 +67,20 @@ const tableColumns: TableColumn[] = [
   },
 ];
 
-type GcLogsForTarget = {
+type UnifiedLogsForTarget = {
   jvmId: string;
   archiveCount: number;
-  gcLogs: GcLog[];
+  logs: UnifiedLog[];
 };
 
-export interface AllTargetsGcLogsTableProps {}
+export interface AllTargetsUnifiedLogsTableProps {}
 
-export const AllTargetsGcLogsTable: React.FC<AllTargetsGcLogsTableProps> = () => {
+export const AllTargetsUnifiedLogsTable: React.FC<AllTargetsUnifiedLogsTableProps> = () => {
   const context = React.useContext(ServiceContext);
   const { t } = useCryostatTranslation();
 
   const [searchText, setSearchText] = React.useState('');
-  const [gcLogsForTargets, setGcLogsForTargets] = React.useState<GcLogsForTarget[]>([]);
+  const [logsForTargets, setUnifiedLogsForTargets] = React.useState<UnifiedLogsForTarget[]>([]);
   const [expandedJvmIds, setExpandedJvmIds] = React.useState<string[]>([]);
   const [hideEmptyTargets, setHideEmptyTargets] = React.useState(true);
   const [errorMessage, setErrorMessage] = React.useState('');
@@ -97,24 +97,24 @@ export const AllTargetsGcLogsTable: React.FC<AllTargetsGcLogsTableProps> = () =>
   );
 
   const handleDirectories = React.useCallback(
-    (dirs: GcLogDirectory[]) => {
+    (dirs: UnifiedLogDirectory[]) => {
       setIsLoading(false);
       setErrorMessage('');
-      setGcLogsForTargets(
+      setUnifiedLogsForTargets(
         dirs.map((dir) => ({
           jvmId: dir.jvmId,
-          archiveCount: dir.gcLogs.length,
-          gcLogs: dir.gcLogs,
+          archiveCount: dir.logs.length,
+          logs: dir.logs,
         })),
       );
     },
-    [setIsLoading, setErrorMessage, setGcLogsForTargets],
+    [setIsLoading, setErrorMessage, setUnifiedLogsForTargets],
   );
 
   const refreshDirectories = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.api.getAllGcLogs(true).subscribe({
+      context.api.getAllUnifiedLogs(true).subscribe({
         next: handleDirectories,
         error: handleError,
       }),
@@ -146,37 +146,41 @@ export const AllTargetsGcLogsTable: React.FC<AllTargetsGcLogsTableProps> = () =>
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.GcLogUploaded).subscribe(() => refreshDirectories()),
+      context.notificationChannel
+        .messages(NotificationCategory.UnifiedLogUploaded)
+        .subscribe(() => refreshDirectories()),
     );
   }, [addSubscription, context.notificationChannel, refreshDirectories]);
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.GcLogDeleted).subscribe(() => refreshDirectories()),
+      context.notificationChannel
+        .messages(NotificationCategory.UnifiedLogDeleted)
+        .subscribe(() => refreshDirectories()),
     );
   }, [addSubscription, context.notificationChannel, refreshDirectories]);
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.GcLogMetadataUpdated).subscribe((event) => {
-        const updatedGcLogInfo = event.message;
-        setGcLogsForTargets((current) =>
+      context.notificationChannel.messages(NotificationCategory.UnifiedLogMetadataUpdated).subscribe((event) => {
+        const updatedLogInfo = event.message;
+        setUnifiedLogsForTargets((current) =>
           current.map((entry) => ({
             ...entry,
-            gcLogs: entry.gcLogs.map((gcLog) => {
-              if (gcLog.gcLogId === updatedGcLogInfo.gcLog.gcLogId) {
+            logs: entry.logs.map((log) => {
+              if (log.logId === updatedLogInfo.unifiedLog.logId) {
                 return {
-                  ...gcLog,
-                  metadata: { ...(gcLog.metadata ?? {}), labels: updatedGcLogInfo?.gcLog?.metadata?.labels ?? [] },
+                  ...log,
+                  metadata: { ...(log.metadata ?? {}), labels: updatedLogInfo?.unifiedLog?.metadata?.labels ?? [] },
                 };
               }
-              return gcLog;
+              return log;
             }),
           })),
         );
       }),
     );
-  }, [addSubscription, context.notificationChannel, setGcLogsForTargets]);
+  }, [addSubscription, context.notificationChannel, setUnifiedLogsForTargets]);
 
   const handleSearchInput = React.useCallback((_, searchInput: string) => setSearchText(searchInput), [setSearchText]);
 
@@ -192,10 +196,10 @@ export const AllTargetsGcLogsTable: React.FC<AllTargetsGcLogsTableProps> = () =>
   }, []);
 
   const filteredAndSorted = React.useMemo(() => {
-    let updated = gcLogsForTargets;
+    let updated = logsForTargets;
     if (searchText) {
       const reg = new RegExp(_.escapeRegExp(searchText), 'i');
-      updated = gcLogsForTargets.filter(({ jvmId }) => reg.test(jvmId));
+      updated = logsForTargets.filter(({ jvmId }) => reg.test(jvmId));
     }
     return sortResources(
       {
@@ -205,7 +209,7 @@ export const AllTargetsGcLogsTable: React.FC<AllTargetsGcLogsTableProps> = () =>
       updated.filter((v) => !hideEmptyTargets || v.archiveCount > 0),
       tableColumns,
     );
-  }, [searchText, gcLogsForTargets, sortBy, hideEmptyTargets]);
+  }, [searchText, logsForTargets, sortBy, hideEmptyTargets]);
 
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
@@ -218,7 +222,7 @@ export const AllTargetsGcLogsTable: React.FC<AllTargetsGcLogsTableProps> = () =>
   if (isError) {
     view = (
       <ErrorView
-        title={t('AllTargetsGcLogsTable.ERROR_TITLE')}
+        title={t('AllTargetsUnifiedLogsTable.ERROR_TITLE')}
         message={errorMessage}
         retry={isAuthFail(errorMessage) ? authRetry : undefined}
       />
@@ -228,12 +232,12 @@ export const AllTargetsGcLogsTable: React.FC<AllTargetsGcLogsTableProps> = () =>
   } else if (!filteredAndSorted.length) {
     view = (
       <Bullseye>
-        <EmptyState headingLevel="h4" icon={SearchIcon} titleText={t('AllTargetsGcLogsTable.NO_ARCHIVES')} />
+        <EmptyState headingLevel="h4" icon={SearchIcon} titleText={t('AllTargetsUnifiedLogsTable.NO_ARCHIVES')} />
       </Bullseye>
     );
   } else {
     const rowPairs: React.ReactElement[] = [];
-    filteredAndSorted.forEach(({ jvmId, archiveCount, gcLogs }, idx) => {
+    filteredAndSorted.forEach(({ jvmId, archiveCount, logs }, idx) => {
       const isExpanded = expandedJvmIds.includes(jvmId);
       rowPairs.push(
         <Tr key={`${jvmId}-parent`}>
@@ -266,7 +270,7 @@ export const AllTargetsGcLogsTable: React.FC<AllTargetsGcLogsTableProps> = () =>
           <Td colSpan={tableColumns.length + 1}>
             {isExpanded ? (
               <ExpandableRowContent>
-                <GcLogsTable target={of(undefined)} isNestedTable jvmId={jvmId} gcLogs={gcLogs} />
+                <UnifiedLogsTable target={of(undefined)} isNestedTable jvmId={jvmId} logs={logs} />
               </ExpandableRowContent>
             ) : null}
           </Td>
@@ -275,7 +279,7 @@ export const AllTargetsGcLogsTable: React.FC<AllTargetsGcLogsTableProps> = () =>
     });
 
     view = (
-      <Table aria-label="all-targets-gc-logs-table" isStickyHeader>
+      <Table aria-label="all-targets-unified-logs-table" isStickyHeader>
         <Thead>
           <Tr>
             <Th key="table-header-expand" />
@@ -297,13 +301,13 @@ export const AllTargetsGcLogsTable: React.FC<AllTargetsGcLogsTableProps> = () =>
 
   return (
     <OuterScrollContainer className="archive-table-outer-container">
-      <Toolbar id="all-targets-gc-logs-toolbar">
+      <Toolbar id="all-targets-unified-logs-toolbar">
         <ToolbarContent>
           <ToolbarGroup variant="filter-group">
             <ToolbarItem>
               <SearchInput
                 style={{ minWidth: '30ch' }}
-                placeholder={t('AllTargetsGcLogsTable.SEARCH_PLACEHOLDER')}
+                placeholder={t('AllTargetsUnifiedLogsTable.SEARCH_PLACEHOLDER')}
                 value={searchText}
                 onChange={handleSearchInput}
                 onClear={handleSearchInputClear}
@@ -312,10 +316,10 @@ export const AllTargetsGcLogsTable: React.FC<AllTargetsGcLogsTableProps> = () =>
           </ToolbarGroup>
           <ToolbarItem alignSelf="center">
             <Checkbox
-              name="all-targets-gc-logs-hide-check"
-              id="all-targets-gc-logs-hide-check"
-              aria-label="all-targets-gc-logs-hide-check"
-              label={t('AllTargetsGcLogsTable.HIDE_TARGET_WITH_ZERO_LOGS')}
+              name="all-targets-unified-logs-hide-check"
+              id="all-targets-unified-logs-hide-check"
+              aria-label="all-targets-unified-logs-hide-check"
+              label={t('AllTargetsUnifiedLogsTable.HIDE_TARGET_WITH_ZERO_LOGS')}
               onChange={handleHideEmptyTarget}
               isChecked={hideEmptyTargets}
             />
@@ -327,4 +331,4 @@ export const AllTargetsGcLogsTable: React.FC<AllTargetsGcLogsTableProps> = () =>
   );
 };
 
-export default AllTargetsGcLogsTable;
+export default AllTargetsUnifiedLogsTable;

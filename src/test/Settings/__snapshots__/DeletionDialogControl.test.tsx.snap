@@ -118,13 +118,13 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               data-ouia-component-id="OUIA-Generated-Switch-2"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
-              for="DeleteGcLog"
+              for="DeleteUnifiedLog"
             >
               <input
-                aria-labelledby="DeleteGcLog-label"
+                aria-labelledby="DeleteUnifiedLog-label"
                 checked=""
                 class="pf-v6-c-switch__input"
-                id="DeleteGcLog"
+                id="DeleteUnifiedLog"
                 role="switch"
                 type="checkbox"
               />
@@ -134,9 +134,9 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               <span
                 aria-hidden="true"
                 class="pf-v6-c-switch__label"
-                id="DeleteGcLog-label"
+                id="DeleteUnifiedLog-label"
               >
-                Delete GC Log
+                Delete Log
               </span>
             </label>
           </div>

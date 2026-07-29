@@ -20,15 +20,15 @@ import { LabelCell } from '@app/RecordingMetadata/LabelCell';
 import { RowAction } from '@app/Recordings/RecordingActions';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import {
-  GcLogDeleteCategoryFiltersIntent,
-  GcLogDeleteFilterIntent,
-  GcLogAddFilterIntent,
-  GcLogDeleteAllFiltersIntent,
-  TargetGcLogFilters,
-  emptyArchivedGcLogFilters,
-} from '@app/Shared/Redux/Filters/GcLogFilterSlice';
+  UnifiedLogDeleteCategoryFiltersIntent,
+  UnifiedLogDeleteFilterIntent,
+  UnifiedLogAddFilterIntent,
+  UnifiedLogDeleteAllFiltersIntent,
+  TargetUnifiedLogFilters,
+  emptyArchivedUnifiedLogFilters,
+} from '@app/Shared/Redux/Filters/UnifiedLogFilterSlice';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { GcLog, NotificationCategory, NullableTarget, Target } from '@app/Shared/Services/api.types';
+import { UnifiedLog, NotificationCategory, NullableTarget, Target } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
@@ -65,13 +65,13 @@ import { ISortBy, SortByDirection, Tbody, Td, ThProps, Tr } from '@patternfly/re
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { combineLatest, concatMap, first, forkJoin, Observable, of } from 'rxjs';
-import { GcLogFilters, GcLogFiltersCategories, filterGcLogs } from './Filters/GcLogFilters';
-import { GcLogLabelsPanel } from './GcLogLabelsPanel';
+import { UnifiedLogFilters, UnifiedLogFiltersCategories, filterUnifiedLogs } from './Filters/UnifiedLogFilters';
+import { UnifiedLogLabelsPanel } from './UnifiedLogLabelsPanel';
 
 const tableColumns: TableColumn[] = [
   {
     title: 'Name',
-    keyPaths: ['gcLogId'],
+    keyPaths: ['logId'],
     sortable: true,
   },
   {
@@ -90,28 +90,28 @@ const tableColumns: TableColumn[] = [
   },
 ];
 
-export type GcLogTableActions = 'DELETE' | 'PULL';
+export type UnifiedLogTableActions = 'DELETE' | 'PULL';
 
-export interface GcLogsTableProps {
+export interface UnifiedLogsTableProps {
   target: Observable<NullableTarget>;
   isNestedTable?: boolean;
-  /** When set, use these gc logs directly (nested/read-only mode) instead of fetching */
-  gcLogs?: GcLog[];
+  /** When set, use these logs directly (nested/read-only mode) instead of fetching */
+  logs?: UnifiedLog[];
   /** When set, delete via jvmId path rather than targetId */
   jvmId?: string;
-  /** Pull button is only enabled when GC logging is active on the target */
-  gcLoggingEnabled?: boolean;
-  /** The log file path reported by the GC logging status */
-  gcLogFilePath?: string;
+  /** Pull button is only enabled when logging is active on the target */
+  loggingEnabled?: boolean;
+  /** The log file path reported by the logging status */
+  logFilePath?: string;
 }
 
-export const GcLogsTable: React.FC<GcLogsTableProps> = ({
+export const UnifiedLogsTable: React.FC<UnifiedLogsTableProps> = ({
   target: propsTarget,
   isNestedTable = false,
-  gcLogs: propGcLogs,
+  logs,
   jvmId,
-  gcLoggingEnabled = false,
-  gcLogFilePath,
+  loggingEnabled = false,
+  logFilePath,
 }) => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
@@ -119,7 +119,7 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
 
-  const [gcLogs, setGcLogs] = React.useState<GcLog[]>([]);
+  const [unifiedLogs, setUnifiedLogs] = React.useState<UnifiedLog[]>([]);
   const [checkedIndices, setCheckedIndices] = React.useState<number[]>([]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [showLabelsPanel, setShowLabelsPanel] = React.useState(false);
@@ -130,17 +130,17 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
   });
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
-  const [actionLoadings, setActionLoadings] = React.useState<Record<GcLogTableActions, boolean>>({
+  const [actionLoadings, setActionLoadings] = React.useState<Record<UnifiedLogTableActions, boolean>>({
     DELETE: false,
     PULL: false,
   });
 
-  const targetGcLogFilters = useSelector((state: RootState) => {
-    const filters = state.gcLogFilters.list.filter(
-      (targetFilter: TargetGcLogFilters) => targetFilter.target === targetConnectURL,
+  const targetUnifiedLogFilters = useSelector((state: RootState) => {
+    const filters = state.unifiedLogFilters.list.filter(
+      (targetFilter: TargetUnifiedLogFilters) => targetFilter.target === targetConnectURL,
     );
-    return filters.length > 0 ? filters[0].archived.filters : emptyArchivedGcLogFilters;
-  }) as GcLogFiltersCategories;
+    return filters.length > 0 ? filters[0].archived.filters : emptyArchivedUnifiedLogFilters;
+  }) as UnifiedLogFiltersCategories;
 
   const updateFilters = React.useCallback(
     (
@@ -149,19 +149,19 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
     ) => {
       if (deleted) {
         if (deleteOptions && deleteOptions.all) {
-          dispatch(GcLogDeleteCategoryFiltersIntent(target, filterKey));
+          dispatch(UnifiedLogDeleteCategoryFiltersIntent(target, filterKey));
         } else {
-          dispatch(GcLogDeleteFilterIntent(target, filterKey, filterValue, filterValueIndex));
+          dispatch(UnifiedLogDeleteFilterIntent(target, filterKey, filterValue, filterValueIndex));
         }
       } else {
-        dispatch(GcLogAddFilterIntent(target, filterKey, filterValue));
+        dispatch(UnifiedLogAddFilterIntent(target, filterKey, filterValue));
       }
     },
     [dispatch],
   );
 
   const handleClearFilters = React.useCallback(() => {
-    dispatch(GcLogDeleteAllFiltersIntent(targetConnectURL));
+    dispatch(UnifiedLogDeleteAllFiltersIntent(targetConnectURL));
   }, [dispatch, targetConnectURL]);
 
   const getSortParams = React.useCallback(
@@ -173,8 +173,8 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
     [sortBy],
   );
 
-  const handleGcLogs = React.useCallback((logs: GcLog[]) => {
-    setGcLogs(logs);
+  const handleUnifiedLogs = React.useCallback((logs: UnifiedLog[]) => {
+    setUnifiedLogs(logs);
     setIsLoading(false);
     setErrorMessage('');
   }, []);
@@ -184,9 +184,9 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
     setErrorMessage(error.message);
   }, []);
 
-  const refreshGcLogs = React.useCallback(() => {
-    if (propGcLogs !== undefined) {
-      handleGcLogs(propGcLogs);
+  const refreshUnifiedLogs = React.useCallback(() => {
+    if (logs !== undefined) {
+      handleUnifiedLogs(logs);
       return;
     }
     setIsLoading(true);
@@ -194,11 +194,11 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
       propsTarget
         .pipe(
           first(),
-          concatMap((target: Target | undefined) => (target ? context.api.getGcLogs(target) : of([]))),
+          concatMap((target: Target | undefined) => (target ? context.api.getUnifiedLogs(target) : of([]))),
         )
-        .subscribe({ next: handleGcLogs, error: handleError }),
+        .subscribe({ next: handleUnifiedLogs, error: handleError }),
     );
-  }, [addSubscription, propsTarget, propGcLogs, context.api, handleGcLogs, handleError]);
+  }, [addSubscription, propsTarget, logs, context.api, handleUnifiedLogs, handleError]);
 
   React.useEffect(() => {
     addSubscription(
@@ -206,27 +206,29 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
         setTargetConnectURL(target?.connectUrl || '');
         setCheckedIndices([]);
         setHeaderChecked(false);
-        refreshGcLogs();
+        refreshUnifiedLogs();
       }),
     );
-  }, [addSubscription, propsTarget, refreshGcLogs]);
+  }, [addSubscription, propsTarget, refreshUnifiedLogs]);
 
   React.useEffect(() => {
-    if (propGcLogs !== undefined) {
-      handleGcLogs(propGcLogs);
+    if (logs !== undefined) {
+      handleUnifiedLogs(logs);
     }
-  }, [propGcLogs, handleGcLogs]);
+  }, [logs, handleUnifiedLogs]);
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.GcLogUploaded).subscribe(() => refreshGcLogs()),
+      context.notificationChannel
+        .messages(NotificationCategory.UnifiedLogUploaded)
+        .subscribe(() => refreshUnifiedLogs()),
     );
-  }, [addSubscription, context.notificationChannel, refreshGcLogs]);
+  }, [addSubscription, context.notificationChannel, refreshUnifiedLogs]);
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.GcLogDeleted).subscribe((msg) => {
-        setGcLogs((old) => old.filter((l) => l.gcLogId !== msg.message.gcLog.gcLogId));
+      context.notificationChannel.messages(NotificationCategory.UnifiedLogDeleted).subscribe((msg) => {
+        setUnifiedLogs((old) => old.filter((l) => l.logId !== msg.message.unifiedLog.logId));
       }),
     );
   }, [addSubscription, context.notificationChannel]);
@@ -235,18 +237,18 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
     addSubscription(
       combineLatest([
         propsTarget,
-        context.notificationChannel.messages(NotificationCategory.GcLogMetadataUpdated),
+        context.notificationChannel.messages(NotificationCategory.UnifiedLogMetadataUpdated),
       ]).subscribe(([currentTarget, event]) => {
         const targetJvmId = jvmId ?? currentTarget?.jvmId;
-        if (targetJvmId !== event.message.jvmId && targetJvmId !== event.message.gcLog.jvmId) {
+        if (targetJvmId !== event.message.jvmId && targetJvmId !== event.message.unifiedLog.jvmId) {
           return;
         }
-        setGcLogs((old) =>
-          old.map((gcLog) => {
-            if (gcLog.gcLogId === event.message.gcLog.gcLogId) {
-              return { ...gcLog, metadata: { labels: event.message.gcLog.metadata?.labels ?? [] } };
+        setUnifiedLogs((old) =>
+          old.map((log) => {
+            if (log.logId === event.message.unifiedLog.logId) {
+              return { ...log, metadata: { labels: event.message.unifiedLog.metadata?.labels ?? [] } };
             }
-            return gcLog;
+            return log;
           }),
         );
       }),
@@ -256,33 +258,33 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) return;
     const id = window.setInterval(
-      () => refreshGcLogs(),
+      () => refreshUnifiedLogs(),
       context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits(),
     );
     return () => window.clearInterval(id);
-  }, [context.settings, refreshGcLogs]);
+  }, [context.settings, refreshUnifiedLogs]);
 
-  const filteredGcLogs = React.useMemo(() => {
-    return filterGcLogs(gcLogs, targetGcLogFilters);
-  }, [gcLogs, targetGcLogFilters]);
+  const filteredUnifiedLogs = React.useMemo(() => {
+    return filterUnifiedLogs(unifiedLogs, targetUnifiedLogFilters);
+  }, [unifiedLogs, targetUnifiedLogFilters]);
 
-  const sortedGcLogs = React.useMemo(() => {
+  const sortedUnifiedLogs = React.useMemo(() => {
     const idx = sortBy.index ?? 0;
     const dir = sortBy.direction ?? SortByDirection.asc;
-    const key = tableColumns[idx]?.keyPaths?.[0] ?? 'gcLogId';
-    return [...filteredGcLogs].sort((a, b) => {
+    const key = tableColumns[idx]?.keyPaths?.[0] ?? 'unifiedLogId';
+    return [...filteredUnifiedLogs].sort((a, b) => {
       const av = a[key] ?? '';
       const bv = b[key] ?? '';
       return dir === SortByDirection.asc ? (av < bv ? -1 : av > bv ? 1 : 0) : av > bv ? -1 : av < bv ? 1 : 0;
     });
-  }, [filteredGcLogs, sortBy]);
+  }, [filteredUnifiedLogs, sortBy]);
 
   const handleHeaderCheck = React.useCallback(
     (_event, checked: boolean) => {
       setHeaderChecked(checked);
-      setCheckedIndices(checked ? sortedGcLogs.map((l) => hashCode(l.gcLogId)) : []);
+      setCheckedIndices(checked ? sortedUnifiedLogs.map((l) => hashCode(l.logId)) : []);
     },
-    [sortedGcLogs],
+    [sortedUnifiedLogs],
   );
 
   const handleRowCheck = React.useCallback((checked: boolean, index: number) => {
@@ -296,20 +298,20 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
 
   React.useEffect(() => {
     setCheckedIndices((ci) => {
-      const ids = new Set(sortedGcLogs.map((l) => hashCode(l.gcLogId)));
+      const ids = new Set(sortedUnifiedLogs.map((l) => hashCode(l.logId)));
       return ci.filter((i) => ids.has(i));
     });
-  }, [sortedGcLogs]);
+  }, [sortedUnifiedLogs]);
 
   React.useEffect(() => {
-    setHeaderChecked(sortedGcLogs.length > 0 && checkedIndices.length === sortedGcLogs.length);
-  }, [checkedIndices, sortedGcLogs]);
+    setHeaderChecked(sortedUnifiedLogs.length > 0 && checkedIndices.length === sortedUnifiedLogs.length);
+  }, [checkedIndices, sortedUnifiedLogs]);
 
   const handleDownload = React.useCallback(
-    (gcLog: GcLog) => {
+    (log: UnifiedLog) => {
       addSubscription(
         propsTarget.pipe(first()).subscribe((t) => {
-          if (t) context.api.downloadGcLog(t, gcLog);
+          if (t) context.api.downloadUnifiedLog(t, log);
         }),
       );
     },
@@ -320,9 +322,9 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
     setActionLoadings((old) => ({ ...old, DELETE: true }));
     const tasks: Observable<boolean>[] = [];
     if (jvmId) {
-      sortedGcLogs.forEach((l) => {
-        if (checkedIndices.includes(hashCode(l.gcLogId))) {
-          tasks.push(context.api.deleteArchivedGcLogFromPath(jvmId, l.gcLogId).pipe(first()));
+      sortedUnifiedLogs.forEach((l) => {
+        if (checkedIndices.includes(hashCode(l.logId))) {
+          tasks.push(context.api.deleteArchivedUnifiedLogFromPath(jvmId, l.logId).pipe(first()));
         }
       });
       addSubscription(
@@ -337,9 +339,9 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
             first(),
             concatMap((t: Target | undefined) => {
               if (!t) return of([]);
-              sortedGcLogs.forEach((l) => {
-                if (checkedIndices.includes(hashCode(l.gcLogId))) {
-                  tasks.push(context.api.deleteGcLog(t, l.gcLogId).pipe(first()));
+              sortedUnifiedLogs.forEach((l) => {
+                if (checkedIndices.includes(hashCode(l.logId))) {
+                  tasks.push(context.api.deleteUnifiedLog(t, l.logId).pipe(first()));
                 }
               });
               return forkJoin(tasks.length ? tasks : [of(true)]);
@@ -348,7 +350,7 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
           .subscribe(() => setActionLoadings((old) => ({ ...old, DELETE: false }))),
       );
     }
-  }, [addSubscription, propsTarget, jvmId, sortedGcLogs, checkedIndices, context.api]);
+  }, [addSubscription, propsTarget, jvmId, sortedUnifiedLogs, checkedIndices, context.api]);
 
   const handlePull = React.useCallback(() => {
     setActionLoadings((old) => ({ ...old, PULL: true }));
@@ -356,13 +358,13 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
       propsTarget
         .pipe(
           first(),
-          concatMap((t: Target | undefined) => (t ? context.api.pullGcLog(t) : of(null))),
+          concatMap((t: Target | undefined) => (t ? context.api.pullUnifiedLog(t) : of(null))),
         )
         .subscribe({
-          next: (gcLog) => {
+          next: (log) => {
             setActionLoadings((old) => ({ ...old, PULL: false }));
-            if (gcLog === null) {
-              notifications.info(t('GcLogs.PULL_NO_CONTENT_TITLE'), t('GcLogs.PULL_NO_CONTENT_MESSAGE'));
+            if (log === null) {
+              notifications.info(t('UnifiedLogs.PULL_NO_CONTENT_TITLE'), t('UnifiedLogs.PULL_NO_CONTENT_MESSAGE'));
             }
           },
           error: () => setActionLoadings((old) => ({ ...old, PULL: false })),
@@ -376,39 +378,39 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
 
   const LabelsPanel = React.useMemo(
     () => (
-      <GcLogLabelsPanel
+      <UnifiedLogLabelsPanel
         setShowPanel={setShowLabelsPanel}
         checkedIndices={checkedIndices}
         target={propsTarget}
         jvmId={jvmId}
-        directoryGcLogs={propGcLogs}
+        directoryUnifiedLogs={logs}
       />
     ),
-    [checkedIndices, propsTarget, jvmId, propGcLogs],
+    [checkedIndices, propsTarget, jvmId, logs],
   );
 
   const toolbar = React.useMemo(
     () => (
-      <GcLogsToolbar
+      <UnifiedLogsToolbar
         target={targetConnectURL}
         checkedIndices={checkedIndices}
-        gcLogFilters={targetGcLogFilters}
-        gcLogs={gcLogs}
+        logFilters={targetUnifiedLogFilters}
+        logs={unifiedLogs}
         updateFilters={updateFilters}
         handleClearFilters={handleClearFilters}
         handleEditLabels={handleEditLabels}
         actionLoadings={actionLoadings}
         handleDelete={handleDeleteSelected}
         handlePull={isNestedTable ? undefined : handlePull}
-        gcLoggingEnabled={gcLoggingEnabled}
-        gcLogFilePath={gcLogFilePath}
+        loggingEnabled={loggingEnabled}
+        logFilePath={logFilePath}
       />
     ),
     [
       targetConnectURL,
       checkedIndices,
-      targetGcLogFilters,
-      gcLogs,
+      targetUnifiedLogFilters,
+      unifiedLogs,
       updateFilters,
       handleClearFilters,
       handleEditLabels,
@@ -416,8 +418,8 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
       handleDeleteSelected,
       handlePull,
       isNestedTable,
-      gcLoggingEnabled,
-      gcLogFilePath,
+      loggingEnabled,
+      logFilePath,
     ],
   );
 
@@ -427,31 +429,31 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
   );
 
   return (
-    <Drawer isExpanded={showLabelsPanel} isInline id={'gc-logs-drawer'}>
-      <DrawerContent panelContent={LabelsPanel} className="gc-logs-table-drawer-content">
+    <Drawer isExpanded={showLabelsPanel} isInline id={'unified-logs-drawer'}>
+      <DrawerContent panelContent={LabelsPanel} className="unified-logs-table-drawer-content">
         <DrawerContentBody hasPadding>
           <DiagnosticsTable
-            tableTitle={t('GcLogs.TABLE_TITLE')}
+            tableTitle={t('UnifiedLogs.TABLE_TITLE')}
             toolbar={toolbar}
             tableColumns={columnConfig}
             isHeaderChecked={headerChecked}
             onHeaderCheck={handleHeaderCheck}
             isLoading={isLoading}
-            isEmpty={!gcLogs.length}
-            isEmptyFilterResult={!filteredGcLogs.length}
+            isEmpty={!unifiedLogs.length}
+            isEmptyFilterResult={!filteredUnifiedLogs.length}
             clearFilters={handleClearFilters}
             isNestedTable={isNestedTable}
             errorMessage={errorMessage}
           >
-            {sortedGcLogs.map((l) => (
-              <GcLogRow
-                key={l.gcLogId}
-                gcLog={l}
-                index={hashCode(l.gcLogId)}
+            {sortedUnifiedLogs.map((l) => (
+              <UnifiedLogRow
+                key={l.logId}
+                log={l}
+                index={hashCode(l.logId)}
                 checkedIndices={checkedIndices}
                 handleRowCheck={handleRowCheck}
                 onDownload={handleDownload}
-                labelFilters={targetGcLogFilters.Label}
+                labelFilters={targetUnifiedLogFilters.Label}
                 updateFilters={updateFilters}
                 currentSelectedTargetURL={targetConnectURL}
               />
@@ -465,36 +467,36 @@ export const GcLogsTable: React.FC<GcLogsTableProps> = ({
 
 // ── Toolbar ───────────────────────────────────────────────────────────────────
 
-const GC_LOG_STREAM_PATHS = ['/dev/stdout', '/dev/stderr'];
+const LOG_STREAM_PATHS = ['/dev/stdout', '/dev/stderr'];
 
-interface GcLogsToolbarProps {
+interface UnifiedLogsToolbarProps {
   target: string;
   checkedIndices: number[];
-  gcLogFilters: GcLogFiltersCategories;
-  gcLogs: GcLog[];
+  logFilters: UnifiedLogFiltersCategories;
+  logs: UnifiedLog[];
   updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
   handleClearFilters: () => void;
   handleEditLabels: () => void;
-  actionLoadings: Record<GcLogTableActions, boolean>;
+  actionLoadings: Record<UnifiedLogTableActions, boolean>;
   handleDelete: () => void;
   handlePull?: () => void;
-  gcLoggingEnabled?: boolean;
-  gcLogFilePath?: string;
+  loggingEnabled?: boolean;
+  logFilePath?: string;
 }
 
-const GcLogsToolbar: React.FC<GcLogsToolbarProps> = ({
+const UnifiedLogsToolbar: React.FC<UnifiedLogsToolbarProps> = ({
   target,
   checkedIndices,
-  gcLogFilters,
-  gcLogs,
+  logFilters,
+  logs,
   updateFilters,
   handleClearFilters,
   handleEditLabels,
   actionLoadings,
   handleDelete,
   handlePull,
-  gcLoggingEnabled = false,
-  gcLogFilePath,
+  loggingEnabled = false,
+  logFilePath,
 }) => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
@@ -502,7 +504,7 @@ const GcLogsToolbar: React.FC<GcLogsToolbarProps> = ({
   const [actionToggleOpen, setActionToggleOpen] = React.useState(false);
 
   const handleDeleteButton = React.useCallback(() => {
-    if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteGcLog)) {
+    if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteUnifiedLog)) {
       setWarningModalOpen(true);
     } else {
       handleDelete();
@@ -512,7 +514,7 @@ const GcLogsToolbar: React.FC<GcLogsToolbarProps> = ({
   const deleteModal = React.useMemo(
     () => (
       <DeleteWarningModal
-        warningType={DeleteOrDisableWarningType.DeleteGcLog}
+        warningType={DeleteOrDisableWarningType.DeleteUnifiedLog}
         visible={warningModalOpen}
         onAccept={handleDelete}
         onClose={() => setWarningModalOpen(false)}
@@ -525,18 +527,18 @@ const GcLogsToolbar: React.FC<GcLogsToolbarProps> = ({
     if (!handlePull) return null;
     const isPullDisabled =
       actionLoadings['PULL'] ||
-      !gcLoggingEnabled ||
-      (gcLogFilePath !== undefined && GC_LOG_STREAM_PATHS.includes(gcLogFilePath));
+      !loggingEnabled ||
+      (logFilePath !== undefined && LOG_STREAM_PATHS.includes(logFilePath));
     return {
       default: (
-        <Tooltip content={t('GcLogs.PULL_TOOLTIP')} appendTo={portalRoot}>
+        <Tooltip content={t('UnifiedLogs.PULL_TOOLTIP')} appendTo={portalRoot}>
           <Button
             variant="plain"
-            aria-label={t('GcLogs.PULL_ARIA')}
+            aria-label={t('UnifiedLogs.PULL_ARIA')}
             onClick={handlePull}
             isLoading={actionLoadings['PULL']}
             isDisabled={isPullDisabled}
-            data-quickstart-id="gc-logs-pull-btn"
+            data-quickstart-id="unified-logs-pull-btn"
           >
             <ImportIcon />
           </Button>
@@ -544,12 +546,12 @@ const GcLogsToolbar: React.FC<GcLogsToolbarProps> = ({
       ),
       collapsed: (
         <OverflowMenuDropdownItem key="pull-log" isShared onClick={handlePull}>
-          {t('GcLogs.PULL_TOOLTIP')}
+          {t('UnifiedLogs.PULL_TOOLTIP')}
         </OverflowMenuDropdownItem>
       ),
       key: 'pull-log',
     };
-  }, [handlePull, actionLoadings, gcLoggingEnabled, gcLogFilePath, t]);
+  }, [handlePull, actionLoadings, loggingEnabled, logFilePath, t]);
 
   const editLabelsButton = React.useMemo(
     () => ({
@@ -558,14 +560,14 @@ const GcLogsToolbar: React.FC<GcLogsToolbarProps> = ({
           variant="secondary"
           onClick={handleEditLabels}
           isDisabled={!checkedIndices.length}
-          data-quickstart-id="gc-logs-edit-labels-btn"
+          data-quickstart-id="unified-logs-edit-labels-btn"
         >
-          {t('GcLogs.EDIT_LABELS')}
+          {t('UnifiedLogs.EDIT_LABELS')}
         </Button>
       ),
       collapsed: (
         <OverflowMenuDropdownItem key="edit-labels" isShared onClick={handleEditLabels}>
-          {t('GcLogs.EDIT_LABELS')}
+          {t('UnifiedLogs.EDIT_LABELS')}
         </OverflowMenuDropdownItem>
       ),
       key: 'edit-labels',
@@ -581,14 +583,14 @@ const GcLogsToolbar: React.FC<GcLogsToolbarProps> = ({
           onClick={handleDeleteButton}
           isDisabled={!checkedIndices.length || actionLoadings['DELETE']}
           isLoading={actionLoadings['DELETE']}
-          data-quickstart-id="gc-logs-delete-btn"
+          data-quickstart-id="unified-logs-delete-btn"
         >
-          {actionLoadings['DELETE'] ? t('GcLogs.DELETING') : t('GcLogs.DELETE')}
+          {actionLoadings['DELETE'] ? t('UnifiedLogs.DELETING') : t('UnifiedLogs.DELETE')}
         </Button>
       ),
       collapsed: (
         <OverflowMenuDropdownItem key="delete" isShared onClick={handleDeleteButton}>
-          {t('GcLogs.DELETE')}
+          {t('UnifiedLogs.DELETE')}
         </OverflowMenuDropdownItem>
       ),
       key: 'delete',
@@ -605,7 +607,7 @@ const GcLogsToolbar: React.FC<GcLogsToolbarProps> = ({
     <>
       <Toolbar clearAllFilters={handleClearFilters}>
         <ToolbarContent>
-          <GcLogFilters target={target} gcLogs={gcLogs} filters={gcLogFilters} updateFilters={updateFilters} />
+          <UnifiedLogFilters target={target} logs={logs} filters={logFilters} updateFilters={updateFilters} />
           <ToolbarGroup variant="action-group-plain">
             <ToolbarItem>
               <OverflowMenu breakpoint="lg">
@@ -626,7 +628,7 @@ const GcLogsToolbar: React.FC<GcLogsToolbarProps> = ({
                         variant="plain"
                         onClick={() => setActionToggleOpen((o) => !o)}
                         isExpanded={actionToggleOpen}
-                        aria-label={t('GcLogs.ARIA_LABELS.ACTION_TOGGLE')}
+                        aria-label={t('UnifiedLogs.ARIA_LABELS.ACTION_TOGGLE')}
                       >
                         <EllipsisVIcon />
                       </MenuToggle>
@@ -647,19 +649,19 @@ const GcLogsToolbar: React.FC<GcLogsToolbarProps> = ({
 
 // ── Row ───────────────────────────────────────────────────────────────────────
 
-interface GcLogRowProps {
-  gcLog: GcLog;
+interface UnifiedLogRowProps {
+  log: UnifiedLog;
   index: number;
   checkedIndices: number[];
   handleRowCheck: (checked: boolean, index: number) => void;
-  onDownload: (gcLog: GcLog) => void;
+  onDownload: (log: UnifiedLog) => void;
   labelFilters: string[];
   updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
   currentSelectedTargetURL: string;
 }
 
-const GcLogRow: React.FC<GcLogRowProps> = ({
-  gcLog,
+const UnifiedLogRow: React.FC<UnifiedLogRowProps> = ({
+  log,
   index,
   checkedIndices,
   handleRowCheck,
@@ -678,8 +680,8 @@ const GcLogRow: React.FC<GcLogRowProps> = ({
   );
 
   const actionItems = React.useMemo<RowAction[]>(
-    () => [{ title: t('GcLogs.DOWNLOAD'), key: 'download-gc-log', onClick: () => onDownload(gcLog) }],
-    [t, gcLog, onDownload],
+    () => [{ title: t('UnifiedLogs.DOWNLOAD'), key: 'download-unified-log', onClick: () => onDownload(log) }],
+    [t, log, onDownload],
   );
 
   const toggle = React.useCallback(
@@ -689,8 +691,8 @@ const GcLogRow: React.FC<GcLogRowProps> = ({
         onClick={() => setIsOpen((o) => !o)}
         isExpanded={isOpen}
         variant="plain"
-        aria-label={t('GcLogs.ARIA_LABELS.ROW_ACTION')}
-        data-quickstart-id="gc-log-row-kebab"
+        aria-label={t('UnifiedLogs.ARIA_LABELS.ROW_ACTION')}
+        data-quickstart-id="unified-log-row-kebab"
       >
         <EllipsisVIcon />
       </MenuToggle>
@@ -703,22 +705,22 @@ const GcLogRow: React.FC<GcLogRowProps> = ({
       <Tr>
         <Td>
           <Checkbox
-            name={`gc-log-row-${index}-check`}
-            id={`gc-log-row-${index}-check`}
+            name={`unified-log-row-${index}-check`}
+            id={`unified-log-row-${index}-check`}
             isChecked={checkedIndices.includes(index)}
             onChange={handleCheck}
           />
         </Td>
-        <Td dataLabel={tableColumns[0].title}>{gcLog.gcLogId}</Td>
+        <Td dataLabel={tableColumns[0].title}>{log.logId}</Td>
         <Td dataLabel={tableColumns[1].title}>
-          {gcLog.lastModified ? (
+          {log.lastModified ? (
             <Timestamp
               tooltip={{
                 variant: TimestampTooltipVariant.custom,
-                content: dayjs(gcLog.lastModified * 1000).toISOString(),
+                content: dayjs(log.lastModified * 1000).toISOString(),
               }}
             >
-              {dayjs(gcLog.lastModified * 1000)
+              {dayjs(log.lastModified * 1000)
                 .tz(datetimeContext.timeZone.full)
                 .format('L LTS z')}
             </Timestamp>
@@ -733,10 +735,10 @@ const GcLogRow: React.FC<GcLogRowProps> = ({
               updateFilters: updateFilters,
               labelFilters: labelFilters,
             }}
-            labels={gcLog.metadata?.labels ?? []}
+            labels={log.metadata?.labels ?? []}
           />
         </Td>
-        <Td dataLabel={tableColumns[3].title}>{formatBytes(gcLog.size ?? 0)}</Td>
+        <Td dataLabel={tableColumns[3].title}>{formatBytes(log.size ?? 0)}</Td>
         <Td isActionCell>
           <Dropdown
             toggle={toggle}
@@ -765,4 +767,4 @@ const GcLogRow: React.FC<GcLogRowProps> = ({
   );
 };
 
-export default GcLogsTable;
+export default UnifiedLogsTable;

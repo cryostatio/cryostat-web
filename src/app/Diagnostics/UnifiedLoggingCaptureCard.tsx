@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GcLoggingModal } from '@app/GcLogs/GcLoggingModal';
-import { GcLoggingStatusSummary } from '@app/GcLogs/GcLoggingStatusCard';
 import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { FeatureFlag } from '@app/Shared/Components/FeatureFlag';
-import { GcLoggingStatus, NullableTarget } from '@app/Shared/Services/api.types';
+import { UnifiedLoggingStatus, NullableTarget } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { UnifiedLoggingModal } from '@app/UnifiedLogs/UnifiedLoggingModal';
+import { UnifiedLoggingStatusSummary } from '@app/UnifiedLogs/UnifiedLoggingStatusCard';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
@@ -40,16 +40,16 @@ import {
 import { ListIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 
-export interface GcCaptureCardProps {}
+export interface UnifiedLoggingCaptureCardProps {}
 
-export const GcCaptureCard: React.FC<GcCaptureCardProps> = () => {
+export const UnifiedLoggingCaptureCard: React.FC<UnifiedLoggingCaptureCardProps> = () => {
   const { t } = useCryostatTranslation();
   const serviceContext = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
 
   const [target, setTarget] = React.useState<NullableTarget>(undefined);
-  const [status, setStatus] = React.useState<GcLoggingStatus | undefined>(undefined);
+  const [status, setStatus] = React.useState<UnifiedLoggingStatus | undefined>(undefined);
   const [isLoadingStatus, setIsLoadingStatus] = React.useState(true);
   const [runningGc, setRunningGc] = React.useState(false);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -64,7 +64,7 @@ export const GcCaptureCard: React.FC<GcCaptureCardProps> = () => {
     }
     setIsLoadingStatus(true);
     addSubscription(
-      serviceContext.api.getGcLoggingStatus(target, true).subscribe({
+      serviceContext.api.getUnifiedLoggingStatus(target, true).subscribe({
         next: (nextStatus) => {
           setStatus(nextStatus);
           setIsLoadingStatus(false);
@@ -108,20 +108,20 @@ export const GcCaptureCard: React.FC<GcCaptureCardProps> = () => {
 
   const modalMode = status?.enabled ? 'reconfigure' : 'enable';
   const actionLabel = status?.enabled
-    ? t('GcLoggingStatusCard.RECONFIGURE_BUTTON')
-    : t('GcLoggingStatusCard.ENABLE_BUTTON');
+    ? t('UnifiedLoggingStatusCard.RECONFIGURE_BUTTON')
+    : t('UnifiedLoggingStatusCard.ENABLE_BUTTON');
 
   return (
     <>
-      <Card isCompact isFullHeight data-quickstart-id="gc-capture-status-card">
+      <Card isCompact isFullHeight data-quickstart-id="unified-capture-status-card">
         <CardHeader>
-          <CardTitle>{t('GcCaptureCard.TITLE')}</CardTitle>
+          <CardTitle>{t('UnifiedLoggingCaptureCard.TITLE')}</CardTitle>
         </CardHeader>
         <CardBody>
           <Stack hasGutter>
             <StackItem>
               <FeatureFlag level={FeatureLevel.BETA}>
-                <GcLoggingStatusSummary status={status} isLoading={isLoadingStatus} />
+                <UnifiedLoggingStatusSummary status={status} isLoading={isLoadingStatus} />
               </FeatureFlag>
             </StackItem>
             <StackItem>
@@ -143,7 +143,7 @@ export const GcCaptureCard: React.FC<GcCaptureCardProps> = () => {
                       variant="secondary"
                       onClick={() => setIsModalOpen(true)}
                       isDisabled={isLoadingStatus}
-                      data-quickstart-id="gc-capture-configure-btn"
+                      data-quickstart-id="unified-capture-configure-btn"
                     >
                       {actionLabel}
                     </Button>
@@ -151,11 +151,11 @@ export const GcCaptureCard: React.FC<GcCaptureCardProps> = () => {
                   <SplitItem>
                     <ActionList>
                       <ActionListItem>
-                        <Tooltip content={t('GcLogs.TABLE_TITLE')}>
+                        <Tooltip content={t('UnifiedLogs.TABLE_TITLE')}>
                           <Button
                             variant="primary"
-                            aria-label={t('GcLogs.TABLE_TITLE')}
-                            component={(props) => <CryostatLink {...props} to="/gc-logs" />}
+                            aria-label={t('UnifiedLogs.TABLE_TITLE')}
+                            component={(props) => <CryostatLink {...props} to="/unified-logs" />}
                             icon={<ListIcon />}
                           />
                         </Tooltip>
@@ -169,7 +169,7 @@ export const GcCaptureCard: React.FC<GcCaptureCardProps> = () => {
         </CardBody>
       </Card>
       {isModalOpen && (
-        <GcLoggingModal
+        <UnifiedLoggingModal
           isOpen={isModalOpen}
           onClose={handleModalClose}
           mode={modalMode}
@@ -181,4 +181,4 @@ export const GcCaptureCard: React.FC<GcCaptureCardProps> = () => {
   );
 };
 
-export default GcCaptureCard;
+export default UnifiedLoggingCaptureCard;

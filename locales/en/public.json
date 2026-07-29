@@ -57,11 +57,11 @@
     "SEARCH_PLACEHOLDER": "Find by JVM ID or alias...",
     "TARGET_DISPLAY": "{{alias}} ({{connectUrl}})"
   },
-  "AllTargetsGcLogsTable": {
-    "HIDE_TARGET_WITH_ZERO_LOGS": "Hide targets with zero GC Logs",
+  "AllTargetsUnifiedLogsTable": {
+    "HIDE_TARGET_WITH_ZERO_LOGS": "Hide targets with zero Logs",
     "SEARCH_PLACEHOLDER": "Find by JVM ID...",
-    "NO_ARCHIVES": "No GC Logs",
-    "ERROR_TITLE": "Error retrieving GC Logs"
+    "NO_ARCHIVES": "No Logs",
+    "ERROR_TITLE": "Error retrieving Logs"
   },
   "DirectoryNameCell": {
     "LOADING_TARGET_INFO": "Loading target information",
@@ -435,38 +435,38 @@
       "THREADS": "Thread Dump"
     }
   },
-  "BulkEditGcLogLabels": {
+  "BulkEditUnifiedLogLabels": {
     "TITLE": "Edit labels",
-    "HELPER_TEXT": "Labels present on all selected GC Logs will appear here. Editing the labels will affect all selected GC Logs. Specify labels with format",
+    "HELPER_TEXT": "Labels present on all selected Logs will appear here. Editing the labels will affect all selected Logs. Specify labels with format",
     "SAVE": "Save",
     "SAVING": "Saving"
   },
-  "GcLogs": {
-    "PAGE_TITLE": "GC Log Archives",
-    "AGENT_REQUIRED": "GC log collection requires the Cryostat Agent.",
-    "TABLE_TITLE": "GC Logs",
+  "UnifiedLogs": {
+    "PAGE_TITLE": "Unified Log Archives",
+    "AGENT_REQUIRED": "Unified Log collection requires the Cryostat Agent.",
+    "TABLE_TITLE": "Unified Logs",
     "PULL_TOOLTIP": "Pull log from Agent",
-    "PULL_ARIA": "Pull GC log from Agent into storage",
-    "PULL_NO_CONTENT_TITLE": "No GC Log Content",
-    "PULL_NO_CONTENT_MESSAGE": "The Agent had no GC log content to retrieve.",
+    "PULL_ARIA": "Pull log from Agent into storage",
+    "PULL_NO_CONTENT_TITLE": "No Unified Log Content",
+    "PULL_NO_CONTENT_MESSAGE": "The Agent had no log content to retrieve.",
     "DELETE": "Delete",
     "DELETING": "Deleting",
     "DOWNLOAD": "Download",
     "EDIT_LABELS": "Edit Labels",
     "ARIA_LABELS": {
-      "ROW_ACTION": "gc-log-action-menu",
-      "ACTION_TOGGLE": "gc-log-actions-toggle"
+      "ROW_ACTION": "unified-log-action-menu",
+      "ACTION_TOGGLE": "unified-log-actions-toggle"
     }
   },
-  "GcCaptureCard": {
+  "UnifiedLoggingCaptureCard": {
     "TITLE": "Garbage Collection and Logging"
   },
-  "GcLoggingModal": {
-    "ENABLE_TITLE": "Enable GC Logging",
-    "RECONFIGURE_TITLE": "Reconfigure GC Logging",
+  "UnifiedLoggingModal": {
+    "ENABLE_TITLE": "Enable Unified Logging",
+    "RECONFIGURE_TITLE": "Reconfigure Unified Logging",
     "ENABLE_SUBMIT": "Enable",
     "RECONFIGURE_SUBMIT": "Save",
-    "ENABLED_LABEL": "GC Logging",
+    "ENABLED_LABEL": "Unified Logging",
     "ENABLED_ON": "Enabled",
     "ENABLED_OFF": "Disabled",
     "WHAT_LABEL": "What to log",
@@ -478,7 +478,7 @@
     "ADD_CUSTOM": "Add",
     "CUSTOM_HELPER_TEXT": "Custom values are passed verbatim to the JVM and may not be recognised."
   },
-  "GcLoggingStatusCard": {
+  "UnifiedLoggingStatusCard": {
     "STATUS_LABEL": "Status",
     "ENABLED": "Enabled",
     "DISABLED": "Disabled",
@@ -518,9 +518,9 @@
     },
     "NO_ARCHIVES": "No Thread Dumps"
   },
-  "GcLogFilters": {
+  "UnifiedLogFilters": {
     "ARIA_LABELS": {
-      "MENU_TOGGLE": "gc-log-filters-toggle"
+      "MENU_TOGGLE": "unified-log-filters-toggle"
     }
   },
   "ThreadDumpFilters": {

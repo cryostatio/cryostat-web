@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { GcLog } from '@app/Shared/Services/api.types';
+import { UnifiedLog, keyValueToString } from '@app/Shared/Services/api.types';
 import {
   Button,
+  Label,
   MenuToggle,
   MenuToggleElement,
   Select,
@@ -30,13 +31,13 @@ import { TimesIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
 
-export interface GcLogNameFilterProps {
-  gcLogs: GcLog[];
-  filteredNames: string[];
-  onSubmit: (inputName: string) => void;
+export interface UnifiedLogLabelFilterProps {
+  logs: UnifiedLog[];
+  filteredLabels: string[];
+  onSubmit: (inputLabel: string) => void;
 }
 
-export const GcLogNameFilter: React.FC<GcLogNameFilterProps> = ({ gcLogs, filteredNames, onSubmit }) => {
+export const UnifiedLogLabelFilter: React.FC<UnifiedLogLabelFilterProps> = ({ logs, filteredLabels, onSubmit }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [filterValue, setFilterValue] = React.useState('');
 
@@ -54,25 +55,34 @@ export const GcLogNameFilter: React.FC<GcLogNameFilterProps> = ({ gcLogs, filter
 
   const onInputChange = React.useCallback((_, inputVal: string) => setFilterValue(inputVal), [setFilterValue]);
 
-  const nameOptions = React.useMemo(() => {
-    return gcLogs.map((r) => r.gcLogId).filter((n) => !filteredNames.includes(n));
-  }, [gcLogs, filteredNames]);
+  const labelOptions = React.useMemo(() => {
+    const labels = new Set<string>();
+    logs.forEach((r) => {
+      if (!r || !r.metadata || !r.metadata.labels) return;
+      r.metadata.labels.map((label) => labels.add(keyValueToString(label)));
+    });
+    return Array.from(labels)
+      .filter((l) => !filteredLabels.includes(l))
+      .sort();
+  }, [logs, filteredLabels]);
 
-  const filteredNameOptions = React.useMemo(() => {
+  const filteredLabelOptions = React.useMemo(() => {
     const reg = new RegExp(_.escapeRegExp(filterValue), 'i');
-    return !filterValue ? nameOptions : nameOptions.filter((n) => reg.test(n));
-  }, [filterValue, nameOptions]);
+    return !filterValue ? labelOptions : labelOptions.filter((l) => reg.test(l));
+  }, [filterValue, labelOptions]);
 
   const selectOptions = React.useMemo(() => {
-    if (!filteredNameOptions.length) {
+    if (!filteredLabelOptions.length) {
       return <SelectOption isDisabled>No results found</SelectOption>;
     }
-    return filteredNameOptions.map((n, index) => (
-      <SelectOption key={index} value={n}>
-        {n}
+    return filteredLabelOptions.map((l, index) => (
+      <SelectOption key={index} value={l}>
+        <Label key={l} color="grey">
+          {l}
+        </Label>
       </SelectOption>
     ));
-  }, [filteredNameOptions]);
+  }, [filteredLabelOptions]);
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
@@ -83,11 +93,11 @@ export const GcLogNameFilter: React.FC<GcLogNameFilterProps> = ({ gcLogs, filter
             onClick={onToggle}
             onChange={onInputChange}
             autoComplete="off"
-            placeholder="Filter by name..."
+            placeholder="Filter by label..."
             isExpanded={isExpanded}
             role="combobox"
-            id="typeahead-gc-log-name-filter"
-            aria-controls="typeahead-gc-log-name-select"
+            id="typeahead-unified-log-label-filter"
+            aria-controls="typeahead-unified-log-label-select"
           />
           <TextInputGroupUtilities>
             {filterValue ? (
@@ -110,12 +120,12 @@ export const GcLogNameFilter: React.FC<GcLogNameFilterProps> = ({ gcLogs, filter
       toggle={toggle}
       onSelect={onSelect}
       isOpen={isExpanded}
-      aria-label="Filter by name"
+      aria-label="Filter by label"
       onOpenChange={(isOpen) => setIsExpanded(isOpen)}
       onOpenChangeKeys={['Escape']}
       shouldFocusFirstItemOnOpen={false}
     >
-      <SelectList id="typeahead-gc-log-name-select">{selectOptions}</SelectList>
+      <SelectList id="typeahead-unified-log-label-select">{selectOptions}</SelectList>
     </Select>
   );
 };

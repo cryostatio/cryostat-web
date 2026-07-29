@@ -1313,18 +1313,18 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         return new Response(204);
       });
 
-      // ── GC logging in-memory state ─────────────────────────────────────────────
-      const gcLoggingState: Record<
+      // ── unified logging in-memory state ─────────────────────────────────────────────
+      const unifiedLoggingState: Record<
         string,
         { enabled: boolean; logFilePath: string; what: string; decorators: string }
       > = {};
-      const gcLogsList: Record<
+      const unifiedLogsList: Record<
         string,
-        Array<{ gcLogId: string; jvmId: string; size: number; lastModified: number }>
+        Array<{ logId: string; jvmId: string; size: number; lastModified: number }>
       > = {};
 
-      this.get('api/beta/diagnostics/targets/:targetId/gclogging', (_schema, request) => {
-        const state = gcLoggingState[request.params.targetId];
+      this.get('api/beta/diagnostics/targets/:targetId/unified-logging', (_schema, request) => {
+        const state = unifiedLoggingState[request.params.targetId];
         if (!state || !state.enabled) {
           return new Response(200, {}, { enabled: false });
         }
@@ -1335,84 +1335,84 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         );
       });
 
-      this.post('api/beta/diagnostics/targets/:targetId/gclogging', (_schema, request) => {
+      this.post('api/beta/diagnostics/targets/:targetId/unified-logging', (_schema, request) => {
         const { targetId } = request.params;
-        if (gcLoggingState[targetId]?.enabled) {
+        if (unifiedLoggingState[targetId]?.enabled) {
           return new Response(409, {}, 'GC logging already active');
         }
         const what = (request.queryParams as Record<string, string>)['what'] || 'gc';
         const decorators = (request.queryParams as Record<string, string>)['decorators'] || 'time,level';
-        gcLoggingState[targetId] = { enabled: true, logFilePath: '/tmp/gc.log', what, decorators };
+        unifiedLoggingState[targetId] = { enabled: true, logFilePath: '/tmp/gc.log', what, decorators };
         return new Response(200, {}, { enabled: true, what, decorators });
       });
 
-      this.patch('api/beta/diagnostics/targets/:targetId/gclogging', (_schema, request) => {
+      this.patch('api/beta/diagnostics/targets/:targetId/unified-logging', (_schema, request) => {
         const { targetId } = request.params;
-        if (!gcLoggingState[targetId]?.enabled) {
+        if (!unifiedLoggingState[targetId]?.enabled) {
           return new Response(409, {}, 'GC logging not active');
         }
-        const what = (request.queryParams as Record<string, string>)['what'] || gcLoggingState[targetId].what;
+        const what = (request.queryParams as Record<string, string>)['what'] || unifiedLoggingState[targetId].what;
         const decorators =
-          (request.queryParams as Record<string, string>)['decorators'] || gcLoggingState[targetId].decorators;
-        gcLoggingState[targetId] = { enabled: true, logFilePath: '/tmp/gc.log', what, decorators };
+          (request.queryParams as Record<string, string>)['decorators'] || unifiedLoggingState[targetId].decorators;
+        unifiedLoggingState[targetId] = { enabled: true, logFilePath: '/tmp/gc.log', what, decorators };
         return new Response(200, {}, { enabled: true, what, decorators });
       });
 
-      this.del('api/beta/diagnostics/targets/:targetId/gclogging', (_schema, request) => {
-        delete gcLoggingState[request.params.targetId];
+      this.del('api/beta/diagnostics/targets/:targetId/unified-logging', (_schema, request) => {
+        delete unifiedLoggingState[request.params.targetId];
         return new Response(204);
       });
 
-      this.post('api/beta/diagnostics/targets/:targetId/gclogging/pull', (_schema, request) => {
+      this.post('api/beta/diagnostics/targets/:targetId/unified-logging/pull', (_schema, request) => {
         const { targetId } = request.params;
         const jvmId = '1234';
-        const gcLogId = `gclog-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+        const logId = `log-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
         const entry = {
-          gcLogId,
+          logId,
           jvmId,
           size: Math.floor(Math.random() * 512 * 1024) + 1024,
           lastModified: Math.floor(Date.now() / 1000),
         };
-        if (!gcLogsList[targetId]) {
-          gcLogsList[targetId] = [];
+        if (!unifiedLogsList[targetId]) {
+          unifiedLogsList[targetId] = [];
         }
-        gcLogsList[targetId].push(entry);
+        unifiedLogsList[targetId].push(entry);
         websocket.send(
           JSON.stringify({
             meta: {
-              category: 'GcLogUploaded',
+              category: 'UnifiedLogUploaded',
               type: { type: 'application', subType: 'json' },
             },
-            message: { jvmId, gcLog: entry },
+            message: { jvmId, unifiedLog: entry },
           }),
         );
         return new Response(200, {}, entry);
       });
 
-      this.get('api/beta/diagnostics/targets/:targetId/gclogs', (_schema, request) => {
-        return new Response(200, {}, gcLogsList[request.params.targetId] ?? []);
+      this.get('api/beta/diagnostics/targets/:targetId/unified-logs', (_schema, request) => {
+        return new Response(200, {}, unifiedLogsList[request.params.targetId] ?? []);
       });
 
-      this.get('api/beta/diagnostics/targets/:targetId/gclogs/:gcLogId', (_schema, request) => {
-        return new Response(303, { Location: `data:text/plain,mock-gc-log-${request.params.gcLogId}` });
+      this.get('api/beta/diagnostics/targets/:targetId/unified-logs/:logId', (_schema, request) => {
+        return new Response(303, { Location: `data:text/plain,mock-gc-log-${request.params.logId}` });
       });
 
-      this.del('api/beta/diagnostics/targets/:targetId/gclogs/:gcLogId', (_schema, request) => {
-        const { targetId, gcLogId } = request.params;
-        const list = gcLogsList[targetId];
+      this.del('api/beta/diagnostics/targets/:targetId/unified-logs/:logId', (_schema, request) => {
+        const { targetId, logId } = request.params;
+        const list = unifiedLogsList[targetId];
         if (list) {
-          const idx = list.findIndex((e) => e.gcLogId === gcLogId);
+          const idx = list.findIndex((e) => e.logId === logId);
           if (idx !== -1) {
             const removed = list.splice(idx, 1)[0];
             websocket.send(
               JSON.stringify({
                 meta: {
-                  category: 'GcLogDeleted',
+                  category: 'UnifiedLogDeleted',
                   type: { type: 'application', subType: 'json' },
                 },
                 message: {
                   jvmId: removed.jvmId,
-                  gcLog: { jvmId: removed.jvmId, gcLogId, size: removed.size, lastModified: removed.lastModified },
+                  unifiedLog: { jvmId: removed.jvmId, logId, size: removed.size, lastModified: removed.lastModified },
                 },
               }),
             );
@@ -1421,31 +1421,31 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         return new Response(204);
       });
 
-      this.get('api/beta/diagnostics/fs/gclogs', () => {
-        const grouped: Array<{ jvmId: string; gcLogs: Array<{ gcLogId: string; size: number }> }> = [];
-        for (const targetId of Object.keys(gcLogsList)) {
-          const logs = gcLogsList[targetId];
+      this.get('api/beta/diagnostics/fs/unified-logs', () => {
+        const grouped: Array<{ jvmId: string; logs: Array<{ logId: string; size: number }> }> = [];
+        for (const targetId of Object.keys(unifiedLogsList)) {
+          const logs = unifiedLogsList[targetId];
           if (logs.length === 0) continue;
           const jvmId = logs[0].jvmId;
-          grouped.push({ jvmId, gcLogs: logs.map(({ gcLogId, size }) => ({ gcLogId, size })) });
+          grouped.push({ jvmId, logs: logs.map(({ logId: logId, size }) => ({ logId, size })) });
         }
         return new Response(200, {}, grouped);
       });
 
-      this.del('api/beta/diagnostics/fs/gclogs/:jvmId/:gcLogId', (_schema, request) => {
-        const { jvmId, gcLogId } = request.params;
-        for (const targetId of Object.keys(gcLogsList)) {
-          const list = gcLogsList[targetId];
-          const idx = list.findIndex((e) => e.gcLogId === gcLogId && e.jvmId === jvmId);
+      this.del('api/beta/diagnostics/fs/unified-logs/:jvmId/:logId', (_schema, request) => {
+        const { jvmId, logId } = request.params;
+        for (const targetId of Object.keys(unifiedLogsList)) {
+          const list = unifiedLogsList[targetId];
+          const idx = list.findIndex((e) => e.logId === logId && e.jvmId === jvmId);
           if (idx !== -1) {
             list.splice(idx, 1);
             websocket.send(
               JSON.stringify({
                 meta: {
-                  category: 'GcLogDeleted',
+                  category: 'UnifiedLogDeleted',
                   type: { type: 'application', subType: 'json' },
                 },
-                message: { gcLogId, jvmId },
+                message: { logId, jvmId },
               }),
             );
             break;
