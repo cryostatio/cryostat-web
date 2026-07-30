@@ -68,7 +68,9 @@ describe('<CaptureDiagnostics />', () => {
     expect(screen.getByText(testT('UnifiedLoggingCaptureCard.TITLE'))).toBeVisible();
     expect(screen.getByText(testT('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE'))).toBeVisible();
     expect(screen.queryByText(testT('UnifiedLoggingStatusCard.STATUS_LABEL'))).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: testT('UnifiedLoggingStatusCard.ENABLE_BUTTON') })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: testT('UnifiedLoggingStatusCard.ENABLE_BUTTON') }),
+    ).not.toBeInTheDocument();
     expect(
       screen.queryByRole('button', { name: testT('UnifiedLoggingStatusCard.RECONFIGURE_BUTTON') }),
     ).not.toBeInTheDocument();
