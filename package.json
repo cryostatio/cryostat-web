@@ -57,7 +57,7 @@
     "eslint-plugin-unused-imports": "4.4.1",
     "eslint-webpack-plugin": "6.0.0",
     "file-loader": "6.2.0",
-    "html-webpack-plugin": "5.6.7",
+    "html-webpack-plugin": "5.6.8",
     "i18next-parser": "9.4.0",
     "imagemin": "9.0.1",
     "jest": "30.4.2",
