@@ -47,7 +47,7 @@ export const persistMiddleware: Middleware<{}, RootState> =
       saveToLocalStorage('TARGET_HEAP_DUMP_FILTERS', rootState.heapDumpFilters);
     } else if (actionSet(ThreadDumpFilterActions as Set<string>)) {
       saveToLocalStorage('TARGET_THREAD_DUMP_FILTERS', rootState.threadDumpFilters);
-    } else if (UnifiedLogFilterActions.has(action.type)) {
+    } else if (actionSet(UnifiedLogFilterActions as Set<string>)) {
       saveToLocalStorage('TARGET_UNIFIED_LOG_FILTERS', rootState.unifiedLogFilters);
     } else if (actionSet(NavMenuConfigActions as Set<string>)) {
       saveToLocalStorage('NAV_MENU_CFG', rootState.navMenuConfigs);
