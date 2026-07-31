@@ -16,17 +16,11 @@
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
 import { includesLabel } from '@app/RecordingMetadata/utils';
 import { LoadingProps } from '@app/Shared/Components/types';
-import {
-  NotificationCategory,
-  Target,
-  KeyValue,
-  HeapDump,
-  NullableTarget,
-  HeapDumpDirectory,
-} from '@app/Shared/Services/api.types';
+import { NotificationCategory, Target, KeyValue, UnifiedLog, NullableTarget } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionList,
   ActionListItem,
@@ -42,23 +36,24 @@ import {
 import * as React from 'react';
 import { combineLatest, concatMap, filter, first, forkJoin, Observable, of } from 'rxjs';
 
-export interface BulkEditLabelsProps {
+export interface BulkEditUnifiedLogLabelsProps {
   checkedIndices: number[];
   target: Observable<NullableTarget>;
-  directory?: HeapDumpDirectory;
-  directoryHeapDumps?: HeapDump[];
+  jvmId?: string;
+  directoryUnifiedLogs?: UnifiedLog[];
   closePanelFn?: () => void;
 }
 
-export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({
+export const BulkEditUnifiedLogLabels: React.FC<BulkEditUnifiedLogLabelsProps> = ({
   checkedIndices,
   target: propsTarget,
-  directory,
-  directoryHeapDumps,
+  jvmId,
+  directoryUnifiedLogs,
   closePanelFn,
 }) => {
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
-  const [heapDumps, setHeapDumps] = React.useState<HeapDump[]>([]);
+  const [unifiedLogs, setUnifiedLogs] = React.useState<UnifiedLog[]>([]);
   const [commonLabels, setCommonLabels] = React.useState<KeyValue[]>([]);
   const [savedCommonLabels, setSavedCommonLabels] = React.useState<KeyValue[]>([]);
   const [valid, setValid] = React.useState(ValidatedOptions.default);
@@ -75,16 +70,16 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({
     const toDelete = savedCommonLabels.filter((label) => !includesLabel(commonLabels, label));
     addSubscription(
       propsTarget.pipe(filter((t) => !!t)).subscribe((t) => {
-        heapDumps.forEach((r: HeapDump) => {
-          const idx = hashCode(r.heapDumpId);
+        unifiedLogs.forEach((r: UnifiedLog) => {
+          const idx = hashCode(r.logId);
           if (checkedIndices.includes(idx)) {
             const updatedLabels = [...(r.metadata?.labels ?? []), ...commonLabels].filter(
               (label) => !includesLabel(toDelete, label),
             );
-            if (directory) {
-              tasks.push(context.api.postHeapDumpMetadataForJvmId(directory.jvmId, r.heapDumpId, updatedLabels));
+            if (jvmId) {
+              tasks.push(context.api.postUnifiedLogMetadataForJvmId(jvmId, r.logId, updatedLabels).pipe(first()));
             } else {
-              tasks.push(context.api.postHeapDumpMetadata(r.heapDumpId, updatedLabels, t).pipe(first()));
+              tasks.push(context.api.postUnifiedLogMetadata(t as Target, r.logId, updatedLabels).pipe(first()));
             }
           }
         });
@@ -101,11 +96,11 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({
     context.api,
     handlePostUpdate,
     propsTarget,
-    directory,
+    jvmId,
     commonLabels,
     savedCommonLabels,
     checkedIndices,
-    heapDumps,
+    unifiedLogs,
   ]);
 
   const handleCancel = React.useCallback(() => {
@@ -115,110 +110,103 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({
 
   const updateCommonLabels = React.useCallback(
     (setLabels: (l: KeyValue[]) => void) => {
-      const allHeapDumpLabels: KeyValue[][] = [];
+      const allUnifiedLogLabels: KeyValue[][] = [];
 
-      heapDumps.forEach((r: HeapDump) => {
-        const idx = hashCode(r.heapDumpId);
+      unifiedLogs.forEach((r: UnifiedLog) => {
+        const idx = hashCode(r.logId);
         if (checkedIndices.includes(idx)) {
-          allHeapDumpLabels.push(r.metadata?.labels ?? []);
+          allUnifiedLogLabels.push(r.metadata?.labels ?? []);
         }
       });
 
       const updatedCommonLabels =
-        allHeapDumpLabels.length > 0
-          ? allHeapDumpLabels.reduce(
+        allUnifiedLogLabels.length > 0
+          ? allUnifiedLogLabels.reduce(
               (prev, curr) => prev.filter((label) => includesLabel(curr, label)),
-              allHeapDumpLabels[0],
+              allUnifiedLogLabels[0],
             )
           : [];
 
       setLabels(updatedCommonLabels);
     },
-    [heapDumps, checkedIndices],
+    [unifiedLogs, checkedIndices],
   );
 
-  const refreshHeapDumpsList = React.useCallback(() => {
-    let observable: Observable<HeapDump[]>;
-    if (directory) {
-      observable = of(directoryHeapDumps ?? []);
+  const refreshUnifiedLogsList = React.useCallback(() => {
+    let observable: Observable<UnifiedLog[]>;
+    if (jvmId) {
+      observable = of(directoryUnifiedLogs ?? []);
     } else {
       observable = propsTarget.pipe(
         filter((target) => !!target),
-        concatMap((target: Target) => {
-          return context.api.getTargetHeapDumps(target);
-        }),
+        concatMap((target: Target) => context.api.getUnifiedLogs(target)),
         first(),
       );
     }
-    addSubscription(
-      observable.subscribe((value) => {
-        setHeapDumps(value);
-      }),
-    );
-  }, [addSubscription, propsTarget, directory, directoryHeapDumps, context.api]);
+    addSubscription(observable.subscribe((value) => setUnifiedLogs(value)));
+  }, [addSubscription, propsTarget, jvmId, directoryUnifiedLogs, context.api]);
 
   const saveButtonLoadingProps = React.useMemo(
     () =>
       ({
         spinnerAriaValueText: 'Saving',
-        spinnerAriaLabel: 'saving-heap-dump-labels',
+        spinnerAriaLabel: 'saving-unified-log-labels',
         isLoading: loading,
       }) as LoadingProps,
     [loading],
   );
 
   React.useEffect(() => {
-    addSubscription(propsTarget.subscribe(refreshHeapDumpsList));
-  }, [addSubscription, context, propsTarget, refreshHeapDumpsList]);
+    addSubscription(propsTarget.subscribe(refreshUnifiedLogsList));
+  }, [addSubscription, propsTarget, refreshUnifiedLogsList]);
 
-  // Depends only on HeapDumpMetadataUpdated notifications
-  // since updates on list of heap dumps will mount a completely new BulkEditLabels.
+  // Depends only on UnigiedLogMetadataUpdated notifications
+  // since updates on list of logs will mount a completely new BulkEditUnifiedLogLabels.
   React.useEffect(() => {
     addSubscription(
       combineLatest([
         propsTarget,
-        context.notificationChannel.messages(NotificationCategory.HeapDumpMetadataUpdated),
+        context.notificationChannel.messages(NotificationCategory.UnifiedLogMetadataUpdated),
       ]).subscribe((parts) => {
         const currentTarget = parts[0];
         const event = parts[1];
 
         const isMatch =
-          currentTarget?.jvmId === event.message.jvmId || currentTarget?.jvmId === event.message.heapDump.jvmId;
+          currentTarget?.jvmId === event.message.jvmId || currentTarget?.jvmId === event.message.unifiedLog.jvmId;
 
-        setHeapDumps((oldHeapDumps) => {
-          return oldHeapDumps.map((heapDump) => {
-            if (isMatch && heapDump.heapDumpId === event.message.heapDump.heapDumpId) {
-              const updatedHeapDump = {
-                ...heapDump,
+        setUnifiedLogs((oldUnifiedLogs) => {
+          return oldUnifiedLogs.map((unifiedLog) => {
+            if (isMatch && unifiedLog.logId === event.message.unifiedLog.logId) {
+              const updatedUnifiedLog = {
+                ...unifiedLog,
                 metadata: {
-                  labels: event.message.heapDump.metadata?.labels ?? [],
+                  labels: event.message.unifiedLog.metadata?.labels ?? [],
                 },
               };
-              return updatedHeapDump;
+              return updatedUnifiedLog;
             }
-            return heapDump;
+            return unifiedLog;
           });
         });
       }),
     );
-  }, [addSubscription, propsTarget, context.notificationChannel, setHeapDumps]);
+  }, [addSubscription, propsTarget, context.notificationChannel, setUnifiedLogs]);
 
   React.useEffect(() => {
     updateCommonLabels(setCommonLabels);
     updateCommonLabels(setSavedCommonLabels);
-  }, [heapDumps, setCommonLabels, setSavedCommonLabels, updateCommonLabels]);
+  }, [unifiedLogs, setCommonLabels, setSavedCommonLabels, updateCommonLabels]);
 
   return (
     <>
       <Stack hasGutter>
         <StackItem>
-          <Title headingLevel="h2">Edit labels</Title>
+          <Title headingLevel="h2">{t('BulkEditUnifiedLogLabels.TITLE')}</Title>
         </StackItem>
         <StackItem>
           <HelperText>
             <HelperTextItem>
-              Labels present on all selected Heap Dumps will appear here. Editing the labels will affect all selected
-              Heap Dumps. Specify labels with format <Label isCompact>key=value</Label>.
+              {t('BulkEditUnifiedLogLabels.HELPER_TEXT')} <Label isCompact>key=value</Label>.
             </HelperTextItem>
           </HelperText>
         </StackItem>
@@ -239,12 +227,12 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({
                 isDisabled={valid != ValidatedOptions.success || loading}
                 {...saveButtonLoadingProps}
               >
-                {loading ? 'Saving' : 'Save'}
+                {loading ? t('BulkEditUnifiedLogLabels.SAVING') : t('BulkEditUnifiedLogLabels.SAVE')}
               </Button>
             </ActionListItem>
             <ActionListItem>
               <Button variant="secondary" onClick={handleCancel} isDisabled={loading}>
-                Cancel
+                {t('CANCEL')}
               </Button>
             </ActionListItem>
           </ActionList>

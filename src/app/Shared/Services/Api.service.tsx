@@ -74,6 +74,9 @@ import {
   SmartTrigger,
   AsyncProfilerStatus,
   AsyncProfile,
+  UnifiedLoggingStatus,
+  UnifiedLog,
+  UnifiedLogDirectory,
   AuditQueryParams,
   AuditRevisionsResponse,
   AuditRevisionDetail,
@@ -2157,6 +2160,120 @@ export class ApiService {
     }).pipe(
       map((resp) => resp.ok),
       catchError(() => of(false)),
+      first(),
+    );
+  }
+
+  getUnifiedLoggingStatus(target: Target, suppressNotifications = false): Observable<UnifiedLoggingStatus> {
+    return this.doGet<UnifiedLoggingStatus>(
+      `diagnostics/targets/${target.id}/unified-logging`,
+      'beta',
+      undefined,
+      suppressNotifications,
+    );
+  }
+
+  enableUnifiedLogging(target: Target, what: string, decorators: string): Observable<boolean> {
+    const params = new URLSearchParams({ what, decorators });
+    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logging?${params}`, {
+      method: 'POST',
+    }).pipe(
+      map((resp) => resp.ok),
+      first(),
+    );
+  }
+
+  reconfigureUnifiedLogging(target: Target, what: string, decorators: string): Observable<boolean> {
+    const params = new URLSearchParams({ what, decorators });
+    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logging?${params}`, {
+      method: 'PATCH',
+    }).pipe(
+      map((resp) => resp.ok),
+      first(),
+    );
+  }
+
+  disableUnifiedLogging(target: Target): Observable<boolean> {
+    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logging`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
+      first(),
+    );
+  }
+
+  pullUnifiedLog(target: Target): Observable<UnifiedLog | null> {
+    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logging/pull`, {
+      method: 'POST',
+    }).pipe(
+      concatMap((resp) => (resp.status === 204 ? Promise.resolve(null) : resp.json())),
+      first(),
+    );
+  }
+
+  getUnifiedLogs(target: Target, suppressNotifications = false): Observable<UnifiedLog[]> {
+    return this.doGet<UnifiedLog[]>(
+      `diagnostics/targets/${target.id}/unified-logs`,
+      'beta',
+      undefined,
+      suppressNotifications,
+    );
+  }
+
+  downloadUnifiedLog(target: Target, log: UnifiedLog): void {
+    this.ctx
+      .url(log.downloadUrl ?? `/api/beta/diagnostics/targets/${target.id}/unified-logs/${log.logId}`)
+      .subscribe((resourceUrl) =>
+        this.downloadFile(resourceUrl, new URLSearchParams({ filename: log.logId }), log.logId),
+      );
+  }
+
+  deleteUnifiedLog(target: Target, logId: string): Observable<boolean> {
+    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logs/${logId}`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
+      first(),
+    );
+  }
+
+  deleteArchivedUnifiedLogFromPath(jvmId: string, logId: string): Observable<boolean> {
+    return this.sendRequest('beta', `diagnostics/fs/unified-logs/${jvmId}/${logId}`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
+      first(),
+    );
+  }
+
+  getAllUnifiedLogs(suppressNotifications = false): Observable<UnifiedLogDirectory[]> {
+    return this.doGet<UnifiedLogDirectory[]>('diagnostics/fs/unified-logs', 'beta', undefined, suppressNotifications);
+  }
+
+  postUnifiedLogMetadataForJvmId(jvmId: string, logId: string, labels: KeyValue[]): Observable<UnifiedLog> {
+    return this.ctx.headers({ 'Content-Type': 'application/json' }).pipe(
+      concatMap((headers) =>
+        this.sendRequest('beta', `diagnostics/fs/unified-logs/${jvmId}/${logId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ labels: this.transformLabelsToObject(labels) }),
+          headers,
+        }),
+      ),
+      concatMap((resp) => resp.json()),
+      first(),
+    );
+  }
+
+  postUnifiedLogMetadata(target: Target, logId: string, labels: KeyValue[]): Observable<UnifiedLog> {
+    return this.ctx.headers({ 'Content-Type': 'application/json' }).pipe(
+      concatMap((headers) =>
+        this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logs/${logId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ labels: this.transformLabelsToObject(labels) }),
+          headers,
+        }),
+      ),
+      concatMap((resp) => resp.json()),
       first(),
     );
   }

@@ -601,4 +601,28 @@ export const messageKeys = new Map([
       body: (evt) => `async-profiler remote file ${evt.message.id} was deleted`,
     } as NotificationMessageMapper,
   ],
+  [
+    NotificationCategory.UnifiedLogUploaded,
+    {
+      variant: AlertVariant.success,
+      title: 'Log pulled',
+      body: (evt) => `Log ${evt.message.unifiedLog.logId} pulled from target ${evt.message.jvmId}`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.UnifiedLogDeleted,
+    {
+      variant: AlertVariant.success,
+      title: 'Log deleted',
+      body: (evt) => `Log ${evt.message.unifiedLog.logId} was deleted`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.UnifiedLogMetadataUpdated,
+    {
+      variant: AlertVariant.success,
+      title: 'Log metadata updated',
+      body: (evt) => `${evt.message.unifiedLog.logId} in target ${evt.message.jvmId} metadata was updated`,
+    } as NotificationMessageMapper,
+  ],
 ]);

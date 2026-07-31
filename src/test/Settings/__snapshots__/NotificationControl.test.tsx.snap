@@ -1639,6 +1639,96 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               </span>
             </label>
           </div>
+          <div
+            class="pf-v6-l-stack__item"
+          >
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-49"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="UnifiedLogUploaded"
+            >
+              <input
+                aria-labelledby="UnifiedLogUploaded-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="UnifiedLogUploaded"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="UnifiedLogUploaded-label"
+              >
+                Log pulled
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
+          >
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-50"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="UnifiedLogDeleted"
+            >
+              <input
+                aria-labelledby="UnifiedLogDeleted-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="UnifiedLogDeleted"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="UnifiedLogDeleted-label"
+              >
+                Log deleted
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
+          >
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-51"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="UnifiedLogMetadataUpdated"
+            >
+              <input
+                aria-labelledby="UnifiedLogMetadataUpdated-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="UnifiedLogMetadataUpdated"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="UnifiedLogMetadataUpdated-label"
+              >
+                Log metadata updated
+              </span>
+            </label>
+          </div>
         </div>
       </div>
     </div>

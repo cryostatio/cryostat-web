@@ -24,6 +24,7 @@ import HeapDumpFilterReducer from './Filters/HeapDumpFilterSlice';
 import recordingFilterReducer, * as recordingFilterSlice from './Filters/RecordingFilterSlice';
 import ThreadDumpFilterReducer from './Filters/ThreadDumpFilterSlice';
 import topologyFilterReducer, * as topologyFilterSlice from './Filters/TopologyFilterSlice';
+import UnifiedLogFilterReducer from './Filters/UnifiedLogFilterSlice';
 import { persistMiddleware } from './Middlewares/PersistMiddleware';
 import modalPrefillReducer, * as modalPrefillSlice from './ModalPrefillSlice';
 
@@ -101,6 +102,7 @@ export const rootReducer = combineReducers({
   recordingFilters: recordingFilterReducer,
   heapDumpFilters: HeapDumpFilterReducer,
   threadDumpFilters: ThreadDumpFilterReducer,
+  unifiedLogFilters: UnifiedLogFilterReducer,
   archiveFilters: archiveFiltersReducer,
   automatedAnalysisFilters: automatedAnalysisFilterReducer,
   topologyConfigs: topologyConfigReducer,

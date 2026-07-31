@@ -275,7 +275,7 @@ export interface ThreadDump {
   jvmId?: string;
   lastModified?: number;
   size: number;
-  metadata: Metadata;
+  metadata?: Metadata;
 }
 
 export interface StackFrame {
@@ -371,7 +371,7 @@ export interface HeapDump {
   jvmId?: string;
   lastModified?: number;
   size: number;
-  metadata: Metadata;
+  metadata?: Metadata;
 }
 
 export interface ActiveRecordingsFilterInput {
@@ -674,6 +674,31 @@ export interface AsyncProfilerStatus {
 }
 
 // ======================================
+// Unified Logging resources
+// ======================================
+
+export interface UnifiedLoggingStatus {
+  enabled: boolean;
+  logFilePath?: string;
+  what?: string;
+  decorators?: string;
+}
+
+export interface UnifiedLog {
+  logId: string;
+  jvmId: string;
+  size: number;
+  lastModified?: number;
+  downloadUrl?: string;
+  metadata?: Metadata;
+}
+
+export interface UnifiedLogDirectory {
+  jvmId: string;
+  logs: UnifiedLog[];
+}
+
+// ======================================
 // Notification resources
 // ======================================
 
@@ -757,6 +782,9 @@ export enum NotificationCategory {
   AsyncProfileCreated = 'AsyncProfilerCreated',
   AsyncProfileStopped = 'AsyncProfilerStopped',
   AsyncProfileDeleted = 'AsyncProfilerDeleted',
+  UnifiedLogUploaded = 'UnifiedLogUploaded',
+  UnifiedLogDeleted = 'UnifiedLogDeleted',
+  UnifiedLogMetadataUpdated = 'UnifiedLogMetadataUpdated',
 }
 
 export enum CloseStatus {
