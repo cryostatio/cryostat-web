@@ -17,9 +17,10 @@
 import { EmptyText } from '@app/Shared/Components/EmptyText';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
+import useDayjs from '@app/utils/hooks/useDayjs';
 import { Label, LabelGroup } from '@patternfly/react-core';
 import * as React from 'react';
-import { ClickableLabel } from './ClickableLabel';
+import { ClickableLabel, formatLabelValue } from './ClickableLabel';
 
 export interface LabelCellProps {
   target: string;
@@ -32,6 +33,8 @@ export interface LabelCellProps {
 }
 
 export const LabelCell: React.FC<LabelCellProps> = ({ target, labels, clickableOptions }) => {
+  const [dayjs, datetimeContext] = useDayjs();
+
   const isLabelSelected = React.useCallback(
     (label: KeyValue) => {
       if (clickableOptions) {
@@ -75,7 +78,7 @@ export const LabelCell: React.FC<LabelCellProps> = ({ target, labels, clickableO
               />
             ) : (
               <Label aria-label={keyValueToString(label)} key={label.key} color={getLabelColor(label)}>
-                {keyValueToString(label)}
+                {`${label.key}=${formatLabelValue(label, dayjs, datetimeContext)}`}
               </Label>
             ),
           )}

@@ -18,6 +18,7 @@ import AutomatedRulesQuickStart from './quickstarts/automated-rules-quickstart';
 import DashboardQuickStart from './quickstarts/dashboard-quickstart';
 import HeapDumpQuickstart from './quickstarts/diagnostics/heap-dump-quickstart';
 import ThreadDumpQuickStart from './quickstarts/diagnostics/thread-dump-quickstart';
+import UnifiedLogsQuickStart from './quickstarts/diagnostics/unified-logs-quickstart';
 import GenericQuickStart from './quickstarts/generic-quickstart';
 import SettingsQuickStart from './quickstarts/settings-quickstart';
 import RecordingQuickStart from './quickstarts/start-a-recording';
@@ -35,4 +36,5 @@ export const allQuickStarts: QuickStart[] = [
   CustomTargetQuickstart,
   ThreadDumpQuickStart,
   HeapDumpQuickstart,
+  UnifiedLogsQuickStart,
 ];

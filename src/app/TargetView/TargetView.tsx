@@ -27,9 +27,16 @@ interface TargetViewProps {
   pageTitle: string;
   breadcrumbs?: BreadcrumbTrail[];
   children: React.ReactNode;
+  noSelectionContent?: React.ReactNode;
 }
 
-export const TargetView: React.FC<TargetViewProps> = ({ attachments, pageTitle, breadcrumbs, children }) => {
+export const TargetView: React.FC<TargetViewProps> = ({
+  attachments,
+  pageTitle,
+  breadcrumbs,
+  children,
+  noSelectionContent,
+}) => {
   const context = React.useContext(ServiceContext);
   const [hasSelection, setHasSelection] = React.useState(false);
   const addSubscription = useSubscriptions();
@@ -51,7 +58,7 @@ export const TargetView: React.FC<TargetViewProps> = ({ attachments, pageTitle, 
       <TargetContextSelector />
       {attachments}
       <BreadcrumbPage pageTitle={pageTitle} breadcrumbs={breadcrumbs}>
-        {hasSelection ? children : <NoTargetSelected />}
+        {hasSelection ? children : (noSelectionContent ?? <NoTargetSelected />)}
       </BreadcrumbPage>
     </>
   );

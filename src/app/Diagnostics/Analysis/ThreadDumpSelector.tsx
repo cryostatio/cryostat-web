@@ -45,11 +45,11 @@ export const ThreadDumpSelector: React.FC<ThreadDumpSelectorProps> = ({ selected
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
       <MenuToggle
-        placeholder={'Select a Thread Dump'}
         ref={toggleRef}
         aria-label="thread dump selector toggle"
         onClick={onToggle}
         isExpanded={isOpen}
+        isPlaceholder={selected === ''}
       >
         {selected == '' ? 'Select a Thread Dump' : selected}
       </MenuToggle>

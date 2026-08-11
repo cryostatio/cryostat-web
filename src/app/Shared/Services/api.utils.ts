@@ -375,22 +375,6 @@ export const messageKeys = new Map([
     } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.TargetCredentialsStored,
-    {
-      variant: AlertVariant.success,
-      title: 'Target Credentials stored',
-      body: (evt) => `Credentials stored for target: ${evt.message.target}`,
-    } as NotificationMessageMapper,
-  ],
-  [
-    NotificationCategory.TargetCredentialsDeleted,
-    {
-      variant: AlertVariant.success,
-      title: 'Target Credentials deleted',
-      body: (evt) => `Credentials deleted for target: ${evt.message.target}`,
-    } as NotificationMessageMapper,
-  ],
-  [
     NotificationCategory.HeapDumpSuccess,
     {
       variant: AlertVariant.success,
@@ -428,6 +412,15 @@ export const messageKeys = new Map([
       variant: AlertVariant.success,
       title: 'Heap Dump metadata updated',
       body: (evt) => `${evt.message.heapDump.heapDumpId} in target ${evt.message.jvmId} metadata was updated`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.HeapDumpAnalysisSuccess,
+    {
+      variant: AlertVariant.success,
+      title: 'Heap Dump Analysis Success',
+      body: (evt) =>
+        `Analysis Job ${evt.message.jobId} for ${evt.message.heapDumpId} in target ${evt.message.jvmId} completed successfully`,
     } as NotificationMessageMapper,
   ],
   [
@@ -492,6 +485,42 @@ export const messageKeys = new Map([
       variant: AlertVariant.success,
       title: 'Credentials deleted',
       body: (evt) => `Credentials deleted for: ${evt.message.matchExpression}`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.CredentialsUpdated,
+    {
+      variant: AlertVariant.info,
+      title: 'Credentials updated',
+      body: (evt) => `Credentials updated for: ${evt.message.matchExpression}`,
+      hidden: true,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.ExpressionCreated,
+    {
+      variant: AlertVariant.info,
+      title: 'MatchExpression created',
+      body: (evt) => `Expression created: ${evt.message.script}`,
+      hidden: true,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.ExpressionUpdated,
+    {
+      variant: AlertVariant.info,
+      title: 'MatchExpression updated',
+      body: (evt) => `MatchExpression updated: ${evt.message.script}`,
+      hidden: true,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.ExpressionDeleted,
+    {
+      variant: AlertVariant.info,
+      title: 'MatchExpression deleted',
+      body: (evt) => `MatchExpression deleted: ${evt.message.script}`,
+      hidden: true,
     } as NotificationMessageMapper,
   ],
   [
@@ -570,6 +599,30 @@ export const messageKeys = new Map([
       variant: AlertVariant.success,
       title: 'async-profiler remote file deleted',
       body: (evt) => `async-profiler remote file ${evt.message.id} was deleted`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.UnifiedLogUploaded,
+    {
+      variant: AlertVariant.success,
+      title: 'Log pulled',
+      body: (evt) => `Log ${evt.message.unifiedLog.logId} pulled from target ${evt.message.jvmId}`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.UnifiedLogDeleted,
+    {
+      variant: AlertVariant.success,
+      title: 'Log deleted',
+      body: (evt) => `Log ${evt.message.unifiedLog.logId} was deleted`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.UnifiedLogMetadataUpdated,
+    {
+      variant: AlertVariant.success,
+      title: 'Log metadata updated',
+      body: (evt) => `${evt.message.unifiedLog.logId} in target ${evt.message.jvmId} metadata was updated`,
     } as NotificationMessageMapper,
   ],
 ]);

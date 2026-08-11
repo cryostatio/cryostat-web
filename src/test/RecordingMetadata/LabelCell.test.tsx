@@ -17,10 +17,15 @@
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { KeyValue, Target } from '@app/Shared/Services/api.types';
+import { defaultServices } from '@app/Shared/Services/Services';
+import dayjs, { defaultDatetimeFormat } from '@i18n/datetime';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { of } from 'rxjs';
 import { render } from '../utils';
+
+jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
 
 const mockFooTarget: Target = {
   agent: false,
@@ -150,5 +155,62 @@ describe('<LabelCell />', () => {
     expect(placeHolder).toBeInTheDocument();
     expect(placeHolder).toBeVisible();
     expect(placeHolder.onclick).toBeNull();
+  });
+
+  it('should format startTime label as a human-readable datetime', async () => {
+    const startTimeMillis = 1782483737600;
+    const startTimeLabel: KeyValue = { key: 'startTime', value: String(startTimeMillis) };
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <LabelCell target={mockFooTarget.connectUrl} labels={[startTimeLabel]} />,
+          },
+        ],
+      },
+    });
+
+    const expectedText = `startTime=${dayjs(startTimeMillis).tz(defaultDatetimeFormat.timeZone.full).format('L LTS z')}`;
+    const displayedLabel = screen.getByText(expectedText);
+    expect(displayedLabel).toBeInTheDocument();
+    expect(displayedLabel).toBeVisible();
+  });
+
+  it('should format duration label as a humanized duration string', async () => {
+    const durationLabel: KeyValue = { key: 'duration', value: '90203' };
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <LabelCell target={mockFooTarget.connectUrl} labels={[durationLabel]} />,
+          },
+        ],
+      },
+    });
+
+    const displayedLabel = screen.getByText(/^duration=/);
+    expect(displayedLabel).toBeInTheDocument();
+    expect(displayedLabel).toBeVisible();
+    expect(displayedLabel.textContent).not.toBe('duration=90203');
+  });
+
+  it('should fall back to raw value for startTime label with non-numeric value', async () => {
+    const badLabel: KeyValue = { key: 'startTime', value: 'not-a-timestamp' };
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <LabelCell target={mockFooTarget.connectUrl} labels={[badLabel]} />,
+          },
+        ],
+      },
+    });
+
+    const displayedLabel = screen.getByText('startTime=not-a-timestamp');
+    expect(displayedLabel).toBeInTheDocument();
+    expect(displayedLabel).toBeVisible();
   });
 });

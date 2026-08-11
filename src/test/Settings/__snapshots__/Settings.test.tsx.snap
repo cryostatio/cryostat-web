@@ -248,9 +248,7 @@ exports[`<Settings /> renders correctly 1`] = `
                               >
                                 <span
                                   class="pf-v6-c-helper-text__item-text"
-                                >
-                                  
-                                </span>
+                                />
                               </div>
                             </div>
                           </div>

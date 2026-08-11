@@ -41,6 +41,9 @@ import {
   CardBody,
   CardTitle,
   EmptyState,
+  Modal,
+  ModalBody,
+  ModalHeader,
   Switch,
   Toolbar,
   ToolbarContent,
@@ -52,7 +55,6 @@ import {
   LabelGroup,
   Label,
 } from '@patternfly/react-core';
-import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
   ActionsColumn,
@@ -582,12 +584,12 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
       <Modal
         appendTo={portalRoot()}
         isOpen={createRuleModalOpen}
-        variant={ModalVariant.large}
+        variant="large"
         width="90vw"
-        title={t(isEditMode ? 'UPDATE' : 'CREATE')}
         onClose={handleCreateRuleModalClose}
       >
-        {createRuleModalOpen ? <CreateRule onClose={handleCreateRuleModalClose} /> : null}
+        <ModalHeader title={t(isEditMode ? 'UPDATE' : 'CREATE')} />
+        <ModalBody>{createRuleModalOpen ? <CreateRule onClose={handleCreateRuleModalClose} /> : null}</ModalBody>
       </Modal>
       <RuleUploadModal visible={isUploadModalOpen} onClose={handleUploadModalClose}></RuleUploadModal>
     </>

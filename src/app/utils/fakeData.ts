@@ -16,6 +16,7 @@
 
 import { JFRMetricsChartController } from '@app/Dashboard/Charts/jfr/JFRMetricsChartController';
 import { MBeanMetricsChartController } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartController';
+import { HeapDumpAnalysisResult } from '@app/Diagnostics/Analysis/HeapDumps/types';
 import { ApiService } from '@app/Shared/Services/Api.service';
 import {
   Target,
@@ -37,7 +38,9 @@ import {
   SimpleResponse,
   TargetStub,
   AggregateReport,
+  CachedHeapDumpReportValue,
 } from '@app/Shared/Services/api.types';
+import { HeapDumpReportService } from '@app/Shared/Services/HeapDumpReport.service';
 import { NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
 import { NotificationService, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ReportService } from '@app/Shared/Services/Report.service';
@@ -216,6 +219,154 @@ export const fakeCachedReport: CachedReportValue = {
   timestamp: Date.now() - 1000 * 60 * 60,
 };
 
+export const fakeHeapDumpAnalysis: HeapDumpAnalysisResult = {
+  problemCollections: [
+    {
+      classAndField: 'someClass-->someField',
+      definingClass: 'someClass',
+      overhead: 1,
+      badObjs: 2,
+      goodCollections: 3,
+      classAndOvhds: [
+        {
+          clazz: 'someClass',
+          problemKind: 'PROBLEM',
+          numInstances: 1,
+          overhead: 1,
+        },
+      ],
+    },
+  ],
+  duplicateArrays: [
+    {
+      classAndField: 'someOtherClass-->someOtherField',
+      definingClass: 'someOtherClass',
+      overhead: 4,
+      badObjs: 5,
+      nonDupArrays: 6,
+      aggregates: [
+        {
+          value: 'someArray',
+          count: 7,
+        },
+      ],
+    },
+  ],
+  duplicateStrings: [
+    {
+      classAndField: 'someDupStringClass-->someDupStringField',
+      definingClass: 'someDupStringClass',
+      overhead: 8,
+      badObjs: 9,
+      dupBackingCharArrays: 10,
+      nonDupStrings: 11,
+      aggregates: [
+        {
+          value: 'someString',
+          count: 12,
+        },
+      ],
+    },
+  ],
+  highSizeObjects: [
+    {
+      classAndField: 'someHighSizeObjClass-->someHighSizeObjField',
+      definingClass: 'someHighSizeObjClass',
+      overhead: 13,
+      badObjs: 14,
+      classAndSizeCombos: [
+        {
+          clazz: 'someClazz',
+          numInstances: 1,
+          overhead: 15,
+        },
+      ],
+    },
+  ],
+  weakHashMapClusters: [
+    {
+      classAndField: 'someWeakHashMapClass-->someWeakHashMapField',
+      definingClass: 'someWeakHashMapClass',
+      overhead: 16,
+      badObjs: 17,
+      classes: ['fooClass'],
+    },
+  ],
+  objectHistogram: [
+    {
+      clazz: 'histoClass1',
+      numInstances: 1,
+      inclusiveSize: 123,
+      shallowSize: 456,
+    },
+    {
+      clazz: 'histoClass2',
+      numInstances: 2,
+      inclusiveSize: 321,
+      shallowSize: 654,
+    },
+  ],
+  nullProblemFields: [
+    {
+      clazz: 'NullProblemClass',
+      numInstances: 1,
+      fields: [
+        {
+          clazz: 'NullClass',
+          field: 'NullField',
+          overhead: 1,
+        },
+      ],
+      overhead: 1,
+      problemKind: 'SOME OTHER PROBLEM',
+    },
+  ],
+  nearNullProblemFields: [],
+  fullBytesFields: [],
+  highBytesFields: [],
+  classLoaderInstanceStats: [],
+  classLoaderClassStats: [],
+  compressibleStringStats: {
+    stringObjects: 18,
+    backingArrayBytes: 19,
+    compressedStrings: 20,
+    compressedStringBytes: 21,
+    asciiStrings: 22,
+    asciiStringBytes: 23,
+  },
+  duplicateStringStats: {
+    totalStrings: 24,
+    uniqueStrings: 25,
+    duplicateStrings: 26,
+    overhead: 27,
+  },
+  histogramStats: {
+    totalClasses: 28,
+    totalObjects: 29,
+    zeroInstances: 30,
+    singleInstances: 31,
+  },
+  fundamentalStats: {
+    pointerSize: 32,
+    narrowPointers: false,
+    objectHeaderSize: 33,
+    objectHeaderAlignment: 34,
+    numObjects: 35,
+    objectInstances: 36,
+    objectArrays: 37,
+    primitiveArrays: 38,
+    objectSize: 39,
+    instanceSize: 40,
+    objArraySize: 41,
+    primitiveSize: 42,
+  },
+};
+
+export const fakeCachedHeapDumpReport: CachedHeapDumpReportValue = {
+  report: fakeHeapDumpAnalysis,
+  timestamp: Date.now() - 1000 * 60 * 60,
+};
+
 class FakeTargetService extends TargetService {
   target(): Observable<NullableTarget> {
     return of(fakeTarget);
@@ -233,6 +384,20 @@ class FakeReportService extends ReportService {
 
   getCachedAnalysisReport(_connectUrl: string): CachedReportValue {
     return fakeCachedReport;
+  }
+}
+
+class FakeHeapDumpReportService extends HeapDumpReportService {
+  constructor(ctx: CryostatContext, channel: NotificationChannel) {
+    super(ctx, channel);
+  }
+
+  reportJson(_jvmId: string, _heapDump: string): Observable<HeapDumpAnalysisResult> {
+    return of(fakeHeapDumpAnalysis);
+  }
+
+  getCachedAnalysisReport(_connectUrl: string): CachedHeapDumpReportValue {
+    return fakeCachedHeapDumpReport;
   }
 }
 
@@ -414,6 +579,7 @@ class FakeApiService extends ApiService {
 const target = new FakeTargetService();
 const api = new FakeApiService(target, NotificationsInstance);
 const reports = new FakeReportService(defaultContext, NotificationsInstance, defaultServices.notificationChannel);
+const heapDumpReports = new FakeHeapDumpReportService(defaultContext, defaultServices.notificationChannel);
 const settings = new FakeSetting();
 
 export const fakeServices: Services = {
@@ -421,6 +587,7 @@ export const fakeServices: Services = {
   target,
   api,
   reports,
+  heapDumpReports,
   settings,
 };
 

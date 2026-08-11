@@ -27,7 +27,7 @@ import {
   HeapDumpDeleteFilterIntent,
   TargetHeapDumpFilters,
 } from '@app/Shared/Redux/Filters/HeapDumpFilterSlice';
-import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+import { modalPrefillSetIntent, RootState, StateDispatch, store } from '@app/Shared/Redux/ReduxStore';
 import {
   NotificationCategory,
   HeapDump,
@@ -38,7 +38,7 @@ import {
 import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { TableColumn, formatBytes, hashCode, portalRoot, sortResources } from '@app/utils/utils';
+import { TableColumn, formatBytes, hashCode, portalRoot, sortResources, toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Toolbar,
@@ -70,6 +70,7 @@ import { ISortBy, SortByDirection, Table, Tbody, Td, ThProps, Tr } from '@patter
 import _ from 'lodash';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { combineLatest, concatMap, first, forkJoin, Observable, of } from 'rxjs';
 import { ColumnConfig, DiagnosticsTable } from './DiagnosticsTable';
 import { filterHeapDumps, HeapDumpFilters, HeapDumpFiltersCategories } from './Filters/HeapDumpFilters';
@@ -187,7 +188,10 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({
         setHeapDumps((oldHeapDumps) => {
           return oldHeapDumps.map((heapDump) => {
             if (heapDump.heapDumpId === event.message.heapDump.heapDumpId) {
-              const updatedHeapDump = { ...heapDump, metadata: { labels: event.message.heapDump.metadata.labels } };
+              const updatedHeapDump = {
+                ...heapDump,
+                metadata: { labels: event.message.heapDump.metadata?.labels ?? [] },
+              };
               return updatedHeapDump;
             }
             return heapDump;
@@ -516,6 +520,23 @@ export interface HeapDumpActionProps {
 export const HeapDumpAction: React.FC<HeapDumpActionProps> = ({ heapDump, onDownload, ...props }) => {
   const { t } = useCryostatTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
+  const navigate = useNavigate();
+
+  const handleViewInAnalysis = React.useCallback(
+    (jvmId) => {
+      const id = heapDump.heapDumpId;
+      const analysisPath = toPath('/analyze-heap-dumps');
+      const params = new URLSearchParams({ jvmId, heapDumpId: id });
+      const state = {
+        jvmId,
+        id,
+        threadDumpId: id,
+      };
+      store.dispatch(modalPrefillSetIntent(analysisPath, state as Record<string, unknown>));
+      navigate(`${analysisPath}?${params.toString()}`, { state });
+    },
+    [heapDump, navigate],
+  );
 
   const actionItems = React.useMemo(() => {
     return [
@@ -524,8 +545,13 @@ export const HeapDumpAction: React.FC<HeapDumpActionProps> = ({ heapDump, onDown
         key: 'download-heapdump',
         onClick: () => onDownload(heapDump),
       },
+      {
+        title: 'Analyze Heap Dump',
+        key: 'analyze-heapdump',
+        onClick: () => handleViewInAnalysis(heapDump.jvmId),
+      },
     ] as RowAction[];
-  }, [onDownload, heapDump]);
+  }, [onDownload, handleViewInAnalysis, heapDump]);
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
@@ -644,7 +670,7 @@ export const HeapDumpRow: React.FC<HeapDumpRowProps> = ({
               updateFilters: updateFilters,
               labelFilters: labelFilters,
             }}
-            labels={heapDump.metadata.labels}
+            labels={heapDump.metadata?.labels ?? []}
           />
         </Td>
         <Td key={`heap-dump-table-row-${index}_4`} dataLabel={tableColumns[3].title}>

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { RecordingReplace } from '@app/CreateRecording/types';
+import { HeapDumpAnalysisResult } from '@app/Diagnostics/Analysis/HeapDumps/types';
 import { AlertVariant } from '@patternfly/react-core';
 import _ from 'lodash';
 import { Observable } from 'rxjs';
@@ -59,6 +60,8 @@ export function isTargetMetadata(metadata: Metadata | TargetMetadata): metadata 
 }
 
 export type SimpleResponse = Pick<Response, 'ok' | 'status'>;
+
+export type FetchFn = (url: string, init?: RequestInit) => Promise<Response>;
 
 export interface XMLHttpResponse {
   body: unknown;
@@ -272,7 +275,7 @@ export interface ThreadDump {
   jvmId?: string;
   lastModified?: number;
   size: number;
-  metadata: Metadata;
+  metadata?: Metadata;
 }
 
 export interface StackFrame {
@@ -368,7 +371,7 @@ export interface HeapDump {
   jvmId?: string;
   lastModified?: number;
   size: number;
-  metadata: Metadata;
+  metadata?: Metadata;
 }
 
 export interface ActiveRecordingsFilterInput {
@@ -544,6 +547,11 @@ export interface CachedReportValue {
   timestamp: number;
 }
 
+export interface CachedHeapDumpReportValue {
+  report: HeapDumpAnalysisResult;
+  timestamp: number;
+}
+
 // [topic, { ruleName, score, description, ... }}]
 export type CategorizedRuleEvaluations = [string, AnalysisResult[]];
 
@@ -666,6 +674,31 @@ export interface AsyncProfilerStatus {
 }
 
 // ======================================
+// Unified Logging resources
+// ======================================
+
+export interface UnifiedLoggingStatus {
+  enabled: boolean;
+  logFilePath?: string;
+  what?: string;
+  decorators?: string;
+}
+
+export interface UnifiedLog {
+  logId: string;
+  jvmId: string;
+  size: number;
+  lastModified?: number;
+  downloadUrl?: string;
+  metadata?: Metadata;
+}
+
+export interface UnifiedLogDirectory {
+  jvmId: string;
+  logs: UnifiedLog[];
+}
+
+// ======================================
 // Notification resources
 // ======================================
 
@@ -726,13 +759,12 @@ export enum NotificationCategory {
   GrafanaUploadFail = 'GrafanaUploadFailure',
   GrafanaConfiguration = 'GrafanaConfiguration', // generated client-side
   LayoutTemplateCreated = 'LayoutTemplateCreated', // generated client-side
-  TargetCredentialsStored = 'TargetCredentialsStored',
-  TargetCredentialsDeleted = 'TargetCredentialsDeleted',
   HeapDumpSuccess = 'HeapDumpSuccess',
   HeapDumpUploaded = 'HeapDumpUploaded',
   HeapDumpFailure = 'HeapDumpFailure',
   HeapDumpDeleted = 'HeapDumpDeleted',
   HeapDumpMetadataUpdated = 'HeapDumpMetadataUpdated',
+  HeapDumpAnalysisSuccess = 'HeapDumpAnalysisSuccess',
   ThreadDumpSuccess = 'ThreadDumpSuccess',
   ThreadDumpFailure = 'ThreadDumpFailure',
   ThreadDumpDeleted = 'ThreadDumpDeleted',
@@ -741,11 +773,18 @@ export enum NotificationCategory {
   TriggerDeleted = 'TriggerDeleted',
   CredentialsStored = 'CredentialsStored',
   CredentialsDeleted = 'CredentialsDeleted',
+  CredentialsUpdated = 'CredentialsUpdated',
+  ExpressionCreated = 'ExpressionCreated',
+  ExpressionDeleted = 'ExpressionDeleted',
+  ExpressionUpdated = 'ExpressionUpdated',
   ReportSuccess = 'ReportSuccess',
   ReportFail = 'ReportFailure',
   AsyncProfileCreated = 'AsyncProfilerCreated',
   AsyncProfileStopped = 'AsyncProfilerStopped',
   AsyncProfileDeleted = 'AsyncProfilerDeleted',
+  UnifiedLogUploaded = 'UnifiedLogUploaded',
+  UnifiedLogDeleted = 'UnifiedLogDeleted',
+  UnifiedLogMetadataUpdated = 'UnifiedLogMetadataUpdated',
 }
 
 export enum CloseStatus {

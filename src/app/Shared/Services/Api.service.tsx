@@ -29,8 +29,8 @@ import {
   of,
   ReplaySubject,
   throwError,
+  finalize,
 } from 'rxjs';
-import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
 import {
   GrafanaDatasourceUrlGetResponse,
@@ -74,9 +74,13 @@ import {
   SmartTrigger,
   AsyncProfilerStatus,
   AsyncProfile,
+  UnifiedLoggingStatus,
+  UnifiedLog,
+  UnifiedLogDirectory,
   AuditQueryParams,
   AuditRevisionsResponse,
   AuditRevisionDetail,
+  FetchFn,
 } from './api.types';
 import {
   isHttpError,
@@ -103,6 +107,8 @@ export class ApiService {
     private readonly ctx: CryostatContext,
     private readonly target: TargetService,
     private readonly notifications: NotificationService,
+    private readonly fetchFn: FetchFn = (url, init) => fetch(url, init),
+    private readonly uploadProgressTracking = true,
   ) {}
 
   testBaseServer() {
@@ -279,20 +285,7 @@ export class ApiService {
       }
     });
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
-    return this.ctx.headers().pipe(
-      concatMap((headers) =>
-        this.sendLegacyRequest('v4', 'rules', 'Rule Upload Failed', {
-          body,
-          method: 'POST',
-          headers,
-          listeners: {
-            onUploadProgress: (event) => {
-              onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
-            },
-          },
-          abortSignal,
-        }),
-      ),
+    return this.sendUploadRequest('v4', 'rules', 'Rule Upload Failed', body, onUploadProgress, abortSignal).pipe(
       map((resp) => resp.ok),
       tap({
         next: () => (window.onbeforeunload = null),
@@ -654,20 +647,14 @@ export class ApiService {
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
     const body = new window.FormData();
     body.append('template', file);
-    return this.ctx.headers().pipe(
-      concatMap((headers) =>
-        this.sendLegacyRequest('v4', 'event_templates', 'Template Upload Failed', {
-          body: body,
-          method: 'POST',
-          headers,
-          listeners: {
-            onUploadProgress: (event) => {
-              onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
-            },
-          },
-          abortSignal,
-        }),
-      ),
+    return this.sendUploadRequest(
+      'v4',
+      'event_templates',
+      'Template Upload Failed',
+      body,
+      onUploadProgress,
+      abortSignal,
+    ).pipe(
       map((resp) => resp.ok),
       tap({
         next: () => (window.onbeforeunload = null),
@@ -883,20 +870,14 @@ export class ApiService {
     const body = new window.FormData();
     body.append('probeTemplate', file);
     body.append('name', file.name);
-    return this.ctx.headers().pipe(
-      concatMap((headers) =>
-        this.sendLegacyRequest('v4', 'probes', 'Custom Probe Template Upload Failed', {
-          method: 'POST',
-          body: body,
-          headers,
-          listeners: {
-            onUploadProgress: (event) => {
-              onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
-            },
-          },
-          abortSignal,
-        }),
-      ),
+    return this.sendUploadRequest(
+      'v4',
+      'probes',
+      'Custom Probe Template Upload Failed',
+      body,
+      onUploadProgress,
+      abortSignal,
+    ).pipe(
       map((resp) => resp.ok),
       tap({
         next: () => (window.onbeforeunload = null),
@@ -1298,26 +1279,15 @@ export class ApiService {
     body.append('recording', file);
     body.append('labels', JSON.stringify(labels));
 
-    return this.ctx.headers().pipe(
-      concatMap((headers) =>
-        this.sendLegacyRequest('v4', 'recordings', 'Recording Upload Failed', {
-          method: 'POST',
-          body: body,
-          headers,
-          listeners: {
-            onUploadProgress: (event) => {
-              onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
-            },
-          },
-          abortSignal,
-        }),
-      ),
-      map((resp) => {
-        if (resp.ok) {
-          return resp.body as string;
-        }
-        throw new XMLHttpError(resp);
-      }),
+    return this.sendUploadRequest(
+      'v4',
+      'recordings',
+      'Recording Upload Failed',
+      body,
+      onUploadProgress,
+      abortSignal,
+    ).pipe(
+      concatMap((resp) => (resp instanceof Response ? resp.text() : Promise.resolve(resp.body as string))),
       tap({
         next: () => (window.onbeforeunload = null),
         error: () => (window.onbeforeunload = null),
@@ -1335,20 +1305,14 @@ export class ApiService {
 
     const body = new window.FormData();
     body.append('cert', file);
-    return this.ctx.headers().pipe(
-      concatMap((headers) =>
-        this.sendLegacyRequest('v4', 'certificates', 'Certificate Upload Failed', {
-          method: 'POST',
-          body,
-          headers,
-          listeners: {
-            onUploadProgress: (event) => {
-              onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
-            },
-          },
-          abortSignal,
-        }),
-      ),
+    return this.sendUploadRequest(
+      'v4',
+      'certificates',
+      'Certificate Upload Failed',
+      body,
+      onUploadProgress,
+      abortSignal,
+    ).pipe(
       map((resp) => resp.ok),
       tap({
         next: () => (window.onbeforeunload = null),
@@ -2200,6 +2164,120 @@ export class ApiService {
     );
   }
 
+  getUnifiedLoggingStatus(target: Target, suppressNotifications = false): Observable<UnifiedLoggingStatus> {
+    return this.doGet<UnifiedLoggingStatus>(
+      `diagnostics/targets/${target.id}/unified-logging`,
+      'beta',
+      undefined,
+      suppressNotifications,
+    );
+  }
+
+  enableUnifiedLogging(target: Target, what: string, decorators: string): Observable<boolean> {
+    const params = new URLSearchParams({ what, decorators });
+    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logging?${params}`, {
+      method: 'POST',
+    }).pipe(
+      map((resp) => resp.ok),
+      first(),
+    );
+  }
+
+  reconfigureUnifiedLogging(target: Target, what: string, decorators: string): Observable<boolean> {
+    const params = new URLSearchParams({ what, decorators });
+    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logging?${params}`, {
+      method: 'PATCH',
+    }).pipe(
+      map((resp) => resp.ok),
+      first(),
+    );
+  }
+
+  disableUnifiedLogging(target: Target): Observable<boolean> {
+    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logging`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
+      first(),
+    );
+  }
+
+  pullUnifiedLog(target: Target): Observable<UnifiedLog | null> {
+    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logging/pull`, {
+      method: 'POST',
+    }).pipe(
+      concatMap((resp) => (resp.status === 204 ? Promise.resolve(null) : resp.json())),
+      first(),
+    );
+  }
+
+  getUnifiedLogs(target: Target, suppressNotifications = false): Observable<UnifiedLog[]> {
+    return this.doGet<UnifiedLog[]>(
+      `diagnostics/targets/${target.id}/unified-logs`,
+      'beta',
+      undefined,
+      suppressNotifications,
+    );
+  }
+
+  downloadUnifiedLog(target: Target, log: UnifiedLog): void {
+    this.ctx
+      .url(log.downloadUrl ?? `/api/beta/diagnostics/targets/${target.id}/unified-logs/${log.logId}`)
+      .subscribe((resourceUrl) =>
+        this.downloadFile(resourceUrl, new URLSearchParams({ filename: log.logId }), log.logId),
+      );
+  }
+
+  deleteUnifiedLog(target: Target, logId: string): Observable<boolean> {
+    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logs/${logId}`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
+      first(),
+    );
+  }
+
+  deleteArchivedUnifiedLogFromPath(jvmId: string, logId: string): Observable<boolean> {
+    return this.sendRequest('beta', `diagnostics/fs/unified-logs/${jvmId}/${logId}`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
+      first(),
+    );
+  }
+
+  getAllUnifiedLogs(suppressNotifications = false): Observable<UnifiedLogDirectory[]> {
+    return this.doGet<UnifiedLogDirectory[]>('diagnostics/fs/unified-logs', 'beta', undefined, suppressNotifications);
+  }
+
+  postUnifiedLogMetadataForJvmId(jvmId: string, logId: string, labels: KeyValue[]): Observable<UnifiedLog> {
+    return this.ctx.headers({ 'Content-Type': 'application/json' }).pipe(
+      concatMap((headers) =>
+        this.sendRequest('beta', `diagnostics/fs/unified-logs/${jvmId}/${logId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ labels: this.transformLabelsToObject(labels) }),
+          headers,
+        }),
+      ),
+      concatMap((resp) => resp.json()),
+      first(),
+    );
+  }
+
+  postUnifiedLogMetadata(target: Target, logId: string, labels: KeyValue[]): Observable<UnifiedLog> {
+    return this.ctx.headers({ 'Content-Type': 'application/json' }).pipe(
+      concatMap((headers) =>
+        this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logs/${logId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ labels: this.transformLabelsToObject(labels) }),
+          headers,
+        }),
+      ),
+      concatMap((resp) => resp.json()),
+      first(),
+    );
+  }
+
   downloadLayoutTemplate(template: LayoutTemplate): void {
     const stringifiedSerializedLayout = this.stringifyLayoutTemplate(template);
     const filename = `cryostat-dashboard-${template.name}.json`;
@@ -2303,7 +2381,7 @@ export class ApiService {
           }),
         ),
       ]).pipe(
-        concatMap((parts) => fromFetch(parts[0], parts[1])),
+        concatMap((parts) => from(this.fetchFn(parts[0], parts[1]))),
         map((resp) => {
           if (resp.ok) return resp;
           throw new HttpError(resp);
@@ -2352,6 +2430,60 @@ export class ApiService {
       this.notifications.danger(`Request failed`, error.message);
     }
     throw error;
+  }
+
+  private uploadProgressListener(onUploadProgress?: (progress: string | number) => void) {
+    if (!onUploadProgress) {
+      return undefined;
+    }
+    return {
+      onUploadProgress: (event: ProgressEvent) => {
+        onUploadProgress(Math.floor((event.loaded * 100) / event.total));
+      },
+    };
+  }
+
+  private sendUploadRequest(
+    apiVersion: ApiVersion,
+    path: string,
+    title: string,
+    body: XMLHttpRequestBodyInit,
+    onUploadProgress?: (progress: string | number) => void,
+    abortSignal?: Observable<void>,
+  ): Observable<Response | XMLHttpResponse> {
+    return this.ctx.headers().pipe(
+      concatMap((headers) => {
+        if (this.uploadProgressTracking) {
+          return this.sendLegacyRequest(apiVersion, path, title, {
+            method: 'POST',
+            body,
+            headers,
+            listeners: this.uploadProgressListener(onUploadProgress),
+            abortSignal,
+          });
+        }
+
+        onUploadProgress?.(0);
+        const controller = new AbortController();
+        const abortSubscription = abortSignal?.subscribe(() => controller.abort());
+        return this.sendRequest(
+          apiVersion,
+          path,
+          {
+            method: 'POST',
+            body,
+            headers,
+            signal: controller.signal,
+          },
+          undefined,
+          false,
+          true,
+        ).pipe(
+          tap(() => onUploadProgress?.(100)),
+          finalize(() => abortSubscription?.unsubscribe()),
+        );
+      }),
+    );
   }
 
   private sendLegacyRequest(

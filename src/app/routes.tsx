@@ -22,6 +22,7 @@ import AsyncProfiler from './AsyncProfiler/AsyncProfiler';
 import CreateAsyncProfilerSession from './AsyncProfiler/CreateAsyncProfilerSession';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
+import { HeapDumpAnalysis } from './Diagnostics/Analysis/HeapDumps/HeapDumpAnalysis';
 import ThreadDumpAnalysis from './Diagnostics/Analysis/ThreadDumpAnalysis';
 import { AnalyzeHeapDumps } from './Diagnostics/AnalyzeHeapDumps';
 import AnalyzeThreadDumps from './Diagnostics/AnalyzeThreadDumps';
@@ -42,6 +43,7 @@ import { DefaultFallBack, ErrorBoundary } from './Shared/Components/ErrorBoundar
 import { FeatureLevel } from './Shared/Services/service.types';
 import Topology from './Topology/Topology';
 import CaptureSmartTriggers from './Triggers/CaptureSmartTriggers';
+import UnifiedLogs from './UnifiedLogs/UnifiedLogs';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
 import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
@@ -218,12 +220,31 @@ const diagnosticsRoutes: IAppRoute[] = [
   },
   {
     component: AnalyzeHeapDumps,
-    label: 'Heap Dumps',
+    label: 'Heap Dump Archives',
     path: toPath('/heapdumps'),
-    title: 'Heap Dumps',
+    title: 'Heap Dump Archives',
     description: 'Create and view heap dumps on single target JVMs.',
     navGroup: DIAGNOSTICS,
     navSubgroup: ANALYZE,
+  },
+  {
+    component: HeapDumpAnalysis,
+    label: 'Analyze Heap Dumps',
+    path: toPath('/analyze-heap-dumps'),
+    title: 'Analyze Heap Dumps',
+    description: 'Analyze Heap Dump Data',
+    navGroup: DIAGNOSTICS,
+    navSubgroup: ANALYZE,
+  },
+  {
+    component: UnifiedLogs,
+    label: 'Unified Log Archives',
+    path: toPath('/unified-logs'),
+    title: 'Unified Log Archives',
+    description: 'Manage Unified Logging sessions and view collected log archives.',
+    navGroup: DIAGNOSTICS,
+    navSubgroup: ANALYZE,
+    featureLevel: FeatureLevel.BETA,
   },
 ];
 

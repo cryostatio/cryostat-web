@@ -3,6 +3,10 @@
 import '@i18n/config';
 import '@testing-library/jest-dom';
 
+// React 18 requires this global to be set in jsdom test environments so that
+// act() is properly enforced. See https://react.dev/blog/2022/03/08/react-18-upgrade-guide#configuring-your-testing-environment
+global.IS_REACT_ACT_ENVIRONMENT = true;
+
 if (typeof globalThis.Request === 'undefined') {
   globalThis.Request = class {
     constructor(input, init = {}) {
@@ -19,6 +23,7 @@ jest.mock('@app/Shared/Services/Api.service');
 jest.mock('@app/Shared/Services/Login.service');
 jest.mock('@app/Shared/Services/NotificationChannel.service');
 jest.mock('@app/Shared/Services/Report.service');
+jest.mock('@app/Shared/Services/HeapDumpReport.service')
 jest.mock('@app/Shared/Services/Settings.service');
 jest.mock('@app/Shared/Services/Target.service');
 jest.mock('@app/Shared/Services/Targets.service');

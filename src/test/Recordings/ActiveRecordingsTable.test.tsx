@@ -154,9 +154,7 @@ describe('<ActiveRecordingsTable />', () => {
   let preloadedState: RootState;
 
   beforeAll(async () => {
-    await act(async () => {
-      resize(2400, 1080);
-    });
+    resize(2400, 1080);
   });
 
   beforeEach(async () => {
@@ -229,9 +227,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(startTime).toBeInTheDocument();
     expect(startTime).toBeVisible();
 
-    await act(async () => {
-      await user.hover(startTime);
-    });
+    await user.hover(startTime);
 
     const toolTip = await screen.findByText(dayjs(mockRecording.startTime).toISOString());
     expect(toolTip).toBeInTheDocument(); // FIXME: tooltip is available but visibility test failed
@@ -449,16 +445,14 @@ describe('<ActiveRecordingsTable />', () => {
     const selectAllCheck = checkboxes[0];
     await user.click(selectAllCheck);
 
-    await act(async () => {
-      await user.click(screen.getByText('Delete'));
+    await user.click(screen.getByText('Delete'));
 
-      const deleteModal = await screen.findByLabelText(DeleteActiveRecordings.ariaLabel);
-      expect(deleteModal).toBeInTheDocument();
-      expect(deleteModal).toBeVisible();
+    const deleteModal = await screen.findByLabelText(DeleteActiveRecordings.ariaLabel);
+    expect(deleteModal).toBeInTheDocument();
+    expect(deleteModal).toBeVisible();
 
-      await user.click(screen.getByLabelText("Don't ask me again"));
-      await user.click(within(screen.getByLabelText(DeleteActiveRecordings.ariaLabel)).getByText('Delete'));
-    });
+    await user.click(screen.getByLabelText("Don't ask me again"));
+    await user.click(within(screen.getByLabelText(DeleteActiveRecordings.ariaLabel)).getByText('Delete'));
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toHaveBeenCalledWith(mockRecording.remoteId);
@@ -504,10 +498,8 @@ describe('<ActiveRecordingsTable />', () => {
       preloadedState: preloadedState,
     });
 
-    await act(async () => {
-      await user.click(screen.getByLabelText(testT('RecordingActions.ARIA_LABELS.MENU_TOGGLE')));
-      await user.click(screen.getByText('Download Recording'));
-    });
+    await user.click(screen.getByLabelText(testT('RecordingActions.ARIA_LABELS.MENU_TOGGLE')));
+    await user.click(screen.getByText('Download Recording'));
 
     const downloadRequestSpy = jest.spyOn(defaultServices.api, 'downloadRecording');
 
@@ -528,10 +520,8 @@ describe('<ActiveRecordingsTable />', () => {
       preloadedState: preloadedState,
     });
 
-    await act(async () => {
-      await user.click(screen.getByLabelText(testT('RecordingActions.ARIA_LABELS.MENU_TOGGLE')));
-      await user.click(screen.getByText('View in Grafana ...'));
-    });
+    await user.click(screen.getByLabelText(testT('RecordingActions.ARIA_LABELS.MENU_TOGGLE')));
+    await user.click(screen.getByText('View in Grafana ...'));
 
     const grafanaUploadSpy = jest.spyOn(defaultServices.api, 'uploadActiveRecordingToGrafana');
 
