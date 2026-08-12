@@ -15,7 +15,7 @@
  */
 
 import { DeleteSmartTrigger, DeleteOrDisableWarningType } from '@app/Modal/types';
-import { EventTemplate, SmartTrigger } from '@app/Shared/Services/api.types';
+import { EventTemplate, SmartTrigger, SmartTriggerRequest } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { SmartTriggersTable } from '@app/Triggers/SmartTriggers';
@@ -286,12 +286,15 @@ describe('<SmartTriggerTable />', () => {
     expect(submitButton).toBeEnabled();
     await user.click(submitButton);
 
+    var result: SmartTriggerRequest = {
+      condition: 'ProcessCpuLoad>0.0',
+      durationExpr: '30s',
+      recordingTemplate: 'Profiling',
+    };
+
     const uploadRequestSpy = jest.spyOn(defaultServices.api, 'addTriggers');
     expect(uploadRequestSpy).toHaveBeenCalledTimes(1);
-    expect(uploadRequestSpy).toHaveBeenCalledWith(
-      '[ProcessCpuLoad>0.0;TargetDuration>duration("30s")]~Profiling',
-      mockTarget,
-    );
+    expect(uploadRequestSpy).toHaveBeenCalledWith(result, mockTarget);
   });
 
   it('should upload Smart Triggers when submit button is clicked and no duration is specified', async () => {
@@ -378,9 +381,15 @@ describe('<SmartTriggerTable />', () => {
     expect(submitButton).toBeEnabled();
     await user.click(submitButton);
 
+    var result: SmartTriggerRequest = {
+      condition: 'ProcessCpuLoad>0.0',
+      durationExpr: '',
+      recordingTemplate: 'Profiling',
+    };
+
     const uploadRequestSpy = jest.spyOn(defaultServices.api, 'addTriggers');
     expect(uploadRequestSpy).toHaveBeenCalledTimes(1);
-    expect(uploadRequestSpy).toHaveBeenCalledWith('[ProcessCpuLoad>0.0]~Profiling', mockTarget);
+    expect(uploadRequestSpy).toHaveBeenCalledWith(result, mockTarget);
   });
 
   it('should format int inputs for metrics expecting a double', async () => {
@@ -461,9 +470,14 @@ describe('<SmartTriggerTable />', () => {
     expect(submitButton).toBeEnabled();
     await user.click(submitButton);
 
+    var result: SmartTriggerRequest = {
+      condition: 'ProcessCpuLoad>1.0',
+      durationExpr: '',
+      recordingTemplate: 'Profiling',
+    };
     const uploadRequestSpy = jest.spyOn(defaultServices.api, 'addTriggers');
     expect(uploadRequestSpy).toHaveBeenCalledTimes(1);
-    expect(uploadRequestSpy).toHaveBeenCalledWith('[ProcessCpuLoad>1.0]~Profiling', mockTarget);
+    expect(uploadRequestSpy).toHaveBeenCalledWith(result, mockTarget);
   });
 
   it('should reject invalid inputs', async () => {

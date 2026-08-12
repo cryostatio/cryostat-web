@@ -81,6 +81,7 @@ import {
   AuditRevisionsResponse,
   AuditRevisionDetail,
   FetchFn,
+  SmartTriggerRequest,
 } from './api.types';
 import {
   isHttpError,
@@ -255,9 +256,9 @@ export class ApiService {
     );
   }
 
-  addTriggers(definition: string, target: TargetStub): Observable<boolean> {
+  addTriggers(definition: SmartTriggerRequest, target: TargetStub): Observable<boolean> {
     const body = new window.FormData();
-    body.append('definition', String(definition));
+    body.append('definition', JSON.stringify(definition));
     return this.sendRequest('beta', `targets/${target.id}/smart_triggers/`, { method: 'POST', body }).pipe(
       map((resp) => resp.ok),
       first(),

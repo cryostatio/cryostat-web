@@ -25,6 +25,7 @@ import {
   NotificationCategory,
   NullableTarget,
   SmartTrigger,
+  SmartTriggerRequest,
   Target,
 } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -219,7 +220,7 @@ export const SmartTriggersTable: React.FC<SmartTriggersProps> = ({
   ]);
 
   const handleCreateTriggers = React.useCallback(
-    (s: string) => {
+    (s: SmartTriggerRequest) => {
       setActionLoadings((old) => ({ ...old, DELETE: true }));
       const tasks: Observable<boolean>[] = [];
       addSubscription(
@@ -460,7 +461,7 @@ export interface SmartTriggersTableToolbarProps {
   triggers: SmartTrigger[];
   filteredTriggers: SmartTrigger[];
   handleDelete: () => void;
-  handleUpload: (s: string) => void;
+  handleUpload: (s: SmartTriggerRequest) => void;
   setFilterText: (s: string) => void;
   controlEnabled: boolean;
   actionLoadings: Record<ArchiveActions, boolean>;
@@ -645,7 +646,7 @@ const SmartTriggersToolbar: React.FC<SmartTriggersTableToolbarProps> = (props) =
 export interface CreateSmartTriggersModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAccept: (s: string) => void;
+  onAccept: (s: SmartTriggerRequest) => void;
 }
 
 interface MBeanOption {
@@ -747,10 +748,10 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
 
   const handleSubmit = React.useCallback(() => {
     submitRef.current && submitRef.current.click();
-    var durationExpr = '';
+    var durationExpression = '';
     var formattedExpr = expressionInput;
     if (formData.duration != 0) {
-      durationExpr = ';TargetDuration>duration("' + formData.duration + formData.durationUnit + '")';
+      durationExpression = formData.duration + formData.durationUnit;
     }
     var opt = getOptionByName(mbeanSelectValue);
     if (opt.type == 'double') {
@@ -758,9 +759,13 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
         formattedExpr = expressionInput + '.0';
       }
     }
-    props.onAccept(
-      '[' + mbeanSelectValue + comparatorSelectValue + formattedExpr + durationExpr + ']~' + formData.template?.name,
-    );
+    var template = formData.template?.name ? formData.template?.name : '';
+    var returnVal: SmartTriggerRequest = {
+      condition: mbeanSelectValue + comparatorSelectValue + formattedExpr,
+      durationExpr: durationExpression,
+      recordingTemplate: template,
+    };
+    props.onAccept(returnVal);
     setUploading(false);
     onClose();
     setExpressionInput('');

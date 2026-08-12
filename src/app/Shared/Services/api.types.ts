@@ -511,6 +511,12 @@ export interface SmartTrigger {
   timeConditionFirstMet: string;
 }
 
+export interface SmartTriggerRequest {
+  condition: string;
+  durationExpr: string;
+  recordingTemplate: string;
+}
+
 // ======================================
 // Template resources
 // ======================================
