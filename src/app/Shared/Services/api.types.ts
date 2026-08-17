@@ -514,7 +514,7 @@ export interface SmartTrigger {
 
 export interface SmartTriggerRequest {
   condition: string;
-  durationExpr: string;
+  duration: number;
   recordingTemplate: string;
 }
 

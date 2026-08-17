@@ -290,7 +290,7 @@ describe('<SmartTriggerTable />', () => {
 
     var result: SmartTriggerRequest = {
       condition: 'ProcessCpuLoad>0.0',
-      durationExpr: '30s',
+      duration: 30000,
       recordingTemplate: 'Profiling',
     };
 
@@ -385,7 +385,7 @@ describe('<SmartTriggerTable />', () => {
 
     var result: SmartTriggerRequest = {
       condition: 'ProcessCpuLoad>0.0',
-      durationExpr: '',
+      duration: 0,
       recordingTemplate: 'Profiling',
     };
 
@@ -474,7 +474,7 @@ describe('<SmartTriggerTable />', () => {
 
     var result: SmartTriggerRequest = {
       condition: 'ProcessCpuLoad>1.0',
-      durationExpr: '',
+      duration: 0,
       recordingTemplate: 'Profiling',
     };
     const uploadRequestSpy = jest.spyOn(defaultServices.api, 'addTriggers');

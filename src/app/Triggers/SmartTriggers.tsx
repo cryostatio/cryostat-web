@@ -748,10 +748,16 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
 
   const handleSubmit = React.useCallback(() => {
     submitRef.current && submitRef.current.click();
-    var durationExpression = '';
+    var durationExpression = 0;
     var formattedExpr = expressionInput;
     if (formData.duration != 0) {
-      durationExpression = formData.duration + formData.durationUnit;
+      if (formData.durationUnit == 's') {
+        durationExpression = formData.duration * 1000;
+      } else if (formData.durationUnit == 'm') {
+        durationExpression = formData.duration * 60000;
+      } else {
+        durationExpression = formData.duration * 3600000;
+      }
     }
     var opt = getOptionByName(mbeanSelectValue);
     if (opt.type == 'double') {
@@ -762,7 +768,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
     var template = formData.template?.name ? formData.template?.name : '';
     var returnVal: SmartTriggerRequest = {
       condition: mbeanSelectValue + comparatorSelectValue + formattedExpr,
-      durationExpr: durationExpression,
+      duration: durationExpression,
       recordingTemplate: template,
     };
     props.onAccept(returnVal);
