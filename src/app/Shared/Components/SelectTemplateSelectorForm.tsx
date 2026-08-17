@@ -23,6 +23,7 @@ import { EventTemplate, TemplateType } from '../Services/api.types';
 export interface TemplateSelectionGroup {
   groupLabel: string;
   disabled?: boolean;
+  render?: boolean;
   options: {
     value: string;
     label: string;
@@ -34,6 +35,7 @@ export interface SelectTemplateSelectorFormProps {
   selected: string; // e.g. "Continuous,TARGET"
   templates: EventTemplate[];
   disabled?: boolean;
+  disabledGroups?: string[];
   validated?: ValidatedOptions;
   onSelect: (template?: EventTemplateIdentifier) => void;
 }
@@ -41,6 +43,7 @@ export interface SelectTemplateSelectorFormProps {
 export const SelectTemplateSelectorForm: React.FC<SelectTemplateSelectorFormProps> = ({
   selected,
   templates,
+  disabledGroups,
   disabled,
   validated,
   onSelect,
@@ -50,6 +53,7 @@ export const SelectTemplateSelectorForm: React.FC<SelectTemplateSelectorFormProp
       [
         {
           groupLabel: 'Target templates',
+          render: disabledGroups ? disabledGroups.findIndex((s) => s == 'TARGET') < 0 : true,
           options: templates
             .filter((t) => t.type === 'TARGET')
             .map((t) => ({
@@ -59,6 +63,7 @@ export const SelectTemplateSelectorForm: React.FC<SelectTemplateSelectorFormProp
         },
         {
           groupLabel: 'Custom templates',
+          render: disabledGroups ? disabledGroups.findIndex((s) => s == 'CUSTOM') < 0 : true,
           options: templates
             .filter((t) => t.type === 'CUSTOM')
             .map((t) => ({
@@ -68,6 +73,7 @@ export const SelectTemplateSelectorForm: React.FC<SelectTemplateSelectorFormProp
         },
         {
           groupLabel: 'Preset templates',
+          render: disabledGroups ? disabledGroups.findIndex((s) => s == 'PRESET') < 0 : true,
           options: templates
             .filter((t) => t.type === 'PRESET')
             .map((t) => ({
@@ -76,7 +82,7 @@ export const SelectTemplateSelectorForm: React.FC<SelectTemplateSelectorFormProp
             })),
         },
       ] as TemplateSelectionGroup[],
-    [templates],
+    [disabledGroups, templates],
   );
 
   const handleTemplateSelect = React.useCallback(
@@ -107,22 +113,24 @@ export const SelectTemplateSelectorForm: React.FC<SelectTemplateSelectorFormProp
       >
         <FormSelectOption key="placeholder" label="Select a Template" isPlaceholder isDisabled />
 
-        {groups.map((group, index) => (
-          <FormSelectOptionGroup isDisabled={group.disabled} key={index} label={group.groupLabel}>
-            {group.options.length > 0 ? (
-              group.options.map((option) => (
-                <FormSelectOption
-                  key={option.label}
-                  label={option.label}
-                  value={option.value}
-                  isDisabled={option.disabled}
-                />
-              ))
-            ) : (
-              <FormSelectOption key="no-template" label="No templates" isDisabled />
-            )}
-          </FormSelectOptionGroup>
-        ))}
+        {groups
+          .filter((g) => g.render)
+          .map((group, index) => (
+            <FormSelectOptionGroup isDisabled={group.disabled} key={index} label={group.groupLabel}>
+              {group.options.length > 0 ? (
+                group.options.map((option) => (
+                  <FormSelectOption
+                    key={option.label}
+                    label={option.label}
+                    value={option.value}
+                    isDisabled={option.disabled}
+                  />
+                ))
+              ) : (
+                <FormSelectOption key="no-template" label="No templates" isDisabled />
+              )}
+            </FormSelectOptionGroup>
+          ))}
       </FormSelect>
     </>
   );

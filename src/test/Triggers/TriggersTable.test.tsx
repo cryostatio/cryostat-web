@@ -19,10 +19,10 @@ import { EventTemplate, SmartTrigger, SmartTriggerRequest } from '@app/Shared/Se
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { SmartTriggersTable } from '@app/Triggers/SmartTriggers';
+import { formatDuration } from '@app/utils/utils';
 import { cleanup, screen, within } from '@testing-library/react';
 import { of } from 'rxjs';
 import { DEFAULT_DIMENSIONS, escapeKeyboardInput, render, resize, testT } from '../utils';
-import { formatDuration } from '@app/utils/utils';
 
 const mockConnectUrl = 'http://someUrl';
 
