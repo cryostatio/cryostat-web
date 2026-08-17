@@ -22,6 +22,7 @@ import { SmartTriggersTable } from '@app/Triggers/SmartTriggers';
 import { cleanup, screen, within } from '@testing-library/react';
 import { of } from 'rxjs';
 import { DEFAULT_DIMENSIONS, escapeKeyboardInput, render, resize, testT } from '../utils';
+import { formatDuration } from '@app/utils/utils';
 
 const mockConnectUrl = 'http://someUrl';
 
@@ -40,6 +41,7 @@ const mockSmartTrigger: SmartTrigger = {
   recordingTemplateName: 'bar',
   durationConstraint: 'TargetDuration > duration("30s")',
   triggerCondition: 'foo > 123',
+  targetDuration: 1,
   state: '',
   simple: false,
   timeConditionFirstMet: '',
@@ -103,7 +105,7 @@ describe('<SmartTriggerTable />', () => {
       expect(button).toBeVisible();
     });
 
-    ['Template', 'Duration Constraint', 'Trigger Condition'].map((text) => {
+    ['Template', 'Target Duration', 'Trigger Condition'].map((text) => {
       const header = screen.getByText(text);
       expect(header).toBeInTheDocument();
       expect(header).toBeVisible();
@@ -116,7 +118,7 @@ describe('<SmartTriggerTable />', () => {
       expect(checkbox).toBeVisible();
     });
 
-    const duration = screen.getByText(mockSmartTrigger.durationConstraint);
+    const duration = screen.getByText(formatDuration(mockSmartTrigger.targetDuration, 1000));
     expect(duration).toBeInTheDocument();
     expect(duration).toBeVisible();
 

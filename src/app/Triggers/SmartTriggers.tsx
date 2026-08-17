@@ -30,7 +30,7 @@ import {
 } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { TableColumn, hashCode, portalRoot, sortResources } from '@app/utils/utils';
+import { TableColumn, formatDuration, hashCode, portalRoot, sortResources } from '@app/utils/utils';
 import {
   Toolbar,
   ToolbarContent,
@@ -91,8 +91,8 @@ export const tableColumns: TableColumn[] = [
     tooltip: t('Triggers.TARGET_DURATION_TOOLTIP'),
   },
   {
-    title: 'Duration Constraint',
-    keyPaths: ['durationConstraint'],
+    title: 'Target Duration',
+    keyPaths: ['targetDuration'],
     sortable: true,
     tooltip: t('Triggers.DURATION_CONSTRAINT_TOOLTIP'),
   },
@@ -442,7 +442,7 @@ export const SmartTriggerRow: React.FC<SmartTriggerRowProps> = ({ trigger, index
           {trigger.triggerCondition}
         </Td>
         <Td key={`smart-trigger-table-row-${index}_3`} dataLabel={tableColumns[2].title}>
-          {trigger.durationConstraint != '' ? trigger.durationConstraint : 'None'}
+          {trigger.targetDuration != 0.0 ? formatDuration(trigger.targetDuration, 1000) : 'None'}
         </Td>
         <Td key={`smart-trigger-table-row-${index}_4`} dataLabel={tableColumns[3].title}>
           {trigger.recordingTemplateName}

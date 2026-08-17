@@ -506,6 +506,7 @@ export interface SmartTrigger {
   durationConstraint: string;
   triggerCondition: string;
   recordingTemplateName: string;
+  targetDuration: number;
   state: string;
   simple: boolean;
   timeConditionFirstMet: string;
