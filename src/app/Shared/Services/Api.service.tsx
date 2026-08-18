@@ -258,7 +258,7 @@ export class ApiService {
 
   addTriggers(definition: SmartTriggerRequest, target: TargetStub): Observable<boolean> {
     const body = new window.FormData();
-    body.append('definition', JSON.stringify(definition));
+    body.append('definition', '[' + JSON.stringify(definition) + ']');
     return this.sendRequest('beta', `targets/${target.id}/smart_triggers/`, { method: 'POST', body }).pipe(
       map((resp) => resp.ok),
       first(),
