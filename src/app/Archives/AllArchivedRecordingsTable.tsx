@@ -71,6 +71,7 @@ import {
   OuterScrollContainer,
   InnerScrollContainer,
 } from '@patternfly/react-table';
+import dayjs from 'dayjs';
 import _ from 'lodash';
 import * as React from 'react';
 import { Observable, of } from 'rxjs';
@@ -403,6 +404,11 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
                 </Icon>
               </Button>
             </Tooltip>
+          </Td>
+          <Td key={`directory-table-row-${idx}_5`} dataLabel={tableColumns[MOST_RECENT_ARCHIVE_COLUMN_INDEX].title}>
+            {dir.recordings.length
+              ? dayjs.unix(dir.recordings.reduce((max, r) => Math.max(max, r.archivedTime ?? 0), 0)).format('LLLL')
+              : ''}
           </Td>
         </Tr>
       );
