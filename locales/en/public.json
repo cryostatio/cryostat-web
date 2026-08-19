@@ -894,6 +894,27 @@
     "NO_MATCH": "No Match",
     "SEARCH_PLACEHOLDER": "Find by Match Expression..."
   },
+  "SynthesisForm": {
+    "CANDIDATES_LABEL": "Candidates: {{count}}",
+    "COVERAGE_ARIA_LABEL": "Coverage of requested time window by recordings",
+    "COVERAGE_TITLE": "Time window coverage",
+    "EARLIEST_AVAILABLE": "Earliest available",
+    "ESTIMATED_SIZE_LABEL": "Estimated size: ~{{size}}",
+    "ESTIMATED_SIZE_TOOLTIP": "Sum of sizes of all candidate recordings before synthesis",
+    "FROM_ARIA_LABEL": "From date and time",
+    "GAP_WARNING": "Gap of {{duration}} with no recording data",
+    "HEURISTIC_LABEL": "Matching Recordings",
+    "JOB_ERROR_TITLE": "Synthesis error",
+    "LATEST_AVAILABLE": "Latest available",
+    "NO_CANDIDATES_WARNING": "No recordings found in the selected range",
+    "TAG_ARIA_LABEL": "Recording name tag",
+    "TAG_LABEL": "Tag (optional)",
+    "TAG_PLACEHOLDER": "e.g. incident-abcd1234",
+    "TARGET_LABEL": "Target",
+    "TIME_RANGE_LABEL": "Time Range",
+    "TO_ARIA_LABEL": "To date and time",
+    "USE_AVAILABLE_RANGE": "Use full available range"
+  },
   "TargetAnalysis": {
     "CREATE_RECORDING": "<0>Create a Recording</0> to enable analysis",
     "LAST_UPDATE": "Last update: {{ datetime }}",

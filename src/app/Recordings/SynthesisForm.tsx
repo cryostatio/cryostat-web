@@ -49,6 +49,11 @@ export interface SynthesisFormProps {
   onHighlightChange?: (names: Set<string>) => void;
 }
 
+const SYNTHESIS_CATEGORIES = [
+  NotificationCategory.RecordingSynthesisComplete,
+  NotificationCategory.RecordingSynthesisFailure,
+];
+
 export const SynthesisForm: React.FC<SynthesisFormProps> = ({
   target,
   recordings,
@@ -96,11 +101,6 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
 
   const heuristic = useSynthesisHeuristic(recordings, fromMs, toMs);
 
-  const SYNTHESIS_CATEGORIES = React.useMemo(
-    () => [NotificationCategory.RecordingSynthesisComplete, NotificationCategory.RecordingSynthesisFailure],
-    [],
-  );
-
   const handleSynthesisMessage = React.useCallback(
     (msg: NotificationMessage) => {
       const jobId: string = msg.message?.jobId ?? msg.message;
@@ -114,7 +114,7 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
         onSuccess?.();
       }
     },
-    [onSuccess, t],
+    [setPendingJobId, setSubmitting, setJobError, onSuccess, t],
   );
 
   useNotificationMessages(SYNTHESIS_CATEGORIES, handleSynthesisMessage);
@@ -137,11 +137,14 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
     [t],
   );
 
-  const handlePreset = React.useCallback((offsetMs: number) => {
-    const now = Date.now();
-    setFromInput(dayjs(now - offsetMs).format('YYYY-MM-DDTHH:mm'));
-    setToInput(dayjs(now).format('YYYY-MM-DDTHH:mm'));
-  }, []);
+  const handlePreset = React.useCallback(
+    (offsetMs: number) => {
+      const now = Date.now();
+      setFromInput(dayjs(now - offsetMs).format('YYYY-MM-DDTHH:mm'));
+      setToInput(dayjs(now).format('YYYY-MM-DDTHH:mm'));
+    },
+    [setFromInput, setToInput],
+  );
 
   const handleSubmit = React.useCallback(() => {
     if (!fromMs || !toMs) return;
@@ -185,22 +188,36 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
           },
         }),
     );
-  }, [effectiveJvmId, fromMs, toMs, tagInput, addSubscription, context.api, onSuccess, t]);
+  }, [
+    effectiveJvmId,
+    fromMs,
+    toMs,
+    tagInput,
+    addSubscription,
+    context.api,
+    setSubmitting,
+    setJobError,
+    setPendingJobId,
+    onSuccess,
+    t,
+  ]);
 
   const handleDismiss = React.useCallback(() => {
     onDismiss?.();
   }, [onDismiss]);
 
-  const canSubmit =
-    !!effectiveJvmId && !!fromMs && !!toMs && fromMs < toMs && heuristic.candidates.length > 0 && !submitting;
+  const canSubmit = React.useMemo(
+    () => !!effectiveJvmId && !!fromMs && !!toMs && fromMs < toMs && heuristic.candidates.length > 0 && !submitting,
+    [effectiveJvmId, fromMs, toMs, heuristic, submitting],
+  );
 
   return (
     <Form>
-      <FormGroup label={t('SynthesisForm.TARGET_LABEL', 'Target')}>
+      <FormGroup label={t('SynthesisForm.TARGET_LABEL')}>
         {showAliasSkeleton ? <Skeleton width="60%" /> : <span>{displayName}</span>}
       </FormGroup>
 
-      <FormGroup label={t('SynthesisForm.TIME_RANGE_LABEL', 'Time range')}>
+      <FormGroup label={t('SynthesisForm.TIME_RANGE_LABEL')}>
         <ActionGroup style={{ gap: 'var(--pf-t--global--spacer--sm)' }}>
           {PRESETS.map(({ label, offsetMs }) => (
             <Button key={label} variant="tertiary" size="sm" onClick={() => handlePreset(offsetMs)}>
@@ -213,7 +230,7 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
             <TextInput
               type="datetime-local"
               id="synthesis-from"
-              aria-label={t('SynthesisForm.FROM_ARIA_LABEL', 'From date and time')}
+              aria-label={t('SynthesisForm.FROM_ARIA_LABEL')}
               value={fromInput}
               onChange={(_evt, val) => setFromInput(val)}
             />
@@ -223,7 +240,7 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
             <TextInput
               type="datetime-local"
               id="synthesis-to"
-              aria-label={t('SynthesisForm.TO_ARIA_LABEL', 'To date and time')}
+              aria-label={t('SynthesisForm.TO_ARIA_LABEL')}
               value={toInput}
               onChange={(_evt, val) => setToInput(val)}
             />
@@ -231,34 +248,29 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
         </Split>
       </FormGroup>
 
-      <FormGroup label={t('SynthesisForm.TAG_LABEL', 'Tag (optional)')}>
+      <FormGroup label={t('SynthesisForm.TAG_LABEL')}>
         <TextInput
           type="text"
           id="synthesis-tag"
-          aria-label={t('SynthesisForm.TAG_ARIA_LABEL', 'Synthesis tag')}
-          placeholder={t('SynthesisForm.TAG_PLACEHOLDER', 'e.g. incident-2024-01')}
+          aria-label={t('SynthesisForm.TAG_ARIA_LABEL')}
+          placeholder={t('SynthesisForm.TAG_PLACEHOLDER')}
           value={tagInput}
           onChange={(_evt, val) => setTagInput(val)}
         />
       </FormGroup>
 
       {fromMs && toMs && (
-        <FormGroup label={t('SynthesisForm.HEURISTIC_LABEL', 'Matching recordings')}>
+        <FormGroup label={t('SynthesisForm.HEURISTIC_LABEL')}>
           <Split hasGutter>
             <SplitItem>
-              {t('SynthesisForm.CANDIDATES_LABEL', 'Candidates: {{count}}', {
+              {t('SynthesisForm.CANDIDATES_LABEL', {
                 count: heuristic.candidates.length,
               })}
             </SplitItem>
             <SplitItem>
-              <Tooltip
-                content={t(
-                  'SynthesisForm.ESTIMATED_SIZE_TOOLTIP',
-                  'Sum of sizes of all candidate recordings before synthesis',
-                )}
-              >
+              <Tooltip content={t('SynthesisForm.ESTIMATED_SIZE_TOOLTIP')}>
                 <span>
-                  {t('SynthesisForm.ESTIMATED_SIZE_LABEL', 'Estimated size: ~{{size}}', {
+                  {t('SynthesisForm.ESTIMATED_SIZE_LABEL', {
                     size: formatBytes(heuristic.estimatedSizeBytes),
                   })}
                 </span>
@@ -267,18 +279,18 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
           </Split>
 
           <Progress
-            title={t('SynthesisForm.COVERAGE_TITLE', 'Time window coverage')}
+            title={t('SynthesisForm.COVERAGE_TITLE')}
             value={Math.round(heuristic.coverageRatio * 100)}
             size="sm"
             measureLocation="outside"
-            aria-label={t('SynthesisForm.COVERAGE_ARIA_LABEL', 'Coverage of requested time window by recordings')}
+            aria-label={t('SynthesisForm.COVERAGE_ARIA_LABEL')}
             style={{ marginTop: 'var(--pf-t--global--spacer--sm)' }}
           />
 
           {heuristic.gapMs > 0 && (
             <HelperText>
               <HelperTextItem variant="warning">
-                {t('SynthesisForm.GAP_WARNING', 'Gap of {{duration}} with no recording data', {
+                {t('SynthesisForm.GAP_WARNING', {
                   duration: formatDuration(heuristic.gapMs, 1),
                 })}
               </HelperTextItem>
@@ -288,7 +300,7 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
           {heuristic.heuristicEarliest !== null && (
             <HelperText>
               <HelperTextItem>
-                {t('SynthesisForm.EARLIEST_AVAILABLE', 'Earliest available')}:{' '}
+                {t('SynthesisForm.EARLIEST_AVAILABLE')}:{' '}
                 <Button
                   variant="link"
                   isInline
@@ -303,7 +315,7 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
           {heuristic.heuristicLatest !== null && (
             <HelperText>
               <HelperTextItem>
-                {t('SynthesisForm.LATEST_AVAILABLE', 'Latest available')}:{' '}
+                {t('SynthesisForm.LATEST_AVAILABLE')}:{' '}
                 <Button
                   variant="link"
                   isInline
@@ -324,16 +336,12 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
                 setToInput(dayjs(heuristic.heuristicLatest!).format('YYYY-MM-DDTHH:mm'));
               }}
             >
-              {t('SynthesisForm.USE_AVAILABLE_RANGE', 'Use full available range')}
+              {t('SynthesisForm.USE_AVAILABLE_RANGE')}
             </Button>
           )}
 
           {heuristic.candidates.length === 0 && (
-            <Alert
-              variant="warning"
-              isInline
-              title={t('SynthesisForm.NO_CANDIDATES_WARNING', 'No recordings found in the selected range')}
-            />
+            <Alert variant="warning" isInline title={t('SynthesisForm.NO_CANDIDATES_WARNING')} />
           )}
         </FormGroup>
       )}
@@ -342,7 +350,7 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
         <Alert
           variant="danger"
           isInline
-          title={t('SynthesisForm.JOB_ERROR_TITLE', 'Synthesis error')}
+          title={t('SynthesisForm.JOB_ERROR_TITLE')}
           style={{ marginBottom: 'var(--pf-t--global--spacer--sm)' }}
         >
           {jobError}
@@ -351,10 +359,10 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
 
       <ActionGroup>
         <Button variant="primary" onClick={handleSubmit} isAriaDisabled={!canSubmit} isLoading={submitting}>
-          {submitting ? t('SynthesisForm.SUBMITTING_LABEL', 'Submitting…') : t('SynthesisForm.SUBMIT_LABEL', 'Submit')}
+          {submitting ? t('SUBMITTING') : t('SUBMIT')}
         </Button>
         <Button variant="secondary" onClick={handleDismiss}>
-          {dismissLabel ?? t('SynthesisForm.DISMISS_DEFAULT_LABEL', 'Clear')}
+          {dismissLabel ?? t('CLEAR')}
         </Button>
       </ActionGroup>
     </Form>
