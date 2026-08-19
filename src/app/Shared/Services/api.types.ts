@@ -502,8 +502,6 @@ export interface Rule {
 // ======================================
 export interface SmartTrigger {
   id: string;
-  expression: string;
-  durationConstraint: string;
   triggerCondition: string;
   recordingTemplateName: string;
   targetDuration: number;
