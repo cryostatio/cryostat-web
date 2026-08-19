@@ -81,7 +81,7 @@ const tableColumns: TableColumn[] = [
           : `${target.alias} (${target.connectUrl})`;
     },
     sortable: true,
-    width: 75,
+    width: 70,
   },
   {
     title: 'Archives',
@@ -532,11 +532,11 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           </Td>
           <Td key={`target-table-row-${idx}_4`} dataLabel="Synthesize" className="synthesis-action-cell">
             <Tooltip
-              content={archiveCount === 0 ? 'No recordings to synthesize' : 'Synthesize recording from this target'}
+              content={archiveCount === 0 ? t('ArchivedRecordingsTable.NO_RECORDINGS_TO_SYNTHESIZE') : t('ArchivedRecordingsTable.SYNTHESIZE_FROM_TARGET')}
             >
               <Button
                 variant="plain"
-                aria-label="Synthesize recording from this target"
+                aria-label={t('ArchivedRecordingsTable.SYNTHESIZE_FROM_TARGET')}
                 isDisabled={archiveCount === 0}
                 onClick={() => handleSynthesisSelect(target)}
                 style={isSynthesisActive ? { color: 'var(--pf-t--global--color--brand--default)' } : undefined}
@@ -648,7 +648,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       <DrawerPanelContent id="all-targets-synthesis-panel" defaultSize="40%">
         <DrawerHead>
           <Title headingLevel="h3" size="md">
-            Synthesize Recording
+            {t('ArchivedRecordingsTable.SYNTHESIS_PANEL_TITLE')}
           </Title>
           <DrawerActions>
             <DrawerCloseButton onClick={() => handleSynthesisSelect(synthesisTarget)} />

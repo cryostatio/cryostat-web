@@ -172,6 +172,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   highlightedNames,
 }) => {
   const context = React.useContext(ServiceContext);
+  const { t } = useCryostatTranslation();
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
 
@@ -601,7 +602,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
       <DrawerPanelContent id="synthesis-panel" defaultSize="40%">
         <DrawerHead>
           <Title headingLevel="h3" size="md">
-            Synthesize Recording
+            {t('ArchivedRecordingsTable.SYNTHESIS_PANEL_TITLE')}
           </Title>
           <DrawerActions>
             <DrawerCloseButton onClick={() => setActivePanel('none')} />
