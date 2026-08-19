@@ -45,6 +45,15 @@ const getRecordingTiming = (r: ArchivedRecording): { startMs: number; endMs: num
   return { startMs: startTimeMs, endMs: startTimeMs + durationMs, durationMs };
 };
 
+const NO_CANDIDATES = {
+  candidates: [],
+  heuristicEarliest: null,
+  heuristicLatest: null,
+  estimatedSizeBytes: 0,
+  coverageRatio: 0,
+  gapMs: 0,
+};
+
 export const useSynthesisHeuristic = (
   recordings: ArchivedRecording[],
   fromMs: number | null,
@@ -52,14 +61,7 @@ export const useSynthesisHeuristic = (
 ): SynthesisHeuristic => {
   return React.useMemo((): SynthesisHeuristic => {
     if (!fromMs || !toMs || fromMs >= toMs || !recordings.length) {
-      return {
-        candidates: [],
-        heuristicEarliest: null,
-        heuristicLatest: null,
-        estimatedSizeBytes: 0,
-        coverageRatio: 0,
-        gapMs: 0,
-      };
+      return NO_CANDIDATES;
     }
 
     const candidates = recordings.filter((r) => {
@@ -70,14 +72,7 @@ export const useSynthesisHeuristic = (
     });
 
     if (!candidates.length) {
-      return {
-        candidates: [],
-        heuristicEarliest: null,
-        heuristicLatest: null,
-        estimatedSizeBytes: 0,
-        coverageRatio: 0,
-        gapMs: 0,
-      };
+      return NO_CANDIDATES;
     }
 
     let earliest = Infinity;
