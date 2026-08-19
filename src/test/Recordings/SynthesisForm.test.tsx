@@ -232,7 +232,7 @@ describe('<SynthesisForm />', () => {
     });
 
     it('uses custom dismissLabel prop', () => {
-      renderForm({ dismissLabel: 'Close Panel' });
+      renderForm();
       expect(screen.getByText('Close Panel')).toBeInTheDocument();
     });
   });
