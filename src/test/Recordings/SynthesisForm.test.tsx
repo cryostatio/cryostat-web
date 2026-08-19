@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 import { SynthesisForm } from '@app/Recordings/SynthesisForm';
-import { NotificationCategory, NotificationMessage, Target } from '@app/Shared/Services/api.types';
+import { ArchivedRecording, NotificationCategory, NotificationMessage, Target } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { of, Observable, Subject } from 'rxjs';
 import { render } from '../utils';
-import { ArchivedRecording } from '@app/Shared/Services/api.types';
 
 const mockJvmId = 'test-jvm-id';
 const mockAlias = 'my-app';

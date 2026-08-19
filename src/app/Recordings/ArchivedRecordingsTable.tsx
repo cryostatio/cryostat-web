@@ -15,7 +15,6 @@
  */
 
 import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
-import { SynthesisForm } from '@app/Recordings/SynthesisForm';
 import { AutomatedAnalysisCardList } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList';
 import {
   AutomatedAnalysisFilters,
@@ -30,6 +29,7 @@ import {
 import { AutomatedAnalysisScoreFilter } from '@app/Dashboard/AutomatedAnalysis/Filters/AutomatedAnalysisScoreFilter';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
+import { SynthesisForm } from '@app/Recordings/SynthesisForm';
 import { LoadingProps } from '@app/Shared/Components/types';
 import {
   emptyAutomatedAnalysisFilters,
@@ -623,7 +623,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         </DrawerPanelBody>
       </DrawerPanelContent>
     );
-  }, [activePanel, resolvedTarget, propsDirectory, recordings, refreshRecordingList]);
+  }, [t, activePanel, resolvedTarget, propsDirectory, recordings, refreshRecordingList]);
 
   const totalArchiveSize = React.useMemo(
     () => filteredRecordings.reduce((total, r) => total + r.size, 0),

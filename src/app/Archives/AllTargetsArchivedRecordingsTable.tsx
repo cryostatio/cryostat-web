@@ -532,7 +532,11 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           </Td>
           <Td key={`target-table-row-${idx}_4`} dataLabel="Synthesize" className="synthesis-action-cell">
             <Tooltip
-              content={archiveCount === 0 ? t('ArchivedRecordingsTable.NO_RECORDINGS_TO_SYNTHESIZE') : t('ArchivedRecordingsTable.SYNTHESIZE_FROM_TARGET')}
+              content={
+                archiveCount === 0
+                  ? t('ArchivedRecordingsTable.NO_RECORDINGS_TO_SYNTHESIZE')
+                  : t('ArchivedRecordingsTable.SYNTHESIZE_FROM_TARGET')
+              }
             >
               <Button
                 variant="plain"
@@ -551,6 +555,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       );
     });
   }, [
+    t,
     toggleExpanded,
     searchedArchivesForTargets,
     expandedTargets,

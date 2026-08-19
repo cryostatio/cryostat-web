@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ArchivedRecording } from '@app/Shared/Services/api.types';
 import { useSynthesisHeuristic } from '@app/utils/hooks/useSynthesisHeuristic';
 import { renderHook } from '@testing-library/react';
-import { ArchivedRecording } from '@app/Shared/Services/api.types';
 
 // The hook's getRecordingTiming() requires:
 //   - r.archivedTime is truthy (non-zero)
