@@ -418,16 +418,8 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       tableColumns,
     );
 
-    // Promote selected synthesis target to position 0
-    if (synthesisTarget) {
-      const idx = sorted.findIndex(({ target }) => isEqualTarget(target, synthesisTarget));
-      if (idx > 0) {
-        return [sorted[idx], ...sorted.slice(0, idx), ...sorted.slice(idx + 1)];
-      }
-    }
-
     return sorted;
-  }, [searchText, archivesForTargets, sortBy, hideEmptyTargets, targetDisplay, synthesisTarget]);
+  }, [searchText, archivesForTargets, sortBy, hideEmptyTargets, targetDisplay]);
 
   const synthesisEntry = React.useMemo(
     () =>
@@ -483,7 +475,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   }, [addSubscription, context.notificationChannel, handleNotification]);
 
   const toggleExpanded = React.useCallback(
-    (target) => {
+    (target: Target) => {
       const idx = indexOfTarget(expandedTargets, target);
       setExpandedTargets((expandedTargets) =>
         idx >= 0

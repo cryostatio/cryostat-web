@@ -18,7 +18,7 @@ import { AllTargetsArchivedRecordingsTable } from '@app/Archives/AllTargetsArchi
 import { Target } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
-import { cleanup, screen, within, waitFor } from '@testing-library/react';
+import { cleanup, screen, waitFor } from '@testing-library/react';
 import { of } from 'rxjs';
 import { render } from '../utils';
 
@@ -155,30 +155,9 @@ describe('<AllTargetsArchivedRecordingsTable /> synthesis integration', () => {
       await user.click(buttons[0]);
       await waitFor(() => expect(screen.getByTestId('synthesis-form')).toBeInTheDocument());
 
-      await user.click(buttons[0]);
+      const activeButton = screen.getAllByLabelText('Synthesize recording from this target')[1];
+      await user.click(activeButton);
       await waitFor(() => expect(screen.queryByTestId('synthesis-form')).not.toBeInTheDocument());
-    });
-  });
-
-  describe('row promotion', () => {
-    beforeEach(() => {
-      jest.spyOn(defaultServices.api, 'graphql').mockReturnValue(of(twoTargetsResponse));
-    });
-
-    it('promotes the selected synthesis target row to position 0', async () => {
-      const { user } = render({
-        routerConfigs: { routes: [{ path: '/archives', element: <AllTargetsArchivedRecordingsTable /> }] },
-      });
-
-      const buttons = await screen.findAllByLabelText('Synthesize recording from this target');
-      await user.click(buttons[1]);
-
-      await waitFor(() => {
-        const tableBody = screen.getAllByRole('rowgroup')[1];
-        const rows = within(tableBody).getAllByRole('row');
-        const firstRow = rows[0];
-        expect(within(firstRow).getByText(`${mockTarget2.alias} (${mockTarget2.connectUrl})`)).toBeInTheDocument();
-      });
     });
   });
 
