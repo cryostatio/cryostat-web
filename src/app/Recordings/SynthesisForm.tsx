@@ -360,7 +360,7 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
           {submitting ? t('SUBMITTING') : t('SUBMIT')}
         </Button>
         <Button variant="secondary" onClick={handleDismiss}>
-          {t('DISMISS')}
+          {t('CLEAR')}
         </Button>
       </ActionGroup>
     </Form>
