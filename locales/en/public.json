@@ -29,6 +29,11 @@
     },
     "SEARCH_PLACEHOLDER": "Find by name or XML content..."
   },
+  "ArchivedRecordingsTable": {
+    "SYNTHESIS_PANEL_TITLE": "Synthesize Recording",
+    "SYNTHESIZE_FROM_TARGET": "Synthesize recording from this target",
+    "NO_RECORDINGS_TO_SYNTHESIZE": "No recordings to synthesize"
+  },
   "AllArchivedRecordingsTable": {
     "LOADING_LINEAGE_MESSAGE": "Fetching target lineage for filtering...",
     "LOADING_LINEAGE_TITLE": "Loading lineage data",
