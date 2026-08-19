@@ -645,7 +645,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
 
   const columnConfig: ColumnConfig = React.useMemo(
     () => ({
-      columns: tableColumns.slice(0, ARCHIVED_TIME_COLUMN_INDEX),
+      columns: tableColumns,
       onSort: getSortParams,
     }),
     [getSortParams],
