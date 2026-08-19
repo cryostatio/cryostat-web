@@ -638,6 +638,18 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     );
   }
 
+  const handleSynthesisDismiss = React.useCallback(() => {
+    if (!synthesisTarget) {
+      return;
+    }
+    handleSynthesisSelect(synthesisTarget);
+  }, [handleSynthesisSelect, synthesisTarget]);
+
+  const handleSynthesisSuccess = React.useCallback(() => {
+    handleSynthesisDismiss();
+    refreshArchivesForTargets();
+  }, [handleSynthesisDismiss, refreshArchivesForTargets]);
+
   const SynthesisPanel =
     synthesisTarget && synthesisEntry ? (
       <DrawerPanelContent id="all-targets-synthesis-panel" defaultSize="40%">
@@ -646,7 +658,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
             {t('ArchivedRecordingsTable.SYNTHESIS_PANEL_TITLE')}
           </Title>
           <DrawerActions>
-            <DrawerCloseButton onClick={() => handleSynthesisSelect(synthesisTarget)} />
+            <DrawerCloseButton onClick={handleSynthesisDismiss} />
           </DrawerActions>
         </DrawerHead>
         <DrawerPanelBody>
@@ -655,11 +667,8 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
             recordings={synthesisRecordings}
             dismissLabel="Close"
             onHighlightChange={setHighlightedRecordings}
-            onSuccess={() => {
-              handleSynthesisSelect(synthesisTarget);
-              refreshArchivesForTargets();
-            }}
-            onDismiss={() => handleSynthesisSelect(synthesisTarget)}
+            onSuccess={handleSynthesisSuccess}
+            onDismiss={handleSynthesisDismiss}
           />
         </DrawerPanelBody>
       </DrawerPanelContent>

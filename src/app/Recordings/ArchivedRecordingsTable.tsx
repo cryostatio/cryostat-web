@@ -593,6 +593,13 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
     [checkedIndices, isUploadsTable, propsDirectory, propsTarget, directoryRecordings],
   );
 
+  const handleSynthesisDismiss = React.useCallback(() => setActivePanel('none'), [setActivePanel]);
+
+  const handleSynthesisSuccess = React.useCallback(() => {
+    handleSynthesisDismiss();
+    refreshRecordingList();
+  }, [handleSynthesisDismiss, refreshRecordingList]);
+
   const SynthesisPanel = React.useMemo(() => {
     if (activePanel !== 'synthesis') {
       return null;
@@ -605,7 +612,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
             {t('ArchivedRecordingsTable.SYNTHESIS_PANEL_TITLE')}
           </Title>
           <DrawerActions>
-            <DrawerCloseButton onClick={() => setActivePanel('none')} />
+            <DrawerCloseButton onClick={handleSynthesisDismiss} />
           </DrawerActions>
         </DrawerHead>
         <DrawerPanelBody>
@@ -614,11 +621,8 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
             recordings={recordings}
             dismissLabel="Close"
             onHighlightChange={setHighlightedRecordings}
-            onSuccess={() => {
-              setActivePanel('none');
-              refreshRecordingList();
-            }}
-            onDismiss={() => setActivePanel('none')}
+            onSuccess={handleSynthesisSuccess}
+            onDismiss={handleSynthesisDismiss}
           />
         </DrawerPanelBody>
       </DrawerPanelContent>
