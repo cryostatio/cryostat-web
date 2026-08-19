@@ -15,10 +15,11 @@
  */
 
 import { DeleteSmartTrigger, DeleteOrDisableWarningType } from '@app/Modal/types';
-import { EventTemplate, SmartTrigger } from '@app/Shared/Services/api.types';
+import { EventTemplate, SmartTrigger, SmartTriggerRequest } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { SmartTriggersTable } from '@app/Triggers/SmartTriggers';
+import { formatDuration } from '@app/utils/utils';
 import { cleanup, screen, within } from '@testing-library/react';
 import { of } from 'rxjs';
 import { DEFAULT_DIMENSIONS, escapeKeyboardInput, render, resize, testT } from '../utils';
@@ -36,10 +37,9 @@ const mockTarget = {
 
 const mockSmartTrigger: SmartTrigger = {
   id: 'someuuid',
-  expression: '[foo > 123 ; TargetDuration > duration("30s")]~bar',
   recordingTemplateName: 'bar',
-  durationConstraint: 'TargetDuration > duration("30s")',
   triggerCondition: 'foo > 123',
+  targetDuration: 1,
   state: '',
   simple: false,
   timeConditionFirstMet: '',
@@ -103,7 +103,7 @@ describe('<SmartTriggerTable />', () => {
       expect(button).toBeVisible();
     });
 
-    ['Template', 'Duration Constraint', 'Trigger Condition'].map((text) => {
+    ['Template', 'Target Duration', 'Trigger Condition'].map((text) => {
       const header = screen.getByText(text);
       expect(header).toBeInTheDocument();
       expect(header).toBeVisible();
@@ -116,7 +116,7 @@ describe('<SmartTriggerTable />', () => {
       expect(checkbox).toBeVisible();
     });
 
-    const duration = screen.getByText(mockSmartTrigger.durationConstraint);
+    const duration = screen.getByText(formatDuration(mockSmartTrigger.targetDuration, 1000));
     expect(duration).toBeInTheDocument();
     expect(duration).toBeVisible();
 
@@ -286,12 +286,15 @@ describe('<SmartTriggerTable />', () => {
     expect(submitButton).toBeEnabled();
     await user.click(submitButton);
 
+    var result: SmartTriggerRequest = {
+      condition: 'ProcessCpuLoad>0.0',
+      duration: 30000,
+      recordingTemplate: 'Profiling',
+    };
+
     const uploadRequestSpy = jest.spyOn(defaultServices.api, 'addTriggers');
     expect(uploadRequestSpy).toHaveBeenCalledTimes(1);
-    expect(uploadRequestSpy).toHaveBeenCalledWith(
-      '[ProcessCpuLoad>0.0;TargetDuration>duration("30s")]~Profiling',
-      mockTarget,
-    );
+    expect(uploadRequestSpy).toHaveBeenCalledWith(result, mockTarget);
   });
 
   it('should upload Smart Triggers when submit button is clicked and no duration is specified', async () => {
@@ -378,9 +381,15 @@ describe('<SmartTriggerTable />', () => {
     expect(submitButton).toBeEnabled();
     await user.click(submitButton);
 
+    var result: SmartTriggerRequest = {
+      condition: 'ProcessCpuLoad>0.0',
+      duration: 0,
+      recordingTemplate: 'Profiling',
+    };
+
     const uploadRequestSpy = jest.spyOn(defaultServices.api, 'addTriggers');
     expect(uploadRequestSpy).toHaveBeenCalledTimes(1);
-    expect(uploadRequestSpy).toHaveBeenCalledWith('[ProcessCpuLoad>0.0]~Profiling', mockTarget);
+    expect(uploadRequestSpy).toHaveBeenCalledWith(result, mockTarget);
   });
 
   it('should format int inputs for metrics expecting a double', async () => {
@@ -461,9 +470,14 @@ describe('<SmartTriggerTable />', () => {
     expect(submitButton).toBeEnabled();
     await user.click(submitButton);
 
+    var result: SmartTriggerRequest = {
+      condition: 'ProcessCpuLoad>1.0',
+      duration: 0,
+      recordingTemplate: 'Profiling',
+    };
     const uploadRequestSpy = jest.spyOn(defaultServices.api, 'addTriggers');
     expect(uploadRequestSpy).toHaveBeenCalledTimes(1);
-    expect(uploadRequestSpy).toHaveBeenCalledWith('[ProcessCpuLoad>1.0]~Profiling', mockTarget);
+    expect(uploadRequestSpy).toHaveBeenCalledWith(result, mockTarget);
   });
 
   it('should reject invalid inputs', async () => {

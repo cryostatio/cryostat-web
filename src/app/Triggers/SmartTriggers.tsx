@@ -25,11 +25,12 @@ import {
   NotificationCategory,
   NullableTarget,
   SmartTrigger,
+  SmartTriggerRequest,
   Target,
 } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { TableColumn, hashCode, portalRoot, sortResources } from '@app/utils/utils';
+import { TableColumn, formatDuration, hashCode, portalRoot, sortResources } from '@app/utils/utils';
 import {
   Toolbar,
   ToolbarContent,
@@ -90,8 +91,8 @@ export const tableColumns: TableColumn[] = [
     tooltip: t('Triggers.TARGET_DURATION_TOOLTIP'),
   },
   {
-    title: 'Duration Constraint',
-    keyPaths: ['durationConstraint'],
+    title: 'Target Duration',
+    keyPaths: ['targetDuration'],
     sortable: true,
     tooltip: t('Triggers.DURATION_CONSTRAINT_TOOLTIP'),
   },
@@ -219,7 +220,7 @@ export const SmartTriggersTable: React.FC<SmartTriggersProps> = ({
   ]);
 
   const handleCreateTriggers = React.useCallback(
-    (s: string) => {
+    (s: SmartTriggerRequest) => {
       setActionLoadings((old) => ({ ...old, DELETE: true }));
       const tasks: Observable<boolean>[] = [];
       addSubscription(
@@ -441,7 +442,7 @@ export const SmartTriggerRow: React.FC<SmartTriggerRowProps> = ({ trigger, index
           {trigger.triggerCondition}
         </Td>
         <Td key={`smart-trigger-table-row-${index}_3`} dataLabel={tableColumns[2].title}>
-          {trigger.durationConstraint != '' ? trigger.durationConstraint : 'None'}
+          {trigger.targetDuration != 0.0 ? formatDuration(trigger.targetDuration, 1000) : 'None'}
         </Td>
         <Td key={`smart-trigger-table-row-${index}_4`} dataLabel={tableColumns[3].title}>
           {trigger.recordingTemplateName}
@@ -460,7 +461,7 @@ export interface SmartTriggersTableToolbarProps {
   triggers: SmartTrigger[];
   filteredTriggers: SmartTrigger[];
   handleDelete: () => void;
-  handleUpload: (s: string) => void;
+  handleUpload: (s: SmartTriggerRequest) => void;
   setFilterText: (s: string) => void;
   controlEnabled: boolean;
   actionLoadings: Record<ArchiveActions, boolean>;
@@ -645,7 +646,7 @@ const SmartTriggersToolbar: React.FC<SmartTriggersTableToolbarProps> = (props) =
 export interface CreateSmartTriggersModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAccept: (s: string) => void;
+  onAccept: (s: SmartTriggerRequest) => void;
 }
 
 interface MBeanOption {
@@ -694,7 +695,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
       { value: 'SystemCpuLoad', label: 'System CPU Load', type: 'double' },
       { value: 'SystemLoadAverage', label: 'System Load Average', type: 'double' },
       { value: 'ProcessCpuLoad', label: 'Process CPU Load', type: 'double' },
-      { value: 'TotalPhyiscalMemorySize', label: 'Total Physical Memory Size', type: 'long' },
+      { value: 'TotalPhysicalMemorySize', label: 'Total Physical Memory Size', type: 'long' },
       { value: 'FreePhysicalMemorySize', label: 'Free Physical Memory Size', type: 'long' },
       { value: 'TotalSwapSpaceSize', label: 'Total Swap Space Size', type: 'long' },
       { value: 'HeapMemoryUsage', label: 'Heap Memory Usage', type: 'long' },
@@ -747,10 +748,16 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
 
   const handleSubmit = React.useCallback(() => {
     submitRef.current && submitRef.current.click();
-    var durationExpr = '';
+    var durationExpression = 0;
     var formattedExpr = expressionInput;
     if (formData.duration != 0) {
-      durationExpr = ';TargetDuration>duration("' + formData.duration + formData.durationUnit + '")';
+      if (formData.durationUnit == 's') {
+        durationExpression = formData.duration * 1000;
+      } else if (formData.durationUnit == 'm') {
+        durationExpression = formData.duration * 60000;
+      } else {
+        durationExpression = formData.duration * 3600000;
+      }
     }
     var opt = getOptionByName(mbeanSelectValue);
     if (opt.type == 'double') {
@@ -758,9 +765,13 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
         formattedExpr = expressionInput + '.0';
       }
     }
-    props.onAccept(
-      '[' + mbeanSelectValue + comparatorSelectValue + formattedExpr + durationExpr + ']~' + formData.template?.name,
-    );
+    var template = formData.template?.name ? formData.template?.name : '';
+    var returnVal: SmartTriggerRequest = {
+      condition: mbeanSelectValue + comparatorSelectValue + formattedExpr,
+      duration: durationExpression,
+      recordingTemplate: template,
+    };
+    props.onAccept(returnVal);
     setUploading(false);
     onClose();
     setExpressionInput('');
@@ -792,9 +803,15 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
       if (!target) {
         return;
       }
+      // Remove the ALL template as the agent can't use it.
       addSubscription(
-        context.api.getTargetEventTemplates(target).subscribe({
-          next: setTemplates,
+        context.api.getTargetEventTemplates(target).subscribe((templates: EventTemplate[]) => {
+          var temp = templates.filter((t) => t.type == 'TARGET');
+          const idx = temp.findIndex((t) => t.name === 'ALL');
+          if (idx >= 0) {
+            temp.splice(idx, 1);
+          }
+          setTemplates(temp);
         }),
       );
     },
@@ -973,6 +990,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
             templates={templates}
             validated={templateValid}
             disabled={uploading}
+            disabledGroups={['CUSTOM', 'PRESET']}
             onSelect={handleTemplateChange}
           />
           <ActionGroup>

@@ -502,13 +502,18 @@ export interface Rule {
 // ======================================
 export interface SmartTrigger {
   id: string;
-  expression: string;
-  durationConstraint: string;
   triggerCondition: string;
   recordingTemplateName: string;
+  targetDuration: number;
   state: string;
   simple: boolean;
   timeConditionFirstMet: string;
+}
+
+export interface SmartTriggerRequest {
+  condition: string;
+  duration: number;
+  recordingTemplate: string;
 }
 
 // ======================================
