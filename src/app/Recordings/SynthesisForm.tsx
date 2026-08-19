@@ -66,9 +66,7 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
   const effectiveJvmId: string = isTargetObject ? ((target as Target).jvmId ?? '') : (target as string);
 
   const aliasMap = useAliasCache(isTargetObject ? [] : [effectiveJvmId]);
-  const resolvedAlias: string | undefined = isTargetObject
-    ? (target as Target).alias
-    : aliasMap.get(effectiveJvmId);
+  const resolvedAlias: string | undefined = isTargetObject ? (target as Target).alias : aliasMap.get(effectiveJvmId);
   const displayName: string = resolvedAlias ?? effectiveJvmId;
   const showAliasSkeleton = !isTargetObject && aliasMap.size === 0;
 
