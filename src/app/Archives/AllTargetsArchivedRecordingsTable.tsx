@@ -431,9 +431,9 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   const synthesisEntry = React.useMemo(
     () =>
       synthesisTarget
-        ? (searchedArchivesForTargets.find(({ target }) => isEqualTarget(target, synthesisTarget)) ?? null)
+        ? (archivesForTargets.find(({ target }) => isEqualTarget(target, synthesisTarget)) ?? null)
         : null,
-    [synthesisTarget, searchedArchivesForTargets],
+    [synthesisTarget, archivesForTargets],
   );
 
   const synthesisRecordings = synthesisEntry?.recordings ?? [];
