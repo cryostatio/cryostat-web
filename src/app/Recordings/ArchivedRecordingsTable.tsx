@@ -627,7 +627,16 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         </DrawerPanelBody>
       </DrawerPanelContent>
     );
-  }, [t, activePanel, resolvedTarget, propsDirectory, recordings, refreshRecordingList]);
+  }, [
+    t,
+    activePanel,
+    resolvedTarget,
+    propsDirectory,
+    recordings,
+    setHighlightedRecordings,
+    handleSynthesisSuccess,
+    handleSynthesisDismiss,
+  ]);
 
   const totalArchiveSize = React.useMemo(
     () => filteredRecordings.reduce((total, r) => total + r.size, 0),
