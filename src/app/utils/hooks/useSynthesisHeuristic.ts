@@ -78,18 +78,28 @@ export const useSynthesisHeuristic = (
     let earliest = Infinity;
     let latest = -Infinity;
     let sizeBytes = 0;
+    const clipped: { start: number; end: number }[] = [];
 
     candidates.forEach((r) => {
       const timing = getRecordingTiming(r)!;
       if (timing.startMs < earliest) earliest = timing.startMs;
       if (timing.endMs > latest) latest = timing.endMs;
       sizeBytes += r.size;
+      clipped.push({ start: Math.max(timing.startMs, fromMs), end: Math.min(timing.endMs, toMs) });
+    });
+
+    clipped.sort((a, b) => a.start - b.start);
+    let coveredMs = 0;
+    let cursor = fromMs;
+    clipped.forEach(({ start, end }) => {
+      if (end <= cursor) return;
+      coveredMs += end - Math.max(start, cursor);
+      cursor = end;
     });
 
     const windowMs = toMs - fromMs;
-    const coveredMs = Math.min(latest - earliest, windowMs);
     const coverageRatio = windowMs > 0 ? Math.min(coveredMs / windowMs, 1) : 0;
-    const gapMs = Math.max(windowMs - (latest - earliest), 0);
+    const gapMs = Math.max(windowMs - coveredMs, 0);
 
     return {
       candidates,
