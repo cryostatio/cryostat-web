@@ -109,7 +109,7 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
       setPendingJobId(null);
       setSubmitting(false);
       if (isFailure) {
-        setJobError(msg.message?.error ?? t('SynthesisForm.SYNTHESIS_FAILED_ERROR', 'Synthesis failed'));
+        setJobError(msg.message?.error ?? t('SynthesisForm.SYNTHESIS_FAILED_ERROR'));
       } else {
         onSuccess?.();
       }
@@ -129,10 +129,10 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
 
   const PRESETS = React.useMemo(
     () => [
-      { label: t('SynthesisForm.PRESET_5MIN', 'Last 5 min'), offsetMs: 5 * 60 * 1000 },
-      { label: t('SynthesisForm.PRESET_15MIN', 'Last 15 min'), offsetMs: 15 * 60 * 1000 },
-      { label: t('SynthesisForm.PRESET_1HR', 'Last 1 hr'), offsetMs: 60 * 60 * 1000 },
-      { label: t('SynthesisForm.PRESET_6HR', 'Last 6 hr'), offsetMs: 360 * 60 * 1000 },
+      { label: t('SynthesisForm.PRESET_5MIN'), offsetMs: 5 * 60 * 1000 },
+      { label: t('SynthesisForm.PRESET_15MIN'), offsetMs: 15 * 60 * 1000 },
+      { label: t('SynthesisForm.PRESET_1HR'), offsetMs: 60 * 60 * 1000 },
+      { label: t('SynthesisForm.PRESET_6HR'), offsetMs: 360 * 60 * 1000 },
     ],
     [t],
   );
@@ -184,7 +184,7 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
           },
           error: (err) => {
             setSubmitting(false);
-            setJobError(err.message ?? t('SynthesisForm.SYNTHESIS_REQUEST_FAILED_ERROR', 'Synthesis request failed'));
+            setJobError(err.message ?? t('SynthesisForm.SYNTHESIS_REQUEST_FAILED_ERROR'));
           },
         }),
     );
