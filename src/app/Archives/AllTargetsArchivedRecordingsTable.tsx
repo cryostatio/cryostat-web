@@ -626,7 +626,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
                 key={`table-header-${title || 'action'}-${idx}`}
                 width={width as React.ComponentProps<typeof Th>['width']}
                 sort={title ? getSortParams(idx) : undefined}
-                screenReaderText={!title ? 'Synthesize' : undefined}
+                screenReaderText={!title ? t('SYNTHESIZE') : undefined}
               >
                 {title}
               </Th>
