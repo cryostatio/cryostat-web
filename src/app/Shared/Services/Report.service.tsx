@@ -29,7 +29,7 @@ export class ReportService {
     private notifications: NotificationService,
     channel: NotificationChannel,
   ) {
-    channel.messages(NotificationCategory.ReportSuccess).subscribe((v) => {
+    channel.replayableMessages(NotificationCategory.ReportSuccess).subscribe((v) => {
       if (this.jobIds.has(v.message.jobId)) {
         this._jobCompletion.next(v.message.jobId);
       }

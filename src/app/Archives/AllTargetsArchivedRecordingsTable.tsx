@@ -16,6 +16,7 @@
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
+import { SynthesisForm } from '@app/Recordings/SynthesisForm';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { Target, TargetDiscoveryEvent, NotificationCategory, Metadata } from '@app/Shared/Services/api.types';
 import { isEqualTarget, indexOfTarget, includesTarget } from '@app/Shared/Services/api.utils';
@@ -25,6 +26,14 @@ import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode, sortResources, TableColumn } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
+  Drawer,
+  DrawerActions,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerContentBody,
+  DrawerHead,
+  DrawerPanelBody,
+  DrawerPanelContent,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -35,8 +44,10 @@ import {
   Button,
   Icon,
   Bullseye,
+  Title,
+  Tooltip,
 } from '@patternfly/react-core';
-import { FileIcon, SearchIcon } from '@patternfly/react-icons';
+import { FileIcon, ProcessAutomationIcon, SearchIcon } from '@patternfly/react-icons';
 import {
   Table,
   Th,
@@ -70,7 +81,7 @@ const tableColumns: TableColumn[] = [
           : `${target.alias} (${target.connectUrl})`;
     },
     sortable: true,
-    width: 80,
+    width: 75,
   },
   {
     title: 'Archives',
@@ -78,7 +89,14 @@ const tableColumns: TableColumn[] = [
     sortable: true,
     width: 15,
   },
+  {
+    title: '',
+    keyPaths: [],
+    width: 10,
+  },
 ];
+
+const ARCHIVES_COLUMN_INDEX = 1;
 
 interface ArchivedRecording {
   jvmId?: string;
@@ -109,8 +127,11 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   const [hideEmptyTargets, setHideEmptyTargets] = React.useState(true);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
+  const [synthesisTarget, setSynthesisTarget] = React.useState<Target | null>(null);
+  const [synthExpandedTargets, setSynthExpandedTargets] = React.useState<Target[]>([]);
+  const [highlightedRecordings, setHighlightedRecordings] = React.useState<Set<string>>(new Set());
   const addSubscription = useSubscriptions();
-  const [sortBy, getSortParams] = useSort();
+  const [sortBy, getSortParams, setSortBy] = useSort();
 
   const handleNotification = React.useCallback(
     (_: string, recording: ArchivedRecording, delta: number) => {
@@ -351,21 +372,72 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     refreshArchivesForTargets();
   }, [refreshArchivesForTargets]);
 
+  const handleSynthesisSelect = React.useCallback(
+    (target: Target) => {
+      if (synthesisTarget && isEqualTarget(synthesisTarget, target)) {
+        // Toggle off: collapse auto-expanded rows, clear state
+        setExpandedTargets((prev) => prev.filter((t) => !synthExpandedTargets.some((s) => isEqualTarget(s, t))));
+        setSynthExpandedTargets([]);
+        setSynthesisTarget(null);
+        setHighlightedRecordings(new Set());
+        return;
+      }
+      // Switching to a different target: un-expand previous auto-expanded rows
+      setExpandedTargets((prev) => prev.filter((t) => !synthExpandedTargets.some((s) => isEqualTarget(s, t))));
+      // Expand this row if not already expanded
+      const newAutoExpanded: Target[] = [];
+      if (!includesTarget(expandedTargets, target)) {
+        setExpandedTargets((prev) => [...prev, target]);
+        newAutoExpanded.push(target);
+      }
+      setSynthExpandedTargets(newAutoExpanded);
+      setSynthesisTarget(target);
+    },
+    [synthesisTarget, synthExpandedTargets, expandedTargets],
+  );
+
+  React.useEffect(() => {
+    if (synthesisTarget) {
+      setSortBy({ index: ARCHIVES_COLUMN_INDEX, direction: SortByDirection.desc });
+    }
+  }, [synthesisTarget, setSortBy]);
+
   const searchedArchivesForTargets = React.useMemo(() => {
     let updated: ArchivesForTarget[] = archivesForTargets;
     if (searchText) {
       const reg = new RegExp(_.escapeRegExp(searchText), 'i');
       updated = archivesForTargets.filter(({ target }) => reg.test(targetDisplay(target)));
     }
-    return sortResources(
+    const filtered = updated.filter((v) => !hideEmptyTargets || v.archiveCount > 0);
+    const sorted = sortResources(
       {
         index: sortBy.index ?? 0,
         direction: sortBy.direction ?? SortByDirection.asc,
       },
-      updated.filter((v) => !hideEmptyTargets || v.archiveCount > 0),
+      filtered,
       tableColumns,
     );
-  }, [searchText, archivesForTargets, sortBy, hideEmptyTargets, targetDisplay]);
+
+    // Promote selected synthesis target to position 0
+    if (synthesisTarget) {
+      const idx = sorted.findIndex(({ target }) => isEqualTarget(target, synthesisTarget));
+      if (idx > 0) {
+        return [sorted[idx], ...sorted.slice(0, idx), ...sorted.slice(idx + 1)];
+      }
+    }
+
+    return sorted;
+  }, [searchText, archivesForTargets, sortBy, hideEmptyTargets, targetDisplay, synthesisTarget]);
+
+  const synthesisEntry = React.useMemo(
+    () =>
+      synthesisTarget
+        ? (searchedArchivesForTargets.find(({ target }) => isEqualTarget(target, synthesisTarget)) ?? null)
+        : null,
+    [synthesisTarget, searchedArchivesForTargets],
+  );
+
+  const synthesisRecordings = synthesisEntry?.recordings ?? [];
 
   React.useEffect(() => {
     addSubscription(
@@ -425,6 +497,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   const targetRows = React.useMemo(() => {
     return searchedArchivesForTargets.map(({ target, archiveCount }, idx) => {
       const isExpanded: boolean = includesTarget(expandedTargets, target);
+      const isSynthesisActive = synthesisTarget !== null && isEqualTarget(synthesisTarget, target);
 
       return (
         <Tr key={`${idx}_parent`}>
@@ -457,28 +530,58 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
               onClick={() => toggleExpanded(target)}
             />
           </Td>
+          <Td key={`target-table-row-${idx}_4`} dataLabel="Synthesize" className="synthesis-action-cell">
+            <Tooltip
+              content={archiveCount === 0 ? 'No recordings to synthesize' : 'Synthesize recording from this target'}
+            >
+              <Button
+                variant="plain"
+                aria-label="Synthesize recording from this target"
+                isDisabled={archiveCount === 0}
+                onClick={() => handleSynthesisSelect(target)}
+                style={isSynthesisActive ? { color: 'var(--pf-t--global--color--brand--default)' } : undefined}
+              >
+                <Icon>
+                  <ProcessAutomationIcon />
+                </Icon>
+              </Button>
+            </Tooltip>
+          </Td>
         </Tr>
       );
     });
-  }, [toggleExpanded, searchedArchivesForTargets, expandedTargets, targetDisplay]);
+  }, [
+    toggleExpanded,
+    searchedArchivesForTargets,
+    expandedTargets,
+    targetDisplay,
+    handleSynthesisSelect,
+    synthesisTarget,
+  ]);
 
   const recordingRows = React.useMemo(() => {
     return searchedArchivesForTargets.map(({ target, targetAsObs }) => {
       const isExpanded: boolean = includesTarget(expandedTargets, target);
       const keyBase = hashCode(JSON.stringify(target));
+      const isSynthesisActive = synthesisTarget !== null && isEqualTarget(synthesisTarget, target);
       return (
         <Tr key={`child-${keyBase}`} isExpanded={isExpanded}>
           <Td key={`target-ex-expand-${keyBase}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 1}>
             {isExpanded ? (
               <ExpandableRowContent>
-                <ArchivedRecordingsTable target={targetAsObs} isUploadsTable={false} isNestedTable={true} />
+                <ArchivedRecordingsTable
+                  target={targetAsObs}
+                  isUploadsTable={false}
+                  isNestedTable={true}
+                  highlightedNames={isSynthesisActive ? highlightedRecordings : undefined}
+                />
               </ExpandableRowContent>
             ) : null}
           </Td>
         </Tr>
       );
     });
-  }, [searchedArchivesForTargets, expandedTargets]);
+  }, [searchedArchivesForTargets, expandedTargets, synthesisTarget, highlightedRecordings]);
 
   const rowPairs = React.useMemo(() => {
     const rowPairs: JSX.Element[] = [];
@@ -525,9 +628,10 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
             <Th key="table-header-expand" screenReaderText="column space" />
             {tableColumns.map(({ title, width }, idx) => (
               <Th
-                key={`table-header-${title}`}
+                key={`table-header-${title || 'action'}-${idx}`}
                 width={width as React.ComponentProps<typeof Th>['width']}
-                sort={getSortParams(idx)}
+                sort={title ? getSortParams(idx) : undefined}
+                screenReaderText={!title ? 'Synthesize' : undefined}
               >
                 {title}
               </Th>
@@ -539,34 +643,67 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     );
   }
 
+  const SynthesisPanel =
+    synthesisTarget && synthesisEntry ? (
+      <DrawerPanelContent id="all-targets-synthesis-panel" defaultSize="40%">
+        <DrawerHead>
+          <Title headingLevel="h3" size="md">
+            Synthesize Recording
+          </Title>
+          <DrawerActions>
+            <DrawerCloseButton onClick={() => handleSynthesisSelect(synthesisTarget)} />
+          </DrawerActions>
+        </DrawerHead>
+        <DrawerPanelBody>
+          <SynthesisForm
+            target={synthesisTarget}
+            recordings={synthesisRecordings}
+            dismissLabel="Close"
+            onHighlightChange={setHighlightedRecordings}
+            onSuccess={() => {
+              handleSynthesisSelect(synthesisTarget);
+              refreshArchivesForTargets();
+            }}
+            onDismiss={() => handleSynthesisSelect(synthesisTarget)}
+          />
+        </DrawerPanelBody>
+      </DrawerPanelContent>
+    ) : null;
+
   return (
-    <OuterScrollContainer className="archive-table-outer-container">
-      <Toolbar id="all-targets-toolbar">
-        <ToolbarContent>
-          <ToolbarGroup variant="filter-group">
-            <ToolbarItem>
-              <SearchInput
-                style={{ minWidth: '30ch' }}
-                placeholder={t('AllTargetsArchivedRecordingsTable.SEARCH_PLACEHOLDER')}
-                value={searchText}
-                onChange={handleSearchInput}
-                onClear={handleSearchInputClear}
-              />
-            </ToolbarItem>
-          </ToolbarGroup>
-          <ToolbarItem alignSelf="center">
-            <Checkbox
-              name={`all-targets-hide-check`}
-              label={t('AllTargetsArchivedRecordingsTable.HIDE_TARGET_WITH_ZERO_RECORDING')}
-              onChange={handleHideEmptyTarget}
-              isChecked={hideEmptyTargets}
-              id={`all-targets-hide-check`}
-              aria-label={`all-targets-hide-check`}
-            />
-          </ToolbarItem>
-        </ToolbarContent>
-      </Toolbar>
-      <InnerScrollContainer className="">{view}</InnerScrollContainer>
-    </OuterScrollContainer>
+    <Drawer isExpanded={!!synthesisTarget} isInline id="all-targets-synthesis-drawer">
+      <DrawerContent panelContent={SynthesisPanel}>
+        <DrawerContentBody>
+          <OuterScrollContainer className="archive-table-outer-container">
+            <Toolbar id="all-targets-toolbar">
+              <ToolbarContent>
+                <ToolbarGroup variant="filter-group">
+                  <ToolbarItem>
+                    <SearchInput
+                      style={{ minWidth: '30ch' }}
+                      placeholder={t('AllTargetsArchivedRecordingsTable.SEARCH_PLACEHOLDER')}
+                      value={searchText}
+                      onChange={handleSearchInput}
+                      onClear={handleSearchInputClear}
+                    />
+                  </ToolbarItem>
+                </ToolbarGroup>
+                <ToolbarItem alignSelf="center">
+                  <Checkbox
+                    name={`all-targets-hide-check`}
+                    label={t('AllTargetsArchivedRecordingsTable.HIDE_TARGET_WITH_ZERO_RECORDING')}
+                    onChange={handleHideEmptyTarget}
+                    isChecked={hideEmptyTargets}
+                    id={`all-targets-hide-check`}
+                    aria-label={`all-targets-hide-check`}
+                  />
+                </ToolbarItem>
+              </ToolbarContent>
+            </Toolbar>
+            <InnerScrollContainer className="">{view}</InnerScrollContainer>
+          </OuterScrollContainer>
+        </DrawerContentBody>
+      </DrawerContent>
+    </Drawer>
   );
 };

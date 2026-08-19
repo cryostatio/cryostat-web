@@ -15,7 +15,7 @@
  */
 import { AlertVariant } from '@patternfly/react-core';
 import _ from 'lodash';
-import { BehaviorSubject, combineLatest, Observable, Subject, timer } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, ReplaySubject, Subject, timer } from 'rxjs';
 import { concatMap, distinctUntilChanged, filter, first, map } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { NotificationMessage, ReadyState, CloseStatus, NotificationCategory } from './api.types';
@@ -28,6 +28,7 @@ import { CryostatContext } from './Services';
 export class NotificationChannel {
   private ws: WebSocketSubject<NotificationMessage> | null = null;
   private readonly _messages = new Subject<NotificationMessage>();
+  private readonly _replayableMessages = new ReplaySubject<NotificationMessage>(undefined, 30_000);
   private readonly _ready = new BehaviorSubject<ReadyState>({ ready: false });
 
   constructor(
@@ -197,7 +198,10 @@ export class NotificationChannel {
           });
 
           this.ws.subscribe({
-            next: (v) => this._messages.next(v),
+            next: (v) => {
+              this._messages.next(v);
+              this._replayableMessages.next(v);
+            },
             error: (err: Error) => this.logError('WebSocket error', err),
           });
         },
@@ -218,6 +222,16 @@ export class NotificationChannel {
 
   messages(category: string): Observable<NotificationMessage> {
     return this._messages.asObservable().pipe(filter((msg) => msg.meta.category === category));
+  }
+
+  /**
+   * Returns an Observable that replays messages received within the last 30 seconds
+   * before subscription, then continues live. Use this instead of messages() for
+   * consumers that issue an HTTP 202 request before subscribing, where the WebSocket
+   * notification may arrive before the HTTP response is processed.
+   */
+  replayableMessages(category: string): Observable<NotificationMessage> {
+    return this._replayableMessages.asObservable().pipe(filter((msg) => msg.meta.category === category));
   }
 
   private logError(title: string, err: Error): void {
