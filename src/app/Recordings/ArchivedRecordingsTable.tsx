@@ -226,11 +226,16 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
     setActivePanel((p) => (p === 'synthesis' ? 'none' : 'synthesis'));
   }, []);
 
+  const isSynthesisContext = React.useMemo(
+    () => activePanel === 'synthesis' || highlightedNames !== undefined,
+    [activePanel, highlightedNames],
+  );
+
   React.useEffect(() => {
-    if (activePanel === 'synthesis' || highlightedNames !== undefined) {
+    if (isSynthesisContext) {
       setSortBy({ index: ARCHIVED_TIME_COLUMN_INDEX, direction: SortByDirection.desc });
     }
-  }, [activePanel, highlightedNames, setSortBy]);
+  }, [isSynthesisContext, setSortBy]);
 
   const handleRecordings = React.useCallback(
     (recordings) => {
