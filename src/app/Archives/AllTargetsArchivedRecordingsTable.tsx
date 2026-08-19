@@ -409,7 +409,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       updated = archivesForTargets.filter(({ target }) => reg.test(targetDisplay(target)));
     }
     const filtered = updated.filter((v) => !hideEmptyTargets || v.archiveCount > 0);
-    const sorted = sortResources(
+    return sortResources(
       {
         index: sortBy.index ?? 0,
         direction: sortBy.direction ?? SortByDirection.asc,
@@ -417,8 +417,6 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       filtered,
       tableColumns,
     );
-
-    return sorted;
   }, [searchText, archivesForTargets, sortBy, hideEmptyTargets, targetDisplay]);
 
   const synthesisEntry = React.useMemo(

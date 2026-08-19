@@ -213,7 +213,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     }
 
     // Sort the filtered results
-    const sorted = sortResources(
+    return sortResources(
       {
         index: sortBy.index ?? 0,
         direction: sortBy.direction ?? SortByDirection.asc,
@@ -221,8 +221,6 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
       filtered,
       tableColumns,
     );
-
-    return sorted;
   }, [lineageFilteredDirectories, searchText, timeRange, sortBy, aliasMap]);
 
   const synthesisDirectory = React.useMemo(
