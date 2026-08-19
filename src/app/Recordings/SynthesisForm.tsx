@@ -43,7 +43,6 @@ import { concatMap, first } from 'rxjs/operators';
 export interface SynthesisFormProps {
   target: Target | string;
   recordings: ArchivedRecording[];
-  dismissLabel?: string;
   onSuccess?: () => void;
   onDismiss?: () => void;
   onHighlightChange?: (names: Set<string>) => void;
@@ -57,7 +56,6 @@ const SYNTHESIS_CATEGORIES = [
 export const SynthesisForm: React.FC<SynthesisFormProps> = ({
   target,
   recordings,
-  dismissLabel,
   onSuccess,
   onDismiss,
   onHighlightChange,
@@ -362,7 +360,7 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
           {submitting ? t('SUBMITTING') : t('SUBMIT')}
         </Button>
         <Button variant="secondary" onClick={handleDismiss}>
-          {dismissLabel ?? t('CLEAR')}
+          {t('DISMISS')}
         </Button>
       </ActionGroup>
     </Form>

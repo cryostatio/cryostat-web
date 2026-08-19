@@ -537,7 +537,6 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
           <SynthesisForm
             target={synthesisJvmId}
             recordings={synthesisRecordings}
-            dismissLabel="Close"
             onHighlightChange={setHighlightedRecordings}
             onSuccess={handleSynthesisSuccess}
             onDismiss={handleSynthesisDismiss}
