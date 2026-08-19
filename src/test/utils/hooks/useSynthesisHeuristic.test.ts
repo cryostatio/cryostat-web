@@ -204,12 +204,13 @@ describe('useSynthesisHeuristic', () => {
     it('reports gapMs when candidates span less than the window', () => {
       // window [BASE+1000, BASE+11000] = 10000 ms
       // rec1 [BASE+2000, BASE+4000], rec2 [BASE+6000, BASE+8000]
-      // earliest=BASE+2000, latest=BASE+8000, span=6000; gapMs = 10000-6000 = 4000
+      // clipped union: [BASE+2000,BASE+4000] + [BASE+6000,BASE+8000] = 4000 ms covered
+      // gapMs = 10000 - 4000 = 6000
       const rec1 = makeRecording(BASE + 2000, 2000, 1000, 'rec1');
       const rec2 = makeRecording(BASE + 6000, 2000, 2000, 'rec2');
       const { result } = renderHook(() => useSynthesisHeuristic([rec1, rec2], BASE + 1000, BASE + 11000));
       expect(result.current.candidates).toHaveLength(2);
-      expect(result.current.gapMs).toBe(4000);
+      expect(result.current.gapMs).toBe(6000);
     });
 
     it('reports gapMs of 0 when candidates together span the full window', () => {
