@@ -94,11 +94,6 @@ const tableColumns: TableColumn[] = [
     width: 15,
   },
   {
-    title: '',
-    keyPaths: [],
-    width: 10,
-  },
-  {
     title: 'Most Recent Archive',
     keyPaths: ['recordings'],
     transform: (recordings: ArchivedRecording[]) => {
@@ -106,9 +101,14 @@ const tableColumns: TableColumn[] = [
     },
     sortable: true,
   },
+  {
+    title: '',
+    keyPaths: [],
+    width: 10,
+  },
 ];
 
-const MOST_RECENT_ARCHIVE_COLUMN_INDEX = 3;
+const MOST_RECENT_ARCHIVE_COLUMN_INDEX = 2;
 
 type _RecordingDirectory = RecordingDirectory & { targetAsObs: Observable<Target> };
 
@@ -384,7 +384,12 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
               onClick={() => toggleExpanded(dir)}
             />
           </Td>
-          <Td key={`directory-table-row-${idx}_4`} dataLabel="Synthesize" className="synthesis-action-cell">
+          <Td key={`directory-table-row-${idx}_4`} dataLabel={tableColumns[MOST_RECENT_ARCHIVE_COLUMN_INDEX].title}>
+            {dir.recordings.length
+              ? dayjs.unix(dir.recordings.reduce((max, r) => Math.max(max, r.archivedTime ?? 0), 0)).format('LLLL')
+              : ''}
+          </Td>
+          <Td key={`directory-table-row-${idx}_5`} dataLabel="Synthesize" className="synthesis-action-cell">
             <Tooltip
               content={
                 dir.recordings.length === 0
@@ -404,11 +409,6 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
                 </Icon>
               </Button>
             </Tooltip>
-          </Td>
-          <Td key={`directory-table-row-${idx}_5`} dataLabel={tableColumns[MOST_RECENT_ARCHIVE_COLUMN_INDEX].title}>
-            {dir.recordings.length
-              ? dayjs.unix(dir.recordings.reduce((max, r) => Math.max(max, r.archivedTime ?? 0), 0)).format('LLLL')
-              : ''}
           </Td>
         </Tr>
       );
