@@ -620,7 +620,6 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
           <SynthesisForm
             target={synthTarget}
             recordings={recordings}
-            dismissLabel="Close"
             onHighlightChange={setHighlightedRecordings}
             onSuccess={handleSynthesisSuccess}
             onDismiss={handleSynthesisDismiss}
