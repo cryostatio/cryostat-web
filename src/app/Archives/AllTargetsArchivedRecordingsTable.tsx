@@ -60,6 +60,7 @@ import {
   OuterScrollContainer,
   InnerScrollContainer,
 } from '@patternfly/react-table';
+import dayjs from 'dayjs';
 import { TFunction } from 'i18next';
 import _ from 'lodash';
 import * as React from 'react';
@@ -94,9 +95,17 @@ const tableColumns: TableColumn[] = [
     keyPaths: [],
     width: 10,
   },
+  {
+    title: 'Most Recent Archive',
+    keyPaths: ['recordings'],
+    transform: (recordings: ArchivedRecording[]) => {
+      return recordings.reduce((max, r) => Math.max(max, r.archivedTime ?? 0), 0);
+    },
+    sortable: true,
+  },
 ];
 
-const ARCHIVES_COLUMN_INDEX = 1;
+const MOST_RECENT_ARCHIVE_COLUMN_INDEX = 3;
 
 interface ArchivedRecording {
   jvmId?: string;
@@ -398,7 +407,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
 
   React.useEffect(() => {
     if (synthesisTarget) {
-      setSortBy({ index: ARCHIVES_COLUMN_INDEX, direction: SortByDirection.desc });
+      setSortBy({ index: MOST_RECENT_ARCHIVE_COLUMN_INDEX, direction: SortByDirection.desc });
     }
   }, [synthesisTarget, setSortBy]);
 
@@ -485,7 +494,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   );
 
   const targetRows = React.useMemo(() => {
-    return searchedArchivesForTargets.map(({ target, archiveCount }, idx) => {
+    return searchedArchivesForTargets.map(({ target, archiveCount, recordings }, idx) => {
       const isExpanded: boolean = includesTarget(expandedTargets, target);
       const isSynthesisActive = synthesisTarget !== null && isEqualTarget(synthesisTarget, target);
 
@@ -540,6 +549,11 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
                 </Icon>
               </Button>
             </Tooltip>
+          </Td>
+          <Td key={`target-table-row-${idx}_5`} dataLabel={tableColumns[MOST_RECENT_ARCHIVE_COLUMN_INDEX].title}>
+            {recordings.length
+              ? dayjs.unix(recordings.reduce((max, r) => Math.max(max, r.archivedTime ?? 0), 0)).format('LLLL')
+              : ''}
           </Td>
         </Tr>
       );
