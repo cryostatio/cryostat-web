@@ -128,7 +128,7 @@ describe('<AllTargetsArchivedRecordingsTable /> synthesis integration', () => {
 
       const btn = screen.queryByLabelText('Synthesize recording from this target');
       if (btn) {
-        expect(btn).toBeDisabled();
+        expect(btn).toHaveAttribute('aria-disabled', 'true');
       }
     });
 

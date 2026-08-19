@@ -545,8 +545,8 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
               <Button
                 variant="plain"
                 aria-label={t('ArchivedRecordingsTable.SYNTHESIZE_FROM_TARGET')}
-                isDisabled={archiveCount === 0}
-                onClick={() => handleSynthesisSelect(target)}
+                isAriaDisabled={archiveCount === 0}
+                onClick={() => archiveCount > 0 && handleSynthesisSelect(target)}
                 style={isSynthesisActive ? { color: 'var(--pf-t--global--color--brand--default)' } : undefined}
               >
                 <Icon>

@@ -103,7 +103,7 @@ describe('<AllArchivedRecordingsTable /> synthesis integration', () => {
       });
 
       const btn = await screen.findByLabelText('Synthesize recording from this target');
-      expect(btn).toBeDisabled();
+      expect(btn).toHaveAttribute('aria-disabled', 'true');
     });
 
     it('opens the synthesis panel when the synthesize button is clicked', async () => {
