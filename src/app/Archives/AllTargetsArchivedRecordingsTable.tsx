@@ -304,7 +304,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
                   target: target,
                   targetAsObs: of(target),
                   archiveCount: v.data.targetNodes[0]?.target?.archivedRecordings?.aggregate?.count ?? 0,
-                  recordings: v.data.targetNodes[0]?.target?.archivedRecordings ?? [],
+                  recordings: (v.data.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? [],
                 },
               ];
             });
