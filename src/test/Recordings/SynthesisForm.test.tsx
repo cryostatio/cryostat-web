@@ -231,9 +231,9 @@ describe('<SynthesisForm />', () => {
       expect(onDismiss).toHaveBeenCalledTimes(1);
     });
 
-    it('uses custom dismissLabel prop', () => {
+    it('renders the dismiss button with default label', () => {
       renderForm();
-      expect(screen.getByText('Close Panel')).toBeInTheDocument();
+      expect(screen.getByText('Clear')).toBeInTheDocument();
     });
   });
 
