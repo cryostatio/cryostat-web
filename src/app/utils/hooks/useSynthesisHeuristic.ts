@@ -40,7 +40,7 @@ const getRecordingTiming = (r: ArchivedRecording): { startMs: number; endMs: num
   const startTimeMs = labels['startTime'] !== undefined ? Number(labels['startTime']) : NaN;
   const durationMs = labels['duration'] !== undefined ? Number(labels['duration']) : NaN;
 
-  if (isNaN(startTimeMs) || isNaN(durationMs) || startTimeMs === 0) return null;
+  if (isNaN(startTimeMs) || isNaN(durationMs) || startTimeMs <= 0 || durationMs <= 0) return null;
 
   return { startMs: startTimeMs, endMs: startTimeMs + durationMs, durationMs };
 };
