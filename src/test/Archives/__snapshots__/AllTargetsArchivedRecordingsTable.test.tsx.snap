@@ -145,7 +145,7 @@ exports[`<AllTargetsArchivedRecordingsTable /> renders correctly 1`] = `
                       </span>
                     </th>
                     <th
-                      class="pf-v6-c-table__th pf-v6-c-table__sort"
+                      class="pf-v6-c-table__th pf-v6-c-table__sort pf-m-width-70"
                       scope="col"
                       tabindex="-1"
                     >
