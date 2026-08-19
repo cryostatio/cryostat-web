@@ -396,7 +396,9 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
           <Td key={`directory-table-row-${idx}_4`} dataLabel="Synthesize" className="synthesis-action-cell">
             <Tooltip
               content={
-                dir.recordings.length === 0 ? t('ArchivedRecordingsTable.NO_RECORDINGS_TO_SYNTHESIZE') : t('ArchivedRecordingsTable.SYNTHESIZE_FROM_TARGET')
+                dir.recordings.length === 0
+                  ? t('ArchivedRecordingsTable.NO_RECORDINGS_TO_SYNTHESIZE')
+                  : t('ArchivedRecordingsTable.SYNTHESIZE_FROM_TARGET')
               }
             >
               <Button
@@ -416,6 +418,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
       );
     });
   }, [
+    t,
     toggleExpanded,
     filteredDirectories,
     expandedDirectories,

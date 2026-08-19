@@ -17,8 +17,8 @@ import { ArchivedRecording, NotificationCategory, NotificationMessage, Target } 
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useAliasCache } from '@app/utils/hooks/useAliasCache';
 import { useNotificationMessages } from '@app/utils/hooks/useNotificationMessages';
-import { useSynthesisHeuristic } from '@app/utils/hooks/useSynthesisHeuristic';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { useSynthesisHeuristic } from '@app/utils/hooks/useSynthesisHeuristic';
 import { formatBytes, formatDuration } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
@@ -49,18 +49,25 @@ export interface SynthesisFormProps {
   onHighlightChange?: (names: Set<string>) => void;
 }
 
-export const SynthesisForm: React.FC<SynthesisFormProps> = (props) => {
+export const SynthesisForm: React.FC<SynthesisFormProps> = ({
+  target,
+  recordings,
+  dismissLabel,
+  onSuccess,
+  onDismiss,
+  onHighlightChange,
+}) => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
-  const isTargetObject = typeof props.target !== 'string';
+  const isTargetObject = typeof target !== 'string';
 
-  const effectiveJvmId: string = isTargetObject ? ((props.target as Target).jvmId ?? '') : (props.target as string);
+  const effectiveJvmId: string = isTargetObject ? ((target as Target).jvmId ?? '') : (target as string);
 
   const aliasMap = useAliasCache(isTargetObject ? [] : [effectiveJvmId]);
   const resolvedAlias: string | undefined = isTargetObject
-    ? (props.target as Target).alias
+    ? (target as Target).alias
     : aliasMap.get(effectiveJvmId);
   const displayName: string = resolvedAlias ?? effectiveJvmId;
   const showAliasSkeleton = !isTargetObject && aliasMap.size === 0;
@@ -89,7 +96,7 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = (props) => {
     return d.isValid() ? d.valueOf() : null;
   }, [toInput]);
 
-  const heuristic = useSynthesisHeuristic(props.recordings, fromMs, toMs);
+  const heuristic = useSynthesisHeuristic(recordings, fromMs, toMs);
 
   const SYNTHESIS_CATEGORIES = React.useMemo(
     () => [NotificationCategory.RecordingSynthesisComplete, NotificationCategory.RecordingSynthesisFailure],
@@ -106,23 +113,21 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = (props) => {
       if (isFailure) {
         setJobError(msg.message?.error ?? t('SynthesisForm.SYNTHESIS_FAILED_ERROR', 'Synthesis failed'));
       } else {
-        props.onSuccess?.();
+        onSuccess?.();
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [props.onSuccess, t],
+    [onSuccess, t],
   );
 
   useNotificationMessages(SYNTHESIS_CATEGORIES, handleSynthesisMessage);
 
   React.useEffect(() => {
-    props.onHighlightChange?.(new Set(heuristic.candidates.map((r) => r.name)));
-  }, [heuristic.candidates, props.onHighlightChange]);
+    onHighlightChange?.(new Set(heuristic.candidates.map((r) => r.name)));
+  }, [heuristic.candidates, onHighlightChange]);
 
   React.useEffect(() => {
-    return () => props.onHighlightChange?.(new Set());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.onHighlightChange]);
+    return () => onHighlightChange?.(new Set());
+  }, [onHighlightChange]);
 
   const PRESETS = React.useMemo(
     () => [
@@ -169,7 +174,7 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = (props) => {
           next: (resp) => {
             if (resp === null) {
               setSubmitting(false);
-              props.onSuccess?.();
+              onSuccess?.();
               return;
             }
             const jobId = resp as string;
@@ -182,11 +187,11 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = (props) => {
           },
         }),
     );
-  }, [effectiveJvmId, fromMs, toMs, tagInput, addSubscription, context.api, props.onSuccess, t]);
+  }, [effectiveJvmId, fromMs, toMs, tagInput, addSubscription, context.api, onSuccess, t]);
 
   const handleDismiss = React.useCallback(() => {
-    props.onDismiss?.();
-  }, [props.onDismiss]);
+    onDismiss?.();
+  }, [onDismiss]);
 
   const canSubmit =
     !!effectiveJvmId && !!fromMs && !!toMs && fromMs < toMs && heuristic.candidates.length > 0 && !submitting;
@@ -351,7 +356,7 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = (props) => {
           {submitting ? t('SynthesisForm.SUBMITTING_LABEL', 'Submitting…') : t('SynthesisForm.SUBMIT_LABEL', 'Submit')}
         </Button>
         <Button variant="secondary" onClick={handleDismiss}>
-          {props.dismissLabel ?? t('SynthesisForm.DISMISS_DEFAULT_LABEL', 'Clear')}
+          {dismissLabel ?? t('SynthesisForm.DISMISS_DEFAULT_LABEL', 'Clear')}
         </Button>
       </ActionGroup>
     </Form>
