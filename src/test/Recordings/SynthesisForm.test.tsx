@@ -127,14 +127,14 @@ describe('<SynthesisForm />', () => {
   describe('preset buttons', () => {
     it('renders the four preset buttons', () => {
       renderForm();
-      for (const label of ['Last 5 min', 'Last 15 min', 'Last 1 hr', 'Last 6 hr']) {
+      for (const label of ['Last 5 minutes', 'Last 15 minutes', 'Last 1 hour', 'Last 6 hours']) {
         expect(screen.getByText(label)).toBeInTheDocument();
       }
     });
 
-    it('clicking "Last 5 min" populates the datetime inputs', async () => {
+    it('clicking "Last 5 minutes" populates the datetime inputs', async () => {
       const { user } = renderForm();
-      const btn = screen.getByText('Last 5 min');
+      const btn = screen.getByText('Last 5 minutes');
       await user.click(btn);
 
       const fromInput = screen.getByLabelText('From date and time') as HTMLInputElement;
@@ -157,7 +157,7 @@ describe('<SynthesisForm />', () => {
 
     it('submit button becomes enabled after preset fills a range with candidates', async () => {
       const { user } = renderForm({ recordings: [mockRecordingInWindow] });
-      await user.click(screen.getByText('Last 5 min'));
+      await user.click(screen.getByText('Last 5 minutes'));
       const submitBtn = screen.getByText('Submit').closest('button');
       await waitFor(() => {
         expect(submitBtn).not.toHaveAttribute('aria-disabled', 'true');
@@ -166,8 +166,8 @@ describe('<SynthesisForm />', () => {
 
     it('submit button remains aria-disabled when no candidates fall in the selected range', async () => {
       const { user } = renderForm({ recordings: [mockRecordingOutside] });
-      // "Last 5 min" won't contain mockRecordingOutside (which is 2 hrs ago)
-      await user.click(screen.getByText('Last 5 min'));
+      // "Last 5 minutes" won't contain mockRecordingOutside (which is 2 hrs ago)
+      await user.click(screen.getByText('Last 5 minutes'));
       const submitBtn = screen.getByText('Submit').closest('button');
       await waitFor(() => {
         expect(submitBtn).toHaveAttribute('aria-disabled', 'true');
@@ -176,7 +176,7 @@ describe('<SynthesisForm />', () => {
 
     it('shows a warning alert when range is set but no candidates match', async () => {
       const { user } = renderForm({ recordings: [mockRecordingOutside] });
-      await user.click(screen.getByText('Last 5 min'));
+      await user.click(screen.getByText('Last 5 minutes'));
       await waitFor(() => {
         expect(screen.getByText('No recordings found in the selected range')).toBeInTheDocument();
       });
@@ -186,7 +186,7 @@ describe('<SynthesisForm />', () => {
   describe('heuristic display', () => {
     it('shows candidate count and coverage bar after range is set', async () => {
       const { user } = renderForm({ recordings: [mockRecordingInWindow] });
-      await user.click(screen.getByText('Last 5 min'));
+      await user.click(screen.getByText('Last 5 minutes'));
 
       await waitFor(() => {
         expect(screen.getByText(/Candidates:/)).toBeInTheDocument();
@@ -199,7 +199,7 @@ describe('<SynthesisForm />', () => {
       const onHighlightChange = jest.fn();
       const { user } = renderForm({ recordings: [mockRecordingInWindow], onHighlightChange });
 
-      await user.click(screen.getByText('Last 5 min'));
+      await user.click(screen.getByText('Last 5 minutes'));
 
       await waitFor(() => {
         const calls = onHighlightChange.mock.calls;
@@ -212,7 +212,7 @@ describe('<SynthesisForm />', () => {
       const onHighlightChange = jest.fn();
       const { user, unmount } = renderForm({ recordings: [mockRecordingInWindow], onHighlightChange });
 
-      await user.click(screen.getByText('Last 5 min'));
+      await user.click(screen.getByText('Last 5 minutes'));
       onHighlightChange.mockClear();
 
       unmount();
@@ -245,7 +245,7 @@ describe('<SynthesisForm />', () => {
       jest.spyOn(defaultServices.api, 'sendRequest').mockReturnValue(of(mockResponse));
 
       const { user } = renderForm({ recordings: [mockRecordingInWindow], onSuccess });
-      await user.click(screen.getByText('Last 5 min'));
+      await user.click(screen.getByText('Last 5 minutes'));
 
       const submitBtn = await screen.findByText('Submit');
       await user.click(submitBtn.closest('button')!);
@@ -254,7 +254,7 @@ describe('<SynthesisForm />', () => {
         expect(onSuccess).toHaveBeenCalledTimes(1);
       });
       // No spinner/loading state should linger
-      expect(screen.queryByText('Submitting…')).not.toBeInTheDocument();
+      expect(screen.queryByText('Submitting')).not.toBeInTheDocument();
     });
   });
 
@@ -269,13 +269,13 @@ describe('<SynthesisForm />', () => {
       jest.spyOn(defaultServices.api, 'sendRequest').mockReturnValue(of(mockResponse202));
 
       const { user } = renderForm({ recordings: [mockRecordingInWindow] });
-      await user.click(screen.getByText('Last 5 min'));
+      await user.click(screen.getByText('Last 5 minutes'));
       const submitBtn = screen.getByText('Submit').closest('button')!;
       await user.click(submitBtn);
 
       // While waiting for WS, button shows loading text
       await waitFor(() => {
-        expect(screen.getByText('Submitting…')).toBeInTheDocument();
+        expect(screen.getByText('Submitting')).toBeInTheDocument();
       });
     });
 
@@ -290,10 +290,10 @@ describe('<SynthesisForm />', () => {
       jest.spyOn(defaultServices.api, 'sendRequest').mockReturnValue(of(mockResponse202));
 
       const { user } = renderForm({ recordings: [mockRecordingInWindow], onSuccess });
-      await user.click(screen.getByText('Last 5 min'));
+      await user.click(screen.getByText('Last 5 minutes'));
       await user.click(screen.getByText('Submit').closest('button')!);
 
-      await waitFor(() => screen.getByText('Submitting…'));
+      await waitFor(() => screen.getByText('Submitting'));
 
       act(() => {
         replayableSubjects
@@ -302,7 +302,7 @@ describe('<SynthesisForm />', () => {
       });
 
       await waitFor(() => expect(onSuccess).toHaveBeenCalledTimes(1));
-      expect(screen.queryByText('Submitting…')).not.toBeInTheDocument();
+      expect(screen.queryByText('Submitting')).not.toBeInTheDocument();
     });
 
     it('shows an error alert when the WS failure notification arrives for the pending job', async () => {
@@ -316,10 +316,10 @@ describe('<SynthesisForm />', () => {
       jest.spyOn(defaultServices.api, 'sendRequest').mockReturnValue(of(mockResponse202));
 
       const { user } = renderForm({ recordings: [mockRecordingInWindow] });
-      await user.click(screen.getByText('Last 5 min'));
+      await user.click(screen.getByText('Last 5 minutes'));
       await user.click(screen.getByText('Submit').closest('button')!);
 
-      await waitFor(() => screen.getByText('Submitting…'));
+      await waitFor(() => screen.getByText('Submitting'));
 
       act(() => {
         replayableSubjects.get(NotificationCategory.RecordingSynthesisFailure)!.next(makeWsMsgFailure(jobId, errorMsg));
@@ -329,7 +329,7 @@ describe('<SynthesisForm />', () => {
         expect(screen.getByText('Synthesis error')).toBeInTheDocument();
         expect(screen.getByText(errorMsg)).toBeInTheDocument();
       });
-      expect(screen.queryByText('Submitting…')).not.toBeInTheDocument();
+      expect(screen.queryByText('Submitting')).not.toBeInTheDocument();
     });
 
     it('ignores WS notifications for a different jobId', async () => {
@@ -344,10 +344,10 @@ describe('<SynthesisForm />', () => {
       jest.spyOn(defaultServices.api, 'sendRequest').mockReturnValue(of(mockResponse202));
 
       const { user } = renderForm({ recordings: [mockRecordingInWindow], onSuccess });
-      await user.click(screen.getByText('Last 5 min'));
+      await user.click(screen.getByText('Last 5 minutes'));
       await user.click(screen.getByText('Submit').closest('button')!);
 
-      await waitFor(() => screen.getByText('Submitting…'));
+      await waitFor(() => screen.getByText('Submitting'));
 
       act(() => {
         replayableSubjects
@@ -356,7 +356,7 @@ describe('<SynthesisForm />', () => {
       });
 
       // Should still be submitting; onSuccess not called
-      expect(screen.getByText('Submitting…')).toBeInTheDocument();
+      expect(screen.getByText('Submitting')).toBeInTheDocument();
       expect(onSuccess).not.toHaveBeenCalled();
     });
   });
@@ -368,14 +368,14 @@ describe('<SynthesisForm />', () => {
         .mockReturnValue(new Observable((sub) => sub.error(new Error('Network failure'))));
 
       const { user } = renderForm({ recordings: [mockRecordingInWindow] });
-      await user.click(screen.getByText('Last 5 min'));
+      await user.click(screen.getByText('Last 5 minutes'));
       await user.click(screen.getByText('Submit').closest('button')!);
 
       await waitFor(() => {
         expect(screen.getByText('Synthesis error')).toBeInTheDocument();
         expect(screen.getByText('Network failure')).toBeInTheDocument();
       });
-      expect(screen.queryByText('Submitting…')).not.toBeInTheDocument();
+      expect(screen.queryByText('Submitting')).not.toBeInTheDocument();
     });
   });
 });
