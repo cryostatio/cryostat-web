@@ -318,8 +318,10 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     (target: Target) => {
       setArchivesForTargets((old) => old.filter(({ target: t }) => !isEqualTarget(t, target)));
       setExpandedTargets((old) => old.filter((t) => !isEqualTarget(t, target)));
+      setSynthesisTarget((prev) => (prev && isEqualTarget(prev, target) ? null : prev));
+      setHighlightedRecordings((prev) => (prev.size > 0 ? new Set() : prev));
     },
-    [setArchivesForTargets, setExpandedTargets],
+    [setArchivesForTargets, setExpandedTargets, setSynthesisTarget, setHighlightedRecordings],
   );
 
   const handleTargetNotification = React.useCallback(
@@ -656,8 +658,14 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     if (!synthesisTarget) {
       return;
     }
+    if (!synthesisEntry) {
+      setSynthesisTarget(null);
+      setSynthExpandedTargets([]);
+      setHighlightedRecordings(new Set());
+      return;
+    }
     handleSynthesisSelect(synthesisTarget);
-  }, [handleSynthesisSelect, synthesisTarget]);
+  }, [handleSynthesisSelect, synthesisTarget, synthesisEntry]);
 
   const handleSynthesisSuccess = React.useCallback(() => {
     handleSynthesisDismiss();

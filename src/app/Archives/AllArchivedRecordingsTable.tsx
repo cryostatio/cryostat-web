@@ -256,6 +256,14 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   );
 
   React.useEffect(() => {
+    if (synthesisJvmId && !directories.some((d) => d.jvmId === synthesisJvmId)) {
+      setSynthesisJvmId(null);
+      setSynthExpandedDirs([]);
+      setHighlightedRecordings(new Set());
+    }
+  }, [directories, synthesisJvmId]);
+
+  React.useEffect(() => {
     if (synthesisJvmId) {
       setSortBy({ index: MOST_RECENT_ARCHIVE_COLUMN_INDEX, direction: SortByDirection.desc });
     }
@@ -512,6 +520,9 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
 
   const handleSynthesisDismiss = React.useCallback(() => {
     if (!synthesisDirectory) {
+      setSynthesisJvmId(null);
+      setSynthExpandedDirs([]);
+      setHighlightedRecordings(new Set());
       return;
     }
     handleSynthesisSelect(synthesisDirectory);
