@@ -576,11 +576,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
 
   const [resolvedTarget, setResolvedTarget] = React.useState<Target | undefined>(undefined);
   React.useEffect(() => {
-    addSubscription(
-      propsTarget.pipe(first()).subscribe((t) => {
-        if (t) setResolvedTarget(t as Target);
-      }),
-    );
+    addSubscription(propsTarget.pipe(first((t) => !!t)).subscribe((t) => setResolvedTarget(t as Target)));
   }, [addSubscription, propsTarget]);
 
   const LabelsPanel = React.useMemo(
