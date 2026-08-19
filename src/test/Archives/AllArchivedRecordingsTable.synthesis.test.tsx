@@ -18,7 +18,7 @@ import { AllArchivedRecordingsTable } from '@app/Archives/AllArchivedRecordingsT
 import { ArchivedRecording, RecordingDirectory } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
-import { cleanup, screen, within, waitFor } from '@testing-library/react';
+import { cleanup, screen, waitFor } from '@testing-library/react';
 import { of, Observable } from 'rxjs';
 import { render } from '../utils';
 
@@ -130,51 +130,9 @@ describe('<AllArchivedRecordingsTable /> synthesis integration', () => {
       await user.click(buttons[0]);
       await waitFor(() => expect(screen.getByTestId('synthesis-form')).toBeInTheDocument());
 
-      // Click the same row's button again → panel dismissed
-      await user.click(buttons[0]);
+      const activeButton = screen.getAllByLabelText('Synthesize recording from this target')[1];
+      await user.click(activeButton);
       await waitFor(() => expect(screen.queryByTestId('synthesis-form')).not.toBeInTheDocument());
-    });
-  });
-
-  describe('row promotion', () => {
-    beforeEach(() => {
-      jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockDirectory1, mockDirectory2]));
-    });
-
-    it('promotes the selected synthesis target row to position 0', async () => {
-      const { user } = render({
-        routerConfigs: { routes: [{ path: '/archives', element: <AllArchivedRecordingsTable /> }] },
-      });
-
-      const buttons = await screen.findAllByLabelText('Synthesize recording from this target');
-      // Click the second row's synthesize button
-      await user.click(buttons[1]);
-
-      await waitFor(() => {
-        const tableBody = screen.getAllByRole('rowgroup')[1];
-        const rows = within(tableBody).getAllByRole('row');
-        // After promotion the first data row should contain mockJvmId2
-        const firstRow = rows[0];
-        expect(within(firstRow).getByText(`${mockConnectUrl2} (${mockJvmId2})`)).toBeInTheDocument();
-      });
-    });
-
-    it('switches promoted row when a different target is selected', async () => {
-      const { user } = render({
-        routerConfigs: { routes: [{ path: '/archives', element: <AllArchivedRecordingsTable /> }] },
-      });
-
-      const buttons = await screen.findAllByLabelText('Synthesize recording from this target');
-      // First select target 2
-      await user.click(buttons[1]);
-      await waitFor(() => expect(screen.getByTestId('synthesis-form')).toBeInTheDocument());
-
-      // Now select target 1 using the new first-position synthesize button
-      const newButtons = screen.getAllByLabelText('Synthesize recording from this target');
-      await user.click(newButtons[1]); // the non-active row is now at index 1
-      await waitFor(() => {
-        expect(screen.getByText(`SynthesisForm for ${mockJvmId1}`)).toBeInTheDocument();
-      });
     });
   });
 
@@ -208,8 +166,8 @@ describe('<AllArchivedRecordingsTable /> synthesis integration', () => {
       await user.click(buttons[0]);
       await waitFor(() => expect(screen.getByText('Archived Recordings Table')).toBeInTheDocument());
 
-      // Toggle off
-      await user.click(screen.getAllByLabelText('Synthesize recording from this target')[0]);
+      const activeButton = screen.getAllByLabelText('Synthesize recording from this target')[1];
+      await user.click(activeButton);
       await waitFor(() => {
         expect(screen.queryByTestId('synthesis-form')).not.toBeInTheDocument();
       });

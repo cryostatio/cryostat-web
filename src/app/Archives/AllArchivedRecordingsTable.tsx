@@ -222,16 +222,8 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
       tableColumns,
     );
 
-    // Promote selected synthesis target to position 0
-    if (synthesisJvmId) {
-      const idx = sorted.findIndex((d) => d.jvmId === synthesisJvmId);
-      if (idx > 0) {
-        return [sorted[idx], ...sorted.slice(0, idx), ...sorted.slice(idx + 1)];
-      }
-    }
-
     return sorted;
-  }, [lineageFilteredDirectories, searchText, timeRange, sortBy, aliasMap, synthesisJvmId]);
+  }, [lineageFilteredDirectories, searchText, timeRange, sortBy, aliasMap]);
 
   const synthesisDirectory = React.useMemo(
     () => (synthesisJvmId ? (directories.find((d) => d.jvmId === synthesisJvmId) ?? null) : null),
@@ -331,7 +323,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   }, [addSubscription, context.notificationChannel, refreshDirectoriesAndCounts]);
 
   const toggleExpanded = React.useCallback(
-    (dir) => {
+    (dir: _RecordingDirectory) => {
       const idx = indexOfDirectory(expandedDirectories, dir);
       setExpandedDirectories((prevExpandedDirectories) =>
         idx >= 0
