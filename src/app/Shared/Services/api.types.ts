@@ -790,6 +790,8 @@ export enum NotificationCategory {
   UnifiedLogUploaded = 'UnifiedLogUploaded',
   UnifiedLogDeleted = 'UnifiedLogDeleted',
   UnifiedLogMetadataUpdated = 'UnifiedLogMetadataUpdated',
+  RecordingSynthesisComplete = 'RecordingSynthesisComplete',
+  RecordingSynthesisFailure = 'RecordingSynthesisFailure',
 }
 
 export enum CloseStatus {

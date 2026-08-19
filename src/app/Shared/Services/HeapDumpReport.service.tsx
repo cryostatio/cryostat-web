@@ -26,7 +26,7 @@ export class HeapDumpReportService {
     private ctx: CryostatContext,
     channel: NotificationChannel,
   ) {
-    channel.messages(NotificationCategory.HeapDumpAnalysisSuccess).subscribe((v) => {
+    channel.replayableMessages(NotificationCategory.HeapDumpAnalysisSuccess).subscribe((v) => {
       if (this.jobIds.has(v.message.jobId)) {
         this._jobCompletion.next(v.message.jobId);
       }

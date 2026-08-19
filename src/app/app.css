@@ -17,10 +17,10 @@ limitations under the License.
 /* Scope all global styles to Cryostat app container */
 .cryostat-app {
   /* CSS variables */
-  --cryostat-indigo: #1B4965;
-  --cryostat-picton-blue: #5FA8D3;
-  --cryostat-baby-blue: #95C9E9;
-  --cryostat-white: #FFFFFF;
+  --cryostat-indigo: #1b4965;
+  --cryostat-picton-blue: #5fa8d3;
+  --cryostat-baby-blue: #95c9e9;
+  --cryostat-white: #ffffff;
 
   /* Apply height to the scoped container itself */
   height: 100%;
@@ -39,7 +39,7 @@ limitations under the License.
 
 .cryostat-app .cryostat-text {
   margin-top: -0.5em !important;
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-weight: 900;
   text-align: center;
   font-size: 4.5em;
@@ -126,7 +126,6 @@ limitations under the License.
   gap: var(--pf-t--global--spacer--sm) !important;
 }
 
-
 .cryostat-app .rules-table-outer-container {
   height: 67.5vh;
 }
@@ -170,7 +169,7 @@ limitations under the License.
   margin-left: 1px;
 }
 
-.cryostat-app .dashboard-card-picker  .catalog-tile-pf {
+.cryostat-app .dashboard-card-picker .catalog-tile-pf {
   height: 100%;
   border-top: 1.5px solid var(--pf-t--global--border--color--default);
 }
@@ -250,17 +249,23 @@ limitations under the License.
 }
 
 .cryostat-app .automated-analysis-score-filter-slider-ok .pf-v6-c-slider__main {
-  --pf-v6-c-slider__rail-track--before--base--BackgroundColor: var(--pf-t--global--icon--color--status--success--default);
+  --pf-v6-c-slider__rail-track--before--base--BackgroundColor: var(
+    --pf-t--global--icon--color--status--success--default
+  );
   --pf-v6-c-slider__step-tick--BackgroundColor: var(--pf-t--global--icon--color--status--success--default);
 }
 
 .cryostat-app .automated-analysis-score-filter-slider-warning .pf-v6-c-slider__main {
-  --pf-v6-c-slider__rail-track--before--base--BackgroundColor: var(--pf-t--global--icon--color--status--warning--default);
+  --pf-v6-c-slider__rail-track--before--base--BackgroundColor: var(
+    --pf-t--global--icon--color--status--warning--default
+  );
   --pf-v6-c-slider__step-tick--BackgroundColor: var(--pf-t--global--icon--color--status--warning--default);
 }
 
 .cryostat-app .automated-analysis-score-filter-slider-critical .pf-v6-c-slider__main {
-  --pf-v6-c-slider__rail-track--before--base--BackgroundColor: var(--pf-t--global--icon--color--status--danger--default);
+  --pf-v6-c-slider__rail-track--before--base--BackgroundColor: var(
+    --pf-t--global--icon--color--status--danger--default
+  );
   --pf-v6-c-slider__step-tick--BackgroundColor: var(--pf-t--global--icon--color--status--danger--default);
 }
 
@@ -326,38 +331,65 @@ limitations under the License.
 }
 
 /* Every 2nd, 4th, 6th score label handled specially (tick hidden, label above slider) */
-.cryostat-app .automated-analysis-score-filter-slider :where(.pf-v6-c-slider__step:nth-child(2), .pf-v6-c-slider__step:nth-child(4), .pf-v6-c-slider__step:nth-child(6)) .pf-v6-c-slider__step-tick {
+.cryostat-app
+  .automated-analysis-score-filter-slider
+  :where(.pf-v6-c-slider__step:nth-child(2), .pf-v6-c-slider__step:nth-child(4), .pf-v6-c-slider__step:nth-child(6))
+  .pf-v6-c-slider__step-tick {
   visibility: hidden;
 }
 
-.cryostat-app .automated-analysis-score-filter-slider :where(.pf-v6-c-slider__step:nth-child(2), .pf-v6-c-slider__step:nth-child(4), .pf-v6-c-slider__step:nth-child(6)) .pf-v6-c-slider__step-label {
+.cryostat-app
+  .automated-analysis-score-filter-slider
+  :where(.pf-v6-c-slider__step:nth-child(2), .pf-v6-c-slider__step:nth-child(4), .pf-v6-c-slider__step:nth-child(6))
+  .pf-v6-c-slider__step-label {
   top: 0;
 }
 
-.cryostat-app .automated-analysis-score-filter-slider-ok .pf-v6-c-slider__step:nth-child(2) .pf-v6-c-slider__step-label {
+.cryostat-app
+  .automated-analysis-score-filter-slider-ok
+  .pf-v6-c-slider__step:nth-child(2)
+  .pf-v6-c-slider__step-label {
   color: var(--pf-t--global--icon--color--status--success--default);
   font-weight: bold;
 }
 
-:where(.pf-v6-theme-dark) .cryostat-app .automated-analysis-score-filter-slider-ok .pf-v6-c-slider__step:nth-child(2) .pf-v6-c-slider__step-label {
+:where(.pf-v6-theme-dark)
+  .cryostat-app
+  .automated-analysis-score-filter-slider-ok
+  .pf-v6-c-slider__step:nth-child(2)
+  .pf-v6-c-slider__step-label {
   color: var(--pf-t--global--icon--color--status--success--default);
 }
 
-.cryostat-app .automated-analysis-score-filter-slider-warning .pf-v6-c-slider__step:nth-child(4) .pf-v6-c-slider__step-label {
+.cryostat-app
+  .automated-analysis-score-filter-slider-warning
+  .pf-v6-c-slider__step:nth-child(4)
+  .pf-v6-c-slider__step-label {
   color: var(--pf-t--global--icon--color--status--warning--default);
   font-weight: bold;
 }
 
-:where(.pf-v6-theme-dark) .cryostat-app .automated-analysis-score-filter-slider-warning .pf-v6-c-slider__step:nth-child(4) .pf-v6-c-slider__step-label {
+:where(.pf-v6-theme-dark)
+  .cryostat-app
+  .automated-analysis-score-filter-slider-warning
+  .pf-v6-c-slider__step:nth-child(4)
+  .pf-v6-c-slider__step-label {
   color: var(--pf-t--global--icon--color--status--warning--default);
 }
 
-.cryostat-app .automated-analysis-score-filter-slider-critical .pf-v6-c-slider__step:nth-child(6) .pf-v6-c-slider__step-label {
+.cryostat-app
+  .automated-analysis-score-filter-slider-critical
+  .pf-v6-c-slider__step:nth-child(6)
+  .pf-v6-c-slider__step-label {
   color: var(--pf-t--global--icon--color--status--danger--default);
   font-weight: bold;
 }
 
-:where(.pf-v6-theme-dark) .cryostat-app .automated-analysis-score-filter-slider-critical .pf-v6-c-slider__step:nth-child(6) .pf-v6-c-slider__step-label {
+:where(.pf-v6-theme-dark)
+  .cryostat-app
+  .automated-analysis-score-filter-slider-critical
+  .pf-v6-c-slider__step:nth-child(6)
+  .pf-v6-c-slider__step-label {
   color: var(--pf-t--global--icon--color--status--danger--default);
 }
 
@@ -417,26 +449,34 @@ limitations under the License.
 }
 
 .cryostat-app .draggable-ref-wrapper__left {
-  transition: transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s, opacity 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.1s;
+  transition:
+    transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s,
+    opacity 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.1s;
   transform: translate(-50px, 0px);
   opacity: 0.5;
 }
 
 .cryostat-app .draggable-ref-wrapper__right {
-  transition: transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s, opacity 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.1s;
+  transition:
+    transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s,
+    opacity 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.1s;
   transform: translate(50px, 0px);
   opacity: 0.5;
 }
 
 .cryostat-app .draggable-ref-wrapper__overlap {
-  transition: transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s, opacity 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.1s;
+  transition:
+    transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s,
+    opacity 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.1s;
   transform: translate(0px, -15px);
   opacity: 0.5;
   box-shadow: 0 0.5rem 1rem 0 rgba(3, 3, 3, 0.25);
 }
 
 .cryostat-app .draggable-ref-wrapper__reset {
-  transition: transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s, opacity 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.1s;
+  transition:
+    transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s,
+    opacity 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.1s;
   transform: '';
   opacity: 1;
 }
@@ -507,11 +547,11 @@ limitations under the License.
   padding: var(--pf-t--global--spacer--xs) var(--pf-t--global--spacer--sm);
   border: solid;
   border-color: var(--pf-t--global--border--color--default);
-  border-width: 0 0.10rem 0.10rem 0.10rem;
+  border-width: 0 0.1rem 0.1rem 0.1rem;
 }
 
 .cryostat-app .datetime-picker__meridiem-tile:first-child {
-  border-top-width: 0.10rem;
+  border-top-width: 0.1rem;
   border-radius: 0.25rem 0.25rem 0 0;
 }
 
@@ -548,7 +588,7 @@ limitations under the License.
   margin: 0;
 }
 
-.cryostat-app .datetime-picker__number-input input[type=number] {
+.cryostat-app .datetime-picker__number-input input[type='number'] {
   -moz-appearance: textfield;
   /* Firefox */
   width: 100%;
@@ -558,7 +598,7 @@ limitations under the License.
   margin-bottom: 3px;
 }
 
-:where(.pf-v6-theme-dark) .datetime-picker__number-input input[type=number] {
+:where(.pf-v6-theme-dark) .datetime-picker__number-input input[type='number'] {
   background-color: var(--pf-t--global--background--color--primary--default);
 }
 
@@ -672,14 +712,15 @@ limitations under the License.
 .cryostat-app .linear-dot-spinner {
   width: 2em;
   aspect-ratio: 4;
-  background: radial-gradient(circle closest-side, var(--pf-t--global--icon--color--brand--default) 90%, #0000) 0/calc(100%/3) 100% space;
+  background: radial-gradient(circle closest-side, var(--pf-t--global--icon--color--brand--default) 90%, #0000) 0 /
+    calc(100% / 3) 100% space;
   clip-path: inset(0 100% 0 0);
   animation: linear-dot-spinner-animate 1s steps(4) infinite;
 }
 
 @keyframes linear-dot-spinner-animate {
   to {
-    clip-path: inset(0 -34% 0 0)
+    clip-path: inset(0 -34% 0 0);
   }
 }
 
@@ -709,7 +750,7 @@ limitations under the License.
 }
 
 .cryostat-app #card-catalog-wizard .pf-v6-c-wizard__main-body {
-  height: 100%
+  height: 100%;
 }
 
 .cryostat-app .pf-v6-c-drawer__panel.pf-m-resizable.layout-template-picker-drawer__panel {
@@ -776,7 +817,9 @@ limitations under the License.
 }
 
 .cryostat-app .pfext-spotlight__element-highlight-animate {
-  animation: 0.4s pfext-spotlight-fade-in 0s ease-in-out, 1.2s pfext-spotlight-fade-out 1s ease-in-out;
+  animation:
+    0.4s pfext-spotlight-fade-in 0s ease-in-out,
+    1.2s pfext-spotlight-fade-out 1s ease-in-out;
   animation-fill-mode: forwards;
 }
 
@@ -831,9 +874,20 @@ limitations under the License.
 }
 
 .cryostat-app .theme__toggle-group .pf-v6-c-toggle-group__button.pf-m-selected {
-  --pf-v6-c-toggle-group__button--m-selected--BackgroundColor: var(--pf-t--global--background--color--action--plain--clicked);
+  --pf-v6-c-toggle-group__button--m-selected--BackgroundColor: var(
+    --pf-t--global--background--color--action--plain--clicked
+  );
 }
 
 .cryostat-app .match-expression-display {
-  padding: .25rem .5rem !important;
+  padding: 0.25rem 0.5rem !important;
+}
+
+.cryostat-app .synthesis-candidate-row td {
+  background-color: var(--pf-t--global--background--color--secondary--default) !important;
+}
+
+.cryostat-app .synthesis-action-cell {
+  width: 3rem;
+  white-space: nowrap;
 }

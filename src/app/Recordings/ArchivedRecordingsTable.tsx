@@ -15,6 +15,7 @@
  */
 
 import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
+import { SynthesisForm } from '@app/Recordings/SynthesisForm';
 import { AutomatedAnalysisCardList } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList';
 import {
   AutomatedAnalysisFilters,
@@ -70,8 +71,13 @@ import {
   Checkbox,
   Content,
   Drawer,
+  DrawerActions,
+  DrawerCloseButton,
   DrawerContent,
   DrawerContentBody,
+  DrawerHead,
+  DrawerPanelBody,
+  DrawerPanelContent,
   EmptyState,
   EmptyStateActions,
   EmptyStateBody,
@@ -104,9 +110,11 @@ import {
   StackItem,
   ToggleGroup,
   ToggleGroupItem,
+  Tooltip,
 } from '@patternfly/react-core';
-import { UploadIcon, EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
+import { OutlinedClockIcon, UploadIcon, EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
 import { Tbody, Tr, Td, ExpandableRowContent, Table, SortByDirection } from '@patternfly/react-table';
+import dayjs from 'dayjs';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, forkJoin, merge, combineLatest, of } from 'rxjs';
@@ -135,7 +143,14 @@ const tableColumns: TableColumn[] = [
     keyPaths: ['size'],
     sortable: true,
   },
+  {
+    title: 'Archived Time',
+    keyPaths: ['archivedTime'],
+    sortable: true,
+  },
 ];
+
+const ARCHIVED_TIME_COLUMN_INDEX = 3;
 
 export interface ArchivedRecordingsTableProps {
   target: Observable<NullableTarget>;
@@ -144,6 +159,7 @@ export interface ArchivedRecordingsTableProps {
   directory?: RecordingDirectory;
   directoryRecordings?: ArchivedRecording[];
   toolbarBreakReference?: HTMLElement | (() => HTMLElement);
+  highlightedNames?: Set<string>;
 }
 
 export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = ({
@@ -153,6 +169,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   directory: propsDirectory,
   directoryRecordings,
   toolbarBreakReference,
+  highlightedNames,
 }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
@@ -165,11 +182,13 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [showUploadModal, setShowUploadModal] = React.useState(false);
-  const [showLabelsPanel, setShowLabelsPanel] = React.useState(false);
+  type DrawerPanel = 'none' | 'labels' | 'synthesis';
+  const [activePanel, setActivePanel] = React.useState<DrawerPanel>('none');
+  const [highlightedRecordings, setHighlightedRecordings] = React.useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [actionLoadings, setActionLoadings] = React.useState<Record<ArchiveActions, boolean>>({ DELETE: false });
-  const [sortBy, getSortParams] = useSort();
+  const [sortBy, getSortParams, setSortBy] = useSort();
 
   const targetRecordingFilters = useSelector((state: RootState) => {
     const filters = state.recordingFilters.list.filter(
@@ -199,8 +218,18 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   );
 
   const handleEditLabels = React.useCallback(() => {
-    setShowLabelsPanel(true);
-  }, [setShowLabelsPanel]);
+    setActivePanel((p) => (p === 'labels' ? 'none' : 'labels'));
+  }, []);
+
+  const handleShowSynthesis = React.useCallback(() => {
+    setActivePanel((p) => (p === 'synthesis' ? 'none' : 'synthesis'));
+  }, []);
+
+  React.useEffect(() => {
+    if (activePanel === 'synthesis' || highlightedNames !== undefined) {
+      setSortBy({ index: ARCHIVED_TIME_COLUMN_INDEX, direction: SortByDirection.desc });
+    }
+  }, [activePanel, highlightedNames, setSortBy]);
 
   const handleRecordings = React.useCallback(
     (recordings) => {
@@ -509,6 +538,8 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         handleEditLabels={handleEditLabels}
         handleDeleteRecordings={handleDeleteRecordings}
         handleShowUploadModal={() => setShowUploadModal(true)}
+        handleShowSynthesis={handleShowSynthesis}
+        isSynthesisPanelActive={activePanel === 'synthesis'}
         isUploadsTable={isUploadsTable}
         actionLoadings={actionLoadings}
         toolbarBreakReference={toolbarBreakReference}
@@ -525,6 +556,8 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
       handleEditLabels,
       handleDeleteRecordings,
       setShowUploadModal,
+      handleShowSynthesis,
+      activePanel,
       isUploadsTable,
       actionLoadings,
       toolbarBreakReference,
@@ -535,10 +568,19 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
     setShowUploadModal(false); // Do nothing else as notifications will handle update
   }, [setShowUploadModal]);
 
+  const [resolvedTarget, setResolvedTarget] = React.useState<Target | undefined>(undefined);
+  React.useEffect(() => {
+    addSubscription(
+      propsTarget.pipe(first()).subscribe((t) => {
+        if (t) setResolvedTarget(t as Target);
+      }),
+    );
+  }, [addSubscription, propsTarget]);
+
   const LabelsPanel = React.useMemo(
     () => (
       <RecordingLabelsPanel
-        setShowPanel={setShowLabelsPanel}
+        setShowPanel={(show) => setActivePanel(show ? 'labels' : 'none')}
         isTargetRecording={false}
         isUploadsTable={isUploadsTable}
         target={propsTarget}
@@ -547,8 +589,40 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         directoryRecordings={directoryRecordings}
       />
     ),
-    [checkedIndices, setShowLabelsPanel, isUploadsTable, propsDirectory, propsTarget, directoryRecordings],
+    [checkedIndices, isUploadsTable, propsDirectory, propsTarget, directoryRecordings],
   );
+
+  const SynthesisPanel = React.useMemo(() => {
+    if (activePanel !== 'synthesis') {
+      return null;
+    }
+    const synthTarget: Target | string = resolvedTarget ?? propsDirectory?.jvmId ?? '';
+    return (
+      <DrawerPanelContent id="synthesis-panel" defaultSize="40%">
+        <DrawerHead>
+          <Title headingLevel="h3" size="md">
+            Synthesize Recording
+          </Title>
+          <DrawerActions>
+            <DrawerCloseButton onClick={() => setActivePanel('none')} />
+          </DrawerActions>
+        </DrawerHead>
+        <DrawerPanelBody>
+          <SynthesisForm
+            target={synthTarget}
+            recordings={recordings}
+            dismissLabel="Close"
+            onHighlightChange={setHighlightedRecordings}
+            onSuccess={() => {
+              setActivePanel('none');
+              refreshRecordingList();
+            }}
+            onDismiss={() => setActivePanel('none')}
+          />
+        </DrawerPanelBody>
+      </DrawerPanelContent>
+    );
+  }, [activePanel, resolvedTarget, propsDirectory, recordings, refreshRecordingList]);
 
   const totalArchiveSize = React.useMemo(
     () => filteredRecordings.reduce((total, r) => total + r.size, 0),
@@ -557,14 +631,19 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
 
   const columnConfig: ColumnConfig = React.useMemo(
     () => ({
-      columns: tableColumns,
+      columns: tableColumns.slice(0, ARCHIVED_TIME_COLUMN_INDEX),
       onSort: getSortParams,
     }),
     [getSortParams],
   );
+  const effectiveHighlightedNames = highlightedNames ?? highlightedRecordings;
+
   return (
-    <Drawer isExpanded={showLabelsPanel} isInline id={'archived-recording-drawer'}>
-      <DrawerContent panelContent={LabelsPanel} className="recordings-table-drawer-content">
+    <Drawer isExpanded={activePanel !== 'none'} isInline id={'archived-recording-drawer'}>
+      <DrawerContent
+        panelContent={activePanel === 'synthesis' ? SynthesisPanel : LabelsPanel}
+        className="recordings-table-drawer-content"
+      >
         <DrawerContentBody hasPadding>
           <RecordingsTable
             tableTitle="Archived Recordings"
@@ -607,6 +686,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
                 toggleExpanded={toggleExpanded}
                 handleRowCheck={handleRowCheck}
                 updateFilters={updateFilters}
+                isHighlighted={effectiveHighlightedNames.has(r.name)}
               />
             ))}
           </RecordingsTable>
@@ -631,6 +711,8 @@ export interface ArchivedRecordingsToolbarProps {
   handleEditLabels: () => void;
   handleDeleteRecordings: () => void;
   handleShowUploadModal: () => void;
+  handleShowSynthesis: () => void;
+  isSynthesisPanelActive: boolean;
   isUploadsTable: boolean;
   actionLoadings: Record<ArchiveActions, boolean>;
   toolbarBreakReference?: HTMLElement | (() => HTMLElement);
@@ -638,6 +720,7 @@ export interface ArchivedRecordingsToolbarProps {
 
 const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (props) => {
   const context = React.useContext(ServiceContext);
+  const { t } = useCryostatTranslation();
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [actionToggleOpen, setActionToggleOpen] = React.useState(false);
 
@@ -681,13 +764,30 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
     return [
       {
         default: (
+          <Button
+            variant={props.isSynthesisPanelActive ? 'primary' : 'secondary'}
+            onClick={props.handleShowSynthesis}
+            isDisabled={props.recordings.length === 0}
+          >
+            {t('SYNTHESIZE')}
+          </Button>
+        ),
+        collapsed: (
+          <OverflowMenuDropdownItem key={'Synthesize'} isShared onClick={props.handleShowSynthesis}>
+            {t('SYNTHESIZE')}
+          </OverflowMenuDropdownItem>
+        ),
+        key: 'Synthesize',
+      },
+      {
+        default: (
           <Button variant="secondary" onClick={props.handleEditLabels} isDisabled={!props.checkedIndices.length}>
-            Edit Labels
+            {t('EDIT_LABELS')}
           </Button>
         ),
         collapsed: (
           <OverflowMenuDropdownItem key={'Edit Labels'} isShared onClick={props.handleEditLabels}>
-            Edit Labels
+            {t('EDIT_LABELS')}
           </OverflowMenuDropdownItem>
         ),
         key: 'Edit Labels',
@@ -700,19 +800,23 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
             isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE']}
             {...actionLoadingProps['DELETE']}
           >
-            {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
+            {props.actionLoadings['DELETE'] ? t('DELETING') : t('DELETE')}
           </Button>
         ),
         collapsed: (
           <OverflowMenuDropdownItem key={'Delete'} isShared onClick={handleDeleteButton}>
-            {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
+            {props.actionLoadings['DELETE'] ? t('DELETING') : t('DELETE')}
           </OverflowMenuDropdownItem>
         ),
         key: 'Delete',
       },
     ];
   }, [
+    t,
     props.handleEditLabels,
+    props.handleShowSynthesis,
+    props.isSynthesisPanelActive,
+    props.recordings.length,
     handleDeleteButton,
     props.checkedIndices.length,
     props.actionLoadings,
@@ -803,6 +907,7 @@ export interface ArchivedRecordingRowProps {
   toggleExpanded: (rowId: string) => void;
   handleRowCheck: (checked: boolean, rowIdx: string | number) => void;
   updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
+  isHighlighted?: boolean;
 }
 
 interface ArchivedRecordingAnalysisProps {
@@ -1049,6 +1154,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
   toggleExpanded,
   handleRowCheck,
   updateFilters,
+  isHighlighted,
 }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
@@ -1108,7 +1214,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
 
   const parentRow = React.useMemo(() => {
     return (
-      <Tr key={`${index}_parent`}>
+      <Tr key={`${index}_parent`} className={isHighlighted ? 'synthesis-candidate-row' : undefined}>
         <Td key={`archived-table-row-${index}_0`}>
           <Checkbox
             name={`archived-table-row-${index}-check`}
@@ -1144,6 +1250,11 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
         <Td key={`archived-table-row-${index}_4`} dataLabel={tableColumns[1].title}>
           {formatBytes(recording.size)}
         </Td>
+        <Td key={`archived-table-row-${index}_5`} dataLabel={tableColumns[ARCHIVED_TIME_COLUMN_INDEX].title}>
+          <Tooltip content={dayjs.unix(recording.archivedTime).format('LLLL')}>
+            <OutlinedClockIcon aria-label={tableColumns[ARCHIVED_TIME_COLUMN_INDEX].title} />
+          </Tooltip>
+        </Td>
         {propsDirectory ? (
           <RecordingActions
             recording={recording}
@@ -1164,6 +1275,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
     index,
     checkedIndices,
     isExpanded,
+    isHighlighted,
     labelFilters,
     currentSelectedTargetURL,
     sourceTarget,

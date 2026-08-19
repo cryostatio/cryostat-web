@@ -625,4 +625,22 @@ export const messageKeys = new Map([
       body: (evt) => `${evt.message.unifiedLog.logId} in target ${evt.message.jvmId} metadata was updated`,
     } as NotificationMessageMapper,
   ],
+  [
+    NotificationCategory.RecordingSynthesisComplete,
+    {
+      variant: AlertVariant.success,
+      title: 'Recording synthesis complete',
+      body: (evt) => `Synthetic recording created for job: ${evt.message.jobId}`,
+      hidden: true,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.RecordingSynthesisFailure,
+    {
+      variant: AlertVariant.danger,
+      title: 'Recording synthesis failed',
+      body: (evt) => `Recording synthesis failed for job: ${evt.message.jobId}`,
+      hidden: true,
+    } as NotificationMessageMapper,
+  ],
 ]);
