@@ -640,7 +640,7 @@ export const messageKeys = new Map([
       variant: AlertVariant.danger,
       title: 'Recording synthesis failed',
       body: (evt) => `Recording synthesis failed for job: ${evt.message.jobId}`,
-      hidden: true,
+      hidden: false,
     } as NotificationMessageMapper,
   ],
 ]);
