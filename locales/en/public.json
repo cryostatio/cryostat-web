@@ -30,6 +30,7 @@
     "SEARCH_PLACEHOLDER": "Find by name or XML content..."
   },
   "ArchivedRecordingsTable": {
+    "ARCHIVED_TIME_LABEL": "Archived time: {{datetime}}",
     "SYNTHESIS_PANEL_TITLE": "Synthesize Recording",
     "SYNTHESIZE_FROM_TARGET": "Synthesize recording from this target",
     "NO_RECORDINGS_TO_SYNTHESIZE": "No recordings to synthesize"
