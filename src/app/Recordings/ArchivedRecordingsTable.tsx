@@ -1180,6 +1180,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
   const [loadingAnalysis, setLoadingAnalysis] = React.useState(false);
   const [analyses, setAnalyses] = React.useState<CategorizedRuleEvaluations[]>([]);
   const [useCompactLabels, setUseCompactLabels] = React.useState(true);
+  const { t } = useCryostatTranslation();
 
   const expandedRowId = React.useMemo(() => `archived-table-row-${index}-exp`, [index]);
   const analysisTarget = React.useMemo(
