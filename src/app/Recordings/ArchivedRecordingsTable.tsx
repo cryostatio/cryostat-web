@@ -1271,14 +1271,14 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
         </Td>
         <Td key={`archived-table-row-${index}_5`} dataLabel={tableColumns[ARCHIVED_TIME_COLUMN_INDEX].title}>
           <Tooltip content={dayjs.unix(recording.archivedTime).format('LLLL')}>
-            <span
+            <time
+              dateTime={dayjs.unix(recording.archivedTime).toISOString()}
               tabIndex={0}
-              role="img"
-              aria-label={dayjs.unix(recording.archivedTime).format('LLLL')}
+              aria-label={`Archived time: ${dayjs.unix(recording.archivedTime).format('LLLL')}`}
               style={{ cursor: 'default', display: 'inline-flex' }}
             >
               <OutlinedClockIcon aria-hidden />
-            </span>
+            </time>
           </Tooltip>
         </Td>
         {propsDirectory ? (
