@@ -1274,7 +1274,9 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
             <time
               dateTime={dayjs.unix(recording.archivedTime).toISOString()}
               tabIndex={0}
-              aria-label={`Archived time: ${dayjs.unix(recording.archivedTime).format('LLLL')}`}
+              aria-label={t('ArchivedRecordingsTable.ARCHIVED_TIME_LABEL', {
+                datetime: dayjs.unix(recording.archivedTime).format('LLLL'),
+              })}
               style={{ cursor: 'default', display: 'inline-flex' }}
             >
               <OutlinedClockIcon aria-hidden />
