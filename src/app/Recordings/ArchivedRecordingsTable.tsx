@@ -1301,6 +1301,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
       </Tr>
     );
   }, [
+    t,
     index,
     checkedIndices,
     isExpanded,
