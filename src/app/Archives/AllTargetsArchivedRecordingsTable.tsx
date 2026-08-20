@@ -66,6 +66,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { latestArchivedTime } from './utils';
 
 const tableColumns: TableColumn[] = [
   {
@@ -104,9 +105,6 @@ const tableColumns: TableColumn[] = [
 ];
 
 const MOST_RECENT_ARCHIVE_COLUMN_INDEX = 2;
-
-const latestArchivedTime = (recordings: { archivedTime?: number }[]): number =>
-  recordings.reduce((max, r) => Math.max(max, r.archivedTime ?? 0), 0);
 
 interface ArchivedRecording {
   jvmId?: string;
