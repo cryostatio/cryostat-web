@@ -14153,6 +14153,7 @@ __metadata:
   languageName: node
   linkType: hard
 
+<<<<<<< HEAD
 "shell-quote@npm:1.8.3, shell-quote@npm:^1.7.3":
   version: 1.8.3
   resolution: "shell-quote@npm:1.8.3"
@@ -14168,6 +14169,16 @@ __metadata:
   linkType: hard
 
 "showdown@npm:^2.1.0":
+=======
+"shell-quote@npm:1.9.0, shell-quote@npm:^1.8.4":
+  version: 1.9.0
+  resolution: "shell-quote@npm:1.9.0"
+  checksum: 10/c3bc91e74a469c4f96b6fd13b0c777fff16bcbda202692a4e5402d3d6b78fc6e02fe92fdf8dc0bddf992a9c6758e43207bfc5bdbefbf8a58190b1c885cbcc171
+  languageName: node
+  linkType: hard
+
+"showdown@npm:2.1.0":
+>>>>>>> b51f6ec (build(deps): bump shell-quote from 1.8.4 to 1.9.0 (#2420))
   version: 2.1.0
   resolution: "showdown@npm:2.1.0"
   dependencies:
