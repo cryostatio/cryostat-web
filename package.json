@@ -106,7 +106,7 @@
     "@reduxjs/toolkit": "^2.12.0",
     "@types/lodash": "4.17.25",
     "@types/react": "18.3.31",
-    "dayjs": "1.11.22",
+    "dayjs": "1.11.23",
     "echarts": "6.1.0",
     "humanize-duration": "3.34.0",
     "i18next": "25.10.10",
