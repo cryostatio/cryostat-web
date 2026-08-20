@@ -20,6 +20,7 @@ import { useNotificationMessages } from '@app/utils/hooks/useNotificationMessage
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useSynthesisHeuristic } from '@app/utils/hooks/useSynthesisHeuristic';
 import { formatBytes, formatDuration } from '@app/utils/utils';
+import dayjs from '@i18n/datetime';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionGroup,
@@ -36,7 +37,6 @@ import {
   TextInput,
   Tooltip,
 } from '@patternfly/react-core';
-import dayjs from '@i18n/datetime';
 import * as React from 'react';
 import { concatMap, first } from 'rxjs/operators';
 
