@@ -91,6 +91,7 @@ import {
   OverflowMenuDropdownItem,
   OverflowMenuGroup,
   OverflowMenuItem,
+  Skeleton,
   Spinner,
   Title,
   Toolbar,
@@ -605,7 +606,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
     if (activePanel !== 'synthesis') {
       return null;
     }
-    const synthTarget: Target | string = resolvedTarget ?? propsDirectory?.jvmId ?? '';
+    const synthTarget: Target | string | undefined = resolvedTarget ?? propsDirectory?.jvmId;
     return (
       <DrawerPanelContent id="synthesis-panel" defaultSize="40%">
         <DrawerHead>
@@ -617,13 +618,17 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
           </DrawerActions>
         </DrawerHead>
         <DrawerPanelBody>
-          <SynthesisForm
-            target={synthTarget}
-            recordings={recordings}
-            onHighlightChange={setHighlightedRecordings}
-            onSuccess={handleSynthesisSuccess}
-            onDismiss={handleSynthesisDismiss}
-          />
+          {synthTarget ? (
+            <SynthesisForm
+              target={synthTarget}
+              recordings={recordings}
+              onHighlightChange={setHighlightedRecordings}
+              onSuccess={handleSynthesisSuccess}
+              onDismiss={handleSynthesisDismiss}
+            />
+          ) : (
+            <Skeleton />
+          )}
         </DrawerPanelBody>
       </DrawerPanelContent>
     );

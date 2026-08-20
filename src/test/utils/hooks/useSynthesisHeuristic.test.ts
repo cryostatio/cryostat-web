@@ -172,6 +172,18 @@ describe('useSynthesisHeuristic', () => {
       const { result } = renderHook(() => useSynthesisHeuristic([zeroTime], from, to));
       expect(result.current.candidates).toHaveLength(0);
     });
+
+    it('excludes a recording with zero duration', () => {
+      const rec = makeRecording(BASE + 1100, 0);
+      const { result } = renderHook(() => useSynthesisHeuristic([rec], from, to));
+      expect(result.current.candidates).toHaveLength(0);
+    });
+
+    it('excludes a recording with negative duration', () => {
+      const rec = makeRecording(BASE + 1100, -500);
+      const { result } = renderHook(() => useSynthesisHeuristic([rec], from, to));
+      expect(result.current.candidates).toHaveLength(0);
+    });
   });
 
   describe('single candidate fully covering the window', () => {
@@ -191,8 +203,8 @@ describe('useSynthesisHeuristic', () => {
   describe('single candidate partially overlapping the window', () => {
     it('reports coverage < 1 and positive gap', () => {
       // window [BASE+1000, BASE+5000] = 4000 ms; recording [BASE+2000, BASE+4000] spans 2000 ms
-      // earliest=BASE+2000, latest=BASE+4000, span=2000
-      // coveredMs = min(2000, 4000) = 2000; coverageRatio = 2000/4000 = 0.5; gapMs = 4000-2000 = 2000
+      // clipped to window: [BASE+2000, BASE+4000] → coveredMs = 2000
+      // coverageRatio = 2000/4000 = 0.5; gapMs = 4000-2000 = 2000
       const rec = makeRecording(BASE + 2000, 2000);
       const { result } = renderHook(() => useSynthesisHeuristic([rec], BASE + 1000, BASE + 5000));
       expect(result.current.coverageRatio).toBeCloseTo(0.5);

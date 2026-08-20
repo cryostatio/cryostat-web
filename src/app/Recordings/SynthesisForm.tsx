@@ -36,7 +36,7 @@ import {
   TextInput,
   Tooltip,
 } from '@patternfly/react-core';
-import dayjs from 'dayjs';
+import dayjs from '@i18n/datetime';
 import * as React from 'react';
 import { concatMap, first } from 'rxjs/operators';
 
