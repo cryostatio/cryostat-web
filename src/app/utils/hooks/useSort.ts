@@ -16,7 +16,11 @@
 import { ISortBy, ThProps } from '@patternfly/react-table';
 import * as React from 'react';
 
-export const useSort = (): [ISortBy, (columnIndex: number) => ThProps['sort']] => {
+export const useSort = (): [
+  ISortBy,
+  (columnIndex: number) => ThProps['sort'],
+  React.Dispatch<React.SetStateAction<ISortBy>>,
+] => {
   const [sortBy, setSortBy] = React.useState<ISortBy>({});
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({
@@ -31,5 +35,5 @@ export const useSort = (): [ISortBy, (columnIndex: number) => ThProps['sort']] =
     }),
     [sortBy, setSortBy],
   );
-  return [sortBy, getSortParams];
+  return [sortBy, getSortParams, setSortBy];
 };

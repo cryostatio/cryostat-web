@@ -19,6 +19,7 @@ import { TimeRangeFilter } from '@app/Archives/TimeRangeFilter';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
+import { SynthesisForm } from '@app/Recordings/SynthesisForm';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { ArchivedRecording, RecordingDirectory, Target, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -33,21 +34,31 @@ import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Alert,
+  Button,
+  Bullseye,
+  Drawer,
+  DrawerActions,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerContentBody,
+  DrawerHead,
+  DrawerPanelBody,
+  DrawerPanelContent,
+  Icon,
   Modal,
   ModalBody,
   ModalHeader,
+  SearchInput,
+  EmptyState,
+  Spinner,
+  Title,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  SearchInput,
-  EmptyState,
-  Button,
-  Icon,
-  Bullseye,
-  Spinner,
+  Tooltip,
 } from '@patternfly/react-core';
-import { FileIcon, SearchIcon, TopologyIcon } from '@patternfly/react-icons';
+import { FileIcon, ProcessAutomationIcon, SearchIcon, TopologyIcon } from '@patternfly/react-icons';
 import {
   Table,
   Th,
@@ -60,17 +71,18 @@ import {
   OuterScrollContainer,
   InnerScrollContainer,
 } from '@patternfly/react-table';
+import dayjs from 'dayjs';
 import _ from 'lodash';
 import * as React from 'react';
 import { Observable, of } from 'rxjs';
-import { getTargetFromDirectory, includesDirectory, indexOfDirectory } from './utils';
+import { getTargetFromDirectory, includesDirectory, indexOfDirectory, latestArchivedTime } from './utils';
 
 const tableColumns: TableColumn[] = [
   {
     title: 'Directory',
     keyPaths: ['connectUrl'],
     sortable: true,
-    width: 80,
+    width: 70,
   },
   {
     title: 'Archives',
@@ -81,7 +93,20 @@ const tableColumns: TableColumn[] = [
     sortable: true,
     width: 15,
   },
+  {
+    title: 'Most Recent Archive',
+    keyPaths: ['recordings'],
+    transform: (recordings: ArchivedRecording[]) => latestArchivedTime(recordings),
+    sortable: true,
+  },
+  {
+    title: '',
+    keyPaths: [],
+    width: 10,
+  },
 ];
+
+const MOST_RECENT_ARCHIVE_COLUMN_INDEX = 2;
 
 type _RecordingDirectory = RecordingDirectory & { targetAsObs: Observable<Target> };
 
@@ -95,8 +120,11 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   const [expandedDirectories, setExpandedDirectories] = React.useState<_RecordingDirectory[]>([]);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
+  const [synthesisJvmId, setSynthesisJvmId] = React.useState<string | null>(null);
+  const [synthExpandedDirs, setSynthExpandedDirs] = React.useState<_RecordingDirectory[]>([]);
+  const [highlightedRecordings, setHighlightedRecordings] = React.useState<Set<string>>(new Set());
   const addSubscription = useSubscriptions();
-  const [sortBy, getSortParams] = useSort();
+  const [sortBy, getSortParams, setSortBy] = useSort();
   const { showDetailsModal, setShowDetailsModal, setSelectedJvmId, loadingLineage, wrappedTarget } =
     useTargetDetailsModal();
 
@@ -194,6 +222,51 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     );
   }, [lineageFilteredDirectories, searchText, timeRange, sortBy, aliasMap]);
 
+  const synthesisDirectory = React.useMemo(
+    () => (synthesisJvmId ? (directories.find((d) => d.jvmId === synthesisJvmId) ?? null) : null),
+    [synthesisJvmId, directories],
+  );
+
+  const synthesisRecordings = synthesisDirectory?.recordings ?? [];
+
+  const handleSynthesisSelect = React.useCallback(
+    (dir: _RecordingDirectory) => {
+      if (synthesisJvmId === dir.jvmId) {
+        // Toggle off: collapse auto-expanded rows, clear state
+        setExpandedDirectories((prev) => prev.filter((d) => !synthExpandedDirs.some((s) => s.jvmId === d.jvmId)));
+        setSynthExpandedDirs([]);
+        setSynthesisJvmId(null);
+        setHighlightedRecordings(new Set());
+        return;
+      }
+      // Switching to a different target: un-expand previous auto-expanded rows
+      setExpandedDirectories((prev) => prev.filter((d) => !synthExpandedDirs.some((s) => s.jvmId === d.jvmId)));
+      // Expand this row if not already expanded
+      const newAutoExpanded: _RecordingDirectory[] = [];
+      if (!includesDirectory(expandedDirectories, dir)) {
+        setExpandedDirectories((prev) => [...prev, dir]);
+        newAutoExpanded.push(dir);
+      }
+      setSynthExpandedDirs(newAutoExpanded);
+      setSynthesisJvmId(dir.jvmId);
+    },
+    [synthesisJvmId, synthExpandedDirs, expandedDirectories],
+  );
+
+  React.useEffect(() => {
+    if (synthesisJvmId && !directories.some((d) => d.jvmId === synthesisJvmId)) {
+      setSynthesisJvmId(null);
+      setSynthExpandedDirs([]);
+      setHighlightedRecordings(new Set());
+    }
+  }, [directories, synthesisJvmId]);
+
+  React.useEffect(() => {
+    if (synthesisJvmId) {
+      setSortBy({ index: MOST_RECENT_ARCHIVE_COLUMN_INDEX, direction: SortByDirection.desc });
+    }
+  }, [synthesisJvmId, setSortBy]);
+
   React.useEffect(() => {
     addSubscription(
       context.target.authFailure().subscribe(() => {
@@ -255,7 +328,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   }, [addSubscription, context.notificationChannel, refreshDirectoriesAndCounts]);
 
   const toggleExpanded = React.useCallback(
-    (dir) => {
+    (dir: _RecordingDirectory) => {
       const idx = indexOfDirectory(expandedDirectories, dir);
       setExpandedDirectories((prevExpandedDirectories) =>
         idx >= 0
@@ -280,6 +353,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   const directoryRows = React.useMemo(() => {
     return filteredDirectories.map((dir, idx) => {
       const isExpanded: boolean = includesDirectory(expandedDirectories, dir);
+      const isSynthesisActive = synthesisJvmId === dir.jvmId;
 
       return (
         <Tr key={`${idx}_parent`}>
@@ -316,10 +390,44 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
               onClick={() => toggleExpanded(dir)}
             />
           </Td>
+          <Td key={`directory-table-row-${idx}_4`} dataLabel={tableColumns[MOST_RECENT_ARCHIVE_COLUMN_INDEX].title}>
+            {dir.recordings.length ? dayjs.unix(latestArchivedTime(dir.recordings)).format('LLLL') : ''}
+          </Td>
+          <Td key={`directory-table-row-${idx}_5`} dataLabel={t('SYNTHESIZE')} className="synthesis-action-cell">
+            <Tooltip
+              content={
+                dir.recordings.length === 0
+                  ? t('ArchivedRecordingsTable.NO_RECORDINGS_TO_SYNTHESIZE')
+                  : t('ArchivedRecordingsTable.SYNTHESIZE_FROM_TARGET')
+              }
+            >
+              <Button
+                variant="plain"
+                aria-label={t('ArchivedRecordingsTable.SYNTHESIZE_FROM_TARGET')}
+                isAriaDisabled={dir.recordings.length === 0}
+                onClick={() => dir.recordings.length > 0 && handleSynthesisSelect(dir)}
+                style={isSynthesisActive ? { color: 'var(--pf-t--global--color--brand--default)' } : undefined}
+              >
+                <Icon>
+                  <ProcessAutomationIcon />
+                </Icon>
+              </Button>
+            </Tooltip>
+          </Td>
         </Tr>
       );
     });
-  }, [toggleExpanded, filteredDirectories, expandedDirectories, aliasMap, lineageMap, handleInfoClick]);
+  }, [
+    t,
+    toggleExpanded,
+    filteredDirectories,
+    expandedDirectories,
+    aliasMap,
+    lineageMap,
+    handleInfoClick,
+    handleSynthesisSelect,
+    synthesisJvmId,
+  ]);
 
   const recordingRows = React.useMemo(() => {
     return filteredDirectories.map((dir, idx) => {
@@ -336,6 +444,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
                   isUploadsTable={false}
                   isNestedTable={true}
                   directoryRecordings={dir.recordings}
+                  highlightedNames={dir.jvmId === synthesisJvmId ? highlightedRecordings : undefined}
                 />
               </ExpandableRowContent>
             ) : null}
@@ -343,7 +452,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
         </Tr>
       );
     });
-  }, [filteredDirectories, expandedDirectories]);
+  }, [filteredDirectories, expandedDirectories, synthesisJvmId, highlightedRecordings]);
 
   const rowPairs = React.useMemo(() => {
     const rowPairs: JSX.Element[] = [];
@@ -390,9 +499,10 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
             <Th key="table-header-expand" screenReaderText="column space" />
             {tableColumns.map(({ title, width }, index) => (
               <Th
-                key={`table-header-${title}`}
+                key={`table-header-${title || 'action'}-${index}`}
                 width={width as React.ComponentProps<typeof Th>['width']}
-                sort={getSortParams(index)}
+                sort={title ? getSortParams(index) : undefined}
+                screenReaderText={!title ? t('SYNTHESIZE') : undefined}
               >
                 {title}
               </Th>
@@ -403,6 +513,44 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
       </Table>
     );
   }
+
+  const handleSynthesisDismiss = React.useCallback(() => {
+    if (!synthesisDirectory) {
+      setSynthesisJvmId(null);
+      setSynthExpandedDirs([]);
+      setHighlightedRecordings(new Set());
+      return;
+    }
+    handleSynthesisSelect(synthesisDirectory);
+  }, [handleSynthesisSelect, synthesisDirectory]);
+
+  const handleSynthesisSuccess = React.useCallback(() => {
+    handleSynthesisDismiss();
+    refreshDirectoriesAndCounts();
+  }, [handleSynthesisDismiss, refreshDirectoriesAndCounts]);
+
+  const SynthesisPanel =
+    synthesisJvmId && synthesisDirectory ? (
+      <DrawerPanelContent id="all-archives-synthesis-panel" defaultSize="40%">
+        <DrawerHead>
+          <Title headingLevel="h3" size="md">
+            {t('ArchivedRecordingsTable.SYNTHESIS_PANEL_TITLE')}
+          </Title>
+          <DrawerActions>
+            <DrawerCloseButton onClick={handleSynthesisDismiss} />
+          </DrawerActions>
+        </DrawerHead>
+        <DrawerPanelBody>
+          <SynthesisForm
+            target={synthesisJvmId}
+            recordings={synthesisRecordings}
+            onHighlightChange={setHighlightedRecordings}
+            onSuccess={handleSynthesisSuccess}
+            onDismiss={handleSynthesisDismiss}
+          />
+        </DrawerPanelBody>
+      </DrawerPanelContent>
+    ) : null;
 
   return (
     <>
@@ -431,33 +579,39 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
           )}
         </ModalBody>
       </Modal>
-      <OuterScrollContainer className="archive-table-outer-container">
-        <Toolbar id="all-archives-toolbar">
-          <ToolbarContent>
-            <ToolbarGroup variant="filter-group">
-              <ToolbarItem>
-                <SearchInput
-                  style={{ minWidth: '30ch' }}
-                  placeholder={t('AllArchivedRecordingsTable.SEARCH_PLACEHOLDER')}
-                  value={searchText}
-                  onChange={handleSearchInput}
-                  onClear={handleSearchInputClear}
-                />
-              </ToolbarItem>
-              <ToolbarItem>
-                <TimeRangeFilter />
-              </ToolbarItem>
-            </ToolbarGroup>
-          </ToolbarContent>
-        </Toolbar>
-        {hasActiveFilters && <ArchiveFilterBar />}
-        {lineageLoading && (
-          <Alert variant="info" isInline title={t('AllArchivedRecordingsTable.LOADING_LINEAGE_TITLE')}>
-            <Spinner size="sm" /> {t('AllArchivedRecordingsTable.LOADING_LINEAGE_MESSAGE')}
-          </Alert>
-        )}
-        <InnerScrollContainer className="">{view}</InnerScrollContainer>
-      </OuterScrollContainer>
+      <Drawer isExpanded={!!synthesisJvmId} isInline id="all-archives-synthesis-drawer">
+        <DrawerContent panelContent={SynthesisPanel}>
+          <DrawerContentBody>
+            <OuterScrollContainer className="archive-table-outer-container">
+              <Toolbar id="all-archives-toolbar">
+                <ToolbarContent>
+                  <ToolbarGroup variant="filter-group">
+                    <ToolbarItem>
+                      <SearchInput
+                        style={{ minWidth: '30ch' }}
+                        placeholder={t('AllArchivedRecordingsTable.SEARCH_PLACEHOLDER')}
+                        value={searchText}
+                        onChange={handleSearchInput}
+                        onClear={handleSearchInputClear}
+                      />
+                    </ToolbarItem>
+                    <ToolbarItem>
+                      <TimeRangeFilter />
+                    </ToolbarItem>
+                  </ToolbarGroup>
+                </ToolbarContent>
+              </Toolbar>
+              {hasActiveFilters && <ArchiveFilterBar />}
+              {lineageLoading && (
+                <Alert variant="info" isInline title={t('AllArchivedRecordingsTable.LOADING_LINEAGE_TITLE')}>
+                  <Spinner size="sm" /> {t('AllArchivedRecordingsTable.LOADING_LINEAGE_MESSAGE')}
+                </Alert>
+              )}
+              <InnerScrollContainer className="">{view}</InnerScrollContainer>
+            </OuterScrollContainer>
+          </DrawerContentBody>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 };

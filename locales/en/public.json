@@ -29,6 +29,12 @@
     },
     "SEARCH_PLACEHOLDER": "Find by name or XML content..."
   },
+  "ArchivedRecordingsTable": {
+    "ARCHIVED_TIME_LABEL": "Archived time: {{datetime}}",
+    "SYNTHESIS_PANEL_TITLE": "Synthesize Recording",
+    "SYNTHESIZE_FROM_TARGET": "Synthesize recording from this target",
+    "NO_RECORDINGS_TO_SYNTHESIZE": "No recordings to synthesize"
+  },
   "AllArchivedRecordingsTable": {
     "LOADING_LINEAGE_MESSAGE": "Fetching target lineage for filtering...",
     "LOADING_LINEAGE_TITLE": "Loading lineage data",
@@ -888,6 +894,33 @@
     "NO_CREDENTIAL_TITLE": "No Stored Credentials",
     "NO_MATCH": "No Match",
     "SEARCH_PLACEHOLDER": "Find by Match Expression..."
+  },
+  "SynthesisForm": {
+    "CANDIDATES_LABEL": "Candidates: {{count}}",
+    "COVERAGE_ARIA_LABEL": "Coverage of requested time window by recordings",
+    "COVERAGE_TITLE": "Time window coverage",
+    "EARLIEST_AVAILABLE": "Earliest available",
+    "ESTIMATED_SIZE_LABEL": "Estimated size: ~{{size}}",
+    "ESTIMATED_SIZE_TOOLTIP": "Sum of sizes of all candidate recordings before synthesis",
+    "FROM_ARIA_LABEL": "From date and time",
+    "GAP_WARNING": "Gap of {{duration}} with no recording data",
+    "HEURISTIC_LABEL": "Matching Recordings",
+    "JOB_ERROR_TITLE": "Synthesis error",
+    "LATEST_AVAILABLE": "Latest available",
+    "NO_CANDIDATES_WARNING": "No recordings found in the selected range",
+    "PRESET_5MIN": "Last 5 minutes",
+    "PRESET_15MIN": "Last 15 minutes",
+    "PRESET_1HR": "Last 1 hour",
+    "PRESET_6HR": "Last 6 hours",
+    "SYNTHESIS_FAILED_ERROR": "Synthesis failed",
+    "SYNTHESIS_REQUEST_FAILED_ERROR": "Synthesis request failed",
+    "TAG_ARIA_LABEL": "Recording name tag",
+    "TAG_LABEL": "Tag (optional)",
+    "TAG_PLACEHOLDER": "e.g. incident-abcd1234",
+    "TARGET_LABEL": "Target",
+    "TIME_RANGE_LABEL": "Time Range",
+    "TO_ARIA_LABEL": "To date and time",
+    "USE_AVAILABLE_RANGE": "Use full available range"
   },
   "TargetAnalysis": {
     "CREATE_RECORDING": "<0>Create a Recording</0> to enable analysis",
