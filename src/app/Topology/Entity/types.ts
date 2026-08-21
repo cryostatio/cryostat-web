@@ -40,13 +40,7 @@ export type PatchFn = (
 ) => Observable<ResourceTypes[]>;
 
 export type ResourceTypes =
-  | Recording
-  | EventTemplate
-  | EventType
-  | EventProbe
-  | Rule
-  | MatchedCredential
-  | AggregateReport;
+  Recording | EventTemplate | EventType | EventProbe | Rule | MatchedCredential | AggregateReport;
 
 // Note: Values will be word split to used as display names
 export const TargetOwnedResourceTypeAsArray = [
