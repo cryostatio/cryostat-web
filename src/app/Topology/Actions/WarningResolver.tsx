@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 import { CreateCredentialModal } from '@app/Security/Credentials/CreateCredentialModal';
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { TargetNode } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Button, ButtonProps } from '@patternfly/react-core';
 import * as React from 'react';
 import { LinkProps, useNavigate } from 'react-router-dom';
-import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { ActionUtils } from './types';
 
 export interface WarningResolverAsLinkProps extends LinkProps {}
