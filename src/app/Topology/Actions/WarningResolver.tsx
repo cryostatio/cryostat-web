@@ -19,16 +19,17 @@ import { NotificationsContext } from '@app/Shared/Services/Notifications.service
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Button, ButtonProps } from '@patternfly/react-core';
 import * as React from 'react';
-import { Link, LinkProps, useNavigate } from 'react-router-dom';
+import { LinkProps, useNavigate } from 'react-router-dom';
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { ActionUtils } from './types';
 
 export interface WarningResolverAsLinkProps extends LinkProps {}
 
 export const WarningResolverAsLink: React.FC<WarningResolverAsLinkProps> = ({ to, children, ...props }) => {
   return (
-    <Link to={to} {...props}>
+    <CryostatLink to={to} {...props}>
       {children}
-    </Link>
+    </CryostatLink>
   );
 };
 
