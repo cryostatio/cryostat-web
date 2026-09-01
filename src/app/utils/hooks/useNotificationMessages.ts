@@ -15,7 +15,6 @@
  */
 import { NotificationCategory, NotificationMessage } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import * as React from 'react';
 
 /**
@@ -28,12 +27,16 @@ export const useNotificationMessages = (
   onMessage: (msg: NotificationMessage) => void,
 ): void => {
   const context = React.useContext(ServiceContext);
-  const addSubscription = useSubscriptions();
+
+  // Keep the latest callback in a ref so a changing callback identity does not
+  // trigger re-subscription (which would leak duplicate subscriptions and stale handlers).
+  const onMessageRef = React.useRef(onMessage);
+  onMessageRef.current = onMessage;
 
   React.useEffect(() => {
-    categories.forEach((category) => {
-      addSubscription(context.notificationChannel.replayableMessages(category).subscribe(onMessage));
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [addSubscription, context.notificationChannel, onMessage]);
+    const subscriptions = categories.map((category) =>
+      context.notificationChannel.replayableMessages(category).subscribe((msg) => onMessageRef.current(msg)),
+    );
+    return () => subscriptions.forEach((s) => s.unsubscribe());
+  }, [context.notificationChannel, categories]);
 };

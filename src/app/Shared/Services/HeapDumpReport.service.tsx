@@ -24,13 +24,27 @@ import { CryostatContext } from './Services';
 export class HeapDumpReportService {
   constructor(
     private ctx: CryostatContext,
-    channel: NotificationChannel,
+    private readonly channel: NotificationChannel,
   ) {
     channel.replayableMessages(NotificationCategory.HeapDumpAnalysisSuccess).subscribe((v) => {
       if (this.jobIds.has(v.message.jobId)) {
         this._jobCompletion.next(v.message.jobId);
       }
     });
+  }
+
+  // Resolves the pending job if a completion notification for it was already replayed
+  // before the job ID was registered (i.e. the notification arrived before the HTTP 202
+  // response was processed). The ReplaySubject delivers buffered messages synchronously
+  // on subscribe, so we drain and immediately unsubscribe to avoid catching live messages,
+  // which are already handled by the constructor subscription.
+  private checkReplayBuffer(jobId: string): void {
+    const sub = this.channel.replayableMessages(NotificationCategory.HeapDumpAnalysisSuccess).subscribe((v) => {
+      if (v.message.jobId === jobId && this.jobIds.has(jobId)) {
+        this._jobCompletion.next(jobId);
+      }
+    });
+    sub.unsubscribe();
   }
 
   private readonly jobIds: Map<string, string> = new Map();
@@ -91,6 +105,7 @@ export class HeapDumpReportService {
                           }
                         });
                       });
+                    this.checkReplayBuffer(jobId);
                   });
                   return subj.asObservable();
                 }

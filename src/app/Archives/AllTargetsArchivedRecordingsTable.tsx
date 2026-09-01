@@ -317,10 +317,12 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     (target: Target) => {
       setArchivesForTargets((old) => old.filter(({ target: t }) => !isEqualTarget(t, target)));
       setExpandedTargets((old) => old.filter((t) => !isEqualTarget(t, target)));
-      setSynthesisTarget((prev) => (prev && isEqualTarget(prev, target) ? null : prev));
-      setHighlightedRecordings((prev) => (prev.size > 0 ? new Set() : prev));
+      if (synthesisTarget && isEqualTarget(synthesisTarget, target)) {
+        setSynthesisTarget(null);
+        setHighlightedRecordings((prev) => (prev.size > 0 ? new Set() : prev));
+      }
     },
-    [setArchivesForTargets, setExpandedTargets, setSynthesisTarget, setHighlightedRecordings],
+    [synthesisTarget, setArchivesForTargets, setExpandedTargets, setSynthesisTarget, setHighlightedRecordings],
   );
 
   const handleTargetNotification = React.useCallback(

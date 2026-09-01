@@ -115,21 +115,17 @@ describe('<AllTargetsArchivedRecordingsTable /> synthesis integration', () => {
 
     it('disables the synthesize button for a target with no recordings', async () => {
       jest.spyOn(defaultServices.api, 'graphql').mockReturnValue(of(emptyTargetResponse));
-      render({
+      const { user } = render({
         routerConfigs: { routes: [{ path: '/archives', element: <AllTargetsArchivedRecordingsTable /> }] },
       });
 
       // The empty target is normally hidden by the "hide empty" checkbox; show it first
       const checkbox = await screen.findByLabelText('all-targets-hide-check');
-      const { user } = render({
-        routerConfigs: { routes: [{ path: '/archives', element: <AllTargetsArchivedRecordingsTable /> }] },
-      });
       await user.click(checkbox);
 
-      const btn = screen.queryByLabelText('Synthesize recording from this target');
-      if (btn) {
-        expect(btn).toHaveAttribute('aria-disabled', 'true');
-      }
+      const btn = await screen.findByLabelText('Synthesize recording from this target');
+      expect(btn).toBeInTheDocument();
+      expect(btn).toHaveAttribute('aria-disabled', 'true');
     });
 
     it('opens the synthesis panel when the synthesize button is clicked', async () => {

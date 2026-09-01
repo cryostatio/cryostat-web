@@ -795,7 +795,12 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
                 </Button>
               ),
               collapsed: (
-                <OverflowMenuDropdownItem key={'Synthesize'} isShared onClick={props.handleShowSynthesis}>
+                <OverflowMenuDropdownItem
+                  key={'Synthesize'}
+                  isShared
+                  onClick={props.handleShowSynthesis}
+                  isDisabled={props.recordings.length === 0}
+                >
                   {t('SYNTHESIZE')}
                 </OverflowMenuDropdownItem>
               ),
@@ -1276,18 +1281,20 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
           {formatBytes(recording.size)}
         </Td>
         <Td key={`archived-table-row-${index}_5`} dataLabel={tableColumns[ARCHIVED_TIME_COLUMN_INDEX].title}>
-          <Tooltip content={dayjs.unix(recording.archivedTime).format('LLLL')}>
-            <time
-              dateTime={dayjs.unix(recording.archivedTime).toISOString()}
-              tabIndex={0}
-              aria-label={t('ArchivedRecordingsTable.ARCHIVED_TIME_LABEL', {
-                datetime: dayjs.unix(recording.archivedTime).format('LLLL'),
-              })}
-              style={{ cursor: 'default', display: 'inline-flex' }}
-            >
-              <OutlinedClockIcon aria-hidden />
-            </time>
-          </Tooltip>
+          {recording.archivedTime && dayjs.unix(recording.archivedTime).isValid() ? (
+            <Tooltip content={dayjs.unix(recording.archivedTime).format('LLLL')}>
+              <time
+                dateTime={dayjs.unix(recording.archivedTime).toISOString()}
+                tabIndex={0}
+                aria-label={t('ArchivedRecordingsTable.ARCHIVED_TIME_LABEL', {
+                  datetime: dayjs.unix(recording.archivedTime).format('LLLL'),
+                })}
+                style={{ cursor: 'default', display: 'inline-flex' }}
+              >
+                <OutlinedClockIcon aria-hidden />
+              </time>
+            </Tooltip>
+          ) : null}
         </Td>
         {propsDirectory ? (
           <RecordingActions
