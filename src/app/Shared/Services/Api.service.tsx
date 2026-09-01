@@ -2031,6 +2031,7 @@ export class ApiService {
         archivedRecordings(filter: $filter) {
           data {
             name
+            archivedTime
             downloadUrl
             reportUrl
             metadata {
