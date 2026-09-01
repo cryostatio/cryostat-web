@@ -781,23 +781,27 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
 
   const buttons = React.useMemo(() => {
     return [
-      {
-        default: (
-          <Button
-            variant={props.isSynthesisPanelActive ? 'primary' : 'secondary'}
-            onClick={props.handleShowSynthesis}
-            isDisabled={props.recordings.length === 0}
-          >
-            {t('SYNTHESIZE')}
-          </Button>
-        ),
-        collapsed: (
-          <OverflowMenuDropdownItem key={'Synthesize'} isShared onClick={props.handleShowSynthesis}>
-            {t('SYNTHESIZE')}
-          </OverflowMenuDropdownItem>
-        ),
-        key: 'Synthesize',
-      },
+      ...(props.isUploadsTable
+        ? []
+        : [
+            {
+              default: (
+                <Button
+                  variant={props.isSynthesisPanelActive ? 'primary' : 'secondary'}
+                  onClick={props.handleShowSynthesis}
+                  isDisabled={props.recordings.length === 0}
+                >
+                  {t('SYNTHESIZE')}
+                </Button>
+              ),
+              collapsed: (
+                <OverflowMenuDropdownItem key={'Synthesize'} isShared onClick={props.handleShowSynthesis}>
+                  {t('SYNTHESIZE')}
+                </OverflowMenuDropdownItem>
+              ),
+              key: 'Synthesize',
+            },
+          ]),
       {
         default: (
           <Button variant="secondary" onClick={props.handleEditLabels} isDisabled={!props.checkedIndices.length}>
@@ -835,6 +839,7 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
     props.handleEditLabels,
     props.handleShowSynthesis,
     props.isSynthesisPanelActive,
+    props.isUploadsTable,
     props.recordings.length,
     handleDeleteButton,
     props.checkedIndices.length,
