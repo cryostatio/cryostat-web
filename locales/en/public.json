@@ -648,6 +648,9 @@
     "VIEW_IN_ANALYTICS": "View in Analytics ...",
     "VIEW_IN_GRAFANA": "View in Grafana ..."
   },
+  "RecordingAnalytics": {
+    "QUERIES_TAB_TITLE": "Queries"
+  },
   "RecordingFilters": {
     "ARIA_LABELS": {
       "MENU_TOGGLE": "recording-filters-toggle"
