@@ -211,7 +211,7 @@ export const RecordingAnalytics: React.FC = () => {
               </ToolbarGroup>
             </ToolbarContent>
           </Toolbar>
-          <Tabs activeKey={activeTab} onSelect={onTabSelect}>
+          <Tabs id="recording-analytics" activeKey={activeTab} onSelect={onTabSelect}>
             <Tab
               eventKey={RecordingAnalyticsTab.QUERIES}
               title={<TabTitleText>{t('RecordingAnalytics.QUERIES_TAB_TITLE')}</TabTitleText>}

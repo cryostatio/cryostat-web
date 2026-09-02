@@ -137,9 +137,9 @@ describe('<Views />', () => {
       expect(screen.getByText('JVM')).toBeInTheDocument();
       expect(screen.getByText('Environment')).toBeInTheDocument();
       expect(screen.getByText('Application')).toBeInTheDocument();
-      expect(screen.getByRole('option', { name: 'gc' })).toBeInTheDocument();
-      expect(screen.getByRole('option', { name: 'recording' })).toBeInTheDocument();
-      expect(screen.getByRole('option', { name: 'hot-methods' })).toBeInTheDocument();
+      expect(screen.getByRole('treeitem', { name: 'gc' })).toBeInTheDocument();
+      expect(screen.getByRole('treeitem', { name: 'recording' })).toBeInTheDocument();
+      expect(screen.getByRole('treeitem', { name: 'hot-methods' })).toBeInTheDocument();
     });
   });
 

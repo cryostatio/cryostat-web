@@ -650,7 +650,40 @@
   },
   "RecordingAnalytics": {
     "QUERIES_TAB_TITLE": "Queries",
-    "VIEWS_TAB_TITLE": "Views"
+    "VIEWS_TAB_TITLE": "Views",
+    "Views": {
+      "ARIA_LABELS": {
+        "SELECT_VIEW": "Select view",
+        "FILTER_VIEWS": "Filter views",
+        "VIEW_SELECTOR": "View selector",
+        "SELECT_TRUNCATE": "Select truncate",
+        "VERBOSE": "Verbose",
+        "RENDER_VIEW": "Render view"
+      },
+      "SELECT_RECORDING_FIRST": "Select a recording first",
+      "SELECT_VIEW": "Select view",
+      "FILTER_VIEWS_PLACEHOLDER": "Filter views...",
+      "VIEW_DEFAULT": "View default",
+      "TRUNCATE": {
+        "BEGINNING": "beginning",
+        "END": "end"
+      },
+      "FORM_LABELS": {
+        "VIEW": "View",
+        "WIDTH": "Width",
+        "VERBOSE": "Verbose",
+        "TRUNCATE": "Truncate",
+        "CELL_HEIGHT": "Cell height"
+      }
+    },
+    "Queries": {
+      "ARIA_LABELS": {
+        "INSERT_SAMPLE_QUERY": "Insert sample query",
+        "EXECUTE_QUERY": "Execute query"
+      },
+      "INSERT_SAMPLE_QUERY": "Insert sample query",
+      "EXECUTE_QUERY": "Execute query"
+    }
   },
   "RecordingFilters": {
     "ARIA_LABELS": {

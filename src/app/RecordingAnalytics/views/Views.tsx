@@ -18,15 +18,20 @@ import { ThemeSetting } from '@app/Settings/types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTheme } from '@app/utils/hooks/useTheme';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { CodeEditor, CodeEditorControl } from '@patternfly/react-code-editor';
 import {
   Divider,
   FormGroup,
+  MenuContainer,
   MenuToggle,
   MenuToggleElement,
   NumberInput,
+  Panel,
+  PanelMain,
+  PanelMainBody,
+  SearchInput,
   Select,
-  SelectGroup,
   SelectList,
   SelectOption,
   Split,
@@ -34,8 +39,11 @@ import {
   Stack,
   StackItem,
   Switch,
+  TreeView,
+  TreeViewDataItem,
 } from '@patternfly/react-core';
 import { PlayIcon } from '@patternfly/react-icons';
+import _ from 'lodash';
 import * as React from 'react';
 import { concatMap } from 'rxjs';
 
@@ -51,6 +59,7 @@ export interface ViewsProps {
 }
 
 export const Views: React.FC<ViewsProps> = ({ jvmId, filename }) => {
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [theme] = useTheme();
@@ -58,6 +67,7 @@ export const Views: React.FC<ViewsProps> = ({ jvmId, filename }) => {
   const [viewList, setViewList] = React.useState<ViewList | null>(null);
   const [selectedView, setSelectedView] = React.useState('recording');
   const [isViewSelectOpen, setIsViewSelectOpen] = React.useState(false);
+  const [viewFilter, setViewFilter] = React.useState('');
   const [width, setWidth] = React.useState(120);
   const [verbose, setVerbose] = React.useState(false);
   const [truncate, setTruncate] = React.useState('');
@@ -65,6 +75,9 @@ export const Views: React.FC<ViewsProps> = ({ jvmId, filename }) => {
   const [cellHeight, setCellHeight] = React.useState('');
   const [loading, setLoading] = React.useState(false);
   const [result, setResult] = React.useState('');
+
+  const viewToggleRef = React.useRef<HTMLButtonElement>(null);
+  const viewMenuRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     if (!jvmId || !filename) {
@@ -110,16 +123,85 @@ export const Views: React.FC<ViewsProps> = ({ jvmId, filename }) => {
     );
   }, [addSubscription, context.api, jvmId, filename, selectedView, width, verbose, truncate, cellHeight]);
 
-  const viewToggle = React.useCallback(
-    (toggleRef: React.Ref<MenuToggleElement>) => (
+  const filterRegex = React.useMemo(
+    () => (viewFilter ? new RegExp(_.escapeRegExp(viewFilter), 'i') : null),
+    [viewFilter],
+  );
+
+  const treeData = React.useMemo<TreeViewDataItem[]>(() => {
+    if (!viewList) return [];
+
+    const makeLeaves = (names: string[]): TreeViewDataItem[] => {
+      const leaves = filterRegex ? names.filter((n) => filterRegex.test(n)) : names;
+      return leaves.map((n) => ({ name: n, id: n }));
+    };
+
+    return [
+      { name: 'JVM', id: 'group-vm', children: makeLeaves(viewList.vm) },
+      { name: 'Environment', id: 'group-env', children: makeLeaves(viewList.env) },
+      { name: 'Application', id: 'group-app', children: makeLeaves(viewList.app) },
+    ];
+  }, [viewList, filterRegex]);
+
+  const activeTreeItem = React.useMemo<TreeViewDataItem[]>(
+    () => (selectedView ? [{ name: selectedView, id: selectedView }] : []),
+    [selectedView],
+  );
+
+  const handleViewSelect = React.useCallback((_: React.MouseEvent, item: TreeViewDataItem) => {
+    if (!item.children) {
+      setSelectedView(item.id as string);
+      setIsViewSelectOpen(false);
+      setViewFilter('');
+    }
+  }, []);
+
+  const viewMenu = React.useMemo(
+    () => (
+      <Panel ref={viewMenuRef} variant="raised" style={{ width: '260px', maxHeight: '40vh', overflowY: 'auto' }}>
+        <PanelMain>
+          {viewList ? (
+            <>
+              <PanelMainBody style={{ paddingBottom: 0 }}>
+                <SearchInput
+                  placeholder={t('RecordingAnalytics.Views.FILTER_VIEWS_PLACEHOLDER')}
+                  value={viewFilter}
+                  onChange={(_, val) => setViewFilter(val)}
+                  onClear={() => setViewFilter('')}
+                  aria-label={t('RecordingAnalytics.Views.ARIA_LABELS.FILTER_VIEWS')}
+                />
+              </PanelMainBody>
+              <Divider />
+              <PanelMainBody style={{ padding: 0 }}>
+                <TreeView
+                  data={treeData}
+                  activeItems={activeTreeItem}
+                  onSelect={handleViewSelect}
+                  defaultAllExpanded
+                  allExpanded={viewFilter.length > 0 || undefined}
+                  aria-label={t('RecordingAnalytics.Views.ARIA_LABELS.VIEW_SELECTOR')}
+                />
+              </PanelMainBody>
+            </>
+          ) : (
+            <PanelMainBody>{t('RecordingAnalytics.Views.SELECT_RECORDING_FIRST')}</PanelMainBody>
+          )}
+        </PanelMain>
+      </Panel>
+    ),
+    [viewMenuRef, viewList, viewFilter, treeData, activeTreeItem, handleViewSelect],
+  );
+
+  const viewToggle = React.useMemo(
+    () => (
       <MenuToggle
-        ref={toggleRef}
+        ref={viewToggleRef}
         onClick={() => setIsViewSelectOpen((o) => !o)}
         isExpanded={isViewSelectOpen}
         isDisabled={!viewList}
-        aria-label="Select view"
+        aria-label={t('RecordingAnalytics.Views.ARIA_LABELS.SELECT_VIEW')}
       >
-        {selectedView || 'Select view'}
+        {selectedView || t('RecordingAnalytics.Views.SELECT_VIEW')}
       </MenuToggle>
     ),
     [isViewSelectOpen, selectedView, viewList],
@@ -131,9 +213,9 @@ export const Views: React.FC<ViewsProps> = ({ jvmId, filename }) => {
         ref={toggleRef}
         onClick={() => setIsTruncateOpen((o) => !o)}
         isExpanded={isTruncateOpen}
-        aria-label="Select truncate"
+        aria-label={t('RecordingAnalytics.Views.ARIA_LABELS.SELECT_TRUNCATE')}
       >
-        {truncate || 'View default'}
+        {truncate || t('RecordingAnalytics.Views.VIEW_DEFAULT')}
       </MenuToggle>
     ),
     [isTruncateOpen, truncate],
@@ -143,8 +225,8 @@ export const Views: React.FC<ViewsProps> = ({ jvmId, filename }) => {
     () => (
       <CodeEditorControl
         icon={<PlayIcon />}
-        aria-label="Render view"
-        tooltipProps={{ content: 'Render view' }}
+        aria-label={t('RecordingAnalytics.Views.ARIA_LABELS.RENDER_VIEW')}
+        tooltipProps={{ content: t('RecordingAnalytics.Views.ARIA_LABELS.RENDER_VIEW') }}
         onClick={handleExecute}
         isLoading={loading}
         isDisabled={!jvmId || !filename || !selectedView || loading}
@@ -158,57 +240,23 @@ export const Views: React.FC<ViewsProps> = ({ jvmId, filename }) => {
       <StackItem>
         <Split hasGutter>
           <SplitItem>
-            <FormGroup label="View" fieldId="views-view-select">
-              <Select
-                id="views-view-select"
-                toggle={viewToggle}
+            <FormGroup label={t('RecordingAnalytics.Views.FORM_LABELS.VIEW')} fieldId="views-view-select">
+              <MenuContainer
                 isOpen={isViewSelectOpen}
-                onSelect={(_, val) => {
-                  setSelectedView(val as string);
-                  setIsViewSelectOpen(false);
+                onOpenChange={(open) => {
+                  setIsViewSelectOpen(open);
+                  if (!open) setViewFilter('');
                 }}
-                onOpenChange={setIsViewSelectOpen}
                 onOpenChangeKeys={['Escape']}
-                selected={selectedView}
-                isScrollable
-                maxMenuHeight="40vh"
-              >
-                <SelectList>
-                  {viewList ? (
-                    <>
-                      <SelectGroup label="JVM">
-                        {viewList.vm.map((v) => (
-                          <SelectOption key={v} value={v}>
-                            {v}
-                          </SelectOption>
-                        ))}
-                      </SelectGroup>
-                      <Divider />
-                      <SelectGroup label="Environment">
-                        {viewList.env.map((v) => (
-                          <SelectOption key={v} value={v}>
-                            {v}
-                          </SelectOption>
-                        ))}
-                      </SelectGroup>
-                      <Divider />
-                      <SelectGroup label="Application">
-                        {viewList.app.map((v) => (
-                          <SelectOption key={v} value={v}>
-                            {v}
-                          </SelectOption>
-                        ))}
-                      </SelectGroup>
-                    </>
-                  ) : (
-                    <SelectOption isDisabled>Select a recording first</SelectOption>
-                  )}
-                </SelectList>
-              </Select>
+                menu={viewMenu}
+                menuRef={viewMenuRef}
+                toggle={viewToggle}
+                toggleRef={viewToggleRef}
+              />
             </FormGroup>
           </SplitItem>
           <SplitItem>
-            <FormGroup label="Width" fieldId="views-width-input">
+            <FormGroup label={t('RecordingAnalytics.Views.FORM_LABELS.WIDTH')} fieldId="views-width-input">
               <NumberInput
                 id="views-width-input"
                 value={width}
@@ -223,17 +271,17 @@ export const Views: React.FC<ViewsProps> = ({ jvmId, filename }) => {
             </FormGroup>
           </SplitItem>
           <SplitItem>
-            <FormGroup label="Verbose" fieldId="views-verbose-switch">
+            <FormGroup label={t('RecordingAnalytics.Views.FORM_LABELS.VERBOSE')} fieldId="views-verbose-switch">
               <Switch
                 id="views-verbose-switch"
-                aria-label="Verbose"
+                aria-label={t('RecordingAnalytics.Views.ARIA_LABELS.VERBOSE')}
                 isChecked={verbose}
                 onChange={(_e, checked) => setVerbose(checked)}
               />
             </FormGroup>
           </SplitItem>
           <SplitItem>
-            <FormGroup label="Truncate" fieldId="views-truncate-select">
+            <FormGroup label={t('RecordingAnalytics.Views.FORM_LABELS.TRUNCATE')} fieldId="views-truncate-select">
               <Select
                 id="views-truncate-select"
                 toggle={truncateToggle}
@@ -247,15 +295,15 @@ export const Views: React.FC<ViewsProps> = ({ jvmId, filename }) => {
                 selected={truncate}
               >
                 <SelectList>
-                  <SelectOption value="">View default</SelectOption>
-                  <SelectOption value="beginning">beginning</SelectOption>
-                  <SelectOption value="end">end</SelectOption>
+                  <SelectOption value="">{t('RecordingAnalytics.Views.VIEW_DEFAULT')}</SelectOption>
+                  <SelectOption value="beginning">{t('RecordingAnalytics.Views.TRUNCATE.BEGINNING')}</SelectOption>
+                  <SelectOption value="end">{t('RecordingAnalytics.Views.TRUNCATE.END')}</SelectOption>
                 </SelectList>
               </Select>
             </FormGroup>
           </SplitItem>
           <SplitItem>
-            <FormGroup label="Cell height" fieldId="views-cellheight-input">
+            <FormGroup label={t('RecordingAnalytics.Views.FORM_LABELS.CELL_HEIGHT')} fieldId="views-cellheight-input">
               <NumberInput
                 id="views-cellheight-input"
                 value={cellHeight === '' ? '' : parseInt(cellHeight, 10)}

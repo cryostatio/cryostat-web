@@ -186,7 +186,15 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       }));
       this.get('api/beta/targets/:jvmId/recordings/:filename/view', (_schema, request) => {
         const view = request.queryParams['view'] || 'recording';
-        const width = parseInt(request.queryParams['width'] || '120', 10);
+        let width = 120;
+        if (request.queryParams) {
+          const w = request.queryParams['width'];
+          if (Array.isArray(w)) {
+            width = parseInt(w[0], 10);
+          } else {
+            width = parseInt(w ?? '120', 10);
+          }
+        }
         const sep = '='.repeat(width);
         const stubText = [
           sep,

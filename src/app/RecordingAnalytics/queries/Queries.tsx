@@ -18,6 +18,7 @@ import { ThemeSetting } from '@app/Settings/types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTheme } from '@app/utils/hooks/useTheme';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { loader } from '@monaco-editor/react';
 import { CodeEditor, CodeEditorControl, Language } from '@patternfly/react-code-editor';
 import {
@@ -134,6 +135,7 @@ export interface QueriesProps {
 }
 
 export const Queries: React.FC<QueriesProps> = ({ jvmId, filename }) => {
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
@@ -239,13 +241,13 @@ export const Queries: React.FC<QueriesProps> = ({ jvmId, filename }) => {
         onSelect={() => setIsSampleMenuOpen(false)}
         onOpenChange={(isOpen: boolean) => setIsSampleMenuOpen(isOpen)}
         toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-          <Tooltip content="Insert sample query">
+          <Tooltip content={t('RecordingAnalytics.Queries.INSERT_SAMPLE_QUERY')}>
             <MenuToggle
               ref={toggleRef}
               onClick={() => setIsSampleMenuOpen(!isSampleMenuOpen)}
               isExpanded={isSampleMenuOpen}
               variant="plain"
-              aria-label="Insert sample query"
+              aria-label={t('RecordingAnalytics.Queries.ARIA_LABELS.INSERT_SAMPLE_QUERY')}
               isDisabled={loading}
               className="pf-v6-c-code-editor__controls-item"
             >
@@ -269,8 +271,8 @@ export const Queries: React.FC<QueriesProps> = ({ jvmId, filename }) => {
     return (
       <CodeEditorControl
         icon={<PlayIcon />}
-        aria-label="Execute query"
-        tooltipProps={{ content: 'Execute query' }}
+        aria-label={t('RecordingAnalytics.Queries.ARIA_LABELS.EXECUTE_QUERY')}
+        tooltipProps={{ content: t('RecordingAnalytics.Queries.EXECUTE_QUERY') }}
         onClick={handleExecute}
         isLoading={loading}
         isDisabled={!jvmId || !filename || !query || loading}
