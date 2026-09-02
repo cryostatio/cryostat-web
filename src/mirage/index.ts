@@ -179,6 +179,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             ]
           : [];
       });
+      this.post('api/beta/recording_analytics/:jvmId/:filename', () => [['MOCK_RESPONSE']]);
       this.delete('api/beta/recordings/:targetId/:recordingName', (schema, request) => {
         const recordingName = request.params.recordingName;
         const recording = schema.findBy(Resource.ARCHIVE, { name: recordingName });
