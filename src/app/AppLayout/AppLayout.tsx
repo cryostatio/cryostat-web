@@ -28,6 +28,7 @@ import { ThemeSetting, SettingTab } from '@app/Settings/types';
 import { DARK_THEME_CLASS, selectTab, tabAsParam } from '@app/Settings/utils';
 import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/Components/FeatureFlag';
+import { FeatureLevelBadge } from '@app/Shared/Components/FeatureLevelBadge';
 import { navMenuSetExpandedIntent } from '@app/Shared/Redux/Configurations/NavMenuConfigSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { NotificationCategory, Notification } from '@app/Shared/Services/api.types';
@@ -47,7 +48,6 @@ import {
   Brand,
   Button,
   Icon,
-  Label,
   Masthead,
   MastheadLogo,
   MastheadContent,
@@ -128,7 +128,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [theme] = useTheme();
-  const [useCompactLabels, setUseCompactLabels] = React.useState(true);
 
   const cryostatLogo = React.useMemo(
     () => (theme === ThemeSetting.DARK ? cryostatLogoDark : cryostatLogoLight),
@@ -157,10 +156,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       }),
     );
   }, [serviceContext.target, setShowAuthModal, addSubscription]);
-
-  React.useEffect(() => {
-    addSubscription(serviceContext.settings.largeUi().subscribe((v) => setUseCompactLabels(!v)));
-  }, [addSubscription, serviceContext.settings, setUseCompactLabels]);
 
   React.useEffect(() => {
     addSubscription(notificationsContext.notifications().subscribe((n) => setNotifications([...n])));
@@ -384,20 +379,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     ];
   }, [t, handleOpenDocumentation, handleOpenGuidedTour, handleOpenDiscussion, handleOpenAboutModal]);
 
-  const levelBadge = React.useCallback(
-    (level: FeatureLevel) => {
-      return (
-        <Label
-          isCompact={useCompactLabels}
-          style={{ marginLeft: '2ch', paddingTop: '0.125ch', paddingBottom: '0.125ch' }}
-          color={level === FeatureLevel.BETA ? 'teal' : 'red'}
-        >
-          {t(FeatureLevel[level])}
-        </Label>
-      );
-    },
-    [t, useCompactLabels],
-  );
+  const levelBadge = React.useCallback((level: FeatureLevel) => <FeatureLevelBadge level={level} />, []);
 
   const headerToolbar = React.useMemo(
     () => (
