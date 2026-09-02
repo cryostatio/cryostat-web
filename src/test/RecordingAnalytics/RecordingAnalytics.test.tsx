@@ -15,28 +15,24 @@
  */
 
 import { RecordingAnalytics } from '@app/RecordingAnalytics/RecordingAnalytics';
-import { ThemeSetting } from '@app/Settings/types';
 import { NotificationCategory, RecordingDirectory } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { of, Subject, throwError } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { basePreloadedState, render } from '../utils';
 
-jest.mock('monaco-editor', () => ({
-  editor: {
-    getModels: jest.fn(() => [
-      {
-        updateOptions: jest.fn(),
-      },
-    ]),
-  },
+// Stub the inner tab components — their behaviour is tested in Queries.test.tsx / Views.test.tsx.
+jest.mock('@app/RecordingAnalytics/queries/Queries', () => ({
+  Queries: jest.fn(({ jvmId, filename }) => (
+    <div data-testid="queries-stub" data-jvm-id={jvmId} data-filename={filename} />
+  )),
 }));
 
-jest.mock('@monaco-editor/react', () => ({
-  loader: {
-    config: jest.fn(),
-  },
+jest.mock('@app/RecordingAnalytics/views/Views', () => ({
+  Views: jest.fn(({ jvmId, filename }) => (
+    <div data-testid="views-stub" data-jvm-id={jvmId} data-filename={filename} />
+  )),
 }));
 
 jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => ({
@@ -46,40 +42,6 @@ jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => ({
       {children}
     </div>
   )),
-}));
-
-jest.mock('@patternfly/react-code-editor', () => ({
-  CodeEditor: jest.fn((props) => (
-    <div data-testid="code-editor">
-      <div data-testid="code-editor-language">{props.language}</div>
-      <div data-testid="code-editor-readonly">{props.isReadOnly ? 'true' : 'false'}</div>
-      <div data-testid="code-editor-code">{props.code}</div>
-      {props.customControls && (
-        <div data-testid="code-editor-controls">
-          {props.customControls.map((control: any, idx: number) => (
-            <div key={idx}>{control}</div>
-          ))}
-        </div>
-      )}
-      <button onClick={() => props.onChange && props.onChange('test query')}>Change Query</button>
-      <button onClick={() => props.onEditorDidMount && props.onEditorDidMount({}, {})}>Mount Editor</button>
-    </div>
-  )),
-  CodeEditorControl: jest.fn((props) => (
-    <button
-      data-testid="code-editor-control"
-      onClick={props.onClick}
-      disabled={props.isDisabled}
-      aria-label={props['aria-label']}
-    >
-      {props.icon}
-      {props.isLoading && <span>Loading...</span>}
-    </button>
-  )),
-  Language: {
-    sql: 'sql',
-    json: 'json',
-  },
 }));
 
 jest.mock('@patternfly/react-templates', () => ({
@@ -142,23 +104,8 @@ const mockRecordingDirectories: RecordingDirectory[] = [
   },
 ];
 
-const mockApiResponse = {
-  data: [
-    { column1: 'value1', column2: 'value2' },
-    { column1: 'value3', column2: 'value4' },
-  ],
-};
-
-const createMockResponse = (data: any) => ({
-  json: () => Promise.resolve(data),
-  ok: true,
-  status: 200,
-  statusText: 'OK',
-});
-
 describe('<RecordingAnalytics />', () => {
   let mockDoGet: jest.SpyInstance;
-  let mockSendRequest: jest.SpyInstance;
   let archivedRecordingCreatedSubject: Subject<any>;
   let archivedRecordingDeletedSubject: Subject<any>;
 
@@ -166,10 +113,7 @@ describe('<RecordingAnalytics />', () => {
     archivedRecordingCreatedSubject = new Subject();
     archivedRecordingDeletedSubject = new Subject();
 
-    mockDoGet = jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of(mockRecordingDirectories));
-    mockSendRequest = jest
-      .spyOn(defaultServices.api, 'sendRequest')
-      .mockReturnValue(of(createMockResponse(mockApiResponse) as any));
+    mockDoGet = jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of(mockRecordingDirectories) as any);
     jest.spyOn(defaultServices.notificationChannel, 'messages').mockImplementation((category) => {
       switch (category) {
         case NotificationCategory.ArchivedRecordingCreated:
@@ -180,19 +124,6 @@ describe('<RecordingAnalytics />', () => {
           return of();
       }
     });
-    jest.spyOn(defaultServices.settings, 'themeSetting').mockReturnValue(of(ThemeSetting.LIGHT));
-    jest.spyOn(defaultServices.settings, 'media').mockReturnValue(
-      of({
-        matches: false,
-        media: '(prefers-color-scheme: dark)',
-        onchange: null,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      }),
-    );
   });
 
   afterEach(() => {
@@ -200,106 +131,49 @@ describe('<RecordingAnalytics />', () => {
     jest.clearAllMocks();
   });
 
-  it('renders with correct page title', async () => {
+  const renderPage = (options?: Parameters<typeof render>[0]['routerConfigs']['options']) =>
     render({
       routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
+        routes: [{ path: '/analytics', element: <RecordingAnalytics /> }],
+        options,
       },
     });
 
+  it('renders with correct page title', async () => {
+    renderPage();
     expect(screen.getByText('Analytics')).toBeInTheDocument();
   });
 
   it('loads recording directories on mount', async () => {
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-      },
-    });
-
-    await waitFor(() => {
-      expect(mockDoGet).toHaveBeenCalledWith('fs/recordings', 'beta');
-    });
+    renderPage();
+    await waitFor(() => expect(mockDoGet).toHaveBeenCalledWith('fs/recordings', 'beta'));
   });
 
   it('displays JVM ID dropdown with loaded JVM IDs', async () => {
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-      },
-    });
+    renderPage();
+    await waitFor(() => expect(screen.getByText('JVM ID')).toBeInTheDocument());
 
-    await waitFor(() => {
-      expect(screen.getByText('JVM ID')).toBeInTheDocument();
-    });
-
-    const dropdowns = screen.getAllByTestId('simple-dropdown');
-    const jvmDropdown = dropdowns[0];
-
+    const jvmDropdown = screen.getAllByTestId('simple-dropdown')[0];
     expect(within(jvmDropdown).getByText('jvm-1')).toBeInTheDocument();
     expect(within(jvmDropdown).getByText('jvm-2')).toBeInTheDocument();
     expect(within(jvmDropdown).getByText('Clear Selection')).toBeInTheDocument();
   });
 
   it('displays filename dropdown as disabled when no JVM ID is selected', async () => {
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-      },
+    renderPage();
+    await waitFor(() => expect(screen.getByText('Filename')).toBeInTheDocument());
+
+    const filenameButton = within(screen.getAllByTestId('simple-dropdown')[1]).getByRole('button', {
+      name: 'Filename',
     });
-
-    await waitFor(() => {
-      expect(screen.getByText('Filename')).toBeInTheDocument();
-    });
-
-    const dropdowns = screen.getAllByTestId('simple-dropdown');
-    const filenameDropdown = dropdowns[1];
-    const filenameButton = within(filenameDropdown).getByRole('button', { name: 'Filename' });
-
     expect(filenameButton).toBeDisabled();
   });
 
   it('enables filename dropdown and shows recordings when JVM ID is selected', async () => {
-    const { user } = render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-      },
-    });
+    const { user } = renderPage();
+    await waitFor(() => expect(screen.getByText('JVM ID')).toBeInTheDocument());
 
-    await waitFor(() => {
-      expect(screen.getByText('JVM ID')).toBeInTheDocument();
-    });
-
-    const dropdowns = screen.getAllByTestId('simple-dropdown');
-    const jvmDropdown = dropdowns[0];
-    const jvm1Button = within(jvmDropdown).getByText('jvm-1');
-
-    await user.click(jvm1Button);
+    await user.click(within(screen.getAllByTestId('simple-dropdown')[0]).getByText('jvm-1'));
 
     await waitFor(() => {
       const filenameDropdown = screen.getAllByTestId('simple-dropdown')[1];
@@ -309,499 +183,96 @@ describe('<RecordingAnalytics />', () => {
   });
 
   it('clears filename when JVM ID selection is cleared', async () => {
-    const { user } = render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-      },
-    });
+    const { user } = renderPage();
+    await waitFor(() => expect(screen.getByText('JVM ID')).toBeInTheDocument());
 
-    await waitFor(() => {
-      expect(screen.getByText('JVM ID')).toBeInTheDocument();
-    });
-
-    const dropdowns = screen.getAllByTestId('simple-dropdown');
-    const jvmDropdown = dropdowns[0];
-
+    const jvmDropdown = screen.getAllByTestId('simple-dropdown')[0];
     await user.click(within(jvmDropdown).getByText('jvm-1'));
 
-    await waitFor(() => {
-      const filenameDropdown = screen.getAllByTestId('simple-dropdown')[1];
-      const items = within(filenameDropdown).getByTestId('dropdown-items');
-      expect(within(items).getByRole('button', { name: 'recording1.jfr' })).toBeInTheDocument();
-    });
-
-    const filenameDropdown = screen.getAllByTestId('simple-dropdown')[1];
-    const filenameItems = within(filenameDropdown).getByTestId('dropdown-items');
-    await user.click(within(filenameItems).getByRole('button', { name: 'recording1.jfr' }));
-
-    await waitFor(() => {
-      const updatedDropdowns = screen.getAllByTestId('simple-dropdown');
-      const toggleButton = within(updatedDropdowns[1]).getAllByRole('button')[0];
-      expect(toggleButton).toHaveTextContent('recording1.jfr');
-    });
-
-    const jvmItems = within(jvmDropdown).getByTestId('dropdown-items');
-    await user.click(within(jvmItems).getByRole('button', { name: 'Clear Selection' }));
-
-    await waitFor(() => {
-      const updatedDropdowns = screen.getAllByTestId('simple-dropdown');
-      const jvmToggle = within(updatedDropdowns[0]).getAllByRole('button')[0];
-      const filenameToggle = within(updatedDropdowns[1]).getAllByRole('button')[0];
-      expect(jvmToggle).toHaveTextContent('JVM ID');
-      expect(filenameToggle).toHaveTextContent('Filename');
-    });
-  });
-
-  it('renders SQL code editor for query input', async () => {
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-      },
-    });
-
-    await waitFor(() => {
-      const editors = screen.getAllByTestId('code-editor');
-      expect(editors.length).toBeGreaterThan(0);
-    });
-
-    const editors = screen.getAllByTestId('code-editor');
-    const sqlEditor = editors[0];
-
-    expect(within(sqlEditor).getByTestId('code-editor-language')).toHaveTextContent('sql');
-    expect(within(sqlEditor).getByTestId('code-editor-readonly')).toHaveTextContent('false');
-  });
-
-  it('renders JSON code editor for results display', async () => {
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-      },
-    });
-
-    await waitFor(() => {
-      const editors = screen.getAllByTestId('code-editor');
-      expect(editors.length).toBe(2);
-    });
-
-    const editors = screen.getAllByTestId('code-editor');
-    const jsonEditor = editors[1];
-
-    expect(within(jsonEditor).getByTestId('code-editor-language')).toHaveTextContent('json');
-    expect(within(jsonEditor).getByTestId('code-editor-readonly')).toHaveTextContent('true');
-  });
-
-  it('displays sample query dropdown', async () => {
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-      },
-    });
-
-    await waitFor(() => {
-      expect(screen.getByLabelText('Insert sample query')).toBeInTheDocument();
-    });
-  });
-
-  it('inserts sample query when selected from dropdown', async () => {
-    const { user } = render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-      },
-    });
-
-    await waitFor(() => {
-      expect(screen.getByLabelText('Insert sample query')).toBeInTheDocument();
-    });
-
-    const sampleQueryButton = screen.getByLabelText('Insert sample query');
-    await user.click(sampleQueryButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('Count object allocation sample events')).toBeInTheDocument();
-    });
-
-    await user.click(screen.getByText('Count object allocation sample events'));
-
-    await waitFor(() => {
-      expect(screen.queryByText('Count object allocation sample events')).not.toBeVisible();
-    });
-  });
-
-  it('disables execute button when JVM ID is not selected', async () => {
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-      },
-    });
-
-    await waitFor(() => {
-      const executeButton = screen.getByLabelText('Execute query');
-      expect(executeButton).toBeDisabled();
-    });
-  });
-
-  it('disables execute button when filename is not selected', async () => {
-    const { user } = render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-      },
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText('JVM ID')).toBeInTheDocument();
-    });
-
-    const dropdowns = screen.getAllByTestId('simple-dropdown');
-    const jvmDropdown = dropdowns[0];
-    await user.click(within(jvmDropdown).getByText('jvm-1'));
-
-    await waitFor(() => {
-      const executeButton = screen.getByLabelText('Execute query');
-      expect(executeButton).toBeDisabled();
-    });
-  });
-
-  it('disables execute button when query is empty', async () => {
-    const { user } = render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-      },
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText('JVM ID')).toBeInTheDocument();
-    });
-
-    const dropdowns = screen.getAllByTestId('simple-dropdown');
-    const jvmDropdown = dropdowns[0];
-    await user.click(within(jvmDropdown).getByText('jvm-1'));
-
-    await waitFor(() => {
-      const filenameDropdown = screen.getAllByTestId('simple-dropdown')[1];
-      expect(within(filenameDropdown).getByText('recording1.jfr')).toBeInTheDocument();
-    });
-
-    const filenameDropdown = screen.getAllByTestId('simple-dropdown')[1];
-    await user.click(within(filenameDropdown).getByText('recording1.jfr'));
-
-    await waitFor(() => {
-      const executeButton = screen.getByLabelText('Execute query');
-      expect(executeButton).toBeDisabled();
-    });
-  });
-
-  it('executes query and displays results when all inputs are valid', async () => {
-    const { user } = render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-      },
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText('JVM ID')).toBeInTheDocument();
-    });
-
-    const dropdowns = screen.getAllByTestId('simple-dropdown');
-    const jvmItems = within(dropdowns[0]).getByTestId('dropdown-items');
-    await user.click(within(jvmItems).getByRole('button', { name: 'jvm-1' }));
-
-    await waitFor(() => {
-      const filenameDropdown = screen.getAllByTestId('simple-dropdown')[1];
-      const items = within(filenameDropdown).getByTestId('dropdown-items');
-      expect(within(items).getByRole('button', { name: 'recording1.jfr' })).toBeInTheDocument();
-    });
-
-    const filenameDropdown = screen.getAllByTestId('simple-dropdown')[1];
-    const filenameItems = within(filenameDropdown).getByTestId('dropdown-items');
-    await user.click(within(filenameItems).getByRole('button', { name: 'recording1.jfr' }));
-
-    const editors = screen.getAllByTestId('code-editor');
-    const changeQueryButton = within(editors[0]).getByText('Change Query');
-    await user.click(changeQueryButton);
-
-    await waitFor(() => {
-      const executeButton = screen.getByLabelText('Execute query');
-      expect(executeButton).not.toBeDisabled();
-    });
-
-    const executeButton = screen.getByLabelText('Execute query');
-    await user.click(executeButton);
-
-    await waitFor(() => {
-      expect(mockSendRequest).toHaveBeenCalledWith('beta', 'recording_analytics/jvm-1/recording1.jfr', {
-        method: 'POST',
-        body: expect.any(FormData),
-      });
-    });
-
-    await waitFor(
-      () => {
-        const resultEditor = screen.getAllByTestId('code-editor')[1];
-        const resultCode = within(resultEditor).getByTestId('code-editor-code');
-        expect(resultCode.textContent).toContain('"data"');
-        expect(resultCode.textContent).toContain('"column1"');
-        expect(resultCode.textContent).toContain('"value1"');
-      },
-      { timeout: 3000 },
+    await waitFor(() =>
+      expect(
+        within(within(screen.getAllByTestId('simple-dropdown')[1]).getByTestId('dropdown-items')).getByRole('button', {
+          name: 'recording1.jfr',
+        }),
+      ).toBeInTheDocument(),
     );
+
+    await user.click(
+      within(within(screen.getAllByTestId('simple-dropdown')[1]).getByTestId('dropdown-items')).getByRole('button', {
+        name: 'recording1.jfr',
+      }),
+    );
+
+    await user.click(
+      within(within(jvmDropdown).getByTestId('dropdown-items')).getByRole('button', { name: 'Clear Selection' }),
+    );
+
+    await waitFor(() => {
+      expect(within(screen.getAllByTestId('simple-dropdown')[0]).getAllByRole('button')[0]).toHaveTextContent('JVM ID');
+      expect(within(screen.getAllByTestId('simple-dropdown')[1]).getAllByRole('button')[0]).toHaveTextContent(
+        'Filename',
+      );
+    });
   });
 
-  it('displays error message when query execution fails', async () => {
-    mockSendRequest.mockReturnValue(throwError(() => new Error('Query execution failed')));
+  it('passes jvmId and filename props to Queries stub', async () => {
+    const { user } = renderPage();
+    await waitFor(() => expect(screen.getByText('JVM ID')).toBeInTheDocument());
 
-    const { user } = render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-      },
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText('JVM ID')).toBeInTheDocument();
-    });
-
-    const dropdowns = screen.getAllByTestId('simple-dropdown');
-    const jvmItems = within(dropdowns[0]).getByTestId('dropdown-items');
-    await user.click(within(jvmItems).getByRole('button', { name: 'jvm-1' }));
-
-    await waitFor(() => {
-      const filenameDropdown = screen.getAllByTestId('simple-dropdown')[1];
-      const items = within(filenameDropdown).getByTestId('dropdown-items');
-      expect(within(items).getByRole('button', { name: 'recording1.jfr' })).toBeInTheDocument();
-    });
-
-    const filenameDropdown = screen.getAllByTestId('simple-dropdown')[1];
-    const filenameItems = within(filenameDropdown).getByTestId('dropdown-items');
-    await user.click(within(filenameItems).getByRole('button', { name: 'recording1.jfr' }));
-
-    const editors = screen.getAllByTestId('code-editor');
-    const changeQueryButton = within(editors[0]).getByText('Change Query');
-    await user.click(changeQueryButton);
-
-    await waitFor(() => {
-      const executeButton = screen.getByLabelText('Execute query');
-      expect(executeButton).not.toBeDisabled();
-    });
-
-    const executeButton = screen.getByLabelText('Execute query');
-    await user.click(executeButton);
-
-    await waitFor(
-      () => {
-        const resultEditor = screen.getAllByTestId('code-editor')[1];
-        const resultCode = within(resultEditor).getByTestId('code-editor-code');
-        expect(resultCode).toHaveTextContent('Error: Query execution failed');
-      },
-      { timeout: 3000 },
+    await user.click(within(screen.getAllByTestId('simple-dropdown')[0]).getByText('jvm-1'));
+    await waitFor(() =>
+      expect(within(screen.getAllByTestId('simple-dropdown')[1]).getByText('recording1.jfr')).toBeInTheDocument(),
     );
+    await user.click(within(screen.getAllByTestId('simple-dropdown')[1]).getByText('recording1.jfr'));
+
+    await waitFor(() => {
+      const stub = screen.getByTestId('queries-stub');
+      expect(stub).toHaveAttribute('data-jvm-id', 'jvm-1');
+      expect(stub).toHaveAttribute('data-filename', 'recording1.jfr');
+    });
   });
 
   it('prefills JVM ID and filename from location state', async () => {
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-        options: {
-          initialEntries: [
-            {
-              pathname: '/analytics',
-              state: { jvmId: 'jvm-1', filename: 'recording1.jfr' },
-            },
-          ],
-        },
-      },
-    });
+    renderPage({ initialEntries: [{ pathname: '/analytics', state: { jvmId: 'jvm-1', filename: 'recording1.jfr' } }] });
 
     await waitFor(() => {
-      const dropdowns = screen.getAllByTestId('simple-dropdown');
-      const jvmToggle = within(dropdowns[0]).getAllByRole('button')[0];
-      const filenameToggle = within(dropdowns[1]).getAllByRole('button')[0];
-      expect(jvmToggle).toHaveTextContent('jvm-1');
-      expect(filenameToggle).toHaveTextContent('recording1.jfr');
+      expect(within(screen.getAllByTestId('simple-dropdown')[0]).getAllByRole('button')[0]).toHaveTextContent('jvm-1');
+      expect(within(screen.getAllByTestId('simple-dropdown')[1]).getAllByRole('button')[0]).toHaveTextContent(
+        'recording1.jfr',
+      );
     });
   });
 
   it('prefills JVM ID and filename from Redux state', async () => {
     render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-      },
+      routerConfigs: { routes: [{ path: '/analytics', element: <RecordingAnalytics /> }] },
       preloadedState: {
         ...basePreloadedState,
-        modalPrefill: {
-          route: '/analytics',
-          data: { jvmId: 'jvm-2', filename: 'recording3.jfr' },
-        },
+        modalPrefill: { route: '/analytics', data: { jvmId: 'jvm-2', filename: 'recording3.jfr' } },
       },
     });
 
     await waitFor(() => {
-      const dropdowns = screen.getAllByTestId('simple-dropdown');
-      const jvmToggle = within(dropdowns[0]).getAllByRole('button')[0];
-      const filenameToggle = within(dropdowns[1]).getAllByRole('button')[0];
-      expect(jvmToggle).toHaveTextContent('jvm-2');
-      expect(filenameToggle).toHaveTextContent('recording3.jfr');
+      expect(within(screen.getAllByTestId('simple-dropdown')[0]).getAllByRole('button')[0]).toHaveTextContent('jvm-2');
+      expect(within(screen.getAllByTestId('simple-dropdown')[1]).getAllByRole('button')[0]).toHaveTextContent(
+        'recording3.jfr',
+      );
     });
   });
 
-  it('executes query multiple times successfully', async () => {
-    const { user } = render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-      },
-    });
-
+  it('renders the Queries tab selected by default', async () => {
+    renderPage();
     await waitFor(() => {
-      expect(screen.getByText('JVM ID')).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: 'Queries' })).toHaveAttribute('aria-selected', 'true');
+      expect(screen.getByRole('tab', { name: 'Views' })).toHaveAttribute('aria-selected', 'false');
     });
-
-    const dropdowns = screen.getAllByTestId('simple-dropdown');
-    const jvmItems = within(dropdowns[0]).getByTestId('dropdown-items');
-    await user.click(within(jvmItems).getByRole('button', { name: 'jvm-1' }));
-
-    await waitFor(() => {
-      const filenameDropdown = screen.getAllByTestId('simple-dropdown')[1];
-      const items = within(filenameDropdown).getByTestId('dropdown-items');
-      expect(within(items).getByRole('button', { name: 'recording1.jfr' })).toBeInTheDocument();
-    });
-
-    const filenameDropdown = screen.getAllByTestId('simple-dropdown')[1];
-    const filenameItems = within(filenameDropdown).getByTestId('dropdown-items');
-    await user.click(within(filenameItems).getByRole('button', { name: 'recording1.jfr' }));
-
-    const editors = screen.getAllByTestId('code-editor');
-    const changeQueryButton = within(editors[0]).getByText('Change Query');
-    await user.click(changeQueryButton);
-
-    const executeButton = screen.getByLabelText('Execute query');
-    await user.click(executeButton);
-
-    await waitFor(
-      () => {
-        const resultEditor = screen.getAllByTestId('code-editor')[1];
-        const resultCode = within(resultEditor).getByTestId('code-editor-code');
-        expect(resultCode.textContent).toContain('"data"');
-        expect(resultCode.textContent).toContain('"column1"');
-        expect(resultCode.textContent).toContain('"value1"');
-      },
-      { timeout: 3000 },
-    );
-
-    // Execute again - result should be populated again
-    await user.click(executeButton);
-
-    await waitFor(
-      () => {
-        expect(mockSendRequest).toHaveBeenCalledTimes(2);
-        const resultEditor = screen.getAllByTestId('code-editor')[1];
-        const resultCode = within(resultEditor).getByTestId('code-editor-code');
-        expect(resultCode.textContent).toContain('"data"');
-      },
-      { timeout: 3000 },
-    );
-  });
-
-  it('renders correctly', async () => {
-    const { container } = render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-      },
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText('Analytics')).toBeInTheDocument();
-    });
-
-    expect(container).toMatchSnapshot();
   });
 
   it('refreshes recording directories when ArchivedRecordingCreated notification is received', async () => {
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-      },
-    });
+    renderPage();
+    await waitFor(() => expect(mockDoGet).toHaveBeenCalledTimes(1));
 
-    await waitFor(() => {
-      expect(mockDoGet).toHaveBeenCalledWith('fs/recordings', 'beta');
-    });
-
-    expect(mockDoGet).toHaveBeenCalledTimes(1);
-
-    const updatedDirectories: RecordingDirectory[] = [
+    const updatedDirectories = [
       ...mockRecordingDirectories,
       {
         connectUrl: 'service:jmx:rmi://jvm-3',
@@ -809,113 +280,48 @@ describe('<RecordingAnalytics />', () => {
         recordings: [
           {
             name: 'new-recording.jfr',
-            downloadUrl: 'http://example.com/new-recording.jfr',
+            downloadUrl: '',
             reportUrl: '',
-            archivedTime: 1234567893,
-            size: 8192,
+            archivedTime: 0,
+            size: 0,
             metadata: { labels: [] },
           },
         ],
       },
     ];
+    mockDoGet.mockReturnValue(of(updatedDirectories) as any);
+    archivedRecordingCreatedSubject.next({ message: { jvmId: 'jvm-3', recording: { name: 'new-recording.jfr' } } });
 
-    mockDoGet.mockReturnValue(of(updatedDirectories));
-
-    archivedRecordingCreatedSubject.next({
-      message: {
-        jvmId: 'jvm-3',
-        recording: {
-          name: 'new-recording.jfr',
-        },
-      },
-    });
-
-    await waitFor(() => {
-      expect(mockDoGet).toHaveBeenCalledTimes(2);
-    });
-
-    await waitFor(() => {
-      const dropdowns = screen.getAllByTestId('simple-dropdown');
-      const jvmDropdown = dropdowns[0];
-      expect(within(jvmDropdown).getByText('jvm-3')).toBeInTheDocument();
-    });
+    await waitFor(() => expect(mockDoGet).toHaveBeenCalledTimes(2));
+    await waitFor(() =>
+      expect(within(screen.getAllByTestId('simple-dropdown')[0]).getByText('jvm-3')).toBeInTheDocument(),
+    );
   });
 
   it('refreshes recording directories when ArchivedRecordingDeleted notification is received', async () => {
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-      },
-    });
+    renderPage();
+    await waitFor(() => expect(mockDoGet).toHaveBeenCalledTimes(1));
 
-    await waitFor(() => {
-      expect(mockDoGet).toHaveBeenCalledWith('fs/recordings', 'beta');
-    });
-
-    expect(mockDoGet).toHaveBeenCalledTimes(1);
-
-    const updatedDirectories: RecordingDirectory[] = [
-      {
-        connectUrl: 'service:jmx:rmi://jvm-1',
-        jvmId: 'jvm-1',
-        recordings: [
-          {
-            name: 'recording1.jfr',
-            downloadUrl: 'http://example.com/recording1.jfr',
-            reportUrl: '',
-            archivedTime: 1234567890,
-            size: 1024,
-            metadata: { labels: [] },
-          },
-        ],
-      },
+    const updatedDirectories = [
+      { ...mockRecordingDirectories[0], recordings: [mockRecordingDirectories[0].recordings[0]] },
       mockRecordingDirectories[1],
     ];
+    mockDoGet.mockReturnValue(of(updatedDirectories) as any);
+    archivedRecordingDeletedSubject.next({ message: { jvmId: 'jvm-1', recording: { name: 'recording2.jfr' } } });
 
-    mockDoGet.mockReturnValue(of(updatedDirectories));
-
-    archivedRecordingDeletedSubject.next({
-      message: {
-        jvmId: 'jvm-1',
-        recording: {
-          name: 'recording2.jfr',
-        },
-      },
-    });
-
-    await waitFor(() => {
-      expect(mockDoGet).toHaveBeenCalledTimes(2);
-    });
-
-    await waitFor(() => {
-      const dropdowns = screen.getAllByTestId('simple-dropdown');
-      const jvmDropdown = dropdowns[0];
-      const jvmItems = within(jvmDropdown).getByTestId('dropdown-items');
-      expect(within(jvmItems).queryByText('recording2.jfr')).not.toBeInTheDocument();
-    });
+    await waitFor(() => expect(mockDoGet).toHaveBeenCalledTimes(2));
+    await waitFor(() =>
+      expect(
+        within(within(screen.getAllByTestId('simple-dropdown')[0]).getByTestId('dropdown-items')).queryByText(
+          'recording2.jfr',
+        ),
+      ).not.toBeInTheDocument(),
+    );
   });
 
-  it('renders the Queries tab selected by default', async () => {
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/analytics',
-            element: <RecordingAnalytics />,
-          },
-        ],
-      },
-    });
-
-    await waitFor(() => {
-      const queriesTab = screen.getByRole('tab', { name: 'Queries' });
-      expect(queriesTab).toBeInTheDocument();
-      expect(queriesTab).toHaveAttribute('aria-selected', 'true');
-    });
+  it('renders correctly', async () => {
+    const { container } = renderPage();
+    await waitFor(() => expect(screen.getByText('Analytics')).toBeInTheDocument());
+    expect(container).toMatchSnapshot();
   });
 });
