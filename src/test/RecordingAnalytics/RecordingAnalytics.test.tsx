@@ -899,4 +899,23 @@ describe('<RecordingAnalytics />', () => {
       expect(within(jvmItems).queryByText('recording2.jfr')).not.toBeInTheDocument();
     });
   });
+
+  it('renders the Queries tab selected by default', async () => {
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/analytics',
+            element: <RecordingAnalytics />,
+          },
+        ],
+      },
+    });
+
+    await waitFor(() => {
+      const queriesTab = screen.getByRole('tab', { name: 'Queries' });
+      expect(queriesTab).toBeInTheDocument();
+      expect(queriesTab).toHaveAttribute('aria-selected', 'true');
+    });
+  });
 });
