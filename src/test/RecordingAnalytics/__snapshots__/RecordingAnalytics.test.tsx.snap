@@ -160,7 +160,21 @@ exports[`<RecordingAnalytics /> renders correctly 1`] = `
                 <span
                   class="pf-v6-c-tabs__item-text"
                 >
-                  Views
+                  Views 
+                  <span
+                    class="pf-v6-c-label pf-m-teal pf-m-filled pf-m-compact"
+                    style="margin-left: 2ch; padding-top: 0.125ch; padding-bottom: 0.125ch;"
+                  >
+                    <span
+                      class="pf-v6-c-label__content"
+                    >
+                      <span
+                        class="pf-v6-c-label__text"
+                      >
+                        Beta
+                      </span>
+                    </span>
+                  </span>
                 </span>
               </button>
             </li>

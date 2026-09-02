@@ -16,6 +16,7 @@
 
 import { RecordingAnalytics } from '@app/RecordingAnalytics/RecordingAnalytics';
 import { NotificationCategory, RecordingDirectory } from '@app/Shared/Services/api.types';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -113,6 +114,8 @@ describe('<RecordingAnalytics />', () => {
     archivedRecordingCreatedSubject = new Subject();
     archivedRecordingDeletedSubject = new Subject();
 
+    jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.BETA));
+    jest.spyOn(defaultServices.settings, 'largeUi').mockReturnValue(of(false));
     mockDoGet = jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of(mockRecordingDirectories) as any);
     jest.spyOn(defaultServices.notificationChannel, 'messages').mockImplementation((category) => {
       switch (category) {
@@ -264,7 +267,7 @@ describe('<RecordingAnalytics />', () => {
     renderPage();
     await waitFor(() => {
       expect(screen.getByRole('tab', { name: 'Queries' })).toHaveAttribute('aria-selected', 'true');
-      expect(screen.getByRole('tab', { name: 'Views' })).toHaveAttribute('aria-selected', 'false');
+      expect(screen.getByRole('tab', { name: /Views/i })).toHaveAttribute('aria-selected', 'false');
     });
   });
 
