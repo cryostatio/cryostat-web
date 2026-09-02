@@ -585,7 +585,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             data-tour-id={`${cleanDataId(route.label!)}`}
           >
             {route.label}
-            {route.featureLevel && <FeatureLevelBadge level={route.featureLevel} />}
+            {route.featureLevel == undefined && <FeatureLevelBadge level={route.featureLevel} />}
           </NavLink>
         </NavItem>
       );
