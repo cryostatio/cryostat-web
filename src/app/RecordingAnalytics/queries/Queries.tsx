@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AnalysisResult } from '@app/RecordingAnalytics/AnalysisResult';
 import { ThemeSetting } from '@app/Settings/types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -31,7 +32,7 @@ import {
   StackItem,
   Tooltip,
 } from '@patternfly/react-core';
-import { CopyIcon, ListIcon, PlayIcon } from '@patternfly/react-icons';
+import { ListIcon, PlayIcon } from '@patternfly/react-icons';
 import * as monaco from 'monaco-editor';
 import * as React from 'react';
 import { concatMap } from 'rxjs';
@@ -267,10 +268,6 @@ export const Queries: React.FC<QueriesProps> = ({ jvmId, filename }) => {
     );
   }, [isSampleMenuOpen, loading, handleSampleQuerySelect]);
 
-  const handleCopyResult = React.useCallback(() => {
-    navigator.clipboard.writeText(result);
-  }, [result]);
-
   const executeControl = React.useMemo(() => {
     return (
       <CodeEditorControl
@@ -283,18 +280,6 @@ export const Queries: React.FC<QueriesProps> = ({ jvmId, filename }) => {
       />
     );
   }, [handleExecute, jvmId, filename, query, loading]);
-
-  const copyResultControl = React.useMemo(() => {
-    return (
-      <CodeEditorControl
-        icon={<CopyIcon />}
-        aria-label={t('RecordingAnalytics.Queries.ARIA_LABELS.COPY_RESULT')}
-        tooltipProps={{ content: t('RecordingAnalytics.Queries.COPY_RESULT') }}
-        onClick={handleCopyResult}
-        isDisabled={!result}
-      />
-    );
-  }, [handleCopyResult, result]);
 
   return (
     <Stack hasGutter>
@@ -312,15 +297,13 @@ export const Queries: React.FC<QueriesProps> = ({ jvmId, filename }) => {
         />
       </StackItem>
       <StackItem>
-        <CodeEditor
-          isReadOnly
+        <AnalysisResult
           isDarkTheme={theme === ThemeSetting.DARK}
           height="sizeToFit"
           isLineNumbersVisible
           isLanguageLabelVisible
           language={Language.json}
           code={result}
-          customControls={[copyResultControl]}
         />
       </StackItem>
     </Stack>
