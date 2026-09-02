@@ -17,24 +17,29 @@
 import { Views } from '@app/RecordingAnalytics/views/Views';
 import { ThemeSetting } from '@app/Settings/types';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { cleanup, screen, waitFor, within, act } from '@testing-library/react';
+import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of, throwError } from 'rxjs';
 import { render } from '../utils';
 
-jest.mock('@patternfly/react-code-editor', () => ({
-  CodeEditor: jest.fn((props) => (
+jest.mock('@app/RecordingAnalytics/AnalysisResult', () => ({
+  AnalysisResult: jest.fn((props) => (
     <div data-testid="code-editor">
       <div data-testid="code-editor-code">{props.code}</div>
       {props.customControls && (
         <div data-testid="code-editor-controls">
-          {props.customControls.map((c: React.ReactNode, i: number) => (
-            <div key={i}>{c}</div>
-          ))}
+          {(Array.isArray(props.customControls) ? props.customControls : [props.customControls]).map(
+            (c: React.ReactNode, i: number) => (
+              <div key={i}>{c}</div>
+            ),
+          )}
         </div>
       )}
     </div>
   )),
+}));
+
+jest.mock('@patternfly/react-code-editor', () => ({
   CodeEditorControl: jest.fn((props) => (
     <button
       data-testid="code-editor-control"
@@ -55,12 +60,6 @@ const mockViewList = {
 };
 
 const MOCK_VIEW_TEXT = '====================\nView: recording\n====================\nEvent Count   42\n';
-
-Object.defineProperty(navigator, 'clipboard', {
-  value: { writeText: jest.fn().mockResolvedValue(undefined) },
-  configurable: true,
-  writable: true,
-});
 
 describe('<Views />', () => {
   let mockDoGet: jest.SpyInstance;
@@ -200,36 +199,8 @@ describe('<Views />', () => {
     });
   });
 
-  it('copy result button is present in the result editor', async () => {
+  it('renders AnalysisResult for the result panel', async () => {
     renderViews('jvm-1', 'recording1.jfr');
-    await waitFor(() => expect(screen.getByLabelText('Copy result to clipboard')).toBeInTheDocument());
-  });
-
-  it('copy result button is disabled when there is no result', async () => {
-    renderViews('jvm-1', 'recording1.jfr');
-    await waitFor(() => expect(screen.getByLabelText('Copy result to clipboard')).toBeDisabled());
-  });
-
-  it('copy result button is enabled and copies text after a render', async () => {
-    const { user } = renderViews('jvm-1', 'recording1.jfr');
-    const mockWriteText = jest.fn().mockResolvedValue(undefined);
-    navigator.clipboard.writeText = mockWriteText;
-
-    await waitFor(() => expect(screen.getByLabelText('Render view')).not.toBeDisabled());
-    await user.click(screen.getByLabelText('Render view'));
-
-    await waitFor(() => {
-      const editor = screen.getByTestId('code-editor');
-      expect(within(editor).getByTestId('code-editor-code')).toHaveTextContent('Event Count');
-    });
-
-    const copyButton = screen.getByLabelText('Copy result to clipboard');
-    expect(copyButton).not.toBeDisabled();
-
-    await act(async () => {
-      await user.click(copyButton);
-    });
-
-    expect(mockWriteText).toHaveBeenCalledWith(MOCK_VIEW_TEXT);
+    await waitFor(() => expect(screen.getByTestId('code-editor')).toBeInTheDocument());
   });
 });
