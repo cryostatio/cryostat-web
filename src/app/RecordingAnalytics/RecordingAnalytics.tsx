@@ -15,7 +15,6 @@
  */
 
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { FeatureFlag } from '@app/Shared/Components/FeatureFlag';
 import { FeatureLevelBadge } from '@app/Shared/Components/FeatureLevelBadge';
 import { modalPrefillClearIntent, RootState } from '@app/Shared/Redux/ReduxStore';
 import { NotificationCategory, RecordingDirectory } from '@app/Shared/Services/api.types';
@@ -58,6 +57,7 @@ export const RecordingAnalytics: React.FC = () => {
   const modalPrefill = useSelector((state: RootState) => state.modalPrefill);
   const { search, pathname } = location;
 
+  const [activeFeatureLevel, setActiveFeatureLevel] = React.useState(FeatureLevel.PRODUCTION);
   const [jvmId, setJvmId] = React.useState('');
   const [recordingDirectories, setRecordingDirectories] = React.useState([] as RecordingDirectory[]);
   const [filename, setFilename] = React.useState('');
@@ -69,6 +69,10 @@ export const RecordingAnalytics: React.FC = () => {
       }),
     );
   }, [addSubscription, context.api]);
+
+  React.useLayoutEffect(() => {
+    addSubscription(context.settings.featureLevel().subscribe((level) => setActiveFeatureLevel(level)));
+  }, [addSubscription, context.settings]);
 
   React.useEffect(() => {
     refreshRecordingDirectories();
@@ -222,12 +226,12 @@ export const RecordingAnalytics: React.FC = () => {
             >
               <Queries jvmId={jvmId} filename={filename} />
             </Tab>
-            <FeatureFlag level={FeatureLevel.BETA}>
+            {activeFeatureLevel <= FeatureLevel.BETA && (
               <Tab
                 eventKey={RecordingAnalyticsTab.VIEWS}
                 title={
                   <TabTitleText>
-                    <Trans t={t} components={[<FeatureLevelBadge />]}>
+                    <Trans t={t} components={[<FeatureLevelBadge level={FeatureLevel.BETA} />]}>
                       RecordingAnalytics.VIEWS_TAB_TITLE
                     </Trans>
                   </TabTitleText>
@@ -235,7 +239,7 @@ export const RecordingAnalytics: React.FC = () => {
               >
                 <Views jvmId={jvmId} filename={filename} />
               </Tab>
-            </FeatureFlag>
+            )}
           </Tabs>
         </CardBody>
       </Card>
