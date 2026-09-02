@@ -82,6 +82,7 @@ export const Views: React.FC<ViewsProps> = ({ jvmId, filename }) => {
 
   React.useEffect(() => {
     if (!jvmId || !filename) {
+      setResult('');
       setViewList(null);
       setSelectedView('recording');
       return;
@@ -91,7 +92,7 @@ export const Views: React.FC<ViewsProps> = ({ jvmId, filename }) => {
         .doGet<ViewList>(`targets/${jvmId}/recordings/${filename}/views`, 'beta')
         .subscribe((v) => setViewList(v)),
     );
-  }, [jvmId, filename, addSubscription, context.api]);
+  }, [jvmId, filename, setResult, setViewList, setSelectedView, addSubscription, context.api]);
 
   const handleExecute = React.useCallback(() => {
     if (!jvmId || !filename || !selectedView) {
