@@ -266,7 +266,7 @@ export const Queries: React.FC<QueriesProps> = ({ jvmId, filename }) => {
         </DropdownList>
       </Dropdown>
     );
-  }, [isSampleMenuOpen, loading, handleSampleQuerySelect]);
+  }, [t, isSampleMenuOpen, loading, handleSampleQuerySelect]);
 
   const executeControl = React.useMemo(() => {
     return (
@@ -279,7 +279,7 @@ export const Queries: React.FC<QueriesProps> = ({ jvmId, filename }) => {
         isDisabled={!jvmId || !filename || !query || loading}
       />
     );
-  }, [handleExecute, jvmId, filename, query, loading]);
+  }, [t, handleExecute, jvmId, filename, query, loading]);
 
   return (
     <Stack hasGutter>

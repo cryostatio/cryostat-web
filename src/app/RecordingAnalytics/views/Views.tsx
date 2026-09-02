@@ -190,7 +190,7 @@ export const Views: React.FC<ViewsProps> = ({ jvmId, filename }) => {
         </PanelMain>
       </Panel>
     ),
-    [viewMenuRef, viewList, viewFilter, treeData, activeTreeItem, handleViewSelect],
+    [t, viewMenuRef, viewList, viewFilter, treeData, activeTreeItem, handleViewSelect],
   );
 
   const viewToggle = React.useMemo(
@@ -205,7 +205,7 @@ export const Views: React.FC<ViewsProps> = ({ jvmId, filename }) => {
         {selectedView || t('RecordingAnalytics.Views.SELECT_VIEW')}
       </MenuToggle>
     ),
-    [isViewSelectOpen, selectedView, viewList],
+    [t, isViewSelectOpen, selectedView, viewList],
   );
 
   const truncateToggle = React.useCallback(
@@ -219,7 +219,7 @@ export const Views: React.FC<ViewsProps> = ({ jvmId, filename }) => {
         {truncate || t('RecordingAnalytics.Views.VIEW_DEFAULT')}
       </MenuToggle>
     ),
-    [isTruncateOpen, truncate],
+    [t, isTruncateOpen, truncate],
   );
 
   const executeControl = React.useMemo(
@@ -233,7 +233,7 @@ export const Views: React.FC<ViewsProps> = ({ jvmId, filename }) => {
         isDisabled={!jvmId || !filename || !selectedView || loading}
       />
     ),
-    [handleExecute, jvmId, filename, selectedView, loading],
+    [t, handleExecute, jvmId, filename, selectedView, loading],
   );
 
   return (
