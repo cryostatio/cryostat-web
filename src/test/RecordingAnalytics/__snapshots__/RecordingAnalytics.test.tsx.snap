@@ -115,6 +115,7 @@ exports[`<RecordingAnalytics /> renders correctly 1`] = `
           data-ouia-component-id="OUIA-Generated-Tabs-13"
           data-ouia-component-type="PF6/Tabs"
           data-ouia-safe="true"
+          id="recording-analytics"
           style="--pf-v6-c-tabs--link-accent--length: 0px; --pf-v6-c-tabs--link-accent--start: 0px;"
         >
           <ul
@@ -126,12 +127,12 @@ exports[`<RecordingAnalytics /> renders correctly 1`] = `
               role="presentation"
             >
               <button
-                aria-controls="pf-tab-section-queries-pf-1788362827965vdg254f2hf9"
+                aria-controls="pf-tab-section-queries-recording-analytics"
                 aria-selected="true"
                 class="pf-v6-c-tabs__link"
                 data-ouia-component-type="PF6/TabButton"
                 data-ouia-safe="true"
-                id="pf-tab-queries-pf-1788362827965vdg254f2hf9"
+                id="pf-tab-queries-recording-analytics"
                 role="tab"
                 type="button"
               >
@@ -147,12 +148,12 @@ exports[`<RecordingAnalytics /> renders correctly 1`] = `
               role="presentation"
             >
               <button
-                aria-controls="pf-tab-section-views-pf-1788362827965vdg254f2hf9"
+                aria-controls="pf-tab-section-views-recording-analytics"
                 aria-selected="false"
                 class="pf-v6-c-tabs__link"
                 data-ouia-component-type="PF6/TabButton"
                 data-ouia-safe="true"
-                id="pf-tab-views-pf-1788362827965vdg254f2hf9"
+                id="pf-tab-views-recording-analytics"
                 role="tab"
                 type="button"
               >
@@ -166,11 +167,11 @@ exports[`<RecordingAnalytics /> renders correctly 1`] = `
           </ul>
         </div>
         <section
-          aria-labelledby="pf-tab-queries-pf-1788362827965vdg254f2hf9"
+          aria-labelledby="pf-tab-queries-recording-analytics"
           class="pf-v6-c-tab-content"
           data-ouia-component-type="PF6/TabContent"
           data-ouia-safe="true"
-          id="pf-tab-section-queries-pf-1788362827965vdg254f2hf9"
+          id="pf-tab-section-queries-recording-analytics"
           role="tabpanel"
           tabindex="0"
         >
@@ -181,12 +182,12 @@ exports[`<RecordingAnalytics /> renders correctly 1`] = `
           />
         </section>
         <section
-          aria-labelledby="pf-tab-views-pf-1788362827965vdg254f2hf9"
+          aria-labelledby="pf-tab-views-recording-analytics"
           class="pf-v6-c-tab-content"
           data-ouia-component-type="PF6/TabContent"
           data-ouia-safe="true"
           hidden=""
-          id="pf-tab-section-views-pf-1788362827965vdg254f2hf9"
+          id="pf-tab-section-views-recording-analytics"
           role="tabpanel"
           tabindex="0"
         >
