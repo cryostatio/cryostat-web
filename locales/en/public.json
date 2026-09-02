@@ -650,7 +650,7 @@
   },
   "RecordingAnalytics": {
     "QUERIES_TAB_TITLE": "Queries",
-    "VIEWS_TAB_TITLE": "Views",
+    "VIEWS_TAB_TITLE": "Views <0/>",
     "AnalysisResult": {
       "ARIA_LABELS": {
         "COPY_RESULT": "Copy result to clipboard"

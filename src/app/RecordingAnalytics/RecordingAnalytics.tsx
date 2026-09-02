@@ -15,8 +15,11 @@
  */
 
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { FeatureFlag } from '@app/Shared/Components/FeatureFlag';
+import { FeatureLevelBadge } from '@app/Shared/Components/FeatureLevelBadge';
 import { modalPrefillClearIntent, RootState } from '@app/Shared/Redux/ReduxStore';
 import { NotificationCategory, RecordingDirectory } from '@app/Shared/Services/api.types';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
@@ -34,6 +37,7 @@ import {
 } from '@patternfly/react-core';
 import { SimpleDropdown, SimpleDropdownItem } from '@patternfly/react-templates';
 import * as React from 'react';
+import { Trans } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { Queries } from './queries/Queries';
@@ -218,12 +222,20 @@ export const RecordingAnalytics: React.FC = () => {
             >
               <Queries jvmId={jvmId} filename={filename} />
             </Tab>
-            <Tab
-              eventKey={RecordingAnalyticsTab.VIEWS}
-              title={<TabTitleText>{t('RecordingAnalytics.VIEWS_TAB_TITLE')}</TabTitleText>}
-            >
-              <Views jvmId={jvmId} filename={filename} />
-            </Tab>
+            <FeatureFlag level={FeatureLevel.BETA}>
+              <Tab
+                eventKey={RecordingAnalyticsTab.VIEWS}
+                title={
+                  <TabTitleText>
+                    <Trans t={t} components={[<FeatureLevelBadge />]}>
+                      RecordingAnalytics.VIEWS_TAB_TITLE
+                    </Trans>
+                  </TabTitleText>
+                }
+              >
+                <Views jvmId={jvmId} filename={filename} />
+              </Tab>
+            </FeatureFlag>
           </Tabs>
         </CardBody>
       </Card>
