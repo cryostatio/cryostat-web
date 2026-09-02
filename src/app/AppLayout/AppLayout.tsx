@@ -27,7 +27,7 @@ import { IAppRoute, navGroups, routes } from '@app/routes';
 import { ThemeSetting, SettingTab } from '@app/Settings/types';
 import { DARK_THEME_CLASS, selectTab, tabAsParam } from '@app/Settings/utils';
 import { CryostatLink } from '@app/Shared/Components/CryostatLink';
-import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/Components/FeatureFlag';
+import { FeatureFlag } from '@app/Shared/Components/FeatureFlag';
 import { FeatureLevelBadge } from '@app/Shared/Components/FeatureLevelBadge';
 import { navMenuSetExpandedIntent } from '@app/Shared/Redux/Configurations/NavMenuConfigSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
@@ -379,15 +379,13 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     ];
   }, [t, handleOpenDocumentation, handleOpenGuidedTour, handleOpenDiscussion, handleOpenAboutModal]);
 
-  const levelBadge = React.useCallback((level: FeatureLevel) => <FeatureLevelBadge level={level} />, []);
-
   const headerToolbar = React.useMemo(
     () => (
       <>
         <Toolbar isFullHeight isStatic>
           <ToolbarContent>
             <ToolbarGroup variant="label-group" align={{ default: 'alignStart' }}>
-              <DynamicFeatureFlag levels={[FeatureLevel.DEVELOPMENT, FeatureLevel.BETA]} component={levelBadge} />
+              <FeatureLevelBadge />
             </ToolbarGroup>
             <ToolbarGroup variant="action-group-plain" align={{ default: 'alignEnd' }}>
               <FeatureFlag strict level={FeatureLevel.DEVELOPMENT}>
@@ -481,7 +479,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       </>
     ),
     [
-      levelBadge,
       notificationsContext,
       unreadNotificationsCount,
       errorNotificationsCount,
@@ -588,7 +585,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             data-tour-id={`${cleanDataId(route.label!)}`}
           >
             {route.label}
-            {route.featureLevel !== undefined && levelBadge(route.featureLevel)}
+            {route.featureLevel && <FeatureLevelBadge level={route.featureLevel} />}
           </NavLink>
         </NavItem>
       );
@@ -638,7 +635,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         </NavList>
       </Nav>
     );
-  }, [mobileOnSelect, navExpandedStates, handleNavExpand, isActiveRoute, levelBadge, activeLevel, t]);
+  }, [mobileOnSelect, navExpandedStates, handleNavExpand, isActiveRoute, activeLevel, t]);
 
   const Sidebar = React.useMemo(
     () => (

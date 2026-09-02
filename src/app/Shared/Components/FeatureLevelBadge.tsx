@@ -44,12 +44,14 @@ export const FeatureLevelBadge: React.FC<FeatureLevelBadgeProps> = ({ level: lev
   const level = levelProp ?? activeLevel;
 
   return (
-    <Label
-      isCompact={useCompactLabels}
-      style={{ marginLeft: '2ch', paddingTop: '0.125ch', paddingBottom: '0.125ch' }}
-      color={level === FeatureLevel.BETA ? 'teal' : 'red'}
-    >
-      {t(FeatureLevel[level])}
-    </Label>
+    level !== FeatureLevel.PRODUCTION && (
+      <Label
+        isCompact={useCompactLabels}
+        style={{ marginLeft: '2ch', paddingTop: '0.125ch', paddingBottom: '0.125ch' }}
+        color={level === FeatureLevel.BETA ? 'teal' : 'red'}
+      >
+        {t(FeatureLevel[level])}
+      </Label>
+    )
   );
 };
