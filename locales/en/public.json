@@ -658,7 +658,8 @@
         "VIEW_SELECTOR": "View selector",
         "SELECT_TRUNCATE": "Select truncate",
         "VERBOSE": "Verbose",
-        "RENDER_VIEW": "Render view"
+        "RENDER_VIEW": "Render view",
+        "COPY_RESULT": "Copy result to clipboard"
       },
       "SELECT_RECORDING_FIRST": "Select a recording first",
       "SELECT_VIEW": "Select view",
@@ -679,10 +680,12 @@
     "Queries": {
       "ARIA_LABELS": {
         "INSERT_SAMPLE_QUERY": "Insert sample query",
-        "EXECUTE_QUERY": "Execute query"
+        "EXECUTE_QUERY": "Execute query",
+        "COPY_RESULT": "Copy result to clipboard"
       },
       "INSERT_SAMPLE_QUERY": "Insert sample query",
-      "EXECUTE_QUERY": "Execute query"
+      "EXECUTE_QUERY": "Execute query",
+      "COPY_RESULT": "Copy result to clipboard"
     }
   },
   "RecordingFilters": {
