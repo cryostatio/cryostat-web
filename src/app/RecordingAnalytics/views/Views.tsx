@@ -42,7 +42,7 @@ import {
   TreeView,
   TreeViewDataItem,
 } from '@patternfly/react-core';
-import { PlayIcon } from '@patternfly/react-icons';
+import { CopyIcon, PlayIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
 import { concatMap } from 'rxjs';
@@ -221,6 +221,10 @@ export const Views: React.FC<ViewsProps> = ({ jvmId, filename }) => {
     [isTruncateOpen, truncate],
   );
 
+  const handleCopyResult = React.useCallback(() => {
+    navigator.clipboard.writeText(result);
+  }, [result]);
+
   const executeControl = React.useMemo(
     () => (
       <CodeEditorControl
@@ -233,6 +237,19 @@ export const Views: React.FC<ViewsProps> = ({ jvmId, filename }) => {
       />
     ),
     [handleExecute, jvmId, filename, selectedView, loading],
+  );
+
+  const copyResultControl = React.useMemo(
+    () => (
+      <CodeEditorControl
+        icon={<CopyIcon />}
+        aria-label={t('RecordingAnalytics.Views.ARIA_LABELS.COPY_RESULT')}
+        tooltipProps={{ content: t('RecordingAnalytics.Views.ARIA_LABELS.COPY_RESULT') }}
+        onClick={handleCopyResult}
+        isDisabled={!result}
+      />
+    ),
+    [handleCopyResult, result],
   );
 
   return (
@@ -340,7 +357,7 @@ export const Views: React.FC<ViewsProps> = ({ jvmId, filename }) => {
           isDarkTheme={theme === ThemeSetting.DARK}
           height="sizeToFit"
           code={result}
-          customControls={[executeControl]}
+          customControls={[executeControl, copyResultControl]}
         />
       </StackItem>
     </Stack>

@@ -17,7 +17,7 @@
 import { Queries } from '@app/RecordingAnalytics/queries/Queries';
 import { ThemeSetting } from '@app/Settings/types';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { cleanup, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of, throwError } from 'rxjs';
 import { render } from '../utils';
@@ -62,6 +62,12 @@ jest.mock('@patternfly/react-code-editor', () => ({
   )),
   Language: { sql: 'sql', json: 'json' },
 }));
+
+Object.defineProperty(navigator, 'clipboard', {
+  value: { writeText: jest.fn().mockResolvedValue(undefined) },
+  configurable: true,
+  writable: true,
+});
 
 const mockApiResponse = {
   data: [
@@ -239,5 +245,47 @@ describe('<Queries />', () => {
       },
       { timeout: 3000 },
     );
+  });
+
+  it('copy result button is present in the result editor', async () => {
+    renderQueries();
+    await waitFor(() => expect(screen.getAllByTestId('code-editor').length).toBe(2));
+    const resultEditor = screen.getAllByTestId('code-editor')[1];
+    expect(within(resultEditor).getByLabelText('Copy result to clipboard')).toBeInTheDocument();
+  });
+
+  it('copy result button is disabled when there is no result', async () => {
+    renderQueries();
+    await waitFor(() => expect(screen.getAllByTestId('code-editor').length).toBe(2));
+    const resultEditor = screen.getAllByTestId('code-editor')[1];
+    expect(within(resultEditor).getByLabelText('Copy result to clipboard')).toBeDisabled();
+  });
+
+  it('copy result button is enabled and copies text after a successful query', async () => {
+    const { user } = renderQueries('jvm-1', 'recording1.jfr');
+    const mockWriteText = jest.fn().mockResolvedValue(undefined);
+    navigator.clipboard.writeText = mockWriteText;
+
+    await user.click(within(screen.getAllByTestId('code-editor')[0]).getByText('Change Query'));
+    await waitFor(() => expect(screen.getByLabelText('Execute query')).not.toBeDisabled());
+    await user.click(screen.getByLabelText('Execute query'));
+
+    await waitFor(
+      () => {
+        const resultCode = within(screen.getAllByTestId('code-editor')[1]).getByTestId('code-editor-code');
+        expect(resultCode.textContent).toContain('"data"');
+      },
+      { timeout: 3000 },
+    );
+
+    const resultEditor = screen.getAllByTestId('code-editor')[1];
+    const copyButton = within(resultEditor).getByLabelText('Copy result to clipboard');
+    expect(copyButton).not.toBeDisabled();
+
+    await act(async () => {
+      await user.click(copyButton);
+    });
+
+    expect(mockWriteText).toHaveBeenCalledWith(expect.stringContaining('"data"'));
   });
 });
