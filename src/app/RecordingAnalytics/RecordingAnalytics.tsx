@@ -37,9 +37,11 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { Queries } from './queries/Queries';
+import { Views } from './views/Views';
 
 enum RecordingAnalyticsTab {
   QUERIES = 'queries',
+  VIEWS = 'views',
 }
 
 export const RecordingAnalytics: React.FC = () => {
@@ -215,6 +217,12 @@ export const RecordingAnalytics: React.FC = () => {
               title={<TabTitleText>{t('RecordingAnalytics.QUERIES_TAB_TITLE')}</TabTitleText>}
             >
               <Queries jvmId={jvmId} filename={filename} />
+            </Tab>
+            <Tab
+              eventKey={RecordingAnalyticsTab.VIEWS}
+              title={<TabTitleText>{t('RecordingAnalytics.VIEWS_TAB_TITLE')}</TabTitleText>}
+            >
+              <Views jvmId={jvmId} filename={filename} />
             </Tab>
           </Tabs>
         </CardBody>
