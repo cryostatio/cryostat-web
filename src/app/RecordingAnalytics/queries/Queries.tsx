@@ -15,8 +15,6 @@
  */
 
 import { ThemeSetting } from '@app/Settings/types';
-import { modalPrefillClearIntent, RootState } from '@app/Shared/Redux/ReduxStore';
-import { NotificationCategory, RecordingDirectory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTheme } from '@app/utils/hooks/useTheme';
@@ -30,18 +28,11 @@ import {
   MenuToggleElement,
   Stack,
   StackItem,
-  Toolbar,
-  ToolbarContent,
-  ToolbarGroup,
-  ToolbarItem,
   Tooltip,
 } from '@patternfly/react-core';
 import { ListIcon, PlayIcon } from '@patternfly/react-icons';
-import { SimpleDropdown, SimpleDropdownItem } from '@patternfly/react-templates';
 import * as monaco from 'monaco-editor';
 import * as React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { concatMap } from 'rxjs';
 
 loader.config({ monaco });
@@ -137,17 +128,14 @@ const SAMPLE_QUERIES: SampleQuery[] = [
   },
 ];
 
-export const Queries: React.FC = () => {
+export interface QueriesProps {
+  jvmId: string;
+  filename: string;
+}
+
+export const Queries: React.FC<QueriesProps> = ({ jvmId, filename }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const modalPrefill = useSelector((state: RootState) => state.modalPrefill);
-
-  const [jvmId, setJvmId] = React.useState('');
-  const [recordingDirectories, setRecordingDirectories] = React.useState([] as RecordingDirectory[]);
-  const [filename, setFilename] = React.useState('');
 
   const [theme] = useTheme();
   const [query, setQuery] = React.useState('');
@@ -156,128 +144,6 @@ export const Queries: React.FC = () => {
   const [isSampleMenuOpen, setIsSampleMenuOpen] = React.useState(false);
   const editorRef = React.useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const sampleQueryInsertedRef = React.useRef(false);
-
-  const refreshRecordingDirectories = React.useCallback(() => {
-    addSubscription(
-      context.api.doGet<RecordingDirectory[]>('fs/recordings', 'beta').subscribe((v) => {
-        setRecordingDirectories(v);
-      }),
-    );
-  }, [addSubscription, context.api, setRecordingDirectories]);
-
-  React.useEffect(() => {
-    refreshRecordingDirectories();
-  }, [refreshRecordingDirectories]);
-
-  React.useEffect(() => {
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated).subscribe(() => {
-        refreshRecordingDirectories();
-      }),
-    );
-  }, [addSubscription, context.notificationChannel, refreshRecordingDirectories]);
-
-  React.useEffect(() => {
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted).subscribe(() => {
-        refreshRecordingDirectories();
-      }),
-    );
-  }, [addSubscription, context.notificationChannel, refreshRecordingDirectories]);
-
-  React.useEffect(() => {
-    const stateData = location.state as Record<string, unknown> | null;
-    const reduxData = modalPrefill.route === location.pathname ? (modalPrefill.data as Record<string, unknown>) : null;
-
-    const prefillJvmId = (stateData?.jvmId || reduxData?.jvmId) as string | undefined;
-    const prefillFilename = (stateData?.filename || reduxData?.filename) as string | undefined;
-
-    if (prefillJvmId && recordingDirectories.some((d) => d.jvmId === prefillJvmId)) {
-      setJvmId(prefillJvmId);
-
-      if (prefillFilename) {
-        const directory = recordingDirectories.find((d) => d.jvmId === prefillJvmId);
-        if (directory && directory.recordings.some((r) => r.name === prefillFilename)) {
-          setFilename(prefillFilename);
-        }
-      }
-
-      dispatch(modalPrefillClearIntent());
-      if (location.state) {
-        navigate(`${location.pathname}${location.search}${location.hash}`, { replace: true, state: null });
-      }
-    }
-  }, [
-    recordingDirectories,
-    location.state,
-    location.pathname,
-    location.search,
-    location.hash,
-    modalPrefill,
-    dispatch,
-    navigate,
-  ]);
-
-  const jvmIds = React.useMemo(() => recordingDirectories.map((e) => e.jvmId), [recordingDirectories]);
-
-  const filenames = React.useMemo(() => {
-    const directory = recordingDirectories.find((d) => d.jvmId === jvmId);
-    return directory ? directory.recordings.map((r) => r.name) : [];
-  }, [recordingDirectories, jvmId]);
-
-  const jvmIdItems = React.useMemo(() => {
-    const a: SimpleDropdownItem[] = jvmIds
-      .map(
-        (id) =>
-          ({
-            value: id,
-            onClick: () => {
-              setJvmId(id);
-              setFilename('');
-            },
-            content: id,
-          }) as SimpleDropdownItem,
-      )
-      .concat([
-        {
-          value: '',
-          isDivider: true,
-        },
-        {
-          value: 'Clear Selection',
-          onClick: () => {
-            setJvmId('');
-            setFilename('');
-          },
-          content: 'Clear Selection',
-        },
-      ]);
-    return a;
-  }, [jvmIds]);
-
-  const filenameItems = React.useMemo(() => {
-    const a: SimpleDropdownItem[] = filenames
-      .map(
-        (f) =>
-          ({
-            value: f,
-            onClick: () => setFilename(f),
-            content: f,
-          }) as SimpleDropdownItem,
-      )
-      .concat([
-        {
-          value: '',
-          isDivider: true,
-        },
-        {
-          value: 'Clear Selection',
-          onClick: () => setFilename(''),
-          content: 'Clear Selection',
-        },
-      ]);
-    return a;
-  }, [filenames]);
 
   const onEditorDidMount = React.useCallback((editor, monaco) => {
     editorRef.current = editor;
@@ -413,46 +279,32 @@ export const Queries: React.FC = () => {
   }, [handleExecute, jvmId, filename, query, loading]);
 
   return (
-    <>
-      <Toolbar>
-        <ToolbarContent>
-          <ToolbarGroup>
-            <ToolbarItem>
-              <SimpleDropdown toggleContent={jvmId || 'JVM ID'} initialItems={jvmIdItems} />
-            </ToolbarItem>
-            <ToolbarItem>
-              <SimpleDropdown toggleContent={filename || 'Filename'} isDisabled={!jvmId} initialItems={filenameItems} />
-            </ToolbarItem>
-          </ToolbarGroup>
-        </ToolbarContent>
-      </Toolbar>
-      <Stack hasGutter>
-        <StackItem>
-          <CodeEditor
-            isDarkTheme={theme === ThemeSetting.DARK}
-            code={query}
-            onChange={setQuery}
-            onEditorDidMount={onEditorDidMount}
-            height="sizeToFit"
-            language={Language.sql}
-            isLineNumbersVisible
-            isLanguageLabelVisible
-            customControls={[executeControl, sampleQueryControl]}
-          />
-        </StackItem>
-        <StackItem>
-          <CodeEditor
-            isReadOnly
-            isDarkTheme={theme === ThemeSetting.DARK}
-            height="sizeToFit"
-            isLineNumbersVisible
-            isLanguageLabelVisible
-            language={Language.json}
-            code={result}
-          />
-        </StackItem>
-      </Stack>
-    </>
+    <Stack hasGutter>
+      <StackItem>
+        <CodeEditor
+          isDarkTheme={theme === ThemeSetting.DARK}
+          code={query}
+          onChange={setQuery}
+          onEditorDidMount={onEditorDidMount}
+          height="sizeToFit"
+          language={Language.sql}
+          isLineNumbersVisible
+          isLanguageLabelVisible
+          customControls={[executeControl, sampleQueryControl]}
+        />
+      </StackItem>
+      <StackItem>
+        <CodeEditor
+          isReadOnly
+          isDarkTheme={theme === ThemeSetting.DARK}
+          height="sizeToFit"
+          isLineNumbersVisible
+          isLanguageLabelVisible
+          language={Language.json}
+          code={result}
+        />
+      </StackItem>
+    </Stack>
   );
 };
 
