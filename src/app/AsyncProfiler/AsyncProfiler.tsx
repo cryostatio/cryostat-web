@@ -62,7 +62,7 @@ import {
 import { EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
 import { InnerScrollContainer, OuterScrollContainer, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useNavigate } from 'react-router-dom';
 import { first, forkJoin, merge, Observable, tap } from 'rxjs';
 
 const tableColumns: TableColumn[] = [

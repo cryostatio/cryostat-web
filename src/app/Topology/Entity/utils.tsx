@@ -38,7 +38,7 @@ import {
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
-import { LinkProps } from 'react-router-dom-v5-compat';
+import { LinkProps } from 'react-router-dom';
 import {
   catchError,
   combineLatest,

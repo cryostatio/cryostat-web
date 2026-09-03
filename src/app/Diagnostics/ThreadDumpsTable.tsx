@@ -70,7 +70,7 @@ import { ISortBy, SortByDirection, Table, Tbody, Td, ThProps, Tr } from '@patter
 import _ from 'lodash';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useNavigate } from 'react-router-dom';
 import { combineLatest, concatMap, first, forkJoin, Observable, of } from 'rxjs';
 import { ColumnConfig, DiagnosticsTable } from './DiagnosticsTable';
 import { filterThreadDumps, ThreadDumpFilters, ThreadDumpFiltersCategories } from './Filters/ThreadDumpFilters';
