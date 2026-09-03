@@ -39,7 +39,7 @@ limitations under the License.
 
 .cryostat-app .cryostat-text {
   margin-top: -0.5em !important;
-  font-family: "Montserrat", sans-serif;
+  font-family: Montserrat, sans-serif;
   font-weight: 900;
   text-align: center;
   font-size: 4.5em;
@@ -672,14 +672,14 @@ limitations under the License.
 .cryostat-app .linear-dot-spinner {
   width: 2em;
   aspect-ratio: 4;
-  background: radial-gradient(circle closest-side, var(--pf-t--global--icon--color--brand--default) 90%, #0000) 0/calc(100%/3) 100% space;
+  background: radial-gradient(circle closest-side, var(--pf-t--global--icon--color--brand--default) 90%, #0000) 0 / calc(100% / 3) 100% space;
   clip-path: inset(0 100% 0 0);
   animation: linear-dot-spinner-animate 1s steps(4) infinite;
 }
 
 @keyframes linear-dot-spinner-animate {
   to {
-    clip-path: inset(0 -34% 0 0)
+    clip-path: inset(0 -34% 0 0);
   }
 }
 
@@ -709,7 +709,7 @@ limitations under the License.
 }
 
 .cryostat-app #card-catalog-wizard .pf-v6-c-wizard__main-body {
-  height: 100%
+  height: 100%;
 }
 
 .cryostat-app .pf-v6-c-drawer__panel.pf-m-resizable.layout-template-picker-drawer__panel {
@@ -836,4 +836,13 @@ limitations under the License.
 
 .cryostat-app .match-expression-display {
   padding: .25rem .5rem !important;
+}
+
+.cryostat-app .synthesis-candidate-row td {
+  background-color: var(--pf-t--global--background--color--secondary--default) !important;
+}
+
+.cryostat-app .synthesis-action-cell {
+  width: 3rem;
+  white-space: nowrap;
 }

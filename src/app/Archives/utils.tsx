@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { HeapDumpDirectory, RecordingDirectory, Target, ThreadDumpDirectory } from '@app/Shared/Services/api.types';
+import {
+  ArchivedRecording,
+  HeapDumpDirectory,
+  RecordingDirectory,
+  Target,
+  ThreadDumpDirectory,
+} from '@app/Shared/Services/api.types';
 
 export function includesDirectory<T extends RecordingDirectory | ThreadDumpDirectory | HeapDumpDirectory>(
   arr: T[],
@@ -42,3 +48,6 @@ export const getTargetFromDirectory = (dir: RecordingDirectory | ThreadDumpDirec
     },
   };
 };
+
+export const latestArchivedTime = (recordings: ArchivedRecording[]): number =>
+  recordings.reduce((max, r) => Math.max(max, r.archivedTime ?? 0), 0);

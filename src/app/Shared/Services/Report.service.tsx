@@ -27,13 +27,27 @@ export class ReportService {
   constructor(
     private ctx: CryostatContext,
     private notifications: NotificationService,
-    channel: NotificationChannel,
+    private readonly channel: NotificationChannel,
   ) {
-    channel.messages(NotificationCategory.ReportSuccess).subscribe((v) => {
+    channel.replayableMessages(NotificationCategory.ReportSuccess).subscribe((v) => {
       if (this.jobIds.has(v.message.jobId)) {
         this._jobCompletion.next(v.message.jobId);
       }
     });
+  }
+
+  // Resolves the pending job if a completion notification for it was already replayed
+  // before the job ID was registered (i.e. the notification arrived before the HTTP 202
+  // response was processed). The ReplaySubject delivers buffered messages synchronously
+  // on subscribe, so we drain and immediately unsubscribe to avoid catching live messages,
+  // which are already handled by the constructor subscription.
+  private checkReplayBuffer(jobId: string): void {
+    const sub = this.channel.replayableMessages(NotificationCategory.ReportSuccess).subscribe((v) => {
+      if (v.message.jobId === jobId && this.jobIds.has(jobId)) {
+        this._jobCompletion.next(jobId);
+      }
+    });
+    sub.unsubscribe();
   }
 
   private readonly jobIds: Map<string, string> = new Map();
@@ -97,6 +111,7 @@ export class ReportService {
                           }
                         });
                       });
+                    this.checkReplayBuffer(jobId);
                   });
                   return subj.asObservable();
                 }
