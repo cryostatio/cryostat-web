@@ -179,6 +179,37 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             ]
           : [];
       });
+      this.get('api/beta/targets/:jvmId/recordings/:filename/views', () => ({
+        vm: ['blocked-by-system-gc', 'gc', 'jvm-information', 'native-memory'],
+        env: ['active-recordings', 'recording', 'environment-variables'],
+        app: ['allocation-by-class', 'hot-methods', 'exceptions'],
+      }));
+      this.get('api/beta/targets/:jvmId/recordings/:filename/view', (_schema, request) => {
+        const view = request.queryParams['view'] || 'recording';
+        let width = 120;
+        if (request.queryParams) {
+          const w = request.queryParams['width'];
+          if (Array.isArray(w)) {
+            width = parseInt(w[0], 10);
+          } else {
+            width = parseInt(w ?? '120', 10);
+          }
+        }
+        const sep = '='.repeat(width);
+        const stubText = [
+          sep,
+          `View: ${view}`,
+          sep,
+          'Name                       Value',
+          '------------------------   ----------',
+          'Event Count                1 234',
+          'Duration                   30 s',
+          'Start Time                 2024-01-01 00:00:00',
+          '',
+        ].join('\n');
+        return new Response(200, { 'Content-Type': 'text/plain' }, stubText);
+      });
+      this.post('api/beta/recording_analytics/:jvmId/:filename', () => [['MOCK_RESPONSE']]);
       this.delete('api/beta/recordings/:targetId/:recordingName', (schema, request) => {
         const recordingName = request.params.recordingName;
         const recording = schema.findBy(Resource.ARCHIVE, { name: recordingName });
