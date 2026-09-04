@@ -86,7 +86,7 @@
     "typescript": "5.9.3",
     "url-loader": "4.1.1",
     "wait-on": "9.1.0",
-    "webpack": "5.110.2",
+    "webpack": "5.110.3",
     "webpack-bundle-analyzer": "5.3.2",
     "webpack-cli": "7.2.3",
     "webpack-dev-server": "5.2.6",
