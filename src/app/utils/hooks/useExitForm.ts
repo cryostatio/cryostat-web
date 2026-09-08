@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useNavigate } from 'react-router-dom';
 
 export function useExitForm(onExit?: () => void) {
   const navigate = useNavigate();

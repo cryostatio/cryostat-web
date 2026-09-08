@@ -47,7 +47,7 @@ import { t } from 'i18next';
 import _ from 'lodash';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { concatMap, EMPTY, finalize, first, map, of } from 'rxjs';
 import { AggregateDataCard } from '../AggregateDataCard.tsx';
 import { CollectionsTable } from './CollectionsTable';

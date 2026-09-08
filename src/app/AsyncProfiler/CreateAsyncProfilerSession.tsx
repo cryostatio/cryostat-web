@@ -47,7 +47,7 @@ import AngleLeftIcon from '@patternfly/react-icons/dist/esm/icons/angle-left-ico
 import AngleRightIcon from '@patternfly/react-icons/dist/esm/icons/angle-right-icon';
 import _ from 'lodash';
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useNavigate } from 'react-router-dom';
 import { filter, map } from 'rxjs';
 
 const MILLIS = 1000;

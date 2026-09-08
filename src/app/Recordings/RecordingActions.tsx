@@ -25,7 +25,7 @@ import { Divider, Dropdown, DropdownItem, DropdownList, MenuToggle, MenuToggleEl
 import { EllipsisVIcon } from '@patternfly/react-icons';
 import { Td } from '@patternfly/react-table';
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useNavigate } from 'react-router-dom';
 import { Observable } from 'rxjs';
 import { concatMap, filter, first, tap } from 'rxjs/operators';
 

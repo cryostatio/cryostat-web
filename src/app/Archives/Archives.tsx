@@ -24,7 +24,7 @@ import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, EmptyState, Tab, Tabs, TabTitleText, Stack, StackItem } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { of } from 'rxjs';
 import { AllArchivedRecordingsTable } from './AllArchivedRecordingsTable';
 import { AllTargetsArchivedRecordingsTable } from './AllTargetsArchivedRecordingsTable';
