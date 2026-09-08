@@ -654,6 +654,52 @@
     "VIEW_IN_ANALYTICS": "View in Analytics ...",
     "VIEW_IN_GRAFANA": "View in Grafana ..."
   },
+  "RecordingAnalytics": {
+    "QUERIES_TAB_TITLE": "Queries",
+    "VIEWS_TAB_TITLE": "Views <0/>",
+    "AnalysisResult": {
+      "ARIA_LABELS": {
+        "COPY_RESULT": "Copy result to clipboard"
+      },
+      "COPY_RESULT": "Copy result to clipboard"
+    },
+    "Views": {
+      "ARIA_LABELS": {
+        "SELECT_VIEW": "Select view",
+        "FILTER_VIEWS": "Filter views",
+        "VIEW_SELECTOR": "View selector",
+        "SELECT_TRUNCATE": "Select truncate",
+        "VERBOSE": "Verbose",
+        "RENDER_VIEW": "Render view",
+        "COPY_RESULT": "Copy result to clipboard"
+      },
+      "SELECT_RECORDING_FIRST": "Select a recording first",
+      "SELECT_VIEW": "Select view",
+      "FILTER_VIEWS_PLACEHOLDER": "Filter views...",
+      "VIEW_DEFAULT": "View default",
+      "TRUNCATE": {
+        "BEGINNING": "beginning",
+        "END": "end"
+      },
+      "FORM_LABELS": {
+        "VIEW": "View",
+        "WIDTH": "Width",
+        "VERBOSE": "Verbose",
+        "TRUNCATE": "Truncate",
+        "CELL_HEIGHT": "Cell height"
+      }
+    },
+    "Queries": {
+      "ARIA_LABELS": {
+        "INSERT_SAMPLE_QUERY": "Insert sample query",
+        "EXECUTE_QUERY": "Execute query",
+        "COPY_RESULT": "Copy result to clipboard"
+      },
+      "INSERT_SAMPLE_QUERY": "Insert sample query",
+      "EXECUTE_QUERY": "Execute query",
+      "COPY_RESULT": "Copy result to clipboard"
+    }
+  },
   "RecordingFilters": {
     "ARIA_LABELS": {
       "MENU_TOGGLE": "recording-filters-toggle"
