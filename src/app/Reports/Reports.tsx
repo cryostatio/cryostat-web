@@ -56,7 +56,7 @@ import { ProcessAutomationIcon, SearchIcon, SortAmountDownAltIcon, SortAmountDow
 import { ISortBy } from '@patternfly/react-table';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useNavigate } from 'react-router-dom';
 import { concatMap, filter, first, map, tap } from 'rxjs';
 
 type ReportEntry = { loading: boolean; target: Target; hasSources: boolean; report: AggregateReport };
