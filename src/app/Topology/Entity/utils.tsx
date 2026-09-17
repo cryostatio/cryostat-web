@@ -274,7 +274,7 @@ export const getLinkPropsForTargetResource = (
     case 'automatedRules':
       return { to: { pathname: '/rules' } };
     case 'credentials':
-      return { to: { pathname: '/security' } };
+      return { to: { pathname: '/credentials' } };
     case 'report':
       return { to: { pathname: '/recordings', hash: 'report' } };
     default:

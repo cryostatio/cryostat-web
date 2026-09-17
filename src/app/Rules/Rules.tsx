@@ -568,7 +568,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
                   components={[
                     <CryostatLink to={'/recordings'} />,
                     <CryostatLink to={'/events'} />,
-                    <CryostatLink to={'/security'} />,
+                    <CryostatLink to={'/credentials'} />,
                     <CryostatLink to={'/archives'} />,
                   ]}
                 >

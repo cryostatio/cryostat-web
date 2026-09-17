@@ -78,9 +78,9 @@ exports[`<Rules /> renders correctly 1`] = `
                     </a>
                     . If your Target JVM connections require JMX Credentials, you can configure these in 
                     <a
-                      href="/security"
+                      href="/credentials"
                     >
-                      Security
+                      Credentials
                     </a>
                     . Automated Rules can be configured to periodically copy the contents of the Active Recording to 
                     <a

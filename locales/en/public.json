@@ -731,7 +731,7 @@
     "CLEAN_DESCRIPTION": "Clean will stop any Active Recordings that {{ruleName}} created."
   },
   "Rules": {
-    "ABOUT_BODY": "Automated Rules are configurations that instruct Cryostat to create <0>JDK Flight Recordings</0> on matching target JVM applications, using a specific <1>Event Template</1>. If your Target JVM connections require JMX Credentials, you can configure these in <2>Security</2>. Automated Rules can be configured to periodically copy the contents of the Active Recording to <3>Archives</3> to ensure you always have up-to-date information about your JVMs.",
+    "ABOUT_BODY": "Automated Rules are configurations that instruct Cryostat to create <0>JDK Flight Recordings</0> on matching target JVM applications, using a specific <1>Event Template</1>. If your Target JVM connections require JMX Credentials, you can configure these in <2>Credentials</2>. Automated Rules can be configured to periodically copy the contents of the Active Recording to <3>Archives</3> to ensure you always have up-to-date information about your JVMs.",
     "EVENT_SPECIFIER_TOOLTIP": "The name and location of the Event Template applied by this rule.",
     "MATCH_EXPRESSION_TOOLTIP": "A code-snippet expression which must evaluate to a boolean when applied to a given target. If the expression evaluates to true then the rule applies to that target.",
     "NO_RULES": "No Automated Rules",
