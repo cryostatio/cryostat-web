@@ -82,8 +82,8 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
                 </DescriptionListTermHelpText>{' '}
                 for JMX,{' '}
                 <WarningResolverAsLink
-                  key={`${node.target.alias}-resolver-as-link-to-security`}
-                  to={toPath('/security')}
+                  key={`${node.target.alias}-resolver-as-link-to-certificates`}
+                  to={toPath('/certificates')}
                 >
                   check if the SSL/TLS certificate is loaded.
                 </WarningResolverAsLink>
