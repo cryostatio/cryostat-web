@@ -34,7 +34,7 @@ export class LoginService {
 
   checkAuth(): void {
     this.api
-      .sendRequest('v4', 'auth', {
+      .sendRequest('v5', 'auth', {
         credentials: 'include',
         mode: 'cors',
         method: 'POST',

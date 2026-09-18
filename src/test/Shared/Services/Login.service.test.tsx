@@ -99,7 +99,7 @@ describe('Login.service', () => {
       expect(apiSvc.sendRequest).toHaveBeenCalledTimes(0);
       svc.checkAuth();
       expect(apiSvc.sendRequest).toHaveBeenCalledTimes(1);
-      expect(apiSvc.sendRequest).toHaveBeenNthCalledWith(1, 'v4', 'auth', {
+      expect(apiSvc.sendRequest).toHaveBeenNthCalledWith(1, 'v5', 'auth', {
         credentials: 'include',
         mode: 'cors',
         method: 'POST',
