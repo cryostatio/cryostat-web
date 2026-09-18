@@ -84,8 +84,8 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         reportsAvailable: true,
         reportsConfigured: false,
       }));
-      this.get('api/v4/grafana_datasource_url', () => new Response(500));
-      this.get('api/v4/grafana_dashboard_url', () => new Response(500));
+      this.get('api/v5/grafana_datasource_url', () => new Response(500));
+      this.get('api/v5/grafana_dashboard_url', () => new Response(500));
       this.post('api/v4/auth', () => {
         return new Response(
           200,

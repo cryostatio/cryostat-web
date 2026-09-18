@@ -118,8 +118,8 @@ export class ApiService {
   }
 
   private testHealth() {
-    const datasourceURL: Observable<GrafanaDashboardUrlGetResponse> = this.doGet('/grafana_datasource_url', 'v4');
-    const dashboardURL: Observable<GrafanaDashboardUrlGetResponse> = this.doGet('/grafana_dashboard_url', 'v4');
+    const datasourceURL: Observable<GrafanaDashboardUrlGetResponse> = this.doGet('/grafana_datasource_url', 'v5');
+    const dashboardURL: Observable<GrafanaDashboardUrlGetResponse> = this.doGet('/grafana_dashboard_url', 'v5');
     const health: Observable<HealthGetResponse> = this.doGet('/health', 'unversioned');
 
     health
