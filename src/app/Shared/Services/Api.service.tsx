@@ -1554,7 +1554,7 @@ export class ApiService {
     body.append('username', username);
     body.append('password', password);
 
-    return this.sendRequest('v4', 'credentials', {
+    return this.sendRequest('v5', 'credentials', {
       method: 'POST',
       body,
     }).pipe(
@@ -1565,7 +1565,7 @@ export class ApiService {
   }
 
   getCredential(id: string): Observable<MatchedCredential> {
-    return this.sendRequest('v4', `credentials/${id}`, {
+    return this.sendRequest('v5', `credentials/${id}`, {
       method: 'GET',
     }).pipe(
       concatMap((resp) => resp.json()),
@@ -1575,7 +1575,7 @@ export class ApiService {
 
   getCredentials(suppressNotifications = false, skipStatusCheck = false): Observable<MatchedCredential[]> {
     return this.sendRequest(
-      'v4',
+      'v5',
       `credentials`,
       {
         method: 'GET',
@@ -1590,7 +1590,7 @@ export class ApiService {
   }
 
   deleteCredentials(id: string): Observable<boolean> {
-    return this.sendRequest('v4', `credentials/${id}`, {
+    return this.sendRequest('v5', `credentials/${id}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
