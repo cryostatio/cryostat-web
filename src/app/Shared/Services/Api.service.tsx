@@ -1630,7 +1630,7 @@ export class ApiService {
   }
 
   getTargetLineage(jvmId: string): Observable<EnvironmentNode> {
-    return this.doGet<EnvironmentNode>(`audit/target_lineage/${jvmId}`, 'beta', undefined, true);
+    return this.doGet<EnvironmentNode>(`audit/target_lineage/${jvmId}`, 'v5', undefined, true);
   }
 
   /**
@@ -1658,7 +1658,7 @@ export class ApiService {
       Expires: '0',
     });
 
-    return this.sendRequest('beta', `audit/revisions`, { method: 'GET', headers }, queryParams).pipe(
+    return this.sendRequest('v5', `audit/revisions`, { method: 'GET', headers }, queryParams).pipe(
       map((resp) => resp.json()),
       concatMap(from),
       first(),
@@ -1677,7 +1677,7 @@ export class ApiService {
       Expires: '0',
     });
 
-    return this.sendRequest('beta', `audit/revisions/${rev}`, { method: 'GET', headers }).pipe(
+    return this.sendRequest('v5', `audit/revisions/${rev}`, { method: 'GET', headers }).pipe(
       map((resp) => resp.json()),
       concatMap(from),
       first(),
@@ -1695,7 +1695,7 @@ export class ApiService {
       endTime: endTime.toString(),
     });
 
-    this.ctx.url(`/api/beta/audit/export?${queryParams.toString()}`).subscribe((resourceUrl) => {
+    this.ctx.url(`/api/v5/audit/export?${queryParams.toString()}`).subscribe((resourceUrl) => {
       const filename = `audit-log-${startTime}-${endTime}.json`;
       this.downloadFile(resourceUrl, undefined, filename);
     });

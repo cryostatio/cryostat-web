@@ -1506,7 +1506,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         );
         return new Response(200);
       });
-      this.get('api/beta/audit/revisions', (schema, request) => {
+      this.get('api/v5/audit/revisions', (schema, request) => {
         const { startTime, endTime, page = '0', pageSize = '20' } = request.queryParams;
 
         const mockRevisions: any[] = [];
@@ -1533,7 +1533,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         };
       });
 
-      this.get('api/beta/audit/revisions/:rev', (schema, request) => {
+      this.get('api/v5/audit/revisions/:rev', (schema, request) => {
         const rev = parseInt(request.params.rev);
 
         const entities: any = {};
@@ -1620,8 +1620,8 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         };
       });
 
-      this.get('api/beta/audit/targets/:jvmId', () => new Response(404));
-      this.get('api/beta/audit/target_lineage/:jvmId', () => new Response(404));
+      this.get('api/v5/audit/targets/:jvmId', () => new Response(404));
+      this.get('api/v5/audit/target_lineage/:jvmId', () => new Response(404));
     },
   });
 };
