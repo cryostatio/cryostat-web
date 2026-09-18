@@ -2092,7 +2092,7 @@ export class ApiService {
       };
       status: string;
       availableEvents: string[];
-    }>(`targets/${target.id}/async-profiler/status`, 'beta', undefined, suppressNotifications).pipe(
+    }>(`targets/${target.jvmId}/async-profiler/status`, 'v5', undefined, suppressNotifications).pipe(
       map((s) => ({ ...s, status: s['status'] === 'RUNNING' })),
     );
   }
@@ -2106,7 +2106,7 @@ export class ApiService {
   }
 
   getAsyncProfilerAvailableEvents(target: Target): Observable<string[]> {
-    return this.doGet<string[]>(`targets/${target.id}/async-profiler/status`, 'beta').pipe(
+    return this.doGet<string[]>(`targets/${target.jvmId}/async-profiler/status`, 'v5').pipe(
       map((s) => s['availableEvents']),
     );
   }
@@ -2118,7 +2118,7 @@ export class ApiService {
       })
       .pipe(
         concatMap((headers) =>
-          this.sendRequest('beta', `targets/${target.id}/async-profiler`, {
+          this.sendRequest('v5', `targets/${target.jvmId}/async-profiler`, {
             method: 'POST',
             body: JSON.stringify({
               events,
@@ -2146,18 +2146,18 @@ export class ApiService {
   }
 
   getAsyncProfiles(target: Target): Observable<AsyncProfile[]> {
-    return this.doGet<AsyncProfile[]>(`targets/${target.id}/async-profiler`, 'beta');
+    return this.doGet<AsyncProfile[]>(`targets/${target.jvmId}/async-profiler`, 'v5');
   }
 
   downloadAsyncProfile(target: Target, profileId: string): void {
-    this.ctx.url(`/api/beta/targets/${target.id}/async-profiler/${profileId}`).subscribe((resourceUrl) => {
+    this.ctx.url(`/api/v5/targets/${target.jvmId}/async-profiler/${profileId}`).subscribe((resourceUrl) => {
       const jfrFilename = `${target.alias}_${profileId}.asprof.jfr`;
       this.downloadFile(resourceUrl, new URLSearchParams({ filename: jfrFilename }), jfrFilename);
     });
   }
 
   deleteAsyncProfile(target: Target, profileId: string): Observable<boolean> {
-    return this.sendRequest('beta', `targets/${target.id}/async-profiler/${profileId}`, {
+    return this.sendRequest('v5', `targets/${target.jvmId}/async-profiler/${profileId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
