@@ -67,8 +67,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onProps
           <Content component="p">
             This Target JVM requires authentication. The credentials you provide here will be passed from Cryostat to
             the target when establishing JMX connections. Enter credentials specific to this target, or go to{' '}
-            <CryostatLink onClick={onDismiss} to={toPath('/security')}>
-              Security
+            <CryostatLink onClick={onDismiss} to={toPath('/credentials')}>
+              Credentials
             </CryostatLink>{' '}
             to add a credential matching multiple targets.
           </Content>
