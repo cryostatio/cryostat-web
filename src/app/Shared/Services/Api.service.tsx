@@ -1084,7 +1084,7 @@ export class ApiService {
     aggregateOnly = false,
     reportFilter = {},
   ): Observable<AggregateReport> {
-    let targetIds: number[];
+    let targetIds: string[];
     if (Array.isArray(target)) {
       targetIds = target.map((t) => t.id!);
     } else {
@@ -1112,7 +1112,7 @@ export class ApiService {
     `;
     return this.graphql<any>(
       `
-        query AggregateReportForTarget($targetIds: [ BigInteger! ], $reportFilter: ReportFilterInput) {
+        query AggregateReportForTarget($targetIds: [ String! ], $reportFilter: ReportFilterInput) {
           targetNodes(filter: { targetIds: $targetIds }) {
             target {
               id
@@ -1334,7 +1334,7 @@ export class ApiService {
       concatMap((target) =>
         this.graphql<any>(
           `
-        query PostRecordingMetadata($id: BigInteger!, $recordingName: String, $labels: [Entry_String_StringInput]) {
+        query PostRecordingMetadata($id: String!, $recordingName: String, $labels: [Entry_String_StringInput]) {
           targetNodes(filter: { targetIds: [$id] }) {
             target {
               archivedRecordings(filter: { name: $recordingName }) {
@@ -1395,7 +1395,7 @@ export class ApiService {
   postThreadDumpMetadata(threadDumpId: string, labels: KeyValue[], target: Target): Observable<ThreadDump[]> {
     return this.graphql<any>(
       `
-        query PostThreadDumpMetadata($id: BigInteger!, $threadDumpId: String, $labels: [Entry_String_StringInput]) {
+        query PostThreadDumpMetadata($id: String!, $threadDumpId: String, $labels: [Entry_String_StringInput]) {
           targetNodes(filter: { targetIds: [$id] }) {
             target {
               threadDumps(filter: { name: $threadDumpId }) {
@@ -1454,7 +1454,7 @@ export class ApiService {
   postHeapDumpMetadata(heapDumpId: string, labels: KeyValue[], target: Target): Observable<HeapDump[]> {
     return this.graphql<any>(
       `
-        query PostHeapDumpMetadata($id: BigInteger!, $heapDumpId: String, $labels: [Entry_String_StringInput]) {
+        query PostHeapDumpMetadata($id: String!, $heapDumpId: String, $labels: [Entry_String_StringInput]) {
           targetNodes(filter: { targetIds: [$id] }) {
             target {
               heapDumps(filter: { name: $heapDumpId }) {
@@ -1517,7 +1517,7 @@ export class ApiService {
   ): Observable<ActiveRecording[]> {
     return this.graphql<any>(
       `
-        query PostActiveRecordingMetadata($id: BigInteger!, $recordingName: String, $labels: [Entry_String_StringInput]) {
+        query PostActiveRecordingMetadata($id: String!, $recordingName: String, $labels: [Entry_String_StringInput]) {
           targetNodes(filter: { targetIds: [$id] }) {
             target {
               activeRecordings(filter: { name: $recordingName }) {
@@ -1564,7 +1564,7 @@ export class ApiService {
     );
   }
 
-  getCredential(id: number): Observable<MatchedCredential> {
+  getCredential(id: string): Observable<MatchedCredential> {
     return this.sendRequest('v4', `credentials/${id}`, {
       method: 'GET',
     }).pipe(
@@ -1589,7 +1589,7 @@ export class ApiService {
     );
   }
 
-  deleteCredentials(id: number): Observable<boolean> {
+  deleteCredentials(id: string): Observable<boolean> {
     return this.sendRequest('v4', `credentials/${id}`, {
       method: 'DELETE',
     }).pipe(
@@ -1779,7 +1779,7 @@ export class ApiService {
   targetRecordingRemoteIdByOrigin(target: TargetStub, origin: string): Observable<number | undefined> {
     return this.graphql<any>(
       `
-        query ActiveRecordingIdForRecordingByOriginLabel($id: BigInteger!) {
+        query ActiveRecordingIdForRecordingByOriginLabel($id: String!) {
           targetNodes(filter: { targetIds: [$id] }) {
             target {
               activeRecordings(filter: {
@@ -1812,7 +1812,7 @@ export class ApiService {
   targetHasJFRMetricsRecording(target: TargetStub, filter: ActiveRecordingsFilterInput = {}): Observable<boolean> {
     return this.graphql<RecordingCountResponse>(
       `
-        query ActiveRecordingsForJFRMetrics($id: BigInteger!, $recordingFilter: ActiveRecordingsFilterInput) {
+        query ActiveRecordingsForJFRMetrics($id: String!, $recordingFilter: ActiveRecordingsFilterInput) {
           targetNodes(filter: { targetIds: [$id] }) {
             target {
               activeRecordings(filter: $recordingFilter) {
@@ -1899,7 +1899,7 @@ export class ApiService {
   getTargetMBeanMetrics(target: TargetStub, queries: string[]): Observable<MBeanMetrics> {
     return this.graphql<MBeanMetricsResponse>(
       `
-        query MBeanMXMetricsForTarget($id: BigInteger!) {
+        query MBeanMXMetricsForTarget($id: String!) {
           targetNodes(filter: { targetIds: [$id] }) {
             target {
               mbeanMetrics {
@@ -1924,7 +1924,7 @@ export class ApiService {
   getTargetArchivedRecordings(target: TargetStub): Observable<ArchivedRecording[]> {
     return this.graphql<any>(
       `
-        query ArchivedRecordingsForTarget($id: BigInteger!) {
+        query ArchivedRecordingsForTarget($id: String!) {
           targetNodes(filter: { targetIds: [$id] }) {
             target {
               archivedRecordings {
@@ -1954,7 +1954,7 @@ export class ApiService {
   getTargetThreadDumps(target: TargetStub): Observable<ThreadDump[]> {
     return this.graphql<any>(
       `
-        query ThreadDumpsForTarget($id: BigInteger!) {
+        query ThreadDumpsForTarget($id: String!) {
           targetNodes(filter: { targetIds: [$id] }) {
             target {
               threadDumps {
@@ -1987,7 +1987,7 @@ export class ApiService {
   getTargetHeapDumps(target: TargetStub): Observable<HeapDump[]> {
     return this.graphql<any>(
       `
-        query HeapDumpsForTarget($id: BigInteger!) {
+        query HeapDumpsForTarget($id: String!) {
           targetNodes(filter: { targetIds: [$id] }) {
             target {
               heapDumps {

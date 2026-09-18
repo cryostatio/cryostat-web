@@ -348,7 +348,7 @@ export interface ArchivedRecording extends Recording {
 }
 
 export interface ActiveRecording extends Recording {
-  id: number;
+  id: string;
   state: RecordingState;
   duration: number; // In miliseconds
   startTime: number;
@@ -450,7 +450,7 @@ export interface HeapDumpCountResponse {
 // Credential resources
 // ======================================
 export interface MatchedCredential {
-  id: number;
+  id: string;
   matchExpression: string;
   targets: Target[];
 }
@@ -483,7 +483,7 @@ export interface EventProbe {
 // Rule resources
 // ======================================
 export interface Rule {
-  id?: number;
+  id?: string;
   name: string;
   description: string;
   matchExpression: string;
@@ -595,7 +595,7 @@ export enum AutomatedAnalysisScore {
 // Discovery/Target resources
 // ======================================
 export interface Target {
-  id?: number; // present in responses but we must not include it in requests to create targets
+  id?: string; // present in responses but we must not include it in requests to create targets
   jvmId?: string; // present in responses, but we do not need to provide it in requests
   agent: boolean;
   connectUrl: string;
@@ -642,7 +642,7 @@ export interface LineageNode {
 }
 
 interface _AbstractNode extends LineageNode {
-  readonly id: number;
+  readonly id: string;
   readonly labels: KeyValue[];
 }
 
@@ -847,7 +847,7 @@ export enum RevisionType {
  */
 export interface AuditEntity {
   /** Entity ID */
-  id: number;
+  id: string;
   /** Revision number when this change occurred */
   rev: number;
   /** Type of operation (ADD/MODIFY/DELETE) */

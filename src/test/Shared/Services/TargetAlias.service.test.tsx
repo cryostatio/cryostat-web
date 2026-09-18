@@ -38,19 +38,19 @@ describe('TargetAliasService', () => {
   });
 
   const createMockLineage = (alias: string): EnvironmentNode => ({
-    id: 1,
+    id: '1',
     name: 'Universe',
     nodeType: NodeType.UNIVERSE,
     labels: [],
     children: [
       {
-        id: 2,
+        id: '2',
         name: 'Realm',
         nodeType: NodeType.REALM,
         labels: [],
         children: [
           {
-            id: 3,
+            id: '3',
             name: 'Target',
             nodeType: NodeType.JVM,
             labels: [],
@@ -186,13 +186,13 @@ describe('TargetAliasService', () => {
     it('should not cache alias if target has no alias', (done) => {
       const jvmId = 'test-jvm-id';
       const mockLineage: EnvironmentNode = {
-        id: 1,
+        id: '1',
         name: 'Universe',
         nodeType: NodeType.UNIVERSE,
         labels: [],
         children: [
           {
-            id: 2,
+            id: '2',
             name: 'Target',
             nodeType: NodeType.JVM,
             labels: [],

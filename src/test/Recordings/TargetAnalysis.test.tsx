@@ -41,7 +41,7 @@ const mockRecordingLabels = [
   },
 ];
 const mockRecording: ActiveRecording = {
-  id: 1,
+  id: '1',
   name: 'someRecording',
   downloadUrl: 'http://downloadUrl',
   reportUrl: 'http://reportUrl',

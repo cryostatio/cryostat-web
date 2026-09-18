@@ -83,7 +83,7 @@ export const restHandlers = [
     const jvmId = `${Date.now().toString(16)}`;
 
     const target = db.target.create({
-      id: Date.now(),
+      id: Date.now().toString(),
       agent: true,
       alias,
       connectUrl,
@@ -293,7 +293,7 @@ export const restHandlers = [
 
   // Recordings - Create active recording
   http.post('*/api/v4/targets/:targetId/recordings', async ({ params, request }) => {
-    const targetId = Number(params.targetId);
+    const targetId = String(params.targetId);
     const target = db.target.findFirst({ where: { id: { equals: targetId } } });
     const formData = await request.formData();
     const recordingName = formData.get('recordingName')?.toString() || `recording-${Date.now()}`;
@@ -337,7 +337,7 @@ export const restHandlers = [
 
   // Recordings - List active for target
   http.get('*/api/v4/targets/:targetId/recordings', ({ params }) => {
-    const targetId = Number(params.targetId);
+    const targetId = String(params.targetId);
     const target = db.target.findFirst({ where: { id: { equals: targetId } } });
     const recordings = db.recording.findMany({ where: { jvmId: { equals: target?.jvmId || String(targetId) } } });
     return HttpResponse.json(recordings);
@@ -345,7 +345,7 @@ export const restHandlers = [
 
   // Recordings - Delete active recording
   http.delete('*/api/v4/targets/:targetId/recordings/:remoteId', ({ params }) => {
-    const targetId = Number(params.targetId);
+    const targetId = String(params.targetId);
     const remoteId = Number(params.remoteId);
     const target = db.target.findFirst({ where: { id: { equals: targetId } } });
     const recording = db.recording.findFirst({ where: { remoteId: { equals: remoteId } } });
@@ -368,7 +368,7 @@ export const restHandlers = [
 
   // Recordings - Patch active recording state (STOP / SAVE)
   http.patch('*/api/v4/targets/:targetId/recordings/:remoteId', async ({ params, request }) => {
-    const targetId = Number(params.targetId);
+    const targetId = String(params.targetId);
     const remoteId = Number(params.remoteId);
     const target = db.target.findFirst({ where: { id: { equals: targetId } } });
     const recording = db.recording.findFirst({ where: { remoteId: { equals: remoteId } } });

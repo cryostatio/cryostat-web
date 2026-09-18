@@ -19,7 +19,7 @@ import { factory, primaryKey } from '@mswjs/data';
 export const db = factory({
   target: {
     jvmId: primaryKey(String),
-    id: Number,
+    id: String,
     agent: Boolean,
     alias: String,
     connectUrl: String,
@@ -74,7 +74,7 @@ export const db = factory({
 
 export function seedDatabase() {
   db.target.create({
-    id: 1,
+    id: '1',
     agent: true,
     alias: 'Fake Target',
     connectUrl: 'http://fake-target.local:1234',
