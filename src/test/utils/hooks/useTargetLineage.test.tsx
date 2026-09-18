@@ -52,19 +52,19 @@ describe('useTargetLineage', () => {
   });
 
   const createMockLineage = (alias: string): EnvironmentNode => ({
-    id: 1,
+    id: '1',
     name: 'Universe',
     nodeType: NodeType.UNIVERSE,
     labels: [],
     children: [
       {
-        id: 2,
+        id: '2',
         name: 'Realm',
         nodeType: NodeType.REALM,
         labels: [],
         children: [
           {
-            id: 3,
+            id: '3',
             name: 'Target',
             nodeType: NodeType.JVM,
             labels: [],
@@ -222,7 +222,7 @@ describe('useTargetLineage', () => {
   it('should fallback when lineage has no target', async () => {
     const jvmId = 'test-jvm-id';
     const emptyLineage: EnvironmentNode = {
-      id: 1,
+      id: '1',
       name: 'Universe',
       nodeType: NodeType.UNIVERSE,
       labels: [],

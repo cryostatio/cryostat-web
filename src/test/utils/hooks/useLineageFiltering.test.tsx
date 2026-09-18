@@ -70,31 +70,31 @@ describe('useLineageFiltering', () => {
   });
 
   const createMockLineage = (namespace: string, deployment: string): EnvironmentNode => ({
-    id: 1,
+    id: '1',
     name: 'Universe',
     nodeType: NodeType.UNIVERSE,
     labels: [],
     children: [
       {
-        id: 2,
+        id: '2',
         name: 'Realm',
         nodeType: NodeType.REALM,
         labels: [],
         children: [
           {
-            id: 3,
+            id: '3',
             name: namespace,
             nodeType: NodeType.NAMESPACE,
             labels: [],
             children: [
               {
-                id: 4,
+                id: '4',
                 name: deployment,
                 nodeType: NodeType.DEPLOYMENT,
                 labels: [],
                 children: [
                   {
-                    id: 5,
+                    id: '5',
                     name: 'Target',
                     nodeType: NodeType.JVM,
                     labels: [],
