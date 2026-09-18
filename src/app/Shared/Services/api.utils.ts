@@ -299,7 +299,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.success,
       title: 'Template created',
-      body: (evt) => `${evt.message.template.name} was created`,
+      body: (evt) => `${evt.message.template} was created`,
     } as NotificationMessageMapper,
   ],
   [
@@ -323,7 +323,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.success,
       title: 'Template deleted',
-      body: (evt) => `${evt.message.template.name} was deleted`,
+      body: (evt) => `${evt.message.template} was deleted`,
     } as NotificationMessageMapper,
   ],
   [
