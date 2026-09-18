@@ -685,8 +685,8 @@ export class ApiService {
     return this.target.target().pipe(
       concatMap((target) =>
         this.sendRequest(
-          'beta',
-          `diagnostics/targets/${target?.id}/gc`,
+          'v5',
+          `targets/${target?.jvmId}/diagnostics/gc`,
           {
             method: 'POST',
           },
@@ -705,8 +705,8 @@ export class ApiService {
     return this.target.target().pipe(
       concatMap((target) =>
         this.sendRequest(
-          'beta',
-          `diagnostics/targets/${target?.id}/threaddump?format=threadPrint`,
+          'v5',
+          `targets/${target?.jvmId}/diagnostics/threaddump?format=threadPrint`,
           {
             method: 'POST',
           },
@@ -725,8 +725,8 @@ export class ApiService {
     return this.target.target().pipe(
       concatMap((target) =>
         this.sendRequest(
-          'beta',
-          `diagnostics/targets/${target?.id}/heapdump`,
+          'v5',
+          `targets/${target?.jvmId}/diagnostics/heapdump`,
           {
             method: 'POST',
           },
@@ -742,7 +742,7 @@ export class ApiService {
   }
 
   deleteThreadDump(target: Target, threadDumpId: string): Observable<boolean> {
-    return this.sendRequest('beta', `diagnostics/targets/${target?.id}/threaddump/${threadDumpId}`, {
+    return this.sendRequest('v5', `targets/${target?.jvmId}/diagnostics/threaddump/${threadDumpId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -751,7 +751,7 @@ export class ApiService {
   }
 
   deleteArchivedThreadDumpFromPath(jvmId: string, threadDumpId: string): Observable<boolean> {
-    return this.sendRequest('beta', `diagnostics/fs/threaddumps/${jvmId}/${threadDumpId}`, {
+    return this.sendRequest('v5', `targets/${jvmId}/diagnostics/threaddump/${threadDumpId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -760,7 +760,7 @@ export class ApiService {
   }
 
   deleteHeapDump(target: Target, heapDumpId: string): Observable<boolean> {
-    return this.sendRequest('beta', `diagnostics/targets/${target?.id}/heapdump/${heapDumpId}`, {
+    return this.sendRequest('v5', `targets/${target?.jvmId}/diagnostics/heapdump/${heapDumpId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -769,7 +769,7 @@ export class ApiService {
   }
 
   deleteArchivedHeapDumpFromPath(jvmId: string, heapDumpId: string): Observable<boolean> {
-    return this.sendRequest('beta', `diagnostics/fs/heapdumps/${jvmId}/${heapDumpId}`, {
+    return this.sendRequest('v5', `targets/${jvmId}/diagnostics/heapdump/${heapDumpId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -782,8 +782,8 @@ export class ApiService {
       filter((t) => !!t),
       concatMap((target) =>
         this.sendRequest(
-          'beta',
-          `diagnostics/targets/${target!.id}/threaddump`,
+          'v5',
+          `targets/${target!.jvmId}/diagnostics/threaddump`,
           {
             method: 'GET',
           },
@@ -804,8 +804,8 @@ export class ApiService {
     suppressNotifications = false,
   ): Observable<ThreadDumpAnalysisResult> {
     return this.sendRequest(
-      'beta',
-      `diagnostics/targets/${jvmId}/threaddump/${threadDumpId}/analyze`,
+      'v5',
+      `targets/${jvmId}/diagnostics/threaddump/${threadDumpId}/analyze`,
       {
         method: 'POST',
       },
@@ -822,8 +822,8 @@ export class ApiService {
       filter((t) => !!t),
       concatMap((target) =>
         this.sendRequest(
-          'beta',
-          `diagnostics/targets/${target!.id}/heapdump`,
+          'v5',
+          `targets/${target!.jvmId}/diagnostics/heapdump`,
           {
             method: 'GET',
           },
@@ -2168,8 +2168,8 @@ export class ApiService {
 
   getUnifiedLoggingStatus(target: Target, suppressNotifications = false): Observable<UnifiedLoggingStatus> {
     return this.doGet<UnifiedLoggingStatus>(
-      `diagnostics/targets/${target.id}/unified-logging`,
-      'beta',
+      `targets/${target.jvmId}/diagnostics/unified-logging`,
+      'v5',
       undefined,
       suppressNotifications,
     );
@@ -2177,7 +2177,7 @@ export class ApiService {
 
   enableUnifiedLogging(target: Target, what: string, decorators: string): Observable<boolean> {
     const params = new URLSearchParams({ what, decorators });
-    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logging?${params}`, {
+    return this.sendRequest('v5', `targets/${target.jvmId}/diagnostics/unified-logging?${params}`, {
       method: 'POST',
     }).pipe(
       map((resp) => resp.ok),
@@ -2187,7 +2187,7 @@ export class ApiService {
 
   reconfigureUnifiedLogging(target: Target, what: string, decorators: string): Observable<boolean> {
     const params = new URLSearchParams({ what, decorators });
-    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logging?${params}`, {
+    return this.sendRequest('v5', `targets/${target.jvmId}/diagnostics/unified-logging?${params}`, {
       method: 'PATCH',
     }).pipe(
       map((resp) => resp.ok),
@@ -2196,7 +2196,7 @@ export class ApiService {
   }
 
   disableUnifiedLogging(target: Target): Observable<boolean> {
-    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logging`, {
+    return this.sendRequest('v5', `targets/${target.jvmId}/diagnostics/unified-logging`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -2205,7 +2205,7 @@ export class ApiService {
   }
 
   pullUnifiedLog(target: Target): Observable<UnifiedLog | null> {
-    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logging/pull`, {
+    return this.sendRequest('v5', `targets/${target.jvmId}/diagnostics/unified-logs/pull`, {
       method: 'POST',
     }).pipe(
       concatMap((resp) => (resp.status === 204 ? Promise.resolve(null) : resp.json())),
@@ -2215,8 +2215,8 @@ export class ApiService {
 
   getUnifiedLogs(target: Target, suppressNotifications = false): Observable<UnifiedLog[]> {
     return this.doGet<UnifiedLog[]>(
-      `diagnostics/targets/${target.id}/unified-logs`,
-      'beta',
+      `targets/${target.jvmId}/diagnostics/unified-logs`,
+      'v5',
       undefined,
       suppressNotifications,
     );
@@ -2224,14 +2224,14 @@ export class ApiService {
 
   downloadUnifiedLog(target: Target, log: UnifiedLog): void {
     this.ctx
-      .url(log.downloadUrl ?? `/api/beta/diagnostics/targets/${target.id}/unified-logs/${log.logId}`)
+      .url(log.downloadUrl ?? `/api/v5/targets/${target.jvmId}/diagnostics/unified-logs/${log.logId}`)
       .subscribe((resourceUrl) =>
         this.downloadFile(resourceUrl, new URLSearchParams({ filename: log.logId }), log.logId),
       );
   }
 
   deleteUnifiedLog(target: Target, logId: string): Observable<boolean> {
-    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logs/${logId}`, {
+    return this.sendRequest('v5', `targets/${target.jvmId}/diagnostics/unified-logs/${logId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -2240,7 +2240,7 @@ export class ApiService {
   }
 
   deleteArchivedUnifiedLogFromPath(jvmId: string, logId: string): Observable<boolean> {
-    return this.sendRequest('beta', `diagnostics/fs/unified-logs/${jvmId}/${logId}`, {
+    return this.sendRequest('v5', `targets/${jvmId}/diagnostics/unified-logs/${logId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -2249,13 +2249,13 @@ export class ApiService {
   }
 
   getAllUnifiedLogs(suppressNotifications = false): Observable<UnifiedLogDirectory[]> {
-    return this.doGet<UnifiedLogDirectory[]>('diagnostics/fs/unified-logs', 'beta', undefined, suppressNotifications);
+    return this.doGet<UnifiedLogDirectory[]>('diagnostics/unified-logs', 'v5', undefined, suppressNotifications);
   }
 
   postUnifiedLogMetadataForJvmId(jvmId: string, logId: string, labels: KeyValue[]): Observable<UnifiedLog> {
     return this.ctx.headers({ 'Content-Type': 'application/json' }).pipe(
       concatMap((headers) =>
-        this.sendRequest('beta', `diagnostics/fs/unified-logs/${jvmId}/${logId}`, {
+        this.sendRequest('v5', `targets/${jvmId}/diagnostics/unified-logs/${logId}`, {
           method: 'PATCH',
           body: JSON.stringify({ labels: this.transformLabelsToObject(labels) }),
           headers,
@@ -2269,7 +2269,7 @@ export class ApiService {
   postUnifiedLogMetadata(target: Target, logId: string, labels: KeyValue[]): Observable<UnifiedLog> {
     return this.ctx.headers({ 'Content-Type': 'application/json' }).pipe(
       concatMap((headers) =>
-        this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logs/${logId}`, {
+        this.sendRequest('v5', `targets/${target.jvmId}/diagnostics/unified-logs/${logId}`, {
           method: 'PATCH',
           body: JSON.stringify({ labels: this.transformLabelsToObject(labels) }),
           headers,
