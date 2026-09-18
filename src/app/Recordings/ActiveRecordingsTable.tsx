@@ -43,7 +43,15 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useDayjs } from '@app/utils/hooks/useDayjs';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { formatBytes, formatDuration, LABEL_TEXT_MAXWIDTH, sortResources, TableColumn, toPath } from '@app/utils/utils';
+import {
+  formatBytes,
+  formatDuration,
+  hashCode,
+  LABEL_TEXT_MAXWIDTH,
+  sortResources,
+  TableColumn,
+  toPath,
+} from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
@@ -186,7 +194,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   const handleHeaderCheck = React.useCallback(
     (_, checked: boolean | ((prevState: boolean) => boolean)) => {
       setHeaderChecked(checked);
-      setCheckedIndices(checked ? filteredRecordings.map((r) => r.id) : []);
+      setCheckedIndices(checked ? filteredRecordings.map((r) => hashCode(r.id)) : []);
     },
     [setHeaderChecked, setCheckedIndices, filteredRecordings],
   );
@@ -274,7 +282,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
           return;
         }
         setRecordings((old) => old.filter((r) => r.id !== event.message.recording.id));
-        setCheckedIndices((old) => old.filter((idx) => idx !== event.message.recording.id));
+        setCheckedIndices((old) => old.filter((idx) => idx !== hashCode(event.message.recording.id)));
       }),
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings, setCheckedIndices]);
@@ -347,7 +355,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
 
   React.useEffect(() => {
     setCheckedIndices((ci) => {
-      const filteredRecordingIdx = new Set(filteredRecordings.map((r) => r.id));
+      const filteredRecordingIdx = new Set(filteredRecordings.map((r) => hashCode(r.id)));
       return ci.filter((idx) => filteredRecordingIdx.has(idx));
     });
   }, [filteredRecordings, setCheckedIndices]);
@@ -382,8 +390,8 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
     setActionLoadings((old) => ({ ...old, ARCHIVE: true }));
     const tasks: Observable<string>[] = [];
     filteredRecordings.forEach((r: ActiveRecording) => {
-      if (checkedIndices.includes(r.id)) {
-        handleRowCheck(false, r.id);
+      if (checkedIndices.includes(hashCode(r.id))) {
+        handleRowCheck(false, hashCode(r.id));
         tasks.push(context.api.archiveRecording(r.remoteId).pipe(first()));
       }
     });
@@ -418,8 +426,8 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
     setActionLoadings((old) => ({ ...old, STOP: true }));
     const tasks: Observable<boolean>[] = [];
     filteredRecordings.forEach((r: ActiveRecording) => {
-      if (checkedIndices.includes(r.id)) {
-        handleRowCheck(false, r.id);
+      if (checkedIndices.includes(hashCode(r.id))) {
+        handleRowCheck(false, hashCode(r.id));
         if (r.state === RecordingState.RUNNING || r.state === RecordingState.STARTING) {
           tasks.push(context.api.stopRecording(r.remoteId).pipe(first()));
         }
@@ -445,7 +453,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
     setActionLoadings((old) => ({ ...old, DELETE: true }));
     const tasks: Observable<boolean>[] = [];
     filteredRecordings.forEach((r: ActiveRecording) => {
-      if (checkedIndices.includes(r.id)) {
+      if (checkedIndices.includes(hashCode(r.id))) {
         context.reports.delete(r);
         tasks.push(context.api.deleteRecording(r.remoteId).pipe(first()));
       }
@@ -605,7 +613,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
                 key={r.id}
                 recording={r}
                 labelFilters={targetRecordingFilters.Label}
-                index={r.id}
+                index={hashCode(r.id)}
                 currentSelectedTargetURL={target?.connectUrl || ''}
                 checkedIndices={checkedIndices}
                 handleRowCheck={handleRowCheck}
@@ -664,7 +672,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
     if (!props.checkedIndices.length || props.actionLoadings['STOP']) {
       return true;
     }
-    const filtered = props.filteredRecordings.filter((r) => props.checkedIndices.includes(r.id));
+    const filtered = props.filteredRecordings.filter((r) => props.checkedIndices.includes(hashCode(r.id)));
     const anyRunning = filtered.some((r) => r.state === RecordingState.RUNNING || r.state == RecordingState.STARTING);
     return !anyRunning;
   }, [props.actionLoadings, props.checkedIndices, props.filteredRecordings]);

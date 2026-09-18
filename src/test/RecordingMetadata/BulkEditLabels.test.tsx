@@ -23,6 +23,7 @@ import {
   keyValueToString,
 } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
+import { hashCode } from '@app/utils/utils';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
 import { of } from 'rxjs';
@@ -66,7 +67,7 @@ const mockActiveRecording: ActiveRecording = {
   reportUrl: 'http://reportUrl',
   metadata: { labels: mockRecordingLabels },
   startTime: 1234567890,
-  id: 0,
+  id: '0',
   state: RecordingState.RUNNING,
   duration: 0,
   continuous: false,
@@ -125,7 +126,7 @@ describe('<BulkEditLabels />', () => {
   let emptycheckIndices: number[];
 
   beforeEach(() => {
-    activeCheckedIndices = [mockActiveRecording.id];
+    activeCheckedIndices = [hashCode(mockActiveRecording.id)];
     archivedCheckedIndices = [-553224758]; // Hash code of "someArchivedRecording_some_random"
     emptycheckIndices = [];
   });
