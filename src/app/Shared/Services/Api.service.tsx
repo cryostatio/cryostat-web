@@ -1156,7 +1156,7 @@ export class ApiService {
         .pipe(
           concatMap((headers) =>
             this.sendRequest(
-              'v4',
+              'v5',
               'graphql',
               {
                 method: 'POST',

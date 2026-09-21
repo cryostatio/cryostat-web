@@ -643,7 +643,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       });
       this.get('api/v5/credentials', (schema) => schema.all(Resource.CREDENTIAL).models);
       this.get('api/v5/credentials/:id', () => ({ matchExpression: '', targets: [] }));
-      this.post('api/v4/graphql', (schema, request) => {
+      this.post('api/v5/graphql', (schema, request) => {
         const body = JSON.parse(request.requestBody);
         const query = body.query.trim();
         const variables = body?.variables ?? {};
