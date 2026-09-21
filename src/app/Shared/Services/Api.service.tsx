@@ -631,7 +631,7 @@ export class ApiService {
   }
 
   deleteCustomEventTemplate(templateName: string): Observable<boolean> {
-    return this.sendRequest('v4', `event_templates/${encodeURIComponent(templateName)}`, {
+    return this.sendRequest('v5', `event_templates/${encodeURIComponent(templateName)}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -649,7 +649,7 @@ export class ApiService {
     const body = new window.FormData();
     body.append('template', file);
     return this.sendUploadRequest(
-      'v4',
+      'v5',
       'event_templates',
       'Template Upload Failed',
       body,
@@ -1236,14 +1236,14 @@ export class ApiService {
           first(),
           map(
             (target) =>
-              `/api/v4/targets/${target!.id}/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
+              `/api/v5/targets/${target!.jvmId}/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
           ),
           concatMap((resourceUrl) => this.ctx.url(resourceUrl)),
         );
         break;
       default:
         url = of(
-          `/api/v4/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
+          `/api/v5/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
         ).pipe(concatMap((u) => this.ctx.url(u)));
         break;
     }
@@ -2051,7 +2051,7 @@ export class ApiService {
   }
 
   getEventTemplates(suppressNotifications = false, skipStatusCheck = false): Observable<EventTemplate[]> {
-    return this.doGet<EventTemplate[]>('event_templates', 'v4', undefined, suppressNotifications, skipStatusCheck);
+    return this.doGet<EventTemplate[]>('event_templates', 'v5', undefined, suppressNotifications, skipStatusCheck);
   }
 
   getTargetEventTemplates(
@@ -2060,8 +2060,8 @@ export class ApiService {
     skipStatusCheck = false,
   ): Observable<EventTemplate[]> {
     return this.doGet<EventTemplate[]>(
-      `targets/${target.id}/event_templates`,
-      'v4',
+      `targets/${target.jvmId}/event_templates`,
+      'v5',
       undefined,
       suppressNotifications,
       skipStatusCheck,
@@ -2074,8 +2074,8 @@ export class ApiService {
     skipStatusCheck = false,
   ): Observable<EventType[]> {
     return this.doGet<EventType[]>(
-      `targets/${target.id}/events`,
-      'v4',
+      `targets/${target.jvmId}/events`,
+      'v5',
       undefined,
       suppressNotifications,
       skipStatusCheck,

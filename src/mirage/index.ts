@@ -528,7 +528,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         );
       });
       this.get('api/v4/targets/:targetId/recordingOptions', () => []);
-      this.get('api/v4/targets/:targetId/events', () => [
+      this.get('api/v5/targets/:jvmId/events', () => [
         {
           category: ['GC', 'Java Virtual Machine'],
           name: 'GC Heap Configuration',
@@ -536,7 +536,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           description: 'The configuration of the garbage collected heap',
         },
       ]);
-      this.get('api/v4/event_templates', () => [
+      this.get('api/v5/event_templates', () => [
         {
           name: 'Preset Template',
           provider: 'Cryostat',
@@ -544,7 +544,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           description: 'This is not a real event template, but it is here!',
         },
       ]);
-      this.get('api/v4/targets/:targetId/event_templates', () => [
+      this.get('api/v5/targets/:jvmId/event_templates', () => [
         {
           name: 'Demo Template',
           provider: 'Demo',
