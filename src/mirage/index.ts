@@ -96,7 +96,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         );
       });
       this.post('api/v5/auth/token', () => new Response(400, {}, 'Resource downloads are not supported in this demo'));
-      this.post('api/v4/targets', (schema, request) => {
+      this.post('api/v5/targets', (schema, request) => {
         const params = request.queryParams;
         if (params['dryrun']) {
           return new Response(200);
@@ -128,8 +128,8 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         );
         return target;
       });
-      this.get('api/v4/targets', (schema) => schema.all(Resource.TARGET).models);
-      this.get('api/v4/discovery', (schema) => {
+      this.get('api/v5/targets', (schema) => schema.all(Resource.TARGET).models);
+      this.get('api/v5/discovery/tree', (schema) => {
         const models = schema.all(Resource.TARGET).models;
         const realmTypes = models.map((t) => t.annotations.cryostat['REALM']);
         return {
@@ -621,7 +621,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         websocket.send(JSON.stringify(msg));
         return new Response(200);
       });
-      this.post('api/v4/credentials', (schema, request) => {
+      this.post('api/v5/credentials', (schema, request) => {
         const credential = schema.create(Resource.CREDENTIAL, {
           matchExpression: (request.requestBody as any).get('matchExpression'),
           targets: [],
@@ -641,8 +641,8 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         );
         return new Response(201);
       });
-      this.get('api/v4/credentials', (schema) => schema.all(Resource.CREDENTIAL).models);
-      this.get('api/v4/credentials/:id', () => ({ matchExpression: '', targets: [] }));
+      this.get('api/v5/credentials', (schema) => schema.all(Resource.CREDENTIAL).models);
+      this.get('api/v5/credentials/:id', () => ({ matchExpression: '', targets: [] }));
       this.post('api/v4/graphql', (schema, request) => {
         const body = JSON.parse(request.requestBody);
         const query = body.query.trim();

@@ -1617,8 +1617,8 @@ export class ApiService {
   getDiscoveryTree(mergeRealms = true): Observable<EnvironmentNode> {
     const params = new URLSearchParams([['mergeRealms', `${mergeRealms}`]]);
     return this.sendRequest(
-      'v4',
-      'discovery',
+      'v5',
+      'discovery/tree',
       {
         method: 'GET',
       },
