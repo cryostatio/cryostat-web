@@ -558,8 +558,8 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           description: 'This is not a real event template, but it is here!',
         },
       ]);
-      this.get('api/v4/probes', () => []);
-      this.get('api/v4/targets/:targetId/probes', () => []);
+      this.get('api/v5/jmc_agent/probe_templates', () => []);
+      this.get('api/v5/targets/:jvmId/jmc_agent/probes', () => []);
       this.post('api/v5/matchExpressions', (_, request) => {
         const attr = JSON.parse(request.requestBody);
         if (!attr.matchExpression || !attr.targets) {

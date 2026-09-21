@@ -674,7 +674,7 @@ export class ApiService {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
-        this.sendRequest('v4', `targets/${target!.id}/probes`, {
+        this.sendRequest('v5', `targets/${target!.jvmId}/jmc_agent/probes`, {
           method: 'DELETE',
         }).pipe(
           map((resp) => resp.ok),
@@ -847,7 +847,7 @@ export class ApiService {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
-        this.sendRequest('v4', `targets/${target!.id}/probes/${encodeURIComponent(templateName)}`, {
+        this.sendRequest('v5', `targets/${target!.jvmId}/jmc_agent/probes/${encodeURIComponent(templateName)}`, {
           method: 'POST',
         }).pipe(
           tap((resp) => {
@@ -894,7 +894,7 @@ export class ApiService {
   }
 
   deleteCustomProbeTemplate(templateName: string): Observable<boolean> {
-    return this.sendRequest('v4', `probes/${encodeURIComponent(templateName)}`, {
+    return this.sendRequest('v5', `jmc_agent/probe_templates/${encodeURIComponent(templateName)}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -904,7 +904,7 @@ export class ApiService {
   }
 
   downloadProbeTemplate(template: ProbeTemplate): void {
-    this.ctx.url(`/api/v4/probes/${encodeURIComponent(template.name)}`).subscribe((resourceUrl) => {
+    this.ctx.url(`/api/v5/jmc_agent/probe_templates/${encodeURIComponent(template.name)}`).subscribe((resourceUrl) => {
       this.downloadFile(resourceUrl, undefined, template.name);
     });
   }
@@ -938,7 +938,7 @@ export class ApiService {
   }
 
   getProbeTemplates(): Observable<ProbeTemplate[]> {
-    return this.sendRequest('v4', 'probes', { method: 'GET' }).pipe(
+    return this.sendRequest('v5', 'jmc_agent/probe_templates', { method: 'GET' }).pipe(
       concatMap((resp) => resp.json()),
       first(),
     );
@@ -949,8 +949,8 @@ export class ApiService {
       filter((t) => !!t),
       concatMap((target) =>
         this.sendRequest(
-          'v4',
-          `targets/${target!.id}/probes`,
+          'v5',
+          `targets/${target!.jvmId}/jmc_agent/probes`,
           {
             method: 'GET',
           },
@@ -966,13 +966,13 @@ export class ApiService {
   }
 
   getActiveProbesForTarget(
-    target: TargetStub,
+    target: Target,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<EventProbe[]> {
     return this.sendRequest(
-      'v4',
-      `targets/${target.id}/probes`,
+      'v5',
+      `targets/${target.jvmId}/jmc_agent/probes`,
       {
         method: 'GET',
       },
