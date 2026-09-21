@@ -560,7 +560,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       ]);
       this.get('api/v4/probes', () => []);
       this.get('api/v4/targets/:targetId/probes', () => []);
-      this.post('api/v4/matchExpressions', (_, request) => {
+      this.post('api/v5/matchExpressions', (_, request) => {
         const attr = JSON.parse(request.requestBody);
         if (!attr.matchExpression || !attr.targets) {
           return new Response(400);
