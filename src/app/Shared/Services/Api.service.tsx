@@ -236,7 +236,7 @@ export class ApiService {
     );
   }
 
-  deleteTarget(target: TargetStub): Observable<boolean> {
+  deleteTarget(target: Target): Observable<boolean> {
     return this.sendRequest('v5', `targets/${target.id}`, {
       method: 'DELETE',
     }).pipe(
@@ -247,21 +247,21 @@ export class ApiService {
   }
 
   getTargetTriggers(
-    target: TargetStub,
+    target: Target,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<SmartTrigger[]> {
     return this.doGet(`targets/${target.id}/smart_triggers`, 'beta', undefined, suppressNotifications, skipStatusCheck);
   }
 
-  deleteTrigger(uuid: string, target: TargetStub): Observable<boolean> {
+  deleteTrigger(uuid: string, target: Target): Observable<boolean> {
     return this.sendRequest('beta', `targets/${target.id}/smart_triggers/${uuid}`, { method: 'DELETE' }).pipe(
       map((resp) => resp.ok),
       first(),
     );
   }
 
-  addTriggers(definition: SmartTriggerRequest, target: TargetStub): Observable<boolean> {
+  addTriggers(definition: SmartTriggerRequest, target: Target): Observable<boolean> {
     const body = new window.FormData();
     body.append('definition', JSON.stringify([definition]));
     return this.sendRequest('beta', `targets/${target.id}/smart_triggers/`, { method: 'POST', body }).pipe(
@@ -1071,15 +1071,15 @@ export class ApiService {
   }
 
   getCurrentReportForTarget(
-    target: TargetStub | TargetStub[],
+    target: Target | Target[],
     aggregateOnly = false,
     reportFilter = {},
   ): Observable<AggregateReport> {
-    let targetIds: string[];
+    let jvmIds: string[];
     if (Array.isArray(target)) {
-      targetIds = target.map((t) => t.id!);
+      jvmIds = target.map((t) => t.jvmId!);
     } else {
-      targetIds = [target.id!];
+      jvmIds = [target.jvmId!];
     }
     const dataQ = `
                 data {
@@ -1103,8 +1103,8 @@ export class ApiService {
     `;
     return this.graphql<any>(
       `
-        query AggregateReportForTarget($targetIds: [ String! ], $reportFilter: ReportFilterInput) {
-          targetNodes(filter: { targetIds: $targetIds }) {
+        query AggregateReportForTarget($jvmIds: [ String! ], $reportFilter: ReportFilterInput) {
+          targetNodes(filter: { jvmIds: $jvmIds }) {
             target {
               id
               report(filter: $reportFilter) {
@@ -1119,7 +1119,7 @@ export class ApiService {
           }
         }
       `,
-      { targetIds, reportFilter },
+      { jvmIds, reportFilter },
     ).pipe(
       map((resp) => {
         const empty = {
@@ -1325,8 +1325,8 @@ export class ApiService {
       concatMap((target) =>
         this.graphql<any>(
           `
-        query PostRecordingMetadata($id: String!, $recordingName: String, $labels: [Entry_String_StringInput]) {
-          targetNodes(filter: { targetIds: [$id] }) {
+        query PostRecordingMetadata($jvmId: String!, $recordingName: String, $labels: [Entry_String_StringInput]) {
+          targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               archivedRecordings(filter: { name: $recordingName }) {
                 data {
@@ -1346,7 +1346,7 @@ export class ApiService {
           }
         }`,
           {
-            id: target.id!,
+            jvmId: target.jvmId!,
             recordingName,
             labels: labels.map((label) => ({ key: label.key, value: label.value })),
           },
@@ -1386,8 +1386,8 @@ export class ApiService {
   postThreadDumpMetadata(threadDumpId: string, labels: KeyValue[], target: Target): Observable<ThreadDump[]> {
     return this.graphql<any>(
       `
-        query PostThreadDumpMetadata($id: String!, $threadDumpId: String, $labels: [Entry_String_StringInput]) {
-          targetNodes(filter: { targetIds: [$id] }) {
+        query PostThreadDumpMetadata(jvmId: String!, $threadDumpId: String, $labels: [Entry_String_StringInput]) {
+          targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               threadDumps(filter: { name: $threadDumpId }) {
                 data {
@@ -1405,7 +1405,7 @@ export class ApiService {
           }
         }`,
       {
-        id: target.id!,
+        jvmId: target.jvmId!,
         threadDumpId,
         labels: labels.map((label) => ({ key: label.key, value: label.value })),
       },
@@ -1445,8 +1445,8 @@ export class ApiService {
   postHeapDumpMetadata(heapDumpId: string, labels: KeyValue[], target: Target): Observable<HeapDump[]> {
     return this.graphql<any>(
       `
-        query PostHeapDumpMetadata($id: String!, $heapDumpId: String, $labels: [Entry_String_StringInput]) {
-          targetNodes(filter: { targetIds: [$id] }) {
+        query PostHeapDumpMetadata($jvmId: String!, $heapDumpId: String, $labels: [Entry_String_StringInput]) {
+          targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               heapDumps(filter: { name: $heapDumpId }) {
                 data {
@@ -1464,7 +1464,7 @@ export class ApiService {
           }
         }`,
       {
-        id: target.id!,
+        jvmId: target.jvmId!,
         heapDumpId,
         labels: labels.map((label) => ({ key: label.key, value: label.value })),
       },
@@ -1508,8 +1508,8 @@ export class ApiService {
   ): Observable<ActiveRecording[]> {
     return this.graphql<any>(
       `
-        query PostActiveRecordingMetadata($id: String!, $recordingName: String, $labels: [Entry_String_StringInput]) {
-          targetNodes(filter: { targetIds: [$id] }) {
+        query PostActiveRecordingMetadata($jvmId: String!, $recordingName: String, $labels: [Entry_String_StringInput]) {
+          targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               activeRecordings(filter: { name: $recordingName }) {
                 data {
@@ -1529,7 +1529,7 @@ export class ApiService {
           }
         }`,
       {
-        id: target.id!,
+        jvmId: target.jvmId!,
         recordingName,
         labels: labels.map((label) => ({ key: label.key, value: label.value })),
       },
@@ -1767,11 +1767,11 @@ export class ApiService {
     );
   }
 
-  targetRecordingRemoteIdByOrigin(target: TargetStub, origin: string): Observable<number | undefined> {
+  targetRecordingRemoteIdByOrigin(target: Target, origin: string): Observable<number | undefined> {
     return this.graphql<any>(
       `
-        query ActiveRecordingIdForRecordingByOriginLabel($id: String!) {
-          targetNodes(filter: { targetIds: [$id] }) {
+        query ActiveRecordingIdForRecordingByOriginLabel($jvmId: String!) {
+          targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               activeRecordings(filter: {
                 labels: ["origin=${origin}"]
@@ -1784,7 +1784,7 @@ export class ApiService {
           }
         }
       `,
-      { id: target.id },
+      { jvmId: target.jvmId },
     ).pipe(
       map((resp) => {
         const nodes = resp.data?.targetNodes ?? [];
@@ -1800,11 +1800,11 @@ export class ApiService {
     );
   }
 
-  targetHasJFRMetricsRecording(target: TargetStub, filter: ActiveRecordingsFilterInput = {}): Observable<boolean> {
+  targetHasJFRMetricsRecording(target: Target, filter: ActiveRecordingsFilterInput = {}): Observable<boolean> {
     return this.graphql<RecordingCountResponse>(
       `
-        query ActiveRecordingsForJFRMetrics($id: String!, $recordingFilter: ActiveRecordingsFilterInput) {
-          targetNodes(filter: { targetIds: [$id] }) {
+        query ActiveRecordingsForJFRMetrics($jvmId: String!, $recordingFilter: ActiveRecordingsFilterInput) {
+          targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               activeRecordings(filter: $recordingFilter) {
                 aggregate {
@@ -1815,7 +1815,7 @@ export class ApiService {
           }
         }`,
       {
-        id: target.id!,
+        jvmId: target.jvmId!,
         recordingFilter: filter,
       },
       true,
@@ -1887,11 +1887,11 @@ export class ApiService {
     );
   }
 
-  getTargetMBeanMetrics(target: TargetStub, queries: string[]): Observable<MBeanMetrics> {
+  getTargetMBeanMetrics(target: Target, queries: string[]): Observable<MBeanMetrics> {
     return this.graphql<MBeanMetricsResponse>(
       `
-        query MBeanMXMetricsForTarget($id: String!) {
-          targetNodes(filter: { targetIds: [$id] }) {
+        query MBeanMXMetricsForTarget($jvmId: String!) {
+          targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               mbeanMetrics {
                 ${queries.join('\n')}
@@ -1899,7 +1899,7 @@ export class ApiService {
             }
           }
         }`,
-      { id: target.id! },
+      { jvmId: target.jvmId! },
     ).pipe(
       map((resp) => {
         const nodes = resp.data?.targetNodes ?? [];
@@ -1912,11 +1912,11 @@ export class ApiService {
     );
   }
 
-  getTargetArchivedRecordings(target: TargetStub): Observable<ArchivedRecording[]> {
+  getTargetArchivedRecordings(target: Target): Observable<ArchivedRecording[]> {
     return this.graphql<any>(
       `
-        query ArchivedRecordingsForTarget($id: String!) {
-          targetNodes(filter: { targetIds: [$id] }) {
+        query ArchivedRecordingsForTarget($jvmId: String!) {
+          targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               archivedRecordings {
                 data {
@@ -1936,17 +1936,17 @@ export class ApiService {
             }
           }
         }`,
-      { id: target.id! },
+      { jvmId: target.jvmId! },
       true,
       true,
     ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []));
   }
 
-  getTargetThreadDumps(target: TargetStub): Observable<ThreadDump[]> {
+  getTargetThreadDumps(target: Target): Observable<ThreadDump[]> {
     return this.graphql<any>(
       `
-        query ThreadDumpsForTarget($id: String!) {
-          targetNodes(filter: { targetIds: [$id] }) {
+        query ThreadDumpsForTarget($jvmId: String!) {
+          targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               threadDumps {
                 data {
@@ -1969,17 +1969,17 @@ export class ApiService {
             }
           }
         }`,
-      { id: target.id! },
+      { jvmId: target.jvmId! },
       true,
       true,
     ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.threadDumps?.data as ThreadDump[]) ?? []));
   }
 
-  getTargetHeapDumps(target: TargetStub): Observable<HeapDump[]> {
+  getTargetHeapDumps(target: Target): Observable<HeapDump[]> {
     return this.graphql<any>(
       `
-        query HeapDumpsForTarget($id: String!) {
-          targetNodes(filter: { targetIds: [$id] }) {
+        query HeapDumpsForTarget($jvmId: String!) {
+          targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               heapDumps {
                 data {
@@ -2002,14 +2002,14 @@ export class ApiService {
             }
           }
         }`,
-      { id: target.id! },
+      { jvmId: target.jvmId! },
       true,
       true,
     ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.heapDumps?.data as HeapDump[]) ?? []));
   }
 
   getTargetActiveRecordings(
-    target: TargetStub,
+    target: Target,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<ActiveRecording[]> {
@@ -2287,7 +2287,7 @@ export class ApiService {
   }
 
   getTargetRecordingOptions(
-    target: TargetStub,
+    target: Target,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<AdvancedRecordingOptions> {
