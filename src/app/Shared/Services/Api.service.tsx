@@ -196,7 +196,7 @@ export class ApiService {
   }
 
   getTargets(): Observable<Target[]> {
-    return this.doGet('targets', 'v4');
+    return this.doGet('targets', 'v5');
   }
 
   createTarget(
@@ -213,7 +213,7 @@ export class ApiService {
     credentials?.username && form.append('username', credentials.username);
     credentials?.password && form.append('password', credentials.password);
     return this.sendRequest(
-      'v4',
+      'v5',
       `targets`,
       {
         method: 'POST',
@@ -232,7 +232,7 @@ export class ApiService {
   }
 
   deleteTarget(target: TargetStub): Observable<boolean> {
-    return this.sendRequest('v4', `targets/${target.id}`, {
+    return this.sendRequest('v5', `targets/${target.id}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
