@@ -19,7 +19,7 @@ import { ISortBy, SortByDirection, ThProps } from '@patternfly/react-table';
 import humanizeDuration from 'humanize-duration';
 import { TFunction } from 'i18next';
 import _ from 'lodash';
-import { NavigateFunction } from 'react-router-dom-v5-compat';
+import { NavigateFunction } from 'react-router-dom';
 import { BehaviorSubject, Observable } from 'rxjs';
 import semverGt from 'semver/functions/gt';
 import semverValid from 'semver/functions/valid';

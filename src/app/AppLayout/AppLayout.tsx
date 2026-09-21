@@ -88,7 +88,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { matchPath, NavLink, useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { matchPath, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { map } from 'rxjs/operators';
 import { LogoutIcon } from './LogoutIcon';
 import { ThemeToggle } from './ThemeToggle';
@@ -552,7 +552,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const isActiveRoute = React.useCallback(
     (route: IAppRoute): boolean => {
-      const match = matchPath(location.pathname, route.path);
+      const match = matchPath(route.path, location.pathname);
       if (match) {
         return true;
       } else if (route.children) {
@@ -601,7 +601,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           <NavLink
             end
             to={route.path}
-            className={(active) => (active ? 'pf-m-current' : undefined)}
+            className={(active) => (active?.isActive ? 'pf-m-current' : undefined)}
             data-quickstart-id={`nav-${cleanDataId(route.label!)}-tab`}
             data-tour-id={`${cleanDataId(route.label!)}`}
           >

@@ -45,7 +45,7 @@ import { SimpleDropdown, SimpleDropdownItem } from '@patternfly/react-templates'
 import * as monaco from 'monaco-editor';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { concatMap } from 'rxjs';
 
 loader.config({ monaco });
