@@ -163,7 +163,7 @@ export const RecordingAnalytics: React.FC = () => {
 
   const refreshRecordingDirectories = React.useCallback(() => {
     addSubscription(
-      context.api.doGet<RecordingDirectory[]>('fs/recordings', 'beta').subscribe((v) => {
+      context.api.getArchivedRecordingDirectories().subscribe((v) => {
         setRecordingDirectories(v);
       }),
     );
@@ -352,10 +352,7 @@ export const RecordingAnalytics: React.FC = () => {
     body.append('query', query.trim());
     addSubscription(
       context.api
-        .sendRequest('beta', `recording_analytics/${jvmId}/${filename}`, {
-          method: 'POST',
-          body,
-        })
+        .analyzeRecording(jvmId, filename, body)
         .pipe(concatMap((r) => r.json()))
         .subscribe({
           next: (v) => {

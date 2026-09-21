@@ -557,6 +557,12 @@ export interface CachedHeapDumpReportValue {
   timestamp: number;
 }
 
+export interface ReportRule {
+  id: string;
+  name: string;
+  topic: string;
+}
+
 // [topic, { ruleName, score, description, ... }}]
 export type CategorizedRuleEvaluations = [string, AnalysisResult[]];
 

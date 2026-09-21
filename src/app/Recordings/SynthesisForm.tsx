@@ -159,7 +159,7 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
 
     addSubscription(
       context.api
-        .sendRequest('beta', `recording_synthesis/${encodeURIComponent(effectiveJvmId)}`, { method: 'POST' }, params)
+        .synthesizeRecording(effectiveJvmId, params)
         .pipe(
           concatMap((resp) => {
             if (resp.status === 200) {

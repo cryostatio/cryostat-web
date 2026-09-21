@@ -43,18 +43,6 @@ const initAuthResp = createResponse(401, false, new Headers({ 'X-WWW-Authenticat
     reason: 'HTTP Authorization Failure',
   },
 });
-const authResp = createResponse(200, true, new Headers({ 'X-WWW-Authenticate': 'Basic' }), {
-  meta: {
-    type: 'application/json',
-    status: 'OK',
-  },
-  data: {
-    result: {
-      username: 'user',
-    },
-  },
-});
-const logoutResp = createResponse(200, true);
 
 describe('Login.service', () => {
   let svc: LoginService;
@@ -89,46 +77,26 @@ describe('Login.service', () => {
     });
 
     it('should make expected API calls', async () => {
-      jest.spyOn(apiSvc, 'sendRequest').mockReturnValue(
+      jest.spyOn(apiSvc, 'checkAuthentication').mockReturnValue(
         of({
           ok: true,
           json: new Promise((resolve) => resolve(initAuthResp)),
         } as unknown as Response),
       );
 
-      expect(apiSvc.sendRequest).toHaveBeenCalledTimes(0);
+      expect(apiSvc.checkAuthentication).toHaveBeenCalledTimes(0);
       svc.checkAuth();
-      expect(apiSvc.sendRequest).toHaveBeenCalledTimes(1);
-      expect(apiSvc.sendRequest).toHaveBeenNthCalledWith(1, 'v5', 'auth', {
-        credentials: 'include',
-        mode: 'cors',
-        method: 'POST',
-        body: null,
-      });
+      expect(apiSvc.checkAuthentication).toHaveBeenCalledTimes(1);
       svc.setLoggedOut();
-      expect(apiSvc.sendRequest).toHaveBeenCalledTimes(1);
+      expect(apiSvc.checkAuthentication).toHaveBeenCalledTimes(1);
     });
 
     it('should emit logged-out', async () => {
-      jest.spyOn(apiSvc, 'sendRequest').mockReturnValue(
-        of({
-          ok: true,
-          json: new Promise((resolve) => resolve(authResp)),
-        } as unknown as Response),
-      );
-
       svc.setLoggedOut();
       await firstValueFrom(svc.loggedOut().pipe(timeout({ first: 1000 })));
     });
 
     it('should reset session state', async () => {
-      jest.spyOn(apiSvc, 'sendRequest').mockReturnValue(
-        of({
-          ok: true,
-          json: new Promise((resolve) => resolve(logoutResp)),
-        } as unknown as Response),
-      );
-
       const beforeState = await firstValueFrom(svc.getSessionState());
       expect(beforeState).toEqual(SessionState.CREATING_USER_SESSION);
       svc.setLoggedOut();
@@ -137,13 +105,6 @@ describe('Login.service', () => {
     });
 
     it('should redirect to login page', async () => {
-      jest.spyOn(apiSvc, 'sendRequest').mockReturnValue(
-        of({
-          ok: true,
-          json: new Promise((resolve) => resolve(logoutResp)),
-        } as unknown as Response),
-      );
-
       svc.setLoggedOut();
       expect(fakeLocationHref).toHaveBeenCalledWith('/oauth2/sign_out');
     });

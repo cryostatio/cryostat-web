@@ -47,12 +47,7 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { tap } from 'rxjs';
 import { SettingTab, UserSetting } from '../types';
-
-interface ReportRule {
-  id: string;
-  name: string;
-  topic: string;
-}
+import { ReportRule } from '@app/Shared/Services/api.types';
 
 const getLeafIds = (node: DualListSelectorTreeItemData): string[] => {
   if (!node.children?.length) {
@@ -78,7 +73,7 @@ const Component = () => {
     setLoading(true);
     addSubscription(
       context.api
-        .doGet<ReportRule[]>('/reports_rules', 'v4.1')
+        .getReportRules()
         .pipe(tap(() => setLoading(false)))
         .subscribe((v) => setAllRules(treeify(v))),
     );

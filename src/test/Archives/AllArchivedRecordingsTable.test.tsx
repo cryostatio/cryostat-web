@@ -112,7 +112,7 @@ jest.mock('@app/Shared/Services/Target.service', () => ({
 }));
 
 jest
-  .spyOn(defaultServices.api, 'doGet')
+  .spyOn(defaultServices.api, 'getArchivedRecordingDirectories')
   .mockReturnValueOnce(of([])) // renders correctly
 
   .mockReturnValueOnce(of([])) // shows no recordings when empty

@@ -84,7 +84,9 @@ describe('<AllArchivedRecordingsTable /> synthesis integration', () => {
 
   describe('synthesize button per row', () => {
     beforeEach(() => {
-      jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockDirectory1, mockDirectory2]));
+      jest
+        .spyOn(defaultServices.api, 'getArchivedRecordingDirectories')
+        .mockReturnValue(of([mockDirectory1, mockDirectory2]));
     });
 
     it('renders a synthesize button in each row', async () => {
@@ -97,7 +99,7 @@ describe('<AllArchivedRecordingsTable /> synthesis integration', () => {
     });
 
     it('disables the synthesize button for a directory with no recordings', async () => {
-      jest.spyOn(defaultServices.api, 'doGet').mockReturnValueOnce(of([emptyDirectory]));
+      jest.spyOn(defaultServices.api, 'getArchivedRecordingDirectories').mockReturnValueOnce(of([emptyDirectory]));
       render({
         routerConfigs: { routes: [{ path: '/archives', element: <AllArchivedRecordingsTable /> }] },
       });
@@ -138,7 +140,9 @@ describe('<AllArchivedRecordingsTable /> synthesis integration', () => {
 
   describe('auto-expand', () => {
     beforeEach(() => {
-      jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockDirectory1, mockDirectory2]));
+      jest
+        .spyOn(defaultServices.api, 'getArchivedRecordingDirectories')
+        .mockReturnValue(of([mockDirectory1, mockDirectory2]));
     });
 
     it('auto-expands the target row when synthesis is activated', async () => {
@@ -176,7 +180,7 @@ describe('<AllArchivedRecordingsTable /> synthesis integration', () => {
 
   describe('drawer panel identity', () => {
     beforeEach(() => {
-      jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockDirectory1]));
+      jest.spyOn(defaultServices.api, 'getArchivedRecordingDirectories').mockReturnValue(of([mockDirectory1]));
     });
 
     it('renders the drawer with the expected id', async () => {

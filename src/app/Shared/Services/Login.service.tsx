@@ -34,12 +34,7 @@ export class LoginService {
 
   checkAuth(): void {
     this.api
-      .sendRequest('v5', 'auth', {
-        credentials: 'include',
-        mode: 'cors',
-        method: 'POST',
-        body: null,
-      })
+      .checkAuthentication()
       .pipe(
         concatMap((response) => {
           let gapAuth = response?.headers?.get('Gap-Auth');

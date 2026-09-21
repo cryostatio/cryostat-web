@@ -157,8 +157,8 @@ const createMockResponse = (data: any) => ({
 });
 
 describe('<RecordingAnalytics />', () => {
-  let mockDoGet: jest.SpyInstance;
-  let mockSendRequest: jest.SpyInstance;
+  let mockGetArchivedRecordingDirectories: jest.SpyInstance;
+  let mockAnalyzeRecording: jest.SpyInstance;
   let archivedRecordingCreatedSubject: Subject<any>;
   let archivedRecordingDeletedSubject: Subject<any>;
 
@@ -166,9 +166,11 @@ describe('<RecordingAnalytics />', () => {
     archivedRecordingCreatedSubject = new Subject();
     archivedRecordingDeletedSubject = new Subject();
 
-    mockDoGet = jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of(mockRecordingDirectories));
-    mockSendRequest = jest
-      .spyOn(defaultServices.api, 'sendRequest')
+    mockGetArchivedRecordingDirectories = jest
+      .spyOn(defaultServices.api, 'getArchivedRecordingDirectories')
+      .mockReturnValue(of(mockRecordingDirectories));
+    mockAnalyzeRecording = jest
+      .spyOn(defaultServices.api, 'analyzeRecording')
       .mockReturnValue(of(createMockResponse(mockApiResponse) as any));
     jest.spyOn(defaultServices.notificationChannel, 'messages').mockImplementation((category) => {
       switch (category) {
@@ -228,7 +230,7 @@ describe('<RecordingAnalytics />', () => {
     });
 
     await waitFor(() => {
-      expect(mockDoGet).toHaveBeenCalledWith('fs/recordings', 'beta');
+      expect(mockGetArchivedRecordingDirectories).toHaveBeenCalled();
     });
   });
 
@@ -573,10 +575,7 @@ describe('<RecordingAnalytics />', () => {
     await user.click(executeButton);
 
     await waitFor(() => {
-      expect(mockSendRequest).toHaveBeenCalledWith('beta', 'recording_analytics/jvm-1/recording1.jfr', {
-        method: 'POST',
-        body: expect.any(FormData),
-      });
+      expect(mockAnalyzeRecording).toHaveBeenCalledWith('jvm-1', 'recording1.jfr', expect.any(FormData));
     });
 
     await waitFor(
@@ -592,7 +591,7 @@ describe('<RecordingAnalytics />', () => {
   });
 
   it('displays error message when query execution fails', async () => {
-    mockSendRequest.mockReturnValue(throwError(() => new Error('Query execution failed')));
+    mockAnalyzeRecording.mockReturnValue(throwError(() => new Error('Query execution failed')));
 
     const { user } = render({
       routerConfigs: {
@@ -755,7 +754,7 @@ describe('<RecordingAnalytics />', () => {
 
     await waitFor(
       () => {
-        expect(mockSendRequest).toHaveBeenCalledTimes(2);
+        expect(mockAnalyzeRecording).toHaveBeenCalledTimes(2);
         const resultEditor = screen.getAllByTestId('code-editor')[1];
         const resultCode = within(resultEditor).getByTestId('code-editor-code');
         expect(resultCode.textContent).toContain('"data"');
@@ -796,10 +795,10 @@ describe('<RecordingAnalytics />', () => {
     });
 
     await waitFor(() => {
-      expect(mockDoGet).toHaveBeenCalledWith('fs/recordings', 'beta');
+      expect(mockGetArchivedRecordingDirectories).toHaveBeenCalled();
     });
 
-    expect(mockDoGet).toHaveBeenCalledTimes(1);
+    expect(mockGetArchivedRecordingDirectories).toHaveBeenCalledTimes(1);
 
     const updatedDirectories: RecordingDirectory[] = [
       ...mockRecordingDirectories,
@@ -819,7 +818,7 @@ describe('<RecordingAnalytics />', () => {
       },
     ];
 
-    mockDoGet.mockReturnValue(of(updatedDirectories));
+    mockGetArchivedRecordingDirectories.mockReturnValue(of(updatedDirectories));
 
     archivedRecordingCreatedSubject.next({
       message: {
@@ -831,7 +830,7 @@ describe('<RecordingAnalytics />', () => {
     });
 
     await waitFor(() => {
-      expect(mockDoGet).toHaveBeenCalledTimes(2);
+      expect(mockGetArchivedRecordingDirectories).toHaveBeenCalledTimes(2);
     });
 
     await waitFor(() => {
@@ -854,10 +853,10 @@ describe('<RecordingAnalytics />', () => {
     });
 
     await waitFor(() => {
-      expect(mockDoGet).toHaveBeenCalledWith('fs/recordings', 'beta');
+      expect(mockGetArchivedRecordingDirectories).toHaveBeenCalled();
     });
 
-    expect(mockDoGet).toHaveBeenCalledTimes(1);
+    expect(mockGetArchivedRecordingDirectories).toHaveBeenCalledTimes(1);
 
     const updatedDirectories: RecordingDirectory[] = [
       {
@@ -877,7 +876,7 @@ describe('<RecordingAnalytics />', () => {
       mockRecordingDirectories[1],
     ];
 
-    mockDoGet.mockReturnValue(of(updatedDirectories));
+    mockGetArchivedRecordingDirectories.mockReturnValue(of(updatedDirectories));
 
     archivedRecordingDeletedSubject.next({
       message: {
@@ -889,7 +888,7 @@ describe('<RecordingAnalytics />', () => {
     });
 
     await waitFor(() => {
-      expect(mockDoGet).toHaveBeenCalledTimes(2);
+      expect(mockGetArchivedRecordingDirectories).toHaveBeenCalledTimes(2);
     });
 
     await waitFor(() => {

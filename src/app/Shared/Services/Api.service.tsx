@@ -82,6 +82,11 @@ import {
   AuditRevisionDetail,
   FetchFn,
   SmartTriggerRequest,
+  AdvancedRecordingOptions,
+  ThreadDumpDirectory,
+  HeapDumpDirectory,
+  RecordingDirectory,
+  ReportRule,
 } from './api.types';
 import {
   isHttpError,
@@ -930,20 +935,6 @@ export class ApiService {
       return;
     }
     url.subscribe((u) => window.open(u, '_blank'));
-  }
-
-  doGet<T>(
-    path: string,
-    apiVersion: ApiVersion = 'v4',
-    params?: URLSearchParams,
-    suppressNotifications?: boolean,
-    skipStatusCheck?: boolean,
-  ): Observable<T> {
-    return this.sendRequest(apiVersion, path, { method: 'GET' }, params, suppressNotifications, skipStatusCheck).pipe(
-      map((resp) => resp.json()),
-      concatMap(from),
-      first(),
-    );
   }
 
   getProbeTemplates(): Observable<ProbeTemplate[]> {
@@ -2055,7 +2046,7 @@ export class ApiService {
   }
 
   getTargetEventTemplates(
-    target: TargetStub,
+    target: Target,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<EventTemplate[]> {
@@ -2068,11 +2059,7 @@ export class ApiService {
     );
   }
 
-  getTargetEventTypes(
-    target: TargetStub,
-    suppressNotifications = false,
-    skipStatusCheck = false,
-  ): Observable<EventType[]> {
+  getTargetEventTypes(target: Target, suppressNotifications = false, skipStatusCheck = false): Observable<EventType[]> {
     return this.doGet<EventType[]>(
       `targets/${target.jvmId}/events`,
       'v5',
@@ -2287,6 +2274,89 @@ export class ApiService {
     this.downloadFile(resourceUrl, undefined, filename, false);
   }
 
+  getArchivedRecordingDirectories(suppressNotifications = false): Observable<RecordingDirectory[]> {
+    return this.doGet<RecordingDirectory[]>('fs/recordings', 'beta', undefined, suppressNotifications);
+  }
+
+  getArchivedHeapDumpDirectories(suppressNotifications = false): Observable<HeapDumpDirectory[]> {
+    return this.doGet<HeapDumpDirectory[]>('diagnostics/fs/heapdumps', 'beta', undefined, suppressNotifications);
+  }
+
+  getArchivedThreadDumpDirectories(suppressNotifications = false): Observable<ThreadDumpDirectory[]> {
+    return this.doGet<ThreadDumpDirectory[]>('diagnostics/fs/threaddumps', 'beta', undefined, suppressNotifications);
+  }
+
+  getTargetRecordingOptions(
+    target: TargetStub,
+    suppressNotifications = false,
+    skipStatusCheck = false,
+  ): Observable<AdvancedRecordingOptions> {
+    return this.doGet<AdvancedRecordingOptions>(
+      `targets/${target.id}/recordingOptions`,
+      'v4',
+      undefined,
+      suppressNotifications,
+      skipStatusCheck,
+    );
+  }
+
+  analyzeRecording(
+    jvmId: string,
+    filename: string,
+    body: XMLHttpRequestBodyInit,
+    suppressNotifications = false,
+  ): Observable<Response> {
+    return this.sendRequest(
+      'beta',
+      `recording_analytics/${encodeURIComponent(jvmId)}/${encodeURIComponent(filename)}`,
+      {
+        method: 'POST',
+        body,
+      },
+      undefined,
+      suppressNotifications,
+    );
+  }
+
+  synthesizeRecording(jvmId: string, params: URLSearchParams, suppressNotifications = false): Observable<Response> {
+    return this.sendRequest(
+      'beta',
+      `recording_synthesis/${encodeURIComponent(jvmId)}`,
+      { method: 'POST' },
+      params,
+      suppressNotifications,
+    );
+  }
+
+  generateTargetReport(target: Target, suppressNotifications = false): Observable<Response> {
+    return this.sendRequest(
+      'v4.1',
+      `/targets/${target.id}/reports`,
+      {
+        method: 'POST',
+      },
+      undefined,
+      suppressNotifications,
+    );
+  }
+
+  getReportRules(suppressNotifications = false, skipStatusCheck = false): Observable<ReportRule[]> {
+    return this.doGet<ReportRule[]>('/reports_rules', 'v4.1', undefined, suppressNotifications, skipStatusCheck);
+  }
+
+  getTlsCertificates(suppressNotifications = false, skipStatusCheck = false): Observable<string[]> {
+    return this.doGet<string[]>('tls/certs', 'v4', undefined, suppressNotifications, skipStatusCheck);
+  }
+
+  checkAuthentication(): Observable<Response> {
+    return this.sendRequest('v5', 'auth', {
+      credentials: 'include',
+      mode: 'cors',
+      method: 'POST',
+      body: null,
+    });
+  }
+
   private stringifyLayoutTemplate(template: LayoutTemplate): string {
     const download = {
       name: template.name,
@@ -2356,46 +2426,6 @@ export class ApiService {
       }
     }
     return out;
-  }
-
-  sendRequest(
-    apiVersion: ApiVersion,
-    path: string,
-    config?: RequestInit,
-    params?: URLSearchParams,
-    suppressNotifications = false,
-    skipStatusCheck = false,
-  ): Observable<Response> {
-    const p = apiVersion === 'unversioned' ? path : `/api/${apiVersion}/${path}`;
-    const req = () =>
-      combineLatest([
-        this.ctx.url(`${p}${params ? '?' + params : ''}`),
-        this.ctx.headers(config?.headers).pipe(
-          map((headers) => {
-            const cfg = config || {};
-            if (!cfg.headers) {
-              cfg.headers = new Headers();
-            }
-            const mergedHeaders = new Headers();
-            [headers, cfg.headers].forEach((source) => new Headers(source).forEach((v, k) => mergedHeaders.set(k, v)));
-            cfg.headers = mergedHeaders;
-            return cfg;
-          }),
-        ),
-      ]).pipe(
-        concatMap((parts) => from(this.fetchFn(parts[0], parts[1]))),
-        map((resp) => {
-          if (resp.ok) return resp;
-          throw new HttpError(resp);
-        }),
-        catchError((err) => {
-          if (skipStatusCheck) {
-            throw err;
-          }
-          return this.handleError<Response>(err, req, suppressNotifications);
-        }),
-      );
-    return req();
   }
 
   private handleError<T>(error: Error, retry: () => Observable<T>, suppressNotifications = false): ObservableInput<T> {
@@ -2594,5 +2624,59 @@ export class ApiService {
       this.notifications.danger(`Request failed`, error.message);
     }
     throw error;
+  }
+
+  private doGet<T>(
+    path: string,
+    apiVersion: ApiVersion = 'v4',
+    params?: URLSearchParams,
+    suppressNotifications?: boolean,
+    skipStatusCheck?: boolean,
+  ): Observable<T> {
+    return this.sendRequest(apiVersion, path, { method: 'GET' }, params, suppressNotifications, skipStatusCheck).pipe(
+      map((resp) => resp.json()),
+      concatMap(from),
+      first(),
+    );
+  }
+
+  private sendRequest(
+    apiVersion: ApiVersion,
+    path: string,
+    config?: RequestInit,
+    params?: URLSearchParams,
+    suppressNotifications = false,
+    skipStatusCheck = false,
+  ): Observable<Response> {
+    const p = apiVersion === 'unversioned' ? path : `/api/${apiVersion}/${path}`;
+    const req = () =>
+      combineLatest([
+        this.ctx.url(`${p}${params ? '?' + params : ''}`),
+        this.ctx.headers(config?.headers).pipe(
+          map((headers) => {
+            const cfg = config || {};
+            if (!cfg.headers) {
+              cfg.headers = new Headers();
+            }
+            const mergedHeaders = new Headers();
+            [headers, cfg.headers].forEach((source) => new Headers(source).forEach((v, k) => mergedHeaders.set(k, v)));
+            cfg.headers = mergedHeaders;
+            return cfg;
+          }),
+        ),
+      ]).pipe(
+        concatMap((parts) => from(this.fetchFn(parts[0], parts[1]))),
+        map((resp) => {
+          if (resp.ok) return resp;
+          throw new HttpError(resp);
+        }),
+        catchError((err) => {
+          if (skipStatusCheck) {
+            throw err;
+          }
+          return this.handleError<Response>(err, req, suppressNotifications);
+        }),
+      );
+    return req();
   }
 }

@@ -63,7 +63,7 @@ const mockResponse: Response = {
 
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.api, 'getTargetEventTemplates').mockReturnValue(of([mockCustomEventTemplate]));
-jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of(mockRecordingOptions));
+jest.spyOn(defaultServices.api, 'getTargetRecordingOptions').mockReturnValue(of(mockRecordingOptions));
 
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 
