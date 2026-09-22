@@ -437,7 +437,7 @@ export class ApiService {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
-        this.sendRequest('v4', `targets/${target!.id}/snapshot`, {
+        this.sendRequest('v5', `targets/${target!.jvmId}/snapshot`, {
           method: 'POST',
         }).pipe(
           concatMap((resp) => (resp.status === 202 ? of(undefined) : (resp.json() as Promise<ActiveRecording>))),
@@ -457,7 +457,7 @@ export class ApiService {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
-        this.sendRequest('v4', `targets/${target!.id}/recordings/${remoteId}`, {
+        this.sendRequest('v5', `targets/${target!.jvmId}/recordings/${remoteId}`, {
           method: 'PATCH',
           body: 'SAVE',
         }).pipe(
@@ -534,7 +534,7 @@ export class ApiService {
   ): Observable<string> {
     return sourceTarget.pipe(
       concatMap((target) =>
-        this.sendRequest('v4', `grafana/${window.btoa((target!.jvmId ?? 'uploads') + '/' + recordingName)}`, {
+        this.sendRequest('v5', `grafana/${window.btoa((target!.jvmId ?? 'uploads') + '/' + recordingName)}`, {
           method: 'POST',
         }).pipe(
           concatMap((resp) => resp.text()),
@@ -547,7 +547,7 @@ export class ApiService {
 
   // from file system path functions
   uploadArchivedRecordingToGrafanaFromPath(jvmId: string, recordingName: string): Observable<string> {
-    return this.sendRequest('v4', `grafana/${window.btoa((jvmId ?? 'uploads') + '/' + recordingName)}`, {
+    return this.sendRequest('v5', `grafana/${window.btoa((jvmId ?? 'uploads') + '/' + recordingName)}`, {
       method: 'POST',
     }).pipe(
       concatMap((resp) => resp.text()),
@@ -1854,7 +1854,7 @@ export class ApiService {
     body.append('password', credentials.password);
 
     return this.sendRequest(
-      'v4',
+      'v5',
       `credentials/test/${target.id}`,
       { method: 'POST', body },
       undefined,
@@ -2634,7 +2634,7 @@ export class ApiService {
 
   private doGet<T>(
     path: string,
-    apiVersion: ApiVersion = 'v4',
+    apiVersion: ApiVersion = 'v5',
     params?: URLSearchParams,
     suppressNotifications?: boolean,
     skipStatusCheck?: boolean,
