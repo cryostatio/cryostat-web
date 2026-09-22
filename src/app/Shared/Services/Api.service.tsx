@@ -2345,7 +2345,7 @@ export class ApiService {
   }
 
   getTlsCertificates(suppressNotifications = false, skipStatusCheck = false): Observable<string[]> {
-    return this.doGet<string[]>('tls/certs', 'v4', undefined, suppressNotifications, skipStatusCheck);
+    return this.doGet<string[]>('tls/certs', 'v5', undefined, suppressNotifications, skipStatusCheck);
   }
 
   checkAuthentication(): Observable<Response> {
