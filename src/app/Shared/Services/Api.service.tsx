@@ -1278,8 +1278,8 @@ export class ApiService {
     body.append('labels', JSON.stringify(labels));
 
     return this.sendUploadRequest(
-      'v4',
-      'recordings',
+      'v5',
+      'recordings/uploads',
       'Recording Upload Failed',
       body,
       onUploadProgress,
