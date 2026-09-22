@@ -1454,8 +1454,8 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       });
       // ── End GC logging ─────────────────────────────────────────────────────────
 
-      this.get('api/beta/targets/:targetId/smart_triggers', (schema) => schema.all(Resource.SMART_TRIGGER).models);
-      this.delete('api/beta/targets/:targetId/smart_triggers/:uuid', (schema, request) => {
+      this.get('api/v5/targets/:jvmId/smart_triggers', (schema) => schema.all(Resource.SMART_TRIGGER).models);
+      this.delete('api/v5/targets/:jvmId/smart_triggers/:uuid', (schema, request) => {
         const smartTriggerId = request.params.uuid;
         const smartTrigger = schema.findBy(Resource.SMART_TRIGGER, { id: smartTriggerId });
 
@@ -1471,13 +1471,13 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           },
           message: {
             trigger: request.params['uuid'],
-            jvmId: request.params['targetId'],
+            jvmId: request.params['jvmId'],
           },
         };
         websocket.send(JSON.stringify(msg));
         return new Response(204);
       });
-      this.post('api/beta/targets/:targetId/smart_triggers', (schema, request) => {
+      this.post('api/v5/targets/:jvmId/smart_triggers', (schema, request) => {
         // Note: MirageJS will fake serialize FormData (i.e. FormData object is returned when accessing request.requestBody)
         const attrs = request.requestBody as any;
 

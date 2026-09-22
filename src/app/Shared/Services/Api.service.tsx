@@ -251,11 +251,11 @@ export class ApiService {
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<SmartTrigger[]> {
-    return this.doGet(`targets/${target.id}/smart_triggers`, 'beta', undefined, suppressNotifications, skipStatusCheck);
+    return this.doGet(`targets/${target.jvmId}/smart_triggers`, 'v5', undefined, suppressNotifications, skipStatusCheck);
   }
 
   deleteTrigger(uuid: string, target: Target): Observable<boolean> {
-    return this.sendRequest('beta', `targets/${target.id}/smart_triggers/${uuid}`, { method: 'DELETE' }).pipe(
+    return this.sendRequest('v5', `targets/${target.jvmId}/smart_triggers/${uuid}`, { method: 'DELETE' }).pipe(
       map((resp) => resp.ok),
       first(),
     );
@@ -264,7 +264,7 @@ export class ApiService {
   addTriggers(definition: SmartTriggerRequest, target: Target): Observable<boolean> {
     const body = new window.FormData();
     body.append('definition', JSON.stringify([definition]));
-    return this.sendRequest('beta', `targets/${target.id}/smart_triggers/`, { method: 'POST', body }).pipe(
+    return this.sendRequest('v5', `targets/${target.jvmId}/smart_triggers/`, { method: 'POST', body }).pipe(
       map((resp) => resp.ok),
       first(),
     );
