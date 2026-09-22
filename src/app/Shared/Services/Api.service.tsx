@@ -1294,32 +1294,6 @@ export class ApiService {
     );
   }
 
-  uploadSSLCertificate(
-    file: File,
-    onUploadProgress?: (progress: number) => void,
-    abortSignal?: Observable<void>,
-  ): Observable<boolean> {
-    window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
-
-    const body = new window.FormData();
-    body.append('cert', file);
-    return this.sendUploadRequest(
-      'v4',
-      'certificates',
-      'Certificate Upload Failed',
-      body,
-      onUploadProgress,
-      abortSignal,
-    ).pipe(
-      map((resp) => resp.ok),
-      tap({
-        next: () => (window.onbeforeunload = null),
-        error: () => (window.onbeforeunload = null),
-      }),
-      first(),
-    );
-  }
-
   postRecordingMetadata(
     recordingName: string,
     labels: KeyValue[],
