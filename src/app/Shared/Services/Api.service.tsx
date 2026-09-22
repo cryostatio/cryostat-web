@@ -883,8 +883,8 @@ export class ApiService {
     body.append('probeTemplate', file);
     body.append('name', file.name);
     return this.sendUploadRequest(
-      'v4',
-      'probes',
+      'v5',
+      'jmc_agent/probe_templates',
       'Custom Probe Template Upload Failed',
       body,
       onUploadProgress,
