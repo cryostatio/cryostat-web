@@ -251,7 +251,13 @@ export class ApiService {
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<SmartTrigger[]> {
-    return this.doGet(`targets/${target.jvmId}/smart_triggers`, 'v5', undefined, suppressNotifications, skipStatusCheck);
+    return this.doGet(
+      `targets/${target.jvmId}/smart_triggers`,
+      'v5',
+      undefined,
+      suppressNotifications,
+      skipStatusCheck,
+    );
   }
 
   deleteTrigger(uuid: string, target: Target): Observable<boolean> {
