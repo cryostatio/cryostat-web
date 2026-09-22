@@ -402,7 +402,7 @@ export class ApiService {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
-        this.sendRequest('v4', `targets/${target!.id}/recordings`, {
+        this.sendRequest('v5', `targets/${target!.jvmId}/recordings`, {
           method: 'POST',
           body: form,
         }).pipe(
@@ -467,7 +467,7 @@ export class ApiService {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
-        this.sendRequest('v4', `targets/${target!.id}/recordings/${remoteId}`, {
+        this.sendRequest('v5', `targets/${target!.jvmId}/recordings/${remoteId}`, {
           method: 'PATCH',
           body: 'STOP',
         }).pipe(
@@ -483,7 +483,7 @@ export class ApiService {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
-        this.sendRequest('v4', `targets/${target!.id}/recordings/${remoteId}`, {
+        this.sendRequest('v5', `targets/${target!.jvmId}/recordings/${remoteId}`, {
           method: 'DELETE',
         }).pipe(
           map((resp) => resp.ok),
@@ -511,7 +511,7 @@ export class ApiService {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
-        this.sendRequest('v4', `targets/${target!.id}/recordings/${remoteId}/upload`, {
+        this.sendRequest('v5', `targets/${target!.jvmId}/recordings/${remoteId}/upload`, {
           method: 'POST',
         }).pipe(
           concatMap((resp) => resp.text()),
@@ -550,7 +550,7 @@ export class ApiService {
   }
 
   deleteArchivedRecordingFromPath(jvmId: string, recordingName: string): Observable<boolean> {
-    return this.sendRequest('beta', `fs/recordings/${encodeURIComponent(jvmId)}/${encodeURIComponent(recordingName)}`, {
+    return this.sendRequest('v5', `recordings/${encodeURIComponent(jvmId)}/${encodeURIComponent(recordingName)}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -2013,7 +2013,7 @@ export class ApiService {
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<ActiveRecording[]> {
-    return this.doGet(`targets/${target.id}/recordings`, 'v4', undefined, suppressNotifications, skipStatusCheck);
+    return this.doGet(`targets/${target.jvmId}/recordings`, 'v5', undefined, suppressNotifications, skipStatusCheck);
   }
 
   getUploadedRecordings(): Observable<ArchivedRecording[]> {
@@ -2275,7 +2275,7 @@ export class ApiService {
   }
 
   getArchivedRecordingDirectories(suppressNotifications = false): Observable<RecordingDirectory[]> {
-    return this.doGet<RecordingDirectory[]>('fs/recordings', 'beta', undefined, suppressNotifications);
+    return this.doGet<RecordingDirectory[]>('recordings', 'v5', undefined, suppressNotifications);
   }
 
   getArchivedHeapDumpDirectories(suppressNotifications = false): Observable<HeapDumpDirectory[]> {
@@ -2292,8 +2292,8 @@ export class ApiService {
     skipStatusCheck = false,
   ): Observable<AdvancedRecordingOptions> {
     return this.doGet<AdvancedRecordingOptions>(
-      `targets/${target.id}/recordingOptions`,
-      'v4',
+      `targets/${target.jvmId}/recordingOptions`,
+      'v5',
       undefined,
       suppressNotifications,
       skipStatusCheck,
@@ -2307,8 +2307,8 @@ export class ApiService {
     suppressNotifications = false,
   ): Observable<Response> {
     return this.sendRequest(
-      'beta',
-      `recording_analytics/${encodeURIComponent(jvmId)}/${encodeURIComponent(filename)}`,
+      'v5',
+      `recordings/${encodeURIComponent(jvmId)}/${encodeURIComponent(filename)}/analytics`,
       {
         method: 'POST',
         body,
@@ -2320,8 +2320,8 @@ export class ApiService {
 
   synthesizeRecording(jvmId: string, params: URLSearchParams, suppressNotifications = false): Observable<Response> {
     return this.sendRequest(
-      'beta',
-      `recording_synthesis/${encodeURIComponent(jvmId)}`,
+      'v5',
+      `targets/${encodeURIComponent(jvmId)}/recordings/synthesis`,
       { method: 'POST' },
       params,
       suppressNotifications,
@@ -2330,8 +2330,8 @@ export class ApiService {
 
   generateTargetReport(target: Target, suppressNotifications = false): Observable<Response> {
     return this.sendRequest(
-      'v4.1',
-      `/targets/${target.id}/reports`,
+      'v5',
+      `/targets/${target.jvmId}/reports`,
       {
         method: 'POST',
       },
@@ -2341,7 +2341,7 @@ export class ApiService {
   }
 
   getReportRules(suppressNotifications = false, skipStatusCheck = false): Observable<ReportRule[]> {
-    return this.doGet<ReportRule[]>('/reports_rules', 'v4.1', undefined, suppressNotifications, skipStatusCheck);
+    return this.doGet<ReportRule[]>('/reports/rules', 'v5', undefined, suppressNotifications, skipStatusCheck);
   }
 
   getTlsCertificates(suppressNotifications = false, skipStatusCheck = false): Observable<string[]> {
