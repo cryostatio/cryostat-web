@@ -29,6 +29,7 @@ jest.mock('@app/Rules/CreateRule', () => ({
 }));
 
 const mockRule: Rule = {
+  id: 'rule-uuid-1234',
   name: 'mockRule',
   description: 'A mock rule',
   matchExpression: "target.alias == 'io.cryostat.Cryostat' || target.annotations.cryostat['PORT'] == 9091",
@@ -207,7 +208,7 @@ describe('<Rules />', () => {
     await user.click(within(screen.getByLabelText(DeleteAutomatedRules.ariaLabel)).getByText('Delete'));
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toHaveBeenCalledWith(mockRule.name, true);
+    expect(deleteRequestSpy).toHaveBeenCalledWith(mockRule.id, true);
     expect(dialogWarningSpy).toHaveBeenCalledTimes(1);
     expect(dialogWarningSpy).toHaveBeenCalledWith(DeleteOrDisableWarningType.DeleteAutomatedRules, false);
   });
@@ -232,7 +233,7 @@ describe('<Rules />', () => {
     expect(screen.queryByLabelText(DeleteAutomatedRules.ariaLabel)).not.toBeInTheDocument();
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toHaveBeenCalledWith(mockRule.name, true);
+    expect(deleteRequestSpy).toHaveBeenCalledWith(mockRule.id, true);
   });
 
   it('remove a rule when receiving a notification', async () => {

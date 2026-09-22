@@ -19,6 +19,7 @@ import {
   topologySetIgnoreReportResultIntent,
 } from '@app/Shared/Redux/Configurations/TopologyConfigSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
+import { ReportRule } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
@@ -47,7 +48,6 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { tap } from 'rxjs';
 import { SettingTab, UserSetting } from '../types';
-import { ReportRule } from '@app/Shared/Services/api.types';
 
 const getLeafIds = (node: DualListSelectorTreeItemData): string[] => {
   if (!node.children?.length) {

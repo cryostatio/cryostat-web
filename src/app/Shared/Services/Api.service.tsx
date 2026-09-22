@@ -291,7 +291,7 @@ export class ApiService {
       }
     });
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
-    return this.sendUploadRequest('v4', 'rules', 'Rule Upload Failed', body, onUploadProgress, abortSignal).pipe(
+    return this.sendUploadRequest('v5', 'rules', 'Rule Upload Failed', body, onUploadProgress, abortSignal).pipe(
       map((resp) => resp.ok),
       tap({
         next: () => (window.onbeforeunload = null),
@@ -308,7 +308,7 @@ export class ApiService {
       })
       .pipe(
         concatMap((headers) =>
-          this.sendRequest('v4', 'rules', {
+          this.sendRequest('v5', 'rules', {
             method: 'POST',
             body: JSON.stringify({ ...rule, metadata: { labels: this.transformLabelsToObject(rule.metadata.labels) } }),
             headers,
@@ -328,8 +328,8 @@ export class ApiService {
       .pipe(
         concatMap((headers) =>
           this.sendRequest(
-            'v4',
-            `rules/${rule.name}`,
+            'v5',
+            `rules/${rule.id}`,
             {
               method: 'PATCH',
               body: JSON.stringify({
@@ -349,10 +349,10 @@ export class ApiService {
       );
   }
 
-  deleteRule(name: string, clean = true): Observable<boolean> {
+  deleteRule(id: string, clean = true): Observable<boolean> {
     return this.sendRequest(
-      'v4',
-      `rules/${name}`,
+      'v5',
+      `rules/${id}`,
       {
         method: 'DELETE',
       },
@@ -1591,7 +1591,7 @@ export class ApiService {
 
   getRules(suppressNotifications = false, skipStatusCheck = false): Observable<Rule[]> {
     return this.sendRequest(
-      'v4',
+      'v5',
       'rules',
       {
         method: 'GET',

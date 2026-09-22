@@ -568,7 +568,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           targets: attr.targets,
         };
       });
-      this.post('api/v4/rules', (schema, request) => {
+      this.post('api/v5/rules', (schema, request) => {
         const attrs = JSON.parse(request.requestBody);
         const rule = schema.create(Resource.RULE, attrs);
         const msg = {
@@ -581,11 +581,11 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         websocket.send(JSON.stringify(msg));
         return rule;
       });
-      this.get('api/v4/rules', (schema) => schema.all(Resource.RULE).models);
-      this.patch('api/v4/rules/:ruleName', (schema, request) => {
-        const ruleName = request.params.ruleName;
+      this.get('api/v5/rules', (schema) => schema.all(Resource.RULE).models);
+      this.patch('api/v5/rules/:id', (schema, request) => {
+        const id = request.params.id;
         const patch = JSON.parse(request.requestBody);
-        const rule = schema.findBy(Resource.RULE, { name: ruleName });
+        const rule = schema.findBy(Resource.RULE, { id });
 
         if (!rule) {
           return new Response(404);
@@ -601,9 +601,9 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         websocket.send(JSON.stringify(msg));
         return new Response(200);
       });
-      this.delete('api/v4/rules/:ruleName', (schema, request) => {
-        const ruleName = request.params.ruleName;
-        const rule = schema.findBy(Resource.RULE, { name: ruleName });
+      this.delete('api/v5/rules/:id', (schema, request) => {
+        const id = request.params.id;
+        const rule = schema.findBy(Resource.RULE, { id });
 
         if (!rule) {
           return new Response(404);
