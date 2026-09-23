@@ -316,7 +316,11 @@ export class ApiService {
         concatMap((headers) =>
           this.sendRequest('v5', 'rules', {
             method: 'POST',
-            body: JSON.stringify({ ...rule, metadata: { labels: this.transformLabelsToObject(rule.metadata.labels) } }),
+            body: JSON.stringify({
+              ...rule,
+              id: undefined,
+              metadata: { labels: this.transformLabelsToObject(rule.metadata.labels) },
+            }),
             headers,
           }),
         ),
@@ -350,16 +354,15 @@ export class ApiService {
             new URLSearchParams({ clean: String(clean) }),
           ),
         ),
-
         map((resp) => resp.ok),
         first(),
       );
   }
 
-  deleteRule(id: string, clean = true): Observable<boolean> {
+  deleteRule(rule: Rule, clean = true): Observable<boolean> {
     return this.sendRequest(
       'v5',
-      `rules/${id}`,
+      `rules/${rule.id}`,
       {
         method: 'DELETE',
       },
@@ -501,14 +504,10 @@ export class ApiService {
     );
   }
 
-  deleteArchivedRecording(connectUrl: string, recordingName: string): Observable<boolean> {
-    return this.sendRequest(
-      'beta',
-      `recordings/${encodeURIComponent(connectUrl)}/${encodeURIComponent(recordingName)}`,
-      {
-        method: 'DELETE',
-      },
-    ).pipe(
+  deleteArchivedRecording(jvmId: string, recordingName: string): Observable<boolean> {
+    return this.sendRequest('v5', `recordings/${encodeURIComponent(jvmId)}/${encodeURIComponent(recordingName)}`, {
+      method: 'DELETE',
+    }).pipe(
       map((resp) => resp.ok),
       first(),
     );
@@ -2260,11 +2259,11 @@ export class ApiService {
   }
 
   getArchivedHeapDumpDirectories(suppressNotifications = false): Observable<HeapDumpDirectory[]> {
-    return this.doGet<HeapDumpDirectory[]>('diagnostics/fs/heapdumps', 'beta', undefined, suppressNotifications);
+    return this.doGet<HeapDumpDirectory[]>('diagnostics/heapdump', 'v5', undefined, suppressNotifications);
   }
 
   getArchivedThreadDumpDirectories(suppressNotifications = false): Observable<ThreadDumpDirectory[]> {
-    return this.doGet<ThreadDumpDirectory[]>('diagnostics/fs/threaddumps', 'beta', undefined, suppressNotifications);
+    return this.doGet<ThreadDumpDirectory[]>('diagnostics/threaddump', 'v5', undefined, suppressNotifications);
   }
 
   getTargetRecordingOptions(

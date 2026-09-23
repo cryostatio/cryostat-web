@@ -444,7 +444,7 @@ describe('<ArchivedRecordingsTable />', () => {
     await user.click(within(screen.getByLabelText(DeleteArchivedRecordings.ariaLabel)).getByText('Delete'));
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toHaveBeenCalledWith(mockTarget.connectUrl, 'someRecording');
+    expect(deleteRequestSpy).toHaveBeenCalledWith(mockTarget.jvmId, 'someRecording');
     expect(dialogWarningSpy).toHaveBeenCalledTimes(1);
     expect(dialogWarningSpy).toHaveBeenCalledWith(DeleteOrDisableWarningType.DeleteArchivedRecordings, false);
   });
@@ -478,7 +478,7 @@ describe('<ArchivedRecordingsTable />', () => {
 
     expect(screen.queryByLabelText(DeleteArchivedRecordings.ariaLabel)).not.toBeInTheDocument();
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toHaveBeenCalledWith(mockTarget.connectUrl, 'someRecording');
+    expect(deleteRequestSpy).toHaveBeenCalledWith(mockTarget.jvmId, 'someRecording');
   });
 
   it('should download a Recording when Download Recording is clicked', async () => {

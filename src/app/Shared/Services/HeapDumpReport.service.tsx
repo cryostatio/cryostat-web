@@ -55,7 +55,7 @@ export class HeapDumpReportService {
     headers.append('Accept', 'application/json');
     const req = () =>
       combineLatest([
-        this.ctx.url(`/api/beta/diagnostics/targets/${jvmId}/heapdump/${heapDumpId}/analyze`),
+        this.ctx.url(`/api/v5/targets/${jvmId}/diagnostics/heapdump/${heapDumpId}/analyze`),
         this.ctx.headers(headers).pipe(
           map((headers) => {
             let cfg: RequestInit = {};

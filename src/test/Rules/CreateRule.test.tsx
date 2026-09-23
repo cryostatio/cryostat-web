@@ -270,7 +270,7 @@ describe('<CreateRule />', () => {
     expect(createSpy).toHaveBeenCalledTimes(1);
     expect(createSpy).toHaveBeenCalledWith({
       ...mockRule,
-      id: undefined,
+      id: '',
       metadata: {
         labels: [
           {

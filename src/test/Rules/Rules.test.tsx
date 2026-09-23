@@ -208,7 +208,7 @@ describe('<Rules />', () => {
     await user.click(within(screen.getByLabelText(DeleteAutomatedRules.ariaLabel)).getByText('Delete'));
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toHaveBeenCalledWith(mockRule.id, true);
+    expect(deleteRequestSpy).toHaveBeenCalledWith(mockRule, true);
     expect(dialogWarningSpy).toHaveBeenCalledTimes(1);
     expect(dialogWarningSpy).toHaveBeenCalledWith(DeleteOrDisableWarningType.DeleteAutomatedRules, false);
   });
@@ -233,7 +233,7 @@ describe('<Rules />', () => {
     expect(screen.queryByLabelText(DeleteAutomatedRules.ariaLabel)).not.toBeInTheDocument();
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toHaveBeenCalledWith(mockRule.id, true);
+    expect(deleteRequestSpy).toHaveBeenCalledWith(mockRule, true);
   });
 
   it('remove a rule when receiving a notification', async () => {
