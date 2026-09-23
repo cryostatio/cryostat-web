@@ -339,10 +339,8 @@ export class ApiService {
             {
               method: 'PATCH',
               body: JSON.stringify({
-                rule: {
-                  ...rule,
-                  id: undefined,
-                },
+                ...rule,
+                id: undefined,
                 metadata: {
                   labels: this.transformLabelsToObject(rule?.metadata?.labels ?? []),
                 },
