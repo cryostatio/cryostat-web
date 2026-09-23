@@ -437,7 +437,7 @@ export class ApiService {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
-        this.sendRequest('v5', `targets/${target!.jvmId}/snapshot`, {
+        this.sendRequest('v5', `targets/${target!.jvmId}/recordings/snapshot`, {
           method: 'POST',
         }).pipe(
           concatMap((resp) => (resp.status === 202 ? of(undefined) : (resp.json() as Promise<ActiveRecording>))),
