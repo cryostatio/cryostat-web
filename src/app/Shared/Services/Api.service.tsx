@@ -146,7 +146,7 @@ export class ApiService {
   }
 
   deleteTarget(target: Target): Observable<boolean> {
-    return this.sendRequest('v5', `targets/${target.id}`, {
+    return this.sendRequest('v5', `targets/${target.jvmId!}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
