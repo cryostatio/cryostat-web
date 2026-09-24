@@ -56,12 +56,14 @@ const mockRule: Rule = {
   matchExpression: "target.alias == 'io.cryostat.Cryostat' || target.annotations.cryostat['PORT'] == 9091",
   enabled: true,
   eventSpecifier: 'template=Profiling,type=TARGET',
+  heapDump: false,
   archivalPeriodSeconds: 0,
   initialDelaySeconds: 0,
   preservedArchives: 0,
   maxAgeSeconds: 0,
   maxSizeBytes: 0,
   metadata: { labels: [] },
+  threadDump: false,
 };
 
 const mockNavigate = jest.fn();

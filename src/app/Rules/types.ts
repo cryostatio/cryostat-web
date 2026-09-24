@@ -38,6 +38,8 @@ interface _FormBaseData {
   initialDelay: number;
   initialDelayUnit: number;
   preservedArchives: number;
+  threaddump: boolean;
+  heapdump: boolean;
 }
 
 interface _FormValidationData {
