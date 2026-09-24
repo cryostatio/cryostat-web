@@ -67,8 +67,6 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
     return getActiveTab(search, 'tab', Object.values(ArchiveTab), ArchiveTab.PER_TARGET);
   }, [search]);
 
-  const [archiveEnabled, setArchiveEnabled] = React.useState(false);
-
   const uploadTargetAsObs = React.useMemo(() => of(uploadAsTarget), []);
   const targetAsObs = React.useMemo(() => of(target), [target]);
 
@@ -77,62 +75,53 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
   }, [addSubscription, context.target, setTarget]);
 
   const tabs = React.useMemo(() => {
-    const arr: JSX.Element[] = [];
-    if (archiveEnabled) {
-      arr.push(
-        <Tab
-          id="per-target"
-          data-quickstart-id="nav-archives-per-target"
-          key={ArchiveTab.PER_TARGET}
-          eventKey={ArchiveTab.PER_TARGET}
-          title={<TabTitleText>Targets</TabTitleText>}
-        >
-          <Stack hasGutter>
-            <StackItem>
-              <TargetContextSelector />
-            </StackItem>
-            <StackItem>
-              {target ? (
-                <ArchivedRecordingsTable target={targetAsObs} isUploadsTable={false} isNestedTable={false} />
-              ) : (
-                <AllTargetsArchivedRecordingsTable />
-              )}
-            </StackItem>
-          </Stack>
-        </Tab>,
-      );
-      arr.push(
-        <Tab
-          id="all-archives"
-          data-quickstart-id="nav-archives-all-archives"
-          key={ArchiveTab.ALL_ARCHIVES}
-          eventKey={ArchiveTab.ALL_ARCHIVES}
-          title={<TabTitleText>All Archives</TabTitleText>}
-        >
-          <AllArchivedRecordingsTable />
-        </Tab>,
-      );
+    const arr: JSX.Element[] = [
+      <Tab
+        id="per-target"
+        data-quickstart-id="nav-archives-per-target"
+        key={ArchiveTab.PER_TARGET}
+        eventKey={ArchiveTab.PER_TARGET}
+        title={<TabTitleText>Targets</TabTitleText>}
+      >
+        <Stack hasGutter>
+          <StackItem>
+            <TargetContextSelector />
+          </StackItem>
+          <StackItem>
+            {target ? (
+              <ArchivedRecordingsTable target={targetAsObs} isUploadsTable={false} isNestedTable={false} />
+            ) : (
+              <AllTargetsArchivedRecordingsTable />
+            )}
+          </StackItem>
+        </Stack>
+      </Tab>,
+      <Tab
+        id="all-archives"
+        data-quickstart-id="nav-archives-all-archives"
+        key={ArchiveTab.ALL_ARCHIVES}
+        eventKey={ArchiveTab.ALL_ARCHIVES}
+        title={<TabTitleText>All Archives</TabTitleText>}
+      >
+        <AllArchivedRecordingsTable />
+      </Tab>,
+    ];
 
-      if (capabilities.fileUploads) {
-        arr.push(
-          <Tab
-            id="uploads"
-            data-quickstart-id="nav-archives-all-uploads"
-            key={ArchiveTab.UPLOADS}
-            eventKey={ArchiveTab.UPLOADS}
-            title={<TabTitleText>Uploads</TabTitleText>}
-          >
-            <ArchivedRecordingsTable target={uploadTargetAsObs} isUploadsTable={true} isNestedTable={false} />
-          </Tab>,
-        );
-      }
+    if (capabilities.fileUploads) {
+      arr.push(
+        <Tab
+          id="uploads"
+          data-quickstart-id="nav-archives-all-uploads"
+          key={ArchiveTab.UPLOADS}
+          eventKey={ArchiveTab.UPLOADS}
+          title={<TabTitleText>Uploads</TabTitleText>}
+        >
+          <ArchivedRecordingsTable target={uploadTargetAsObs} isUploadsTable={true} isNestedTable={false} />
+        </Tab>,
+      );
     }
     return arr;
-  }, [capabilities.fileUploads, archiveEnabled, uploadTargetAsObs, target, targetAsObs]);
-
-  React.useEffect(() => {
-    addSubscription(context.api.isArchiveEnabled().subscribe(setArchiveEnabled));
-  }, [context.api, addSubscription, setArchiveEnabled]);
+  }, [capabilities.fileUploads, uploadTargetAsObs, target, targetAsObs]);
 
   const onTabSelect = React.useCallback(
     (_: React.MouseEvent, key: string | number) =>

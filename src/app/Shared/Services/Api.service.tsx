@@ -453,10 +453,6 @@ export class ApiService {
     );
   }
 
-  isArchiveEnabled(): Observable<boolean> {
-    return this.archiveEnabled.asObservable();
-  }
-
   archiveRecording(remoteId: number): Observable<string> {
     return this.target.target().pipe(
       filter((t) => !!t),

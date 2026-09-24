@@ -193,7 +193,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+            element: <ActiveRecordingsTable toolbarBreakReference={document.body} />,
           },
         ],
       },
@@ -259,7 +259,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} />,
+            element: <ActiveRecordingsTable />,
           },
         ],
       },
@@ -276,7 +276,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} />,
+            element: <ActiveRecordingsTable />,
           },
         ],
       },
@@ -293,7 +293,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} />,
+            element: <ActiveRecordingsTable />,
           },
         ],
       },
@@ -310,7 +310,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} />,
+            element: <ActiveRecordingsTable />,
           },
         ],
       },
@@ -326,7 +326,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+            element: <ActiveRecordingsTable toolbarBreakReference={document.body} />,
           },
         ],
       },
@@ -346,7 +346,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+            element: <ActiveRecordingsTable toolbarBreakReference={document.body} />,
           },
         ],
       },
@@ -364,7 +364,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+            element: <ActiveRecordingsTable toolbarBreakReference={document.body} />,
           },
         ],
       },
@@ -388,7 +388,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+            element: <ActiveRecordingsTable toolbarBreakReference={document.body} />,
           },
         ],
       },
@@ -412,7 +412,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+            element: <ActiveRecordingsTable toolbarBreakReference={document.body} />,
           },
         ],
       },
@@ -434,7 +434,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+            element: <ActiveRecordingsTable toolbarBreakReference={document.body} />,
           },
         ],
       },
@@ -466,7 +466,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+            element: <ActiveRecordingsTable toolbarBreakReference={document.body} />,
           },
         ],
       },
@@ -491,7 +491,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} />,
+            element: <ActiveRecordingsTable />,
           },
         ],
       },
@@ -513,7 +513,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} />,
+            element: <ActiveRecordingsTable />,
           },
         ],
       },
@@ -545,7 +545,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} />,
+            element: <ActiveRecordingsTable />,
           },
         ],
       },

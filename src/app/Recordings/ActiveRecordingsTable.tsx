@@ -141,7 +141,6 @@ const tableColumns: TableColumn[] = [
 ];
 
 export interface ActiveRecordingsTableProps {
-  archiveEnabled: boolean;
   initialPanelContent?: string;
   toolbarBreakReference?: HTMLElement | (() => HTMLElement);
 }
@@ -506,7 +505,6 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         filteredRecordings={filteredRecordings}
         updateFilters={updateFilters}
         handleClearFilters={handleClearFilters}
-        archiveEnabled={props.archiveEnabled}
         handleCreateRecording={handleCreateRecording}
         handleArchiveRecordings={handleArchiveRecordings}
         handleEditLabels={handleEditLabels}
@@ -525,7 +523,6 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
       filteredRecordings,
       updateFilters,
       handleClearFilters,
-      props.archiveEnabled,
       handleCreateRecording,
       handleArchiveRecordings,
       handleEditLabels,
@@ -637,7 +634,6 @@ export interface ActiveRecordingsToolbarProps {
   filteredRecordings: ActiveRecording[];
   updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
   handleClearFilters: () => void;
-  archiveEnabled: boolean;
   handleCreateRecording: () => void;
   handleArchiveRecordings: () => void;
   handleEditLabels: () => void;
@@ -699,7 +695,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
   );
 
   const buttons = React.useMemo(() => {
-    let arr = [
+    return [
       {
         default: (
           <Button variant="primary" onClick={props.handleCreateRecording} data-quickstart-id="recordings-create-btn">
@@ -713,9 +709,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
         ),
         key: 'Create',
       },
-    ];
-    if (props.archiveEnabled) {
-      arr.push({
+      {
         default: (
           <Button
             variant="secondary"
@@ -733,10 +727,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
           </OverflowMenuDropdownItem>
         ),
         key: 'Archive',
-      });
-    }
-    arr = [
-      ...arr,
+      },
       {
         default: (
           <Button
@@ -812,7 +803,6 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
         key: 'Analyze',
       },
     ];
-    return arr;
   }, [
     t,
     handleDeleteButton,
@@ -824,7 +814,6 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
     props.handleStopRecordings,
     props.handleAnalyze,
     props.actionLoadings,
-    props.archiveEnabled,
     props.checkedIndices,
   ]);
 
