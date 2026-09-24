@@ -18,23 +18,9 @@ import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/types';
 import { createBlobURL } from '@app/utils/utils';
 import { ValidatedOptions } from '@patternfly/react-core';
 import _ from 'lodash';
-import {
-  BehaviorSubject,
-  combineLatest,
-  EMPTY,
-  forkJoin,
-  from,
-  Observable,
-  ObservableInput,
-  of,
-  ReplaySubject,
-  throwError,
-  finalize,
-} from 'rxjs';
+import { combineLatest, from, Observable, ObservableInput, of, ReplaySubject, finalize } from 'rxjs';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
 import {
-  GrafanaDatasourceUrlGetResponse,
-  GrafanaDashboardUrlGetResponse,
   HealthGetResponse,
   Target,
   Rule,
@@ -53,7 +39,6 @@ import {
   RecordingCountResponse,
   MBeanMetrics,
   EventType,
-  NotificationCategory,
   HttpError,
   SimpleResponse,
   XMLHttpError,
@@ -103,10 +88,8 @@ import { CryostatContext } from './Services';
 import { TargetService } from './Target.service';
 
 export class ApiService {
-  private readonly archiveEnabled = new BehaviorSubject<boolean>(true);
   private readonly cryostatVersionSubject = new ReplaySubject<string>(1);
   private readonly buildInfoSubject = new ReplaySubject<BuildInfo>(1);
-  private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
 
   constructor(
@@ -118,86 +101,12 @@ export class ApiService {
   ) {}
 
   testBaseServer() {
-    this.testHealth();
-    this.testArchiveAvailability();
-  }
-
-  private testHealth() {
-    const datasourceURL: Observable<GrafanaDashboardUrlGetResponse> = this.doGet('/grafana_datasource_url', 'v5');
-    const dashboardURL: Observable<GrafanaDashboardUrlGetResponse> = this.doGet('/grafana_dashboard_url', 'v5');
     const health: Observable<HealthGetResponse> = this.doGet('/health', 'unversioned');
-
-    health
-      .pipe(
-        concatMap((jsonResp) => {
-          this.cryostatVersionSubject.next(jsonResp.cryostatVersion);
-          this.buildInfoSubject.next(jsonResp.build);
-          const toFetch: unknown[] = [];
-          const unconfigured: string[] = [];
-          const unavailable: string[] = [];
-          // if datasource or dashboard are not configured, display a warning
-          // if either is configured but not available, display an error
-          // if both configured and available then display nothing and just retrieve the URLs
-          if (jsonResp.datasourceConfigured) {
-            if (jsonResp.datasourceAvailable) {
-              toFetch.push(datasourceURL);
-            } else {
-              unavailable.push('datasource URL');
-            }
-          } else {
-            unconfigured.push('datasource URL');
-          }
-          if (jsonResp.dashboardConfigured) {
-            if (jsonResp.dashboardAvailable) {
-              toFetch.push(dashboardURL);
-            } else {
-              unavailable.push('dashboard URL');
-            }
-          } else {
-            unconfigured.push('dashboard URL');
-          }
-          if (unconfigured.length > 0) {
-            return throwError(() => ({
-              state: 'not configured',
-              message: unconfigured.join(', ') + ' unconfigured',
-            }));
-          }
-          if (unavailable.length > 0) {
-            return throwError(() => ({
-              state: 'unavailable',
-              message: unavailable.join(', ') + ' unavailable',
-            }));
-          }
-          return forkJoin(
-            toFetch as [Observable<GrafanaDatasourceUrlGetResponse>, Observable<GrafanaDashboardUrlGetResponse>],
-          );
-        }),
-      )
-      .subscribe({
-        next: (parts) => {
-          this.grafanaDatasourceUrlSubject.next(parts[0].grafanaDatasourceUrl);
-          this.grafanaDashboardUrlSubject.next(parts[1].grafanaDashboardUrl);
-        },
-        error: (err) => {
-          window.console.error(err);
-          if (err.state === 'unavailable') {
-            this.notifications.danger(`Grafana ${err.state}`, err.message, NotificationCategory.GrafanaConfiguration);
-          } else {
-            this.notifications.warning(`Grafana ${err.state}`, err.message, NotificationCategory.GrafanaConfiguration);
-          }
-        },
-      });
-  }
-
-  private testArchiveAvailability() {
-    this.doGet('recordings')
-      .pipe(
-        catchError(() => {
-          this.archiveEnabled.next(false);
-          return EMPTY;
-        }),
-      )
-      .subscribe();
+    health.subscribe((resp) => {
+      this.cryostatVersionSubject.next(resp.cryostatVersion);
+      this.buildInfoSubject.next(resp.build);
+      this.grafanaDashboardUrlSubject.next(resp.services.dashboard.url);
+    });
   }
 
   getTargets(): Observable<Target[]> {
@@ -917,10 +826,6 @@ export class ApiService {
 
   buildInfo(): Observable<BuildInfo> {
     return this.buildInfoSubject.asObservable();
-  }
-
-  grafanaDatasourceUrl(): Observable<string> {
-    return this.grafanaDatasourceUrlSubject.asObservable();
   }
 
   grafanaDashboardUrl(): Observable<string> {
