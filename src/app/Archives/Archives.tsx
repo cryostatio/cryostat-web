@@ -38,6 +38,7 @@ import { AllTargetsArchivedRecordingsTable } from './AllTargetsArchivedRecording
 export const uploadAsTarget: Target = {
   agent: false,
   connectUrl: UPLOADS_SUBDIRECTORY,
+  jvmId: UPLOADS_SUBDIRECTORY,
   alias: '',
   labels: [],
   annotations: {
