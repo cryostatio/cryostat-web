@@ -349,9 +349,9 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         }
         return new Response(200);
       });
-      this.post('api/v4/targets/:targetId/snapshot', (schema, request) => {
+      this.post('api/v5/targets/:jvmId/recordings/snapshot', (schema, request) => {
         const remoteId = Math.floor(Math.random() * 1000000);
-        const target = schema.findBy(Resource.TARGET, { id: request.params.targetId });
+        const target = schema.findBy(Resource.TARGET, { jvmId: request.params.jvmId });
         if (!target) {
           return new Response(404);
         }
