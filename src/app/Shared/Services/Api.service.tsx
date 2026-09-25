@@ -101,7 +101,7 @@ export class ApiService {
   ) {}
 
   testBaseServer() {
-    const health: Observable<HealthGetResponse> = this.doGet('/health', 'unversioned');
+    const health: Observable<HealthGetResponse> = this.doGet('health', 'unversioned');
     health.subscribe((resp) => {
       this.cryostatVersionSubject.next(resp.cryostatVersion);
       this.buildInfoSubject.next(resp.build);
@@ -2212,7 +2212,7 @@ export class ApiService {
   generateTargetReport(target: Target, suppressNotifications = false): Observable<Response> {
     return this.sendRequest(
       'v5',
-      `/targets/${target.jvmId}/reports`,
+      `targets/${target.jvmId}/reports`,
       {
         method: 'POST',
       },
@@ -2222,7 +2222,7 @@ export class ApiService {
   }
 
   getReportRules(suppressNotifications = false, skipStatusCheck = false): Observable<ReportRule[]> {
-    return this.doGet<ReportRule[]>('/reports/rules', 'v5', undefined, suppressNotifications, skipStatusCheck);
+    return this.doGet<ReportRule[]>('reports/rules', 'v5', undefined, suppressNotifications, skipStatusCheck);
   }
 
   getTlsCertificates(suppressNotifications = false, skipStatusCheck = false): Observable<string[]> {
