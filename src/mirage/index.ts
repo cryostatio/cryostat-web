@@ -535,7 +535,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           description: 'The configuration of the garbage collected heap',
         },
       ]);
-      this.get('api/v5/event_templates', () => [
+      this.get('api/v5/event-templates', () => [
         {
           name: 'Preset Template',
           provider: 'Cryostat',
@@ -543,7 +543,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           description: 'This is not a real event template, but it is here!',
         },
       ]);
-      this.get('api/v5/targets/:jvmId/event_templates', () => [
+      this.get('api/v5/targets/:jvmId/event-templates', () => [
         {
           name: 'Demo Template',
           provider: 'Demo',
@@ -557,9 +557,9 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           description: 'This is not a real event template, but it is here!',
         },
       ]);
-      this.get('api/v5/jmc_agent/probe_templates', () => []);
-      this.get('api/v5/targets/:jvmId/jmc_agent/probes', () => []);
-      this.post('api/v5/matchExpressions', (_, request) => {
+      this.get('api/v5/jmc-agent/probe-templates', () => []);
+      this.get('api/v5/targets/:jvmId/jmc-agent/probes', () => []);
+      this.post('api/v5/match-expressions', (_, request) => {
         const attr = JSON.parse(request.requestBody);
         if (!attr.matchExpression || !attr.targets) {
           return new Response(400);
@@ -1454,8 +1454,8 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       });
       // ── End GC logging ─────────────────────────────────────────────────────────
 
-      this.get('api/v5/targets/:jvmId/smart_triggers', (schema) => schema.all(Resource.SMART_TRIGGER).models);
-      this.delete('api/v5/targets/:jvmId/smart_triggers/:uuid', (schema, request) => {
+      this.get('api/v5/targets/:jvmId/smart-triggers', (schema) => schema.all(Resource.SMART_TRIGGER).models);
+      this.delete('api/v5/targets/:jvmId/smart-triggers/:uuid', (schema, request) => {
         const smartTriggerId = request.params.uuid;
         const smartTrigger = schema.findBy(Resource.SMART_TRIGGER, { id: smartTriggerId });
 
@@ -1477,7 +1477,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         websocket.send(JSON.stringify(msg));
         return new Response(204);
       });
-      this.post('api/v5/targets/:jvmId/smart_triggers', (schema, request) => {
+      this.post('api/v5/targets/:jvmId/smart-triggers', (schema, request) => {
         // Note: MirageJS will fake serialize FormData (i.e. FormData object is returned when accessing request.requestBody)
         const attrs = request.requestBody as any;
 
@@ -1620,7 +1620,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       });
 
       this.get('api/v5/audit/targets/:jvmId', () => new Response(404));
-      this.get('api/v5/audit/target_lineage/:jvmId', () => new Response(404));
+      this.get('api/v5/audit/target-lineage/:jvmId', () => new Response(404));
     },
   });
 };

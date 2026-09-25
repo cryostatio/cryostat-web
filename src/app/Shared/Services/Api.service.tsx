@@ -161,7 +161,7 @@ export class ApiService {
     skipStatusCheck = false,
   ): Observable<SmartTrigger[]> {
     return this.doGet(
-      `targets/${target.jvmId}/smart_triggers`,
+      `targets/${target.jvmId}/smart-triggers`,
       'v5',
       undefined,
       suppressNotifications,
@@ -170,7 +170,7 @@ export class ApiService {
   }
 
   deleteTrigger(uuid: string, target: Target): Observable<boolean> {
-    return this.sendRequest('v5', `targets/${target.jvmId}/smart_triggers/${uuid}`, { method: 'DELETE' }).pipe(
+    return this.sendRequest('v5', `targets/${target.jvmId}/smart-triggers/${uuid}`, { method: 'DELETE' }).pipe(
       map((resp) => resp.ok),
       first(),
     );
@@ -179,7 +179,7 @@ export class ApiService {
   addTriggers(definition: SmartTriggerRequest, target: Target): Observable<boolean> {
     const body = new window.FormData();
     body.append('definition', JSON.stringify([definition]));
-    return this.sendRequest('v5', `targets/${target.jvmId}/smart_triggers/`, { method: 'POST', body }).pipe(
+    return this.sendRequest('v5', `targets/${target.jvmId}/smart-triggers/`, { method: 'POST', body }).pipe(
       map((resp) => resp.ok),
       first(),
     );
@@ -547,7 +547,7 @@ export class ApiService {
   }
 
   deleteCustomEventTemplate(templateName: string): Observable<boolean> {
-    return this.sendRequest('v5', `event_templates/${encodeURIComponent(templateName)}`, {
+    return this.sendRequest('v5', `event-templates/${encodeURIComponent(templateName)}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -566,7 +566,7 @@ export class ApiService {
     body.append('template', file);
     return this.sendUploadRequest(
       'v5',
-      'event_templates',
+      'event-templates',
       'Template Upload Failed',
       body,
       onUploadProgress,
@@ -585,7 +585,7 @@ export class ApiService {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
-        this.sendRequest('v5', `targets/${target!.jvmId}/jmc_agent/probes`, {
+        this.sendRequest('v5', `targets/${target!.jvmId}/jmc-agent/probes`, {
           method: 'DELETE',
         }).pipe(
           map((resp) => resp.ok),
@@ -622,7 +622,7 @@ export class ApiService {
       concatMap((target) =>
         this.sendRequest(
           'v5',
-          `targets/${target?.jvmId}/diagnostics/threaddump?format=threadPrint`,
+          `targets/${target?.jvmId}/diagnostics/thread-dump?format=threadPrint`,
           {
             method: 'POST',
           },
@@ -642,7 +642,7 @@ export class ApiService {
       concatMap((target) =>
         this.sendRequest(
           'v5',
-          `targets/${target?.jvmId}/diagnostics/heapdump`,
+          `targets/${target?.jvmId}/diagnostics/heap-dump`,
           {
             method: 'POST',
           },
@@ -658,7 +658,7 @@ export class ApiService {
   }
 
   deleteThreadDump(target: Target, threadDumpId: string): Observable<boolean> {
-    return this.sendRequest('v5', `targets/${target?.jvmId}/diagnostics/threaddump/${threadDumpId}`, {
+    return this.sendRequest('v5', `targets/${target?.jvmId}/diagnostics/thread-dump/${threadDumpId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -667,7 +667,7 @@ export class ApiService {
   }
 
   deleteArchivedThreadDumpFromPath(jvmId: string, threadDumpId: string): Observable<boolean> {
-    return this.sendRequest('v5', `targets/${jvmId}/diagnostics/threaddump/${threadDumpId}`, {
+    return this.sendRequest('v5', `targets/${jvmId}/diagnostics/thread-dump/${threadDumpId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -676,7 +676,7 @@ export class ApiService {
   }
 
   deleteHeapDump(target: Target, heapDumpId: string): Observable<boolean> {
-    return this.sendRequest('v5', `targets/${target?.jvmId}/diagnostics/heapdump/${heapDumpId}`, {
+    return this.sendRequest('v5', `targets/${target?.jvmId}/diagnostics/heap-dump/${heapDumpId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -685,7 +685,7 @@ export class ApiService {
   }
 
   deleteArchivedHeapDumpFromPath(jvmId: string, heapDumpId: string): Observable<boolean> {
-    return this.sendRequest('v5', `targets/${jvmId}/diagnostics/heapdump/${heapDumpId}`, {
+    return this.sendRequest('v5', `targets/${jvmId}/diagnostics/heap-dump/${heapDumpId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -699,7 +699,7 @@ export class ApiService {
       concatMap((target) =>
         this.sendRequest(
           'v5',
-          `targets/${target!.jvmId}/diagnostics/threaddump`,
+          `targets/${target!.jvmId}/diagnostics/thread-dump`,
           {
             method: 'GET',
           },
@@ -721,7 +721,7 @@ export class ApiService {
   ): Observable<ThreadDumpAnalysisResult> {
     return this.sendRequest(
       'v5',
-      `targets/${jvmId}/diagnostics/threaddump/${threadDumpId}/analyze`,
+      `targets/${jvmId}/diagnostics/thread-dump/${threadDumpId}/analyze`,
       {
         method: 'POST',
       },
@@ -739,7 +739,7 @@ export class ApiService {
       concatMap((target) =>
         this.sendRequest(
           'v5',
-          `targets/${target!.jvmId}/diagnostics/heapdump`,
+          `targets/${target!.jvmId}/diagnostics/heap-dump`,
           {
             method: 'GET',
           },
@@ -758,7 +758,7 @@ export class ApiService {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
-        this.sendRequest('v5', `targets/${target!.jvmId}/jmc_agent/probes/${encodeURIComponent(templateName)}`, {
+        this.sendRequest('v5', `targets/${target!.jvmId}/jmc-agent/probes/${encodeURIComponent(templateName)}`, {
           method: 'POST',
         }).pipe(
           tap((resp) => {
@@ -789,7 +789,7 @@ export class ApiService {
     body.append('name', file.name);
     return this.sendUploadRequest(
       'v5',
-      'jmc_agent/probe_templates',
+      'jmc-agent/probe-templates',
       'Custom Probe Template Upload Failed',
       body,
       onUploadProgress,
@@ -805,7 +805,7 @@ export class ApiService {
   }
 
   deleteCustomProbeTemplate(templateName: string): Observable<boolean> {
-    return this.sendRequest('v5', `jmc_agent/probe_templates/${encodeURIComponent(templateName)}`, {
+    return this.sendRequest('v5', `jmc-agent/probe-templates/${encodeURIComponent(templateName)}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -815,7 +815,7 @@ export class ApiService {
   }
 
   downloadProbeTemplate(template: ProbeTemplate): void {
-    this.ctx.url(`/api/v5/jmc_agent/probe_templates/${encodeURIComponent(template.name)}`).subscribe((resourceUrl) => {
+    this.ctx.url(`/api/v5/jmc-agent/probe-templates/${encodeURIComponent(template.name)}`).subscribe((resourceUrl) => {
       this.downloadFile(resourceUrl, undefined, template.name);
     });
   }
@@ -845,7 +845,7 @@ export class ApiService {
   }
 
   getProbeTemplates(): Observable<ProbeTemplate[]> {
-    return this.sendRequest('v5', 'jmc_agent/probe_templates', { method: 'GET' }).pipe(
+    return this.sendRequest('v5', 'jmc-agent/probe-templates', { method: 'GET' }).pipe(
       concatMap((resp) => resp.json()),
       first(),
     );
@@ -857,7 +857,7 @@ export class ApiService {
       concatMap((target) =>
         this.sendRequest(
           'v5',
-          `targets/${target!.jvmId}/jmc_agent/probes`,
+          `targets/${target!.jvmId}/jmc-agent/probes`,
           {
             method: 'GET',
           },
@@ -879,7 +879,7 @@ export class ApiService {
   ): Observable<EventProbe[]> {
     return this.sendRequest(
       'v5',
-      `targets/${target.jvmId}/jmc_agent/probes`,
+      `targets/${target.jvmId}/jmc-agent/probes`,
       {
         method: 'GET',
       },
@@ -1134,14 +1134,14 @@ export class ApiService {
           first(),
           map(
             (target) =>
-              `/api/v5/targets/${target!.jvmId}/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
+              `/api/v5/targets/${target!.jvmId}/event-templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
           ),
           concatMap((resourceUrl) => this.ctx.url(resourceUrl)),
         );
         break;
       default:
         url = of(
-          `/api/v5/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
+          `/api/v5/event-templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
         ).pipe(concatMap((u) => this.ctx.url(u)));
         break;
     }
@@ -1502,7 +1502,7 @@ export class ApiService {
   }
 
   getTargetLineage(jvmId: string): Observable<EnvironmentNode> {
-    return this.doGet<EnvironmentNode>(`audit/target_lineage/${jvmId}`, 'v5', undefined, true);
+    return this.doGet<EnvironmentNode>(`audit/target-lineage/${jvmId}`, 'v5', undefined, true);
   }
 
   /**
@@ -1587,7 +1587,7 @@ export class ApiService {
         concatMap((headers) =>
           this.sendRequest(
             'v5',
-            'matchExpressions',
+            'match-expressions',
             {
               method: 'POST',
               body,
@@ -1923,7 +1923,7 @@ export class ApiService {
   }
 
   getEventTemplates(suppressNotifications = false, skipStatusCheck = false): Observable<EventTemplate[]> {
-    return this.doGet<EventTemplate[]>('event_templates', 'v5', undefined, suppressNotifications, skipStatusCheck);
+    return this.doGet<EventTemplate[]>('event-templates', 'v5', undefined, suppressNotifications, skipStatusCheck);
   }
 
   getTargetEventTemplates(
@@ -1932,7 +1932,7 @@ export class ApiService {
     skipStatusCheck = false,
   ): Observable<EventTemplate[]> {
     return this.doGet<EventTemplate[]>(
-      `targets/${target.jvmId}/event_templates`,
+      `targets/${target.jvmId}/event-templates`,
       'v5',
       undefined,
       suppressNotifications,
@@ -2160,11 +2160,11 @@ export class ApiService {
   }
 
   getArchivedHeapDumpDirectories(suppressNotifications = false): Observable<HeapDumpDirectory[]> {
-    return this.doGet<HeapDumpDirectory[]>('diagnostics/heapdump', 'v5', undefined, suppressNotifications);
+    return this.doGet<HeapDumpDirectory[]>('diagnostics/heap-dump', 'v5', undefined, suppressNotifications);
   }
 
   getArchivedThreadDumpDirectories(suppressNotifications = false): Observable<ThreadDumpDirectory[]> {
-    return this.doGet<ThreadDumpDirectory[]>('diagnostics/threaddump', 'v5', undefined, suppressNotifications);
+    return this.doGet<ThreadDumpDirectory[]>('diagnostics/thread-dump', 'v5', undefined, suppressNotifications);
   }
 
   getTargetRecordingOptions(
@@ -2173,7 +2173,7 @@ export class ApiService {
     skipStatusCheck = false,
   ): Observable<AdvancedRecordingOptions> {
     return this.doGet<AdvancedRecordingOptions>(
-      `targets/${target.jvmId}/recordingOptions`,
+      `targets/${target.jvmId}/recording-options`,
       'v5',
       undefined,
       suppressNotifications,
