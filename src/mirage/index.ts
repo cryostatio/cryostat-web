@@ -547,7 +547,6 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           },
         );
       });
-      this.get('api/v4/targets/:targetId/recordingOptions', () => []);
       this.get('api/v5/targets/:jvmId/recording-options', () => []);
       this.get('api/v5/targets/:jvmId/events', () => [
         {
@@ -1083,9 +1082,6 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           }
         }
         return { data };
-      });
-      this.get('api/v4/tls/certs', () => {
-        return new Response(200, {}, ['/truststore/additional-app.crt']);
       });
       this.get('api/v5/tls/certs', () => {
         return new Response(200, {}, ['/truststore/additional-app.crt']);
