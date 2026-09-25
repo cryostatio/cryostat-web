@@ -1267,7 +1267,7 @@ export class ApiService {
   postThreadDumpMetadata(threadDumpId: string, labels: KeyValue[], target: Target): Observable<ThreadDump[]> {
     return this.graphql<any>(
       `
-        query PostThreadDumpMetadata(jvmId: String!, $threadDumpId: String, $labels: [Entry_String_StringInput]) {
+        query PostThreadDumpMetadata($jvmId: String!, $threadDumpId: String, $labels: [Entry_String_StringInput]) {
           targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               threadDumps(filter: { name: $threadDumpId }) {
