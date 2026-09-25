@@ -77,12 +77,21 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           },
         },
         cryostatVersion: `${build.version.replace(/(-\w+)*$/g, '')}-0-preview`,
-        dashboardAvailable: false,
-        dashboardConfigured: false,
-        datasourceAvailable: false,
-        datasourceConfigured: false,
-        reportsAvailable: true,
-        reportsConfigured: false,
+        services: {
+          reports: {
+            available: true,
+            configured: false,
+          },
+          datasource: {
+            available: false,
+            configured: false,
+          },
+          dashboard: {
+            available: false,
+            configured: false,
+            url: '',
+          },
+        },
       }));
       this.get(
         'api/v5/active-download/:id',
