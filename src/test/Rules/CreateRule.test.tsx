@@ -51,6 +51,7 @@ const mockCustomEventTemplate: EventTemplate = {
 };
 
 const mockRule: Rule = {
+  id: 'rule-uuid-1234',
   name: 'mockRule',
   description: 'A mock rule',
   matchExpression: "target.alias == 'io.cryostat.Cryostat' || target.annotations.cryostat['PORT'] == 9091",
@@ -269,6 +270,7 @@ describe('<CreateRule />', () => {
     expect(createSpy).toHaveBeenCalledTimes(1);
     expect(createSpy).toHaveBeenCalledWith({
       ...mockRule,
+      id: '',
       metadata: {
         labels: [
           {

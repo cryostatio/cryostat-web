@@ -105,7 +105,6 @@ jest.spyOn(defaultServices.api, 'deleteRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(of([mockRecording]));
 jest.spyOn(defaultServices.api, 'downloadRecording').mockReturnValue(void 0);
 jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of('/grafanaUrl'));
-jest.spyOn(defaultServices.api, 'grafanaDatasourceUrl').mockReturnValue(of('/datasource'));
 jest.spyOn(defaultServices.api, 'stopRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'uploadActiveRecordingToGrafana').mockReturnValue(of());
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
@@ -193,7 +192,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+            element: <ActiveRecordingsTable toolbarBreakReference={document.body} />,
           },
         ],
       },
@@ -259,7 +258,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} />,
+            element: <ActiveRecordingsTable />,
           },
         ],
       },
@@ -276,7 +275,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} />,
+            element: <ActiveRecordingsTable />,
           },
         ],
       },
@@ -293,7 +292,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} />,
+            element: <ActiveRecordingsTable />,
           },
         ],
       },
@@ -310,7 +309,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} />,
+            element: <ActiveRecordingsTable />,
           },
         ],
       },
@@ -326,7 +325,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+            element: <ActiveRecordingsTable toolbarBreakReference={document.body} />,
           },
         ],
       },
@@ -346,7 +345,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+            element: <ActiveRecordingsTable toolbarBreakReference={document.body} />,
           },
         ],
       },
@@ -364,7 +363,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+            element: <ActiveRecordingsTable toolbarBreakReference={document.body} />,
           },
         ],
       },
@@ -388,7 +387,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+            element: <ActiveRecordingsTable toolbarBreakReference={document.body} />,
           },
         ],
       },
@@ -412,7 +411,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+            element: <ActiveRecordingsTable toolbarBreakReference={document.body} />,
           },
         ],
       },
@@ -434,7 +433,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+            element: <ActiveRecordingsTable toolbarBreakReference={document.body} />,
           },
         ],
       },
@@ -466,7 +465,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+            element: <ActiveRecordingsTable toolbarBreakReference={document.body} />,
           },
         ],
       },
@@ -491,7 +490,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} />,
+            element: <ActiveRecordingsTable />,
           },
         ],
       },
@@ -513,7 +512,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} />,
+            element: <ActiveRecordingsTable />,
           },
         ],
       },
@@ -545,7 +544,7 @@ describe('<ActiveRecordingsTable />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <ActiveRecordingsTable archiveEnabled={true} />,
+            element: <ActiveRecordingsTable />,
           },
         ],
       },

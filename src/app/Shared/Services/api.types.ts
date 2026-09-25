@@ -19,7 +19,7 @@ import { AlertVariant } from '@patternfly/react-core';
 import _ from 'lodash';
 import { Observable } from 'rxjs';
 
-export type ApiVersion = 'unversioned' | 'v4' | 'v4.1' | 'beta';
+export type ApiVersion = 'unversioned' | 'v5' | 'beta';
 
 // ======================================
 // Common Resources
@@ -111,23 +111,25 @@ export type TargetForTest = Pick<Target, 'alias' | 'connectUrl'> & {
 // ======================================
 // Health Resources
 // ======================================
-export interface GrafanaDashboardUrlGetResponse {
-  grafanaDashboardUrl: string;
+export interface Services {
+  dashboard: ExternalService;
+  datasource: InternalService;
+  reports: InternalService;
 }
 
-export interface GrafanaDatasourceUrlGetResponse {
-  grafanaDatasourceUrl: string;
+export interface InternalService {
+  configured: boolean;
+  available: boolean;
+}
+
+export interface ExternalService extends InternalService {
+  url: string;
 }
 
 export interface HealthGetResponse {
   cryostatVersion: string;
   build: BuildInfo;
-  datasourceConfigured: boolean;
-  datasourceAvailable: boolean;
-  dashboardConfigured: boolean;
-  dashboardAvailable: boolean;
-  reportsConfigured: boolean;
-  reportsAvailable: boolean;
+  services: Services;
 }
 
 // ======================================
@@ -555,6 +557,12 @@ export interface CachedReportValue {
 export interface CachedHeapDumpReportValue {
   report: HeapDumpAnalysisResult;
   timestamp: number;
+}
+
+export interface ReportRule {
+  id: string;
+  name: string;
+  topic: string;
 }
 
 // [topic, { ruleName, score, description, ... }}]

@@ -132,7 +132,7 @@ jest.spyOn(defaultServices.settings, 'largeUi').mockReturnValue(of(false));
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(of([mockRecording]));
 jest.spyOn(defaultServices.api, 'getCurrentReportForTarget').mockReturnValue(of(mockReport));
-jest.spyOn(defaultServices.api, 'sendRequest').mockReturnValue(of());
+jest.spyOn(defaultServices.api, 'generateTargetReport').mockReturnValue(of());
 jest.spyOn(defaultServices.notificationChannel, 'messages').mockImplementation((category: string) => {
   switch (category) {
     case 'ReportSuccess':

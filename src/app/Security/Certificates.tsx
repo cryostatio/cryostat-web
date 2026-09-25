@@ -52,7 +52,7 @@ export const Certificates: React.FC = () => {
     setLoading(true);
     addSubscription(
       context.api
-        .doGet('tls/certs')
+        .getTlsCertificates()
         .pipe(
           tap((_) => setLoading(false)),
           map((a: string[]) => a.sort()),
