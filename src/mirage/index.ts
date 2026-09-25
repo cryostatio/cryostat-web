@@ -84,8 +84,19 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         reportsAvailable: true,
         reportsConfigured: false,
       }));
-      this.get('api/v5/grafana_datasource_url', () => new Response(500));
-      this.get('api/v5/grafana_dashboard_url', () => new Response(500));
+      this.get(
+        'api/v5/active-download/:id',
+        () => new Response(503, {}, 'Resource downloads are not supported in this demo'),
+      );
+      this.get(
+        'api/v5/download/:encodedKey',
+        () => new Response(503, {}, 'Resource downloads are not supported in this demo'),
+      );
+      this.post(
+        'api/v5/grafana/:encodedKey',
+        () => new Response(503, {}, 'Grafana uploads are not supported in this demo'),
+      );
+      this.get('api/v5/audit/export', () => new Response(503, {}, 'Audit export is not supported in this demo'));
       this.post('api/v5/auth', () => {
         return new Response(
           200,
@@ -202,6 +213,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         websocket.send(JSON.stringify(msg));
         return new Response(200);
       });
+      this.post('api/v5/recordings/:jvmId/:recordingName/analytics', () => new Response(202));
       this.post('api/v5/targets/:jvmId/recordings', (schema, request) => {
         // Note: MirageJS will fake serialize FormData (i.e. FormData object is returned when accessing request.requestBody)
         const attrs = request.requestBody as any;
@@ -527,6 +539,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         );
       });
       this.get('api/v4/targets/:targetId/recordingOptions', () => []);
+      this.get('api/v5/targets/:jvmId/recording-options', () => []);
       this.get('api/v5/targets/:jvmId/events', () => [
         {
           category: ['GC', 'Java Virtual Machine'],
@@ -749,7 +762,8 @@ export const startMirage = ({ environment = 'development' } = {}) => {
               targetNodes: [
                 {
                   target: {
-                    id: target.id,
+                    id: target?.id ?? '1',
+                    jvmId: target?.jvmId ?? '1234',
                     report: {
                       lastUpdated: +Date.now(),
                       aggregate: {
@@ -1064,6 +1078,9 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       this.get('api/v4/tls/certs', () => {
         return new Response(200, {}, ['/truststore/additional-app.crt']);
       });
+      this.get('api/v5/tls/certs', () => {
+        return new Response(200, {}, ['/truststore/additional-app.crt']);
+      });
       // ── Thread dump in-memory state ────────────────────────────────────────────
       const threadDumpsList: Record<
         string,
@@ -1077,22 +1094,21 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         }>
       > = {};
 
-      this.post('api/beta/diagnostics/targets/:targetId/threaddump', (_schema, request) => {
-        const { targetId } = request.params;
-        const jvmId = '1234';
+      this.post('api/v5/targets/:jvmId/diagnostics/thread-dump', (_schema, request) => {
+        const { jvmId } = request.params;
         const threadDumpId = `threaddump-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
         const entry = {
           threadDumpId,
           jvmId,
-          downloadUrl: `api/beta/diagnostics/targets/${targetId}/threaddump/${threadDumpId}`,
+          downloadUrl: `api/v5/targets/${jvmId}/diagnostics/thread-dump/${threadDumpId}`,
           size: Math.floor(Math.random() * 128 * 1024) + 1024,
           lastModified: Math.floor(Date.now() / 1000),
           metadata: { labels: [] },
         };
-        if (!threadDumpsList[targetId]) {
-          threadDumpsList[targetId] = [];
+        if (!threadDumpsList[jvmId]) {
+          threadDumpsList[jvmId] = [];
         }
-        threadDumpsList[targetId].push(entry);
+        threadDumpsList[jvmId].push(entry);
         websocket.send(
           JSON.stringify({
             meta: {
@@ -1105,15 +1121,15 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         return new Response(200, {}, entry);
       });
 
-      this.get('api/beta/diagnostics/targets/:targetId/threaddump', (_schema, request) => {
-        return new Response(200, {}, threadDumpsList[request.params.targetId] ?? []);
+      this.get('api/v5/targets/:jvmId/diagnostics/thread-dump', (_schema, request) => {
+        return new Response(200, {}, threadDumpsList[request.params.jvmId] ?? []);
       });
 
-      this.get('api/beta/diagnostics/targets/:targetId/threaddump/:threadDumpId', (_schema, request) => {
+      this.get('api/v5/targets/:jvmId/diagnostics/thread-dump/:threadDumpId', (_schema, request) => {
         return new Response(303, { Location: `data:text/plain,mock-thread-dump-${request.params.threadDumpId}` });
       });
 
-      this.post('api/beta/diagnostics/targets/:targetId/threaddump/:threadDumpId/analyze', (_schema, _request) => {
+      this.post('api/v5/targets/:jvmId/diagnostics/thread-dump/:threadDumpId/analyze', (_schema, _request) => {
         return new Response(
           200,
           {},
@@ -1134,9 +1150,9 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         );
       });
 
-      this.del('api/beta/diagnostics/targets/:targetId/threaddump/:threadDumpId', (_schema, request) => {
-        const { targetId, threadDumpId } = request.params;
-        const list = threadDumpsList[targetId];
+      this.del('api/v5/targets/:jvmId/diagnostics/thread-dump/:threadDumpId', (_schema, request) => {
+        const { jvmId, threadDumpId } = request.params;
+        const list = threadDumpsList[jvmId];
         if (list) {
           const idx = list.findIndex((e) => e.threadDumpId === threadDumpId);
           if (idx !== -1) {
@@ -1163,38 +1179,6 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         return new Response(204);
       });
 
-      this.get('api/beta/diagnostics/fs/threaddumps', () => {
-        const grouped: Array<{ jvmId: string; threadDumps: Array<{ threadDumpId: string; size: number }> }> = [];
-        for (const targetId of Object.keys(threadDumpsList)) {
-          const dumps = threadDumpsList[targetId];
-          if (dumps.length === 0) continue;
-          const jvmId = dumps[0].jvmId;
-          grouped.push({ jvmId, threadDumps: dumps.map(({ threadDumpId, size }) => ({ threadDumpId, size })) });
-        }
-        return new Response(200, {}, grouped);
-      });
-
-      this.del('api/beta/diagnostics/fs/threaddumps/:jvmId/:threadDumpId', (_schema, request) => {
-        const { jvmId, threadDumpId } = request.params;
-        for (const targetId of Object.keys(threadDumpsList)) {
-          const list = threadDumpsList[targetId];
-          const idx = list.findIndex((e) => e.threadDumpId === threadDumpId && e.jvmId === jvmId);
-          if (idx !== -1) {
-            list.splice(idx, 1);
-            websocket.send(
-              JSON.stringify({
-                meta: {
-                  category: 'ThreadDumpDeleted',
-                  type: { type: 'application', subType: 'json' },
-                },
-                message: { threadDumpId, jvmId },
-              }),
-            );
-            break;
-          }
-        }
-        return new Response(204);
-      });
       // ── End thread dumps ────────────────────────────────────────────────────────
 
       // ── Heap dump in-memory state ──────────────────────────────────────────────
@@ -1210,22 +1194,21 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         }>
       > = {};
 
-      this.post('api/beta/diagnostics/targets/:targetId/heapdump', (_schema, request) => {
-        const { targetId } = request.params;
-        const jvmId = '1234';
+      this.post('api/v5/targets/:jvmId/diagnostics/heap-dump', (_schema, request) => {
+        const { jvmId } = request.params;
         const heapDumpId = `heapdump-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
         const entry = {
           heapDumpId,
           jvmId,
-          downloadUrl: `api/beta/diagnostics/targets/${targetId}/heapdump/${heapDumpId}`,
+          downloadUrl: `api/v5/targets/${jvmId}/diagnostics/heap-dump/${heapDumpId}`,
           size: Math.floor(Math.random() * 50 * 1024 * 1024) + 1024 * 1024,
           lastModified: Math.floor(Date.now() / 1000),
           metadata: { labels: [] },
         };
-        if (!heapDumpsList[targetId]) {
-          heapDumpsList[targetId] = [];
+        if (!heapDumpsList[jvmId]) {
+          heapDumpsList[jvmId] = [];
         }
-        heapDumpsList[targetId].push(entry);
+        heapDumpsList[jvmId].push(entry);
         websocket.send(
           JSON.stringify({
             meta: {
@@ -1238,17 +1221,35 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         return new Response(200, {}, entry);
       });
 
-      this.get('api/beta/diagnostics/targets/:targetId/heapdump', (_schema, request) => {
-        return new Response(200, {}, heapDumpsList[request.params.targetId] ?? []);
+      this.post('api/v5/targets/:jvmId/diagnostics/heap-dump/upload', (_schema, request) => {
+        const { jvmId } = request.params;
+        const heapDumpId = `heapdump-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+        const entry = {
+          heapDumpId,
+          jvmId,
+          downloadUrl: `api/v5/targets/${jvmId}/diagnostics/heap-dump/${heapDumpId}`,
+          size: Math.floor(Math.random() * 50 * 1024 * 1024) + 1024 * 1024,
+          lastModified: Math.floor(Date.now() / 1000),
+          metadata: { labels: [] },
+        };
+        if (!heapDumpsList[jvmId]) {
+          heapDumpsList[jvmId] = [];
+        }
+        heapDumpsList[jvmId].push(entry);
+        return new Response(201, {}, entry);
       });
 
-      this.get('api/beta/diagnostics/targets/:targetId/heapdump/:heapDumpId', (_schema, request) => {
+      this.get('api/v5/targets/:jvmId/diagnostics/heap-dump', (_schema, request) => {
+        return new Response(200, {}, heapDumpsList[request.params.jvmId] ?? []);
+      });
+
+      this.get('api/v5/targets/:jvmId/diagnostics/heap-dump/:heapDumpId', (_schema, request) => {
         return new Response(303, { Location: `data:text/plain,mock-heap-dump-${request.params.heapDumpId}` });
       });
 
-      this.del('api/beta/diagnostics/targets/:targetId/heapdump/:heapDumpId', (_schema, request) => {
-        const { targetId, heapDumpId } = request.params;
-        const list = heapDumpsList[targetId];
+      this.del('api/v5/targets/:jvmId/diagnostics/heap-dump/:heapDumpId', (_schema, request) => {
+        const { jvmId, heapDumpId } = request.params;
+        const list = heapDumpsList[jvmId];
         if (list) {
           const idx = list.findIndex((e) => e.heapDumpId === heapDumpId);
           if (idx !== -1) {
@@ -1275,40 +1276,8 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         return new Response(204);
       });
 
-      this.get('api/beta/diagnostics/fs/heapdumps', () => {
-        const grouped: Array<{ jvmId: string; heapDumps: Array<{ heapDumpId: string; size: number }> }> = [];
-        for (const targetId of Object.keys(heapDumpsList)) {
-          const dumps = heapDumpsList[targetId];
-          if (dumps.length === 0) continue;
-          const jvmId = dumps[0].jvmId;
-          grouped.push({ jvmId, heapDumps: dumps.map(({ heapDumpId, size }) => ({ heapDumpId, size })) });
-        }
-        return new Response(200, {}, grouped);
-      });
-
-      this.del('api/beta/diagnostics/fs/heapdumps/:jvmId/:heapDumpId', (_schema, request) => {
-        const { jvmId, heapDumpId } = request.params;
-        for (const targetId of Object.keys(heapDumpsList)) {
-          const list = heapDumpsList[targetId];
-          const idx = list.findIndex((e) => e.heapDumpId === heapDumpId && e.jvmId === jvmId);
-          if (idx !== -1) {
-            list.splice(idx, 1);
-            websocket.send(
-              JSON.stringify({
-                meta: {
-                  category: 'HeapDumpDeleted',
-                  type: { type: 'application', subType: 'json' },
-                },
-                message: { heapDumpId, jvmId },
-              }),
-            );
-            break;
-          }
-        }
-        return new Response(204);
-      });
       // ── End heap dumps ─────────────────────────────────────────────────────────
-      this.post('api/beta/diagnostics/targets/:targetId/gc', () => {
+      this.post('api/v5/targets/:jvmId/diagnostics/gc', () => {
         return new Response(204);
       });
 
@@ -1322,8 +1291,8 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         Array<{ logId: string; jvmId: string; size: number; lastModified: number }>
       > = {};
 
-      this.get('api/beta/diagnostics/targets/:targetId/unified-logging', (_schema, request) => {
-        const state = unifiedLoggingState[request.params.targetId];
+      this.get('api/v5/targets/:jvmId/diagnostics/unified-logging', (_schema, request) => {
+        const state = unifiedLoggingState[request.params.jvmId];
         if (!state || !state.enabled) {
           return new Response(200, {}, { enabled: false });
         }
@@ -1334,37 +1303,36 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         );
       });
 
-      this.post('api/beta/diagnostics/targets/:targetId/unified-logging', (_schema, request) => {
-        const { targetId } = request.params;
-        if (unifiedLoggingState[targetId]?.enabled) {
+      this.post('api/v5/targets/:jvmId/diagnostics/unified-logging', (_schema, request) => {
+        const { jvmId } = request.params;
+        if (unifiedLoggingState[jvmId]?.enabled) {
           return new Response(409, {}, 'GC logging already active');
         }
         const what = (request.queryParams as Record<string, string>)['what'] || 'gc';
         const decorators = (request.queryParams as Record<string, string>)['decorators'] || 'time,level';
-        unifiedLoggingState[targetId] = { enabled: true, logFilePath: '/tmp/gc.log', what, decorators };
+        unifiedLoggingState[jvmId] = { enabled: true, logFilePath: '/tmp/gc.log', what, decorators };
         return new Response(200, {}, { enabled: true, what, decorators });
       });
 
-      this.patch('api/beta/diagnostics/targets/:targetId/unified-logging', (_schema, request) => {
-        const { targetId } = request.params;
-        if (!unifiedLoggingState[targetId]?.enabled) {
+      this.patch('api/v5/targets/:jvmId/diagnostics/unified-logging', (_schema, request) => {
+        const { jvmId } = request.params;
+        if (!unifiedLoggingState[jvmId]?.enabled) {
           return new Response(409, {}, 'GC logging not active');
         }
-        const what = (request.queryParams as Record<string, string>)['what'] || unifiedLoggingState[targetId].what;
+        const what = (request.queryParams as Record<string, string>)['what'] || unifiedLoggingState[jvmId].what;
         const decorators =
-          (request.queryParams as Record<string, string>)['decorators'] || unifiedLoggingState[targetId].decorators;
-        unifiedLoggingState[targetId] = { enabled: true, logFilePath: '/tmp/gc.log', what, decorators };
+          (request.queryParams as Record<string, string>)['decorators'] || unifiedLoggingState[jvmId].decorators;
+        unifiedLoggingState[jvmId] = { enabled: true, logFilePath: '/tmp/gc.log', what, decorators };
         return new Response(200, {}, { enabled: true, what, decorators });
       });
 
-      this.del('api/beta/diagnostics/targets/:targetId/unified-logging', (_schema, request) => {
-        delete unifiedLoggingState[request.params.targetId];
+      this.del('api/v5/targets/:jvmId/diagnostics/unified-logging', (_schema, request) => {
+        delete unifiedLoggingState[request.params.jvmId];
         return new Response(204);
       });
 
-      this.post('api/beta/diagnostics/targets/:targetId/unified-logging/pull', (_schema, request) => {
-        const { targetId } = request.params;
-        const jvmId = '1234';
+      this.post('api/v5/targets/:jvmId/diagnostics/unified-logs/pull', (_schema, request) => {
+        const { jvmId } = request.params;
         const logId = `log-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
         const entry = {
           logId,
@@ -1372,10 +1340,10 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           size: Math.floor(Math.random() * 512 * 1024) + 1024,
           lastModified: Math.floor(Date.now() / 1000),
         };
-        if (!unifiedLogsList[targetId]) {
-          unifiedLogsList[targetId] = [];
+        if (!unifiedLogsList[jvmId]) {
+          unifiedLogsList[jvmId] = [];
         }
-        unifiedLogsList[targetId].push(entry);
+        unifiedLogsList[jvmId].push(entry);
         websocket.send(
           JSON.stringify({
             meta: {
@@ -1388,17 +1356,17 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         return new Response(200, {}, entry);
       });
 
-      this.get('api/beta/diagnostics/targets/:targetId/unified-logs', (_schema, request) => {
-        return new Response(200, {}, unifiedLogsList[request.params.targetId] ?? []);
+      this.get('api/v5/targets/:jvmId/diagnostics/unified-logs', (_schema, request) => {
+        return new Response(200, {}, unifiedLogsList[request.params.jvmId] ?? []);
       });
 
-      this.get('api/beta/diagnostics/targets/:targetId/unified-logs/:logId', (_schema, request) => {
+      this.get('api/v5/targets/:jvmId/diagnostics/unified-logs/:logId', (_schema, request) => {
         return new Response(303, { Location: `data:text/plain,mock-gc-log-${request.params.logId}` });
       });
 
-      this.del('api/beta/diagnostics/targets/:targetId/unified-logs/:logId', (_schema, request) => {
-        const { targetId, logId } = request.params;
-        const list = unifiedLogsList[targetId];
+      this.del('api/v5/targets/:jvmId/diagnostics/unified-logs/:logId', (_schema, request) => {
+        const { jvmId, logId } = request.params;
+        const list = unifiedLogsList[jvmId];
         if (list) {
           const idx = list.findIndex((e) => e.logId === logId);
           if (idx !== -1) {
@@ -1420,38 +1388,6 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         return new Response(204);
       });
 
-      this.get('api/beta/diagnostics/fs/unified-logs', () => {
-        const grouped: Array<{ jvmId: string; logs: Array<{ logId: string; size: number }> }> = [];
-        for (const targetId of Object.keys(unifiedLogsList)) {
-          const logs = unifiedLogsList[targetId];
-          if (logs.length === 0) continue;
-          const jvmId = logs[0].jvmId;
-          grouped.push({ jvmId, logs: logs.map(({ logId: logId, size }) => ({ logId, size })) });
-        }
-        return new Response(200, {}, grouped);
-      });
-
-      this.del('api/beta/diagnostics/fs/unified-logs/:jvmId/:logId', (_schema, request) => {
-        const { jvmId, logId } = request.params;
-        for (const targetId of Object.keys(unifiedLogsList)) {
-          const list = unifiedLogsList[targetId];
-          const idx = list.findIndex((e) => e.logId === logId && e.jvmId === jvmId);
-          if (idx !== -1) {
-            list.splice(idx, 1);
-            websocket.send(
-              JSON.stringify({
-                meta: {
-                  category: 'UnifiedLogDeleted',
-                  type: { type: 'application', subType: 'json' },
-                },
-                message: { logId, jvmId },
-              }),
-            );
-            break;
-          }
-        }
-        return new Response(204);
-      });
       // ── End GC logging ─────────────────────────────────────────────────────────
 
       this.get('api/v5/targets/:jvmId/smart-triggers', (schema) => schema.all(Resource.SMART_TRIGGER).models);
@@ -1621,6 +1557,51 @@ export const startMirage = ({ environment = 'development' } = {}) => {
 
       this.get('api/v5/audit/targets/:jvmId', () => new Response(404));
       this.get('api/v5/audit/target-lineage/:jvmId', () => new Response(404));
+
+      this.get('api/v5/diagnostics/heap-dump', () => {
+        const grouped: Array<{ jvmId: string; heapDumps: Array<{ heapDumpId: string; size: number }> }> = [];
+        for (const jvmId of Object.keys(heapDumpsList)) {
+          const dumps = heapDumpsList[jvmId];
+          if (dumps.length === 0) continue;
+          grouped.push({ jvmId, heapDumps: dumps.map(({ heapDumpId, size }) => ({ heapDumpId, size })) });
+        }
+        return new Response(200, {}, grouped);
+      });
+
+      this.get(
+        'api/v5/diagnostics/heap-dump/download/:encodedKey',
+        () => new Response(503, {}, 'Resource downloads are not supported in this demo'),
+      );
+
+      this.get('api/v5/diagnostics/thread-dump', () => {
+        const grouped: Array<{ jvmId: string; threadDumps: Array<{ threadDumpId: string; size: number }> }> = [];
+        for (const jvmId of Object.keys(threadDumpsList)) {
+          const dumps = threadDumpsList[jvmId];
+          if (dumps.length === 0) continue;
+          grouped.push({ jvmId, threadDumps: dumps.map(({ threadDumpId, size }) => ({ threadDumpId, size })) });
+        }
+        return new Response(200, {}, grouped);
+      });
+
+      this.get(
+        'api/v5/diagnostics/thread-dump/download/:encodedKey',
+        () => new Response(503, {}, 'Resource downloads are not supported in this demo'),
+      );
+
+      this.get('api/v5/diagnostics/unified-logs', () => {
+        const grouped: Array<{ jvmId: string; logs: Array<{ logId: string; size: number }> }> = [];
+        for (const jvmId of Object.keys(unifiedLogsList)) {
+          const logs = unifiedLogsList[jvmId];
+          if (logs.length === 0) continue;
+          grouped.push({ jvmId, logs: logs.map(({ logId, size }) => ({ logId, size })) });
+        }
+        return new Response(200, {}, grouped);
+      });
+
+      this.get(
+        'api/v5/diagnostics/unified-logs/download/:encodedKey',
+        () => new Response(503, {}, 'Resource downloads are not supported in this demo'),
+      );
     },
   });
 };
