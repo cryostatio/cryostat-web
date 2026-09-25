@@ -949,7 +949,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
               targetNodes: [
                 {
                   target: {
-                    id: 1,
+                    id: '1',
                     agent: true,
                     alias: 'Fake Target',
                     connectUrl: 'http://fake-target.local:1234',
@@ -1044,7 +1044,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
               targetNodes: [
                 {
                   target: {
-                    id: target?.id ?? 1,
+                    id: target?.id ?? '1',
                     agent: true,
                     alias: target?.alias ?? 'Fake Target',
                     connectUrl: target?.connectUrl ?? 'http://fake-target.local:1234',
@@ -1070,7 +1070,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
               targetNodes: [
                 {
                   target: {
-                    id: target?.id ?? 1,
+                    id: target?.id ?? '1',
                     agent: true,
                     alias: target?.alias ?? 'Fake Target',
                     connectUrl: target?.connectUrl ?? 'http://fake-target.local:1234',
@@ -1573,7 +1573,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         if (rev % 3 === 0) {
           entities.Target = [
             {
-              id: Math.floor(rev / 3),
+              id: Math.floor(rev / 3).toString(),
               rev,
               revtype: rev % 2 === 0 ? 1 : 0, // MODIFY or ADD
               connectUrl: `service:jmx:rmi:///jndi/rmi://example-${rev}:9091/jmxrmi`,
@@ -1595,7 +1595,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         if (rev % 5 === 0) {
           entities.Rule = [
             {
-              id: Math.floor(rev / 5),
+              id: Math.floor(rev / 5).toString(),
               rev,
               revtype: rev % 10 === 0 ? 2 : 0, // DELETE or ADD
               name: `auto-rule-${rev}`,
@@ -1614,7 +1614,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         if (rev % 7 === 0) {
           entities.ActiveRecording = [
             {
-              id: Math.floor(rev / 7),
+              id: Math.floor(rev / 7).toString(),
               rev,
               revtype: 1, // MODIFY
               name: `recording-${rev}`,
@@ -1633,7 +1633,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         if (rev % 11 === 0) {
           entities.Credential = [
             {
-              id: Math.floor(rev / 11),
+              id: Math.floor(rev / 11).toString(),
               rev,
               revtype: 0, // ADD
               matchExpression: `target.alias == 'secure-app-${rev}'`,

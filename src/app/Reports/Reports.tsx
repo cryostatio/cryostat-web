@@ -110,7 +110,7 @@ export const Reports: React.FC = () => {
                 onComplete();
               }
             }),
-            map((reports) => reports.sort((a, b) => a.target.id! - b.target.id!)),
+            map((reports) => reports.sort((a, b) => a.target.id!.localeCompare(b.target.id!))),
             map((reports) => reports.map((r) => ({ ...r, loading: false }))),
           )
           .subscribe((a) => setState(a)),

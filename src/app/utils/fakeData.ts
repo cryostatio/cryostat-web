@@ -115,7 +115,7 @@ export const fakeAARecording: ActiveRecording = {
     ],
   },
   startTime: 1680732807,
-  id: 0,
+  id: '0',
   state: RecordingState.RUNNING,
   duration: 0, // Continuous
   continuous: false,

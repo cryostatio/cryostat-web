@@ -55,7 +55,7 @@ const mockRecordingLabels = [
   },
 ];
 const mockRecording: ActiveRecording = {
-  id: 1,
+  id: '1',
   name: 'someRecording',
   downloadUrl: 'http://downloadUrl',
   reportUrl: 'http://reportUrl',
@@ -70,7 +70,7 @@ const mockRecording: ActiveRecording = {
   archiveOnStop: true,
   remoteId: 998877,
 };
-const mockAnotherRecording = { ...mockRecording, name: 'anotherRecording', id: 1 };
+const mockAnotherRecording = { ...mockRecording, name: 'anotherRecording', id: '1' };
 const mockCreateNotification = {
   message: { target: mockConnectUrl, recording: mockAnotherRecording, jvmId: mockJvmId },
 } as NotificationMessage;
@@ -78,7 +78,7 @@ const mockLabelsNotification = {
   message: {
     target: mockConnectUrl,
     recording: {
-      id: 1,
+      id: '1',
       name: 'someRecording',
       metadata: { labels: [{ key: 'someLabel', value: 'someUpdatedValue' }] },
     },
