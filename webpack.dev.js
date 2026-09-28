@@ -36,8 +36,7 @@ module.exports = merge(common('development'), {
   plugins: [
     new EnvironmentPlugin({
       // Requests are proxied by dev-server
-      // In preview mode, a base url is required.
-      CRYOSTAT_AUTHORITY: process.env.PREVIEW? 'http://localhost:8181': '', 
+      CRYOSTAT_AUTHORITY: '',
       PREVIEW: process.env.PREVIEW || 'false',
       I18N_NAMESPACE: process.env.I18N_NAMESPACE || '',
       BASEPATH: process.env.BASEPATH || ''
