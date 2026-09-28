@@ -34,19 +34,6 @@ import QuickStarts from './QuickStarts/QuickStartsCatalogPage';
 import { RecordingAnalytics } from './RecordingAnalytics/RecordingAnalytics';
 import Recordings from './Recordings/Recordings';
 import Reports from './Reports/Reports';
-import RulesTable from './Rules/Rules';
-import AuditLog from './Security/AuditLog';
-import { Certificates } from './Security/Certificates';
-import { StoredCredentialsView } from './Security/Credentials/StoredCredentials';
-import Settings from './Settings/Settings';
-import { DefaultFallBack, ErrorBoundary } from './Shared/Components/ErrorBoundary';
-import { FeatureLevel } from './Shared/Services/service.types';
-import Topology from './Topology/Topology';
-import CaptureSmartTriggers from './Triggers/CaptureSmartTriggers';
-import UnifiedLogs from './UnifiedLogs/UnifiedLogs';
-import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
-import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
-import { accessibleRouteChangeHandler, BASEPATH } from './utils/utils';
 import {
   IRouteMeta,
   navGroups,
@@ -57,6 +44,18 @@ import {
   consoleRouteDefs,
   nonNavRouteDefs,
 } from './routeDefs';
+import RulesTable from './Rules/Rules';
+import AuditLog from './Security/AuditLog';
+import { Certificates } from './Security/Certificates';
+import { StoredCredentialsView } from './Security/Credentials/StoredCredentials';
+import Settings from './Settings/Settings';
+import { DefaultFallBack, ErrorBoundary } from './Shared/Components/ErrorBoundary';
+import Topology from './Topology/Topology';
+import CaptureSmartTriggers from './Triggers/CaptureSmartTriggers';
+import UnifiedLogs from './UnifiedLogs/UnifiedLogs';
+import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
+import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
+import { accessibleRouteChangeHandler, BASEPATH } from './utils/utils';
 
 let routeFocusTimer: number;
 
@@ -75,7 +74,7 @@ const withComponents = (defs: IRouteMeta[], components: Record<string, React.Com
   for (const def of defs) {
     const component = components[def.path];
     if (!component) continue;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     const { children: _children, ...rest } = def;
     const route: IAppRoute = { ...rest, component };
     if (def.children) {

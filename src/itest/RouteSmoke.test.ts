@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import assert from 'assert';
-import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { IRouteMeta, routeDefs } from '@app/routeDefs';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { By, WebDriver, until } from 'selenium-webdriver';
 import { Cryostat, setupDriver } from './util';
 
