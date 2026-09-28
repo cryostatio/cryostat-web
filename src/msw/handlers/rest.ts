@@ -109,15 +109,13 @@ export const restHandlers = [
     });
 
     const targetPayload: components['schemas']['Target'] = {
+      id: target.id,
       alias: target.alias,
       connectUrl: target.connectUrl,
       jvmId: target.jvmId,
       agent: target.agent,
-      labels: {},
-      annotations: {
-        cryostat: { REALM: 'Custom Targets' },
-        platform: {},
-      },
+      labels: target.labels as any,
+      annotations: target.annotations,
     };
 
     return HttpResponse.json(targetPayload, { status: 200 });
@@ -132,11 +130,8 @@ export const restHandlers = [
       connectUrl: t.connectUrl,
       jvmId: t.jvmId,
       agent: t.agent,
-      labels: {},
-      annotations: {
-        cryostat: { REALM: 'Custom Targets' },
-        platform: {},
-      },
+      labels: t.labels as any,
+      annotations: t.annotations,
     }));
     return HttpResponse.json(payload);
   }),
@@ -144,18 +139,11 @@ export const restHandlers = [
   // Discovery Tree
   http.get('*/api/v4/discovery', () => {
     const targets = db.target.getAll();
-    const realmTypes = Array.from(
-      new Set(
-        targets.map((t: any) => {
-          const cryostatAnno = t.annotations?.cryostat;
-          if (Array.isArray(cryostatAnno)) {
-            const realm = cryostatAnno.find((a: any) => a.key === 'REALM');
-            return realm?.value || 'Custom Targets';
-          }
-          return t.annotations?.cryostat?.['REALM'] || 'Custom Targets';
-        }),
-      ),
-    );
+    const getRealmValue = (t: any): string => {
+      const cryostat: any[] = t.annotations?.cryostat ?? [];
+      return cryostat.find((a: any) => a.key === 'REALM')?.value || 'Custom Targets';
+    };
+    const realmTypes = Array.from(new Set(targets.map(getRealmValue)));
 
     const discoveryTree: components['schemas']['DiscoveryNode'] = {
       name: 'Universe',
@@ -167,28 +155,19 @@ export const restHandlers = [
         labels: {},
         id: Date.now(),
         children: targets
-          .filter((t: any) => {
-            const cryostatAnno = t.annotations?.cryostat;
-            if (Array.isArray(cryostatAnno)) {
-              const realm = cryostatAnno.find((a: any) => a.key === 'REALM');
-              return (realm?.value || 'Custom Targets') === r;
-            }
-            return (t.annotations?.cryostat?.['REALM'] || 'Custom Targets') === r;
-          })
+          .filter((t: any) => getRealmValue(t) === r)
           .map((t: any) => ({
             name: t.alias,
             nodeType: 'Target',
             labels: {},
             target: {
+              id: t.id,
               alias: t.alias,
               connectUrl: t.connectUrl,
               jvmId: t.jvmId,
               agent: t.agent,
-              labels: {},
-              annotations: {
-                cryostat: { REALM: 'Custom Targets' },
-                platform: {},
-              },
+              labels: t.labels,
+              annotations: t.annotations,
             },
             children: [],
           })),
@@ -196,6 +175,18 @@ export const restHandlers = [
     };
 
     return HttpResponse.json(discoveryTree);
+  }),
+
+  // Target probes (agent instrumentation)
+  http.get('*/api/v4/targets/:targetId/probes', () => HttpResponse.json([])),
+
+  // Target event types
+  http.get('*/api/v4/targets/:targetId/events', () => HttpResponse.json([])),
+
+  // Match expressions
+  http.post('*/api/v4/matchExpressions', async ({ request }) => {
+    const body = (await request.json()) as any;
+    return HttpResponse.json({ targets: body.targets ?? [] });
   }),
 
   // Event Templates - Global
@@ -323,7 +314,7 @@ export const restHandlers = [
       archiveOnStop: true,
       downloadUrl: `/api/v4/targets/${targetId}/recordings/${encodeURIComponent(recordingName)}`,
       reportUrl: `/api/v4/targets/${targetId}/reports/${encodeURIComponent(recordingName)}`,
-      metadata: { labels: {} },
+      metadata: { labels: [] },
       jvmId: target?.jvmId || String(targetId),
     });
 
