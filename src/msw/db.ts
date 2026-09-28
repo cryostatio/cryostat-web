@@ -70,32 +70,6 @@ export const db = factory({
     matchExpression: String,
     numTargets: Number,
   },
-  smartTrigger: {
-    id: primaryKey(Number),
-    name: String,
-    target: String,
-    action: String,
-    predicate: String,
-    condition: String,
-    enabled: Boolean,
-  },
-  template: {
-    name: primaryKey(String),
-    type: String,
-    description: String,
-    provider: String,
-    xml: String,
-  },
-  probeTemplate: {
-    name: primaryKey(String),
-    xml: String,
-  },
-  recordingOption: {
-    targetId: primaryKey(String),
-    toDisk: Boolean,
-    maxAge: Number,
-    maxSize: Number,
-  },
 });
 
 export function seedDatabase() {
@@ -124,41 +98,5 @@ export function seedDatabase() {
         },
       ],
     },
-  });
-
-  db.template.create({
-    name: 'Continuous',
-    type: 'TARGET',
-    description: 'A standard continuous recording profile',
-    provider: 'OpenJDK',
-    xml: '<?xml version="1.0" encoding="UTF-8"?><configuration version="2.0" label="Continuous" description="Continuous template" provider="OpenJDK"><event name="jdk.CPULoad"><setting name="enabled">true</setting><setting name="period">1000 ms</setting></event></configuration>',
-  });
-
-  db.template.create({
-    name: 'Profiling',
-    type: 'TARGET',
-    description: 'Low overhead configuration for profiling',
-    provider: 'OpenJDK',
-    xml: '<?xml version="1.0" encoding="UTF-8"?><configuration version="2.0" label="Profiling" description="Profiling template" provider="OpenJDK"><event name="jdk.ExecutionSample"><setting name="enabled">true</setting><setting name="period">10 ms</setting></event></configuration>',
-  });
-
-  db.template.create({
-    name: 'CustomTemplate',
-    type: 'CUSTOM',
-    description: 'Custom user template',
-    provider: 'User',
-    xml: '<?xml version="1.0" encoding="UTF-8"?><configuration version="2.0" label="Custom" description="Custom template" provider="User"></configuration>',
-  });
-
-  db.probeTemplate.create({
-    name: 'DefaultProbe',
-    xml: '<jfragent><probe name="test"><event name="testEvent"><class>java.lang.Object</class></event></probe></jfragent>',
-  });
-
-  db.recordingOption.create({
-    targetId: '1234',
-    toDisk: true,
-    maxAge: 0,
-    maxSize: 0,
   });
 }
