@@ -1,30 +1,15 @@
-/*
- * Copyright The Cryostat Authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string };
-  String: { input: string; output: string };
-  Boolean: { input: boolean; output: boolean };
-  Int: { input: number; output: number };
-  Float: { input: number; output: number };
-  BigInteger: { input: number; output: number };
-  Map: { input: Record<string, unknown>; output: Record<string, unknown> };
-  Upload: { input: unknown; output: unknown };
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  BigInteger: { input: number; output: number; }
+  Map: { input: Record<string, unknown>; output: Record<string, unknown>; }
+  Upload: { input: unknown; output: unknown; }
 };
 
 export type ActiveRecording = {
@@ -55,6 +40,7 @@ export type ActiveRecording = {
   target: Target;
   toDisk: Scalars['Boolean']['output'];
 };
+
 
 export type ActiveRecordingDoPutMetadataArgs = {
   metadataInput?: InputMaybe<MetadataLabelsInput>;
@@ -93,9 +79,11 @@ export type Annotations = {
   platform?: Maybe<Array<Maybe<Entry_String_String>>>;
 };
 
+
 export type AnnotationsCryostatArgs = {
   key?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
+
 
 export type AnnotationsPlatformArgs = {
   key?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
@@ -115,6 +103,7 @@ export type ArchivedRecording = {
   reportUrl?: Maybe<Scalars['String']['output']>;
   size: Scalars['BigInteger']['output'];
 };
+
 
 export type ArchivedRecordingDoPutMetadataArgs = {
   metadataInput?: InputMaybe<MetadataLabelsInput>;
@@ -178,9 +167,11 @@ export type DiscoveryNode = {
   target?: Maybe<Target>;
 };
 
+
 export type DiscoveryNodeDescendantTargetsArgs = {
   filter?: InputMaybe<DiscoveryNodeFilterInput>;
 };
+
 
 export type DiscoveryNodeLabelsArgs = {
   key?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
@@ -240,6 +231,7 @@ export type HeapDump = {
   metadata?: Maybe<Metadata>;
   size: Scalars['BigInteger']['output'];
 };
+
 
 export type HeapDumpDoPutMetadataArgs = {
   metadataInput?: InputMaybe<MetadataLabelsInput>;
@@ -303,6 +295,7 @@ export type Metadata = {
   labels?: Maybe<Array<Maybe<Entry_String_String>>>;
 };
 
+
 export type MetadataLabelsArgs = {
   key?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
@@ -338,11 +331,13 @@ export type Mutation = {
   stopRecording?: Maybe<Array<Maybe<ActiveRecording>>>;
 };
 
+
 /** Mutation root */
 export type MutationArchiveRecordingArgs = {
   nodes: DiscoveryNodeFilterInput;
   recordings?: InputMaybe<ActiveRecordingsFilterInput>;
 };
+
 
 /** Mutation root */
 export type MutationCreateAsyncProfileArgs = {
@@ -353,10 +348,12 @@ export type MutationCreateAsyncProfileArgs = {
   startTime: Scalars['BigInteger']['input'];
 };
 
+
 /** Mutation root */
 export type MutationCreateHeapDumpArgs = {
   nodes: DiscoveryNodeFilterInput;
 };
+
 
 /** Mutation root */
 export type MutationCreateRecordingArgs = {
@@ -364,15 +361,18 @@ export type MutationCreateRecordingArgs = {
   recording: RecordingSettingsInput;
 };
 
+
 /** Mutation root */
 export type MutationCreateSnapshotArgs = {
   nodes: DiscoveryNodeFilterInput;
 };
 
+
 /** Mutation root */
 export type MutationCreateThreadDumpArgs = {
   nodes: DiscoveryNodeFilterInput;
 };
+
 
 /** Mutation root */
 export type MutationDeleteAsyncProfilesArgs = {
@@ -380,11 +380,13 @@ export type MutationDeleteAsyncProfilesArgs = {
   nodes: DiscoveryNodeFilterInput;
 };
 
+
 /** Mutation root */
 export type MutationDeleteHeapDumpArgs = {
   filter?: InputMaybe<HeapDumpsFilterInput>;
   nodes: DiscoveryNodeFilterInput;
 };
+
 
 /** Mutation root */
 export type MutationDeleteRecordingArgs = {
@@ -392,11 +394,13 @@ export type MutationDeleteRecordingArgs = {
   recordings?: InputMaybe<ActiveRecordingsFilterInput>;
 };
 
+
 /** Mutation root */
 export type MutationDeleteThreadDumpArgs = {
   filter?: InputMaybe<ThreadDumpsFilterInput>;
   nodes: DiscoveryNodeFilterInput;
 };
+
 
 /** Mutation root */
 export type MutationStopRecordingArgs = {
@@ -438,26 +442,31 @@ export type Query = {
   threadDumps?: Maybe<ThreadDumps>;
 };
 
+
 /** Query root */
 export type QueryArchivedRecordingsArgs = {
   filter?: InputMaybe<ArchivedRecordingsFilterInput>;
 };
+
 
 /** Query root */
 export type QueryEnvironmentNodesArgs = {
   filter?: InputMaybe<DiscoveryNodeFilterInput>;
 };
 
+
 /** Query root */
 export type QueryHeapDumpsArgs = {
   filter?: InputMaybe<HeapDumpsFilterInput>;
 };
+
 
 /** Query root */
 export type QueryTargetNodesArgs = {
   filter?: InputMaybe<DiscoveryNodeFilterInput>;
   useAuditLog?: InputMaybe<Scalars['Boolean']['input']>;
 };
+
 
 /** Query root */
 export type QueryThreadDumpsArgs = {
@@ -501,7 +510,7 @@ export enum RecordingState {
   /** RUNNING */
   Running = 'RUNNING',
   /** STOPPED */
-  Stopped = 'STOPPED',
+  Stopped = 'STOPPED'
 }
 
 export type Recordings = {
@@ -512,9 +521,11 @@ export type Recordings = {
   archived?: Maybe<ArchivedRecordings>;
 };
 
+
 export type RecordingsActiveArgs = {
   filter?: InputMaybe<ActiveRecordingsFilterInput>;
 };
+
 
 export type RecordingsArchivedArgs = {
   filter?: InputMaybe<ArchivedRecordingsFilterInput>;
@@ -526,6 +537,7 @@ export type Report = {
   data: Array<Maybe<Entry_String_AnalysisResult>>;
   lastUpdated: Scalars['BigInteger']['output'];
 };
+
 
 export type ReportDataArgs = {
   key?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
@@ -569,6 +581,7 @@ export type RuntimeMetrics = {
   vmVendor?: Maybe<Scalars['String']['output']>;
   vmVersion?: Maybe<Scalars['String']['output']>;
 };
+
 
 export type RuntimeMetricsSystemPropertiesArgs = {
   key?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
@@ -617,33 +630,41 @@ export type Target = {
   threadDumps?: Maybe<ThreadDumps>;
 };
 
+
 export type TargetActiveRecordingsArgs = {
   filter?: InputMaybe<ActiveRecordingsFilterInput>;
 };
+
 
 export type TargetArchivedRecordingsArgs = {
   filter?: InputMaybe<ArchivedRecordingsFilterInput>;
 };
 
+
 export type TargetAsyncProfilesArgs = {
   filter?: InputMaybe<AsyncProfilerFilterInput>;
 };
+
 
 export type TargetDoStartRecordingArgs = {
   recording: RecordingSettingsInput;
 };
 
+
 export type TargetHeapDumpsArgs = {
   filter?: InputMaybe<HeapDumpsFilterInput>;
 };
+
 
 export type TargetLabelsArgs = {
   key?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
+
 export type TargetReportArgs = {
   filter?: InputMaybe<ReportFilterInput>;
 };
+
 
 export type TargetThreadDumpsArgs = {
   filter?: InputMaybe<ThreadDumpsFilterInput>;
@@ -662,6 +683,7 @@ export type ThreadDump = {
   size: Scalars['BigInteger']['output'];
   threadDumpId?: Maybe<Scalars['String']['output']>;
 };
+
 
 export type ThreadDumpDoPutMetadataArgs = {
   metadataInput?: InputMaybe<MetadataLabelsInput>;
