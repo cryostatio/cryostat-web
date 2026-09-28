@@ -81,21 +81,10 @@ export function seedDatabase() {
     jvmId: '1234',
     labels: [],
     annotations: {
-      platform: [
-        {
-          key: 'io.cryostat.demo',
-          value: 'this-is-not-real',
-        },
-      ],
+      platform: [{ key: 'io.cryostat.demo', value: 'this-is-not-real' }],
       cryostat: [
-        {
-          key: 'hello',
-          value: 'world',
-        },
-        {
-          key: 'REALM',
-          value: 'Some Realm',
-        },
+        { key: 'hello', value: 'world' },
+        { key: 'REALM', value: 'Some Realm' },
       ],
     },
   });
