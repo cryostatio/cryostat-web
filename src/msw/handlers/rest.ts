@@ -141,7 +141,7 @@ export const restHandlers = [
   }),
 
   // Discovery Tree
-  http.get('*/api/v4/discovery/tree', () => {
+  http.get('*/api/v4/discovery', () => {
     const targets = db.target.getAll();
     const realmTypes = Array.from(
       new Set(
