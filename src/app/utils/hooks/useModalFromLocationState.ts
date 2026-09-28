@@ -16,7 +16,7 @@
 import { modalPrefillClearIntent, RootState } from '@app/Shared/Redux/ReduxStore';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export interface CreateModalLocationState {
   openCreateModal?: boolean;

@@ -38,7 +38,7 @@ import { SimpleDropdown, SimpleDropdownItem } from '@patternfly/react-templates'
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Queries } from './queries/Queries';
 import { Views } from './views/Views';
 
