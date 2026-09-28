@@ -127,6 +127,7 @@ export const restHandlers = [
   http.get('*/api/v4/targets', () => {
     const targets = db.target.getAll();
     const payload: components['schemas']['Target'][] = targets.map((t: any) => ({
+      id: t.id,
       alias: t.alias,
       connectUrl: t.connectUrl,
       jvmId: t.jvmId,
@@ -195,6 +196,36 @@ export const restHandlers = [
     };
 
     return HttpResponse.json(discoveryTree);
+  }),
+
+  // Event Templates - Global
+  http.get('*/api/v4/event_templates', () => {
+    return HttpResponse.json([
+      {
+        name: 'Preset Template',
+        provider: 'Cryostat',
+        type: 'PRESET',
+        description: 'This is not a real event template, but it is here!',
+      },
+    ]);
+  }),
+
+  // Event Templates - Per Target
+  http.get('*/api/v4/targets/:targetId/event_templates', () => {
+    return HttpResponse.json([
+      {
+        name: 'Demo Template',
+        provider: 'Demo',
+        type: 'TARGET',
+        description: 'This is not a real event template, but it is here!',
+      },
+      {
+        name: 'Preset Template',
+        provider: 'Cryostat',
+        type: 'PRESET',
+        description: 'This is not a real event template, but it is here!',
+      },
+    ]);
   }),
 
   // Target Delete
@@ -268,9 +299,9 @@ export const restHandlers = [
   }),
 
   // Recordings - Create active recording
-  http.post('*/api/v4/targets/:jvmId/recordings', async ({ params, request }) => {
-    const jvmId = params.jvmId as string;
-    const target = db.target.findFirst({ where: { jvmId: { equals: jvmId } } });
+  http.post('*/api/v4/targets/:targetId/recordings', async ({ params, request }) => {
+    const targetId = Number(params.targetId);
+    const target = db.target.findFirst({ where: { id: { equals: targetId } } });
     const formData = await request.formData();
     const recordingName = formData.get('recordingName')?.toString() || `recording-${Date.now()}`;
     const duration = Number(formData.get('duration') || 0);
@@ -282,7 +313,7 @@ export const restHandlers = [
       remoteId: Date.now(),
       id: Date.now(),
       name: recordingName,
-      state: duration === 0 ? 'RUNNING' : 'STOPPED',
+      state: 'RUNNING',
       duration,
       startTime: Date.now(),
       continuous: duration === 0,
@@ -290,10 +321,10 @@ export const restHandlers = [
       maxSize,
       maxAge,
       archiveOnStop: true,
-      downloadUrl: `/api/v4/targets/${encodeURIComponent(jvmId)}/recordings/${encodeURIComponent(recordingName)}`,
-      reportUrl: `/api/v4/targets/${encodeURIComponent(jvmId)}/reports/${encodeURIComponent(recordingName)}`,
+      downloadUrl: `/api/v4/targets/${targetId}/recordings/${encodeURIComponent(recordingName)}`,
+      reportUrl: `/api/v4/targets/${targetId}/reports/${encodeURIComponent(recordingName)}`,
       metadata: { labels: {} },
-      jvmId,
+      jvmId: target?.jvmId || String(targetId),
     });
 
     mockWsBroadcaster.broadcast({
@@ -302,8 +333,9 @@ export const restHandlers = [
         type: { type: 'application', subType: 'json' },
       },
       message: {
-        target: target?.connectUrl || jvmId,
+        target: target?.connectUrl || String(targetId),
         recording,
+        jvmId: target?.jvmId,
       },
     });
 
@@ -311,17 +343,18 @@ export const restHandlers = [
   }),
 
   // Recordings - List active for target
-  http.get('*/api/v4/targets/:jvmId/recordings', ({ params }) => {
-    const jvmId = params.jvmId as string;
-    const recordings = db.recording.findMany({ where: { jvmId: { equals: jvmId } } });
+  http.get('*/api/v4/targets/:targetId/recordings', ({ params }) => {
+    const targetId = Number(params.targetId);
+    const target = db.target.findFirst({ where: { id: { equals: targetId } } });
+    const recordings = db.recording.findMany({ where: { jvmId: { equals: target?.jvmId || String(targetId) } } });
     return HttpResponse.json(recordings);
   }),
 
   // Recordings - Delete active recording
-  http.delete('*/api/v4/targets/:jvmId/recordings/:remoteId', ({ params }) => {
-    const jvmId = params.jvmId as string;
+  http.delete('*/api/v4/targets/:targetId/recordings/:remoteId', ({ params }) => {
+    const targetId = Number(params.targetId);
     const remoteId = Number(params.remoteId);
-    const target = db.target.findFirst({ where: { jvmId: { equals: jvmId } } });
+    const target = db.target.findFirst({ where: { id: { equals: targetId } } });
     const recording = db.recording.findFirst({ where: { remoteId: { equals: remoteId } } });
     if (recording) {
       db.recording.delete({ where: { remoteId: { equals: remoteId } } });
@@ -331,8 +364,9 @@ export const restHandlers = [
           type: { type: 'application', subType: 'json' },
         },
         message: {
-          target: target?.connectUrl || jvmId,
+          target: target?.connectUrl || String(targetId),
           recording,
+          jvmId: target?.jvmId,
         },
       });
     }
@@ -340,10 +374,10 @@ export const restHandlers = [
   }),
 
   // Recordings - Patch active recording state (STOP / SAVE)
-  http.patch('*/api/v4/targets/:jvmId/recordings/:remoteId', async ({ params, request }) => {
-    const jvmId = params.jvmId as string;
+  http.patch('*/api/v4/targets/:targetId/recordings/:remoteId', async ({ params, request }) => {
+    const targetId = Number(params.targetId);
     const remoteId = Number(params.remoteId);
-    const target = db.target.findFirst({ where: { jvmId: { equals: jvmId } } });
+    const target = db.target.findFirst({ where: { id: { equals: targetId } } });
     const recording = db.recording.findFirst({ where: { remoteId: { equals: remoteId } } });
     const bodyText = await request.text();
 
@@ -359,15 +393,16 @@ export const restHandlers = [
             type: { type: 'application', subType: 'json' },
           },
           message: {
-            target: target?.connectUrl || jvmId,
+            target: target?.connectUrl || String(targetId),
             recording: { ...recording, state: 'STOPPED' },
+            jvmId: target?.jvmId,
           },
         });
       }
       if (bodyText.includes('SAVE')) {
         const archived = db.archive.create({
           name: `${recording.name}_${Date.now()}`,
-          jvmId,
+          jvmId: target?.jvmId || String(targetId),
           downloadUrl: recording.downloadUrl,
           reportUrl: recording.reportUrl,
           metadata: recording.metadata,
@@ -380,8 +415,9 @@ export const restHandlers = [
             type: { type: 'application', subType: 'json' },
           },
           message: {
-            target: target?.connectUrl || jvmId,
+            target: target?.connectUrl || String(targetId),
             recording: archived,
+            jvmId: target?.jvmId,
           },
         });
       }
