@@ -16,8 +16,8 @@
 
 import { fromOpenApi } from '@msw/source/open-api';
 import openApiSpec from '../../../.schemas/openapi.json';
-import { restHandlers, wsHandlers } from './rest';
 import { graphqlHandlers } from './graphql';
+import { restHandlers, wsHandlers } from './rest';
 
 export async function createHandlers() {
   const openApiHandlers = await fromOpenApi(openApiSpec as any);

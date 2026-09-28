@@ -15,8 +15,8 @@
  */
 
 import { setupWorker, SetupWorker } from 'msw/browser';
-import { createHandlers } from './handlers';
 import { seedDatabase } from './db';
+import { createHandlers } from './handlers';
 
 let workerInstance: SetupWorker | null = null;
 
