@@ -20,6 +20,7 @@ module.exports = merge(common('development'), {
     port: PORT,
     static: {
       directory: path.resolve(__dirname, 'src', 'app', 'assets'),
+      serveIndex: false,
     },
     // In preview mode, requests are intercepted with Mock Service Worker
     proxy: process.env.PREVIEW? undefined: [
