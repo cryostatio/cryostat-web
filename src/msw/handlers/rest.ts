@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import build from '@app/build.json';
 import { http, HttpResponse, ws } from 'msw';
 import { components } from '../../schema/openapi.types';
 import { db } from '../db';
 import { mockWsBroadcaster } from '../ws';
-import build from '@app/build.json';
 
 // WebSocket Handler
 const wsNotifications = ws.link(/^ws(s)?:\/\/.*\/api\/(v\d+\/)?notifications$/);

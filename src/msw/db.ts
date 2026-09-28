@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { factory, primaryKey, manyOf, oneOf } from '@mswjs/data';
+import { factory, primaryKey } from '@mswjs/data';
 
 export const db = factory({
   target: {
