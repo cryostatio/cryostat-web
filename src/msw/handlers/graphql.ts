@@ -102,15 +102,110 @@ export const graphqlHandlers = [
                 report: {
                   lastUpdated: Date.now(),
                   aggregate: {
-                    count: 0,
-                    max: 0,
+                    count: 2,
+                    max: 50,
                   },
+                  data: [
+                    {
+                      key: 'rule a',
+                      value: {
+                        name: 'rule a',
+                        topic: 'topic 1',
+                        score: 50,
+                        evaluation: {
+                          summary: 'Mock summary for rule a',
+                          explanation: 'Mock explanation for rule a',
+                          solution: 'Mock solution for rule a',
+                          suggestions: [],
+                        },
+                      },
+                    },
+                    {
+                      key: 'rule b',
+                      value: {
+                        name: 'rule b',
+                        topic: 'topic 2',
+                        score: 2,
+                        evaluation: {
+                          summary: 'Mock summary for rule b',
+                          explanation: 'Mock explanation for rule b',
+                          solution: 'Mock solution for rule b',
+                          suggestions: [],
+                        },
+                      },
+                    },
+                  ],
                 },
               },
             },
           ],
         };
         break;
+
+      case 'AggregateReportsForAllTargets': {
+        const allTargets = db.target.getAll();
+        data = {
+          targetNodes: allTargets.map((t) => ({
+            target: {
+              ...t,
+              labels: [],
+              annotations: {
+                cryostat: [],
+                platform: [],
+              },
+              activeRecordings: {
+                aggregate: {
+                  count: db.recording.findMany({ where: { jvmId: { equals: t.jvmId } } }).length,
+                },
+              },
+              report: {
+                lastUpdated: Date.now(),
+                aggregate: {
+                  count: 2,
+                  max: 75,
+                },
+                data: [
+                  {
+                    key: 'Heap Usage',
+                    value: {
+                      name: 'Heap Usage',
+                      topic: 'jvm',
+                      score: 75,
+                      evaluation: {
+                        summary: 'High heap memory utilization detected',
+                        explanation: 'The JVM heap is operating near capacity under current load conditions.',
+                        solution: 'Consider increasing max heap size (-Xmx) or analyzing memory leak sources.',
+                        suggestions: [
+                          {
+                            name: 'Increase Max Heap Size',
+                            setting: '-Xmx',
+                            value: '2g',
+                          },
+                        ],
+                      },
+                    },
+                  },
+                  {
+                    key: 'GC Pauses',
+                    value: {
+                      name: 'GC Pauses',
+                      topic: 'garbage_collection',
+                      score: 30,
+                      evaluation: {
+                        summary: 'GC pause times are within normal range',
+                        explanation: 'GC pauses accounted for less than 1% of runtime.',
+                        solution: 'No action required at this time.',
+                        suggestions: [],
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          })),
+        };
+        break;
+      }
 
       case 'PostRecordingMetadata': {
         const labelsArray =
