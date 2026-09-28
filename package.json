@@ -12,7 +12,7 @@
     "clean": "rimraf dist .schemas src/schema",
     "schema:fetch": "node scripts/fetch-schemas.js",
     "schema:generate": "openapi-typescript .schemas/openapi.yaml -o src/schema/openapi.types.ts && graphql-codegen --config codegen.ts",
-    "schema:sync": "yarn schema:fetch && yarn schema:generate",
+    "schema:sync": "yarn schema:fetch && yarn schema:generate && yarn license:apply && yarn prettier --write src/schema/",
     "start:dev": "webpack serve --hot --color --progress --config webpack.dev.js",
     "start:dev:preview": "yarn schema:sync && PREVIEW=true PORT=9091 webpack serve --hot --color --progress --config webpack.dev.js",
     "start:dev:lint": "ESLINT_ENABLE=true webpack serve --hot --color --progress --config webpack.dev.js",
@@ -37,7 +37,7 @@
     "build:bundle-analyze": "webpack-bundle-analyzer ./stats.json dist",
     "build:bundle-profile-analyze": "concurrently -c 'auto' 'yarn:build:bundle-*'",
     "yarn:frzinstall": "yarn install --immutable",
-    "type-check": "tsc --noEmit"
+    "type-check": "yarn schema:sync && tsc --noEmit"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^7.4.3",
