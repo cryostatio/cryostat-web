@@ -25,3 +25,8 @@ declare module '*.m4a';
 declare module '*.rdf';
 declare module '*.ttl';
 declare module '*.pdf';
+
+declare module '@msw/source/open-api' {
+  import { HttpHandler } from 'msw';
+  export function fromOpenApi(document: any): Promise<Array<HttpHandler>>;
+}

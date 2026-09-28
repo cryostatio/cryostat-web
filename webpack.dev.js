@@ -18,7 +18,10 @@ module.exports = merge(common('development'), {
     hot: true,
     open: true,
     port: PORT,
-    // In preview mode, requests are intercepted with miragejs
+    static: {
+      directory: path.resolve(__dirname, 'src', 'app', 'assets'),
+    },
+    // In preview mode, requests are intercepted with Mock Service Worker
     proxy: process.env.PREVIEW? undefined: [
       {
         context: ['/api', '/health', '/grafana'],

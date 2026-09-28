@@ -1,4 +1,5 @@
 **/node_modules
+.schemas/
 dist
 .pnp.*
 .yarn/*

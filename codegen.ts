@@ -13,16 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { App } from '@app/index';
-import ReactDOM from 'react-dom';
 
-async function prepare() {
-  if (process.env.PREVIEW === 'true') {
-    const { startWorker } = await import('./msw/browser');
-    await startWorker();
-  }
-}
+import type { CodegenConfig } from '@graphql-codegen/cli';
 
-prepare().then(() => {
-  ReactDOM.render(<App />, document.getElementById('root') as HTMLElement);
-});
+const config: CodegenConfig = {
+  overwrite: true,
+  schema: [
+    `
+    scalar BigInteger
+    scalar Map
+    scalar Upload
+    `,
+    '.schemas/schema.graphql',
+  ],
+  generates: {
+    'src/schema/graphql.types.ts': {
+      plugins: ['typescript'],
+      config: {
+        scalars: {
+          BigInteger: 'number',
+          Map: 'Record<string, unknown>',
+        },
+      },
+    },
+  },
+};
+
+export default config;
