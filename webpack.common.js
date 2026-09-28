@@ -9,11 +9,7 @@ module.exports = (env) => {
   return {
     context: __dirname,
     entry: {
-      app: {
-        import: path.resolve(__dirname, 'src', 'index.tsx'),
-        dependOn: process.env.PREVIEW? 'mirage': undefined
-      },
-      ...(process.env.PREVIEW? {mirage: path.resolve(__dirname, 'src', 'mirage', 'index.ts')}: {})
+      app: path.resolve(__dirname, 'src', 'index.tsx'),
     },
     plugins: [
       new HtmlWebpackPlugin({
