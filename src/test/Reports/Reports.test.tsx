@@ -89,8 +89,8 @@ jest.mock('@app/Recordings/TargetAnalysis', () => {
         <div>
           <p>Automated Analysis Results</p>
           <div>{timestamp}</div>
-          {analyses.map((a) => (
-            <div>{JSON.stringify(a[1][0])}</div>
+          {analyses.map((a, index) => (
+            <div key={index}>{JSON.stringify(a[1][0])}</div>
           ))}
         </div>
       );
