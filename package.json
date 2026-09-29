@@ -94,7 +94,7 @@
   },
   "dependencies": {
     "@patternfly/quickstarts": "6.4.0",
-    "@patternfly/react-catalog-view-extension": "6.3.0",
+    "@patternfly/react-catalog-view-extension": "6.4.0",
     "@patternfly/react-charts": "8.4.1",
     "@patternfly/react-code-editor": "6.4.1",
     "@patternfly/react-core": "6.4.1",
