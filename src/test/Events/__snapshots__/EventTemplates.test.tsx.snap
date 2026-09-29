@@ -114,7 +114,7 @@ exports[`<EventTemplates /> renders correctly 1`] = `
   <table
     aria-label="Event Templates Table"
     class="pf-v6-c-table pf-m-grid-md pf-m-compact"
-    data-ouia-component-id="OUIA-Generated-Table-1"
+    data-ouia-component-id="OUIA-Generated-Table-:r0:"
     data-ouia-component-type="PF6/Table"
     data-ouia-safe="true"
     role="grid"
@@ -124,7 +124,7 @@ exports[`<EventTemplates /> renders correctly 1`] = `
     >
       <tr
         class="pf-v6-c-table__tr"
-        data-ouia-component-id="OUIA-Generated-TableRow-1"
+        data-ouia-component-id="OUIA-Generated-TableRow-:r1:"
         data-ouia-component-type="PF6/TableRow"
         data-ouia-safe="true"
       >
@@ -284,7 +284,7 @@ exports[`<EventTemplates /> renders correctly 1`] = `
     >
       <tr
         class="pf-v6-c-table__tr"
-        data-ouia-component-id="OUIA-Generated-TableRow-2"
+        data-ouia-component-id="OUIA-Generated-TableRow-:r2:"
         data-ouia-component-type="PF6/TableRow"
         data-ouia-safe="true"
       >
@@ -325,7 +325,7 @@ exports[`<EventTemplates /> renders correctly 1`] = `
             aria-expanded="false"
             aria-label="Kebab toggle"
             class="pf-v6-c-menu-toggle pf-m-plain"
-            data-ouia-component-id="OUIA-Generated-MenuToggle-plain-1"
+            data-ouia-component-id="OUIA-Generated-MenuToggle-plain-:r6:"
             data-ouia-component-type="PF6/MenuToggle"
             data-ouia-safe="true"
             type="button"
