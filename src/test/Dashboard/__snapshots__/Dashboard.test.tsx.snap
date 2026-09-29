@@ -172,7 +172,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                               <line
                                 role="presentation"
                                 shape-rendering="auto"
-                                style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
+                                style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
                                 vector-effect="non-scaling-stroke"
                                 x1="54"
                                 x2="-29"
@@ -185,7 +185,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                                   vector-effect="non-scaling-stroke"
                                   x1="12.5"
                                   x2="12.5"
@@ -217,7 +217,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                               <line
                                 role="presentation"
                                 shape-rendering="auto"
-                                style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
+                                style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
                                 vector-effect="non-scaling-stroke"
                                 x1="54"
                                 x2="54"
@@ -248,7 +248,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="-29"
@@ -258,7 +258,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="49"
@@ -289,7 +289,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="-29"
@@ -299,7 +299,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="49"
@@ -330,7 +330,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="-29"
@@ -340,7 +340,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="49"
@@ -371,7 +371,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="-29"
@@ -381,7 +381,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="49"
@@ -591,7 +591,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                               <line
                                 role="presentation"
                                 shape-rendering="auto"
-                                style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
+                                style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
                                 vector-effect="non-scaling-stroke"
                                 x1="54"
                                 x2="-29"
@@ -604,7 +604,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                                   vector-effect="non-scaling-stroke"
                                   x1="-29"
                                   x2="-29"
@@ -636,7 +636,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                               <line
                                 role="presentation"
                                 shape-rendering="auto"
-                                style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
+                                style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
                                 vector-effect="non-scaling-stroke"
                                 x1="54"
                                 x2="54"
@@ -667,7 +667,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="-29"
@@ -677,7 +677,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="49"
@@ -708,7 +708,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="-29"
@@ -718,7 +718,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="49"
@@ -749,7 +749,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="-29"
@@ -759,7 +759,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="49"
@@ -790,7 +790,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="-29"
@@ -800,7 +800,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="49"
@@ -831,7 +831,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="-29"
@@ -841,7 +841,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="49"
@@ -1027,7 +1027,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                               <line
                                 role="presentation"
                                 shape-rendering="auto"
-                                style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
+                                style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
                                 vector-effect="non-scaling-stroke"
                                 x1="54"
                                 x2="-29"
@@ -1040,7 +1040,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                                   vector-effect="non-scaling-stroke"
                                   x1="-29"
                                   x2="-29"
@@ -1072,7 +1072,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                               <line
                                 role="presentation"
                                 shape-rendering="auto"
-                                style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
+                                style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
                                 vector-effect="non-scaling-stroke"
                                 x1="54"
                                 x2="54"
@@ -1103,7 +1103,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="-29"
@@ -1113,7 +1113,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="49"
@@ -1144,7 +1144,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="-29"
@@ -1154,7 +1154,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="49"
@@ -1185,7 +1185,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="-29"
@@ -1195,7 +1195,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="49"
@@ -1226,7 +1226,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="-29"
@@ -1236,7 +1236,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="49"
@@ -1267,7 +1267,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                                  style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="-29"
@@ -1277,7 +1277,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <line
                                   role="presentation"
                                   shape-rendering="auto"
-                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                                  style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                                   vector-effect="non-scaling-stroke"
                                   x1="54"
                                   x2="49"

@@ -97,7 +97,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                   <line
                     role="presentation"
                     shape-rendering="auto"
-                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
+                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
                     vector-effect="non-scaling-stroke"
                     x1="54"
                     x2="-29"
@@ -110,7 +110,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="-29"
                       x2="-29"
@@ -142,7 +142,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                   <line
                     role="presentation"
                     shape-rendering="auto"
-                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
+                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
                     vector-effect="non-scaling-stroke"
                     x1="54"
                     x2="54"
@@ -173,7 +173,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -183,7 +183,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -214,7 +214,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -224,7 +224,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -255,7 +255,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -265,7 +265,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -296,7 +296,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -306,7 +306,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -337,7 +337,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -347,7 +347,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -506,7 +506,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                   <line
                     role="presentation"
                     shape-rendering="auto"
-                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
+                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
                     vector-effect="non-scaling-stroke"
                     x1="54"
                     x2="-29"
@@ -519,7 +519,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="-29"
                       x2="-29"
@@ -551,7 +551,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                   <line
                     role="presentation"
                     shape-rendering="auto"
-                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
+                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
                     vector-effect="non-scaling-stroke"
                     x1="54"
                     x2="54"
@@ -564,7 +564,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -574,7 +574,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -605,7 +605,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -615,7 +615,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -646,7 +646,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -656,7 +656,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -687,7 +687,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -697,7 +697,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -728,7 +728,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -738,7 +738,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -897,7 +897,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                   <line
                     role="presentation"
                     shape-rendering="auto"
-                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
+                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
                     vector-effect="non-scaling-stroke"
                     x1="54"
                     x2="-29"
@@ -910,7 +910,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="-29"
                       x2="-29"
@@ -942,7 +942,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                   <line
                     role="presentation"
                     shape-rendering="auto"
-                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
+                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
                     vector-effect="non-scaling-stroke"
                     x1="54"
                     x2="54"
@@ -973,7 +973,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -983,7 +983,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -1014,7 +1014,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -1024,7 +1024,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -1055,7 +1055,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -1065,7 +1065,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -1096,7 +1096,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -1106,7 +1106,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -1137,7 +1137,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -1147,7 +1147,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -1306,7 +1306,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                   <line
                     role="presentation"
                     shape-rendering="auto"
-                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
+                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
                     vector-effect="non-scaling-stroke"
                     x1="54"
                     x2="-29"
@@ -1319,7 +1319,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="-29"
                       x2="-29"
@@ -1351,7 +1351,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                   <line
                     role="presentation"
                     shape-rendering="auto"
-                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
+                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
                     vector-effect="non-scaling-stroke"
                     x1="54"
                     x2="54"
@@ -1382,7 +1382,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -1392,7 +1392,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -1423,7 +1423,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -1433,7 +1433,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -1464,7 +1464,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -1474,7 +1474,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -1505,7 +1505,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -1515,7 +1515,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -1546,7 +1546,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -1556,7 +1556,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -1715,7 +1715,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                   <line
                     role="presentation"
                     shape-rendering="auto"
-                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
+                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
                     vector-effect="non-scaling-stroke"
                     x1="54"
                     x2="-29"
@@ -1728,7 +1728,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="-29"
                       x2="-29"
@@ -1760,7 +1760,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                   <line
                     role="presentation"
                     shape-rendering="auto"
-                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
+                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
                     vector-effect="non-scaling-stroke"
                     x1="54"
                     x2="54"
@@ -1791,7 +1791,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -1801,7 +1801,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -1832,7 +1832,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -1842,7 +1842,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -1873,7 +1873,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -1883,7 +1883,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -1914,7 +1914,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -1924,7 +1924,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -1955,7 +1955,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -1965,7 +1965,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -2123,14 +2123,14 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 6`] = `
                     d="M0,0Z"
                     role="presentation"
                     shape-rendering="auto"
-                    style="fill: var(--pf-v6-chart-theme--blue--ColorScale--100, #0066cc); padding: 8px; stroke: var(--pf-v6-chart-pie--data--stroke--Color, transparent); stroke-width: 1;"
+                    style="fill: var(--pf-v6-chart-theme--blue--ColorScale--100, #0066cc); padding: 8px; stroke: var(--pf-v6-chart-donut--pie--data--stroke--Color, rgb(255, 255, 255, 0.0000)); stroke-width: var(--pf-v6-chart-donut--pie--data--stroke--Width, 0px);"
                     transform="translate(0.5, 115)"
                   />
                   <path
                     d="M0,0Z"
                     role="presentation"
                     shape-rendering="auto"
-                    style="fill: var(--pf-v6-chart-donut--threshold--first--Color, #e0e0e0); padding: 8px; stroke: var(--pf-v6-chart-pie--data--stroke--Color, transparent); stroke-width: 1;"
+                    style="fill: var(--pf-v6-chart-donut--threshold--first--Color, #e0e0e0); padding: 8px; stroke: var(--pf-v6-chart-donut--pie--data--stroke--Color, rgb(255, 255, 255, 0.0000)); stroke-width: var(--pf-v6-chart-donut--pie--data--stroke--Width, 0px);"
                     transform="translate(0.5, 115)"
                   />
                 </g>
@@ -2270,7 +2270,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                   <line
                     role="presentation"
                     shape-rendering="auto"
-                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
+                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
                     vector-effect="non-scaling-stroke"
                     x1="54"
                     x2="-29"
@@ -2283,7 +2283,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="-29"
                       x2="-29"
@@ -2315,7 +2315,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                   <line
                     role="presentation"
                     shape-rendering="auto"
-                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
+                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
                     vector-effect="non-scaling-stroke"
                     x1="54"
                     x2="54"
@@ -2346,7 +2346,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -2356,7 +2356,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -2387,7 +2387,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -2397,7 +2397,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -2428,7 +2428,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -2438,7 +2438,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -2469,7 +2469,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -2479,7 +2479,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -2510,7 +2510,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -2520,7 +2520,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -2678,14 +2678,14 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 8`] = `
                     d="M0,0Z"
                     role="presentation"
                     shape-rendering="auto"
-                    style="fill: var(--pf-v6-chart-theme--blue--ColorScale--100, #0066cc); padding: 8px; stroke: var(--pf-v6-chart-pie--data--stroke--Color, transparent); stroke-width: 1;"
+                    style="fill: var(--pf-v6-chart-theme--blue--ColorScale--100, #0066cc); padding: 8px; stroke: var(--pf-v6-chart-donut--pie--data--stroke--Color, rgb(255, 255, 255, 0.0000)); stroke-width: var(--pf-v6-chart-donut--pie--data--stroke--Width, 0px);"
                     transform="translate(0.5, 115)"
                   />
                   <path
                     d="M0,0Z"
                     role="presentation"
                     shape-rendering="auto"
-                    style="fill: var(--pf-v6-chart-donut--threshold--first--Color, #e0e0e0); padding: 8px; stroke: var(--pf-v6-chart-pie--data--stroke--Color, transparent); stroke-width: 1;"
+                    style="fill: var(--pf-v6-chart-donut--threshold--first--Color, #e0e0e0); padding: 8px; stroke: var(--pf-v6-chart-donut--pie--data--stroke--Color, rgb(255, 255, 255, 0.0000)); stroke-width: var(--pf-v6-chart-donut--pie--data--stroke--Width, 0px);"
                     transform="translate(0.5, 115)"
                   />
                 </g>
@@ -2826,7 +2826,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                   <line
                     role="presentation"
                     shape-rendering="auto"
-                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
+                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
                     vector-effect="non-scaling-stroke"
                     x1="54"
                     x2="-29"
@@ -2839,7 +2839,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="-29"
                       x2="-29"
@@ -2871,7 +2871,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                   <line
                     role="presentation"
                     shape-rendering="auto"
-                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
+                    style="stroke: var(--pf-v6-chart-axis--axis--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--axis--Fill, transparent); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;"
                     vector-effect="non-scaling-stroke"
                     x1="54"
                     x2="54"
@@ -2902,7 +2902,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -2912,7 +2912,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -2943,7 +2943,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -2953,7 +2953,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -2984,7 +2984,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -2994,7 +2994,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -3025,7 +3025,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -3035,7 +3035,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
@@ -3066,7 +3066,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
+                      style="stroke: var(--pf-v6-chart-axis--grid--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--grid--Fill, none); pointer-events: painted; stroke-linecap: round; stroke-linejoin: round;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="-29"
@@ -3076,7 +3076,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     <line
                       role="presentation"
                       shape-rendering="auto"
-                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #c7c7c7); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
+                      style="stroke: var(--pf-v6-chart-axis--tick--stroke--Color, #e0e0e0); fill: var(--pf-v6-chart-axis--tick--Fill, transparent); size: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1;"
                       vector-effect="non-scaling-stroke"
                       x1="54"
                       x2="49"
