@@ -2147,16 +2147,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-catalog-view-extension@npm:6.3.0":
-  version: 6.3.0
-  resolution: "@patternfly/react-catalog-view-extension@npm:6.3.0"
+"@patternfly/react-catalog-view-extension@npm:6.4.0":
+  version: 6.4.0
+  resolution: "@patternfly/react-catalog-view-extension@npm:6.4.0"
   dependencies:
     "@patternfly/react-core": "npm:^6.1.0"
     "@patternfly/react-styles": "npm:^6.1.0"
   peerDependencies:
     react: ^17 || ^18 || ^19
     react-dom: ^17 || ^18 || ^19
-  checksum: 10/f96fd7b89d834f88685c3ad38ab110a2a1bac5b54b95c9a7f8340ce96f82e1f8ce59e59f94ac57fb6633b5083af1f5a1685bd7a9c709607091b3ff4539076d36
+  checksum: 10/9388cad437732401079d1f53da8fa6638040b4323dbcce288069eed356ed956b8cf059520dfcaf666fcd7af1b93677db9fe0354adc78b0b88f9fd0016efb53f4
   languageName: node
   linkType: hard
 
@@ -5608,7 +5608,7 @@ __metadata:
   resolution: "cryostat-web@workspace:."
   dependencies:
     "@patternfly/quickstarts": "npm:6.4.0"
-    "@patternfly/react-catalog-view-extension": "npm:6.3.0"
+    "@patternfly/react-catalog-view-extension": "npm:6.4.0"
     "@patternfly/react-charts": "npm:8.4.1"
     "@patternfly/react-code-editor": "npm:6.4.1"
     "@patternfly/react-core": "npm:6.4.1"
