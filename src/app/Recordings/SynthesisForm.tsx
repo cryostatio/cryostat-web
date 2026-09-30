@@ -34,6 +34,7 @@ import {
   Skeleton,
   Split,
   SplitItem,
+  Switch,
   TextInput,
   Tooltip,
 } from '@patternfly/react-core';
@@ -76,6 +77,7 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
   const [fromInput, setFromInput] = React.useState('');
   const [toInput, setToInput] = React.useState('');
   const [tagInput, setTagInput] = React.useState('');
+  const [autoanalyze, setAutoanalyze] = React.useState(true);
   const [submitting, setSubmitting] = React.useState(false);
   const [pendingJobId, setPendingJobId] = React.useState<string | null>(null);
   const [jobError, setJobError] = React.useState<string | null>(null);
@@ -156,6 +158,7 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
     if (tag) {
       params.set('tag', tag);
     }
+    params.set('autoanalyze', String(autoanalyze));
 
     addSubscription(
       context.api
@@ -254,6 +257,15 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
           placeholder={t('SynthesisForm.TAG_PLACEHOLDER')}
           value={tagInput}
           onChange={(_evt, val) => setTagInput(val)}
+        />
+      </FormGroup>
+
+      <FormGroup label={t('SynthesisForm.AUTOANALYZE_LABEL')}>
+        <Switch
+          id="autoanalyze-switch"
+          aria-label={t('SynthesisForm.AUTOANALYZE_ARIA_LABEL')}
+          isChecked={autoanalyze}
+          onChange={(_evt, val) => setAutoanalyze(val)}
         />
       </FormGroup>
 
