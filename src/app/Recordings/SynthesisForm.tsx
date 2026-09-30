@@ -194,6 +194,7 @@ export const SynthesisForm: React.FC<SynthesisFormProps> = ({
     fromMs,
     toMs,
     tagInput,
+    autoanalyze,
     addSubscription,
     context.api,
     setSubmitting,
