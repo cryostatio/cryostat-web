@@ -70,7 +70,7 @@ const mockRecording: ActiveRecording = {
   archiveOnStop: true,
   remoteId: 998877,
 };
-const mockAnotherRecording = { ...mockRecording, name: 'anotherRecording', id: 1 };
+const mockAnotherRecording = { ...mockRecording, name: 'anotherRecording', id: 2, remoteId: 998878 };
 const mockCreateNotification = {
   message: { target: mockConnectUrl, recording: mockAnotherRecording, jvmId: mockJvmId },
 } as NotificationMessage;

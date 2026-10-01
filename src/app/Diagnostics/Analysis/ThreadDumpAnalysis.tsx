@@ -364,21 +364,21 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
             </Tr>
           </Thead>
           <Tbody>
-            {trace.map((s: StackFrame) => (
-              <Tr key={`stack-trace`}>
-                <Td key={`file-name`} dataLabel={stackTraceColumns[0].title}>
+            {trace.map((s: StackFrame, index: number) => (
+              <Tr key={`stack-trace-${index}`}>
+                <Td key={`file-name-${index}`} dataLabel={stackTraceColumns[0].title}>
                   {s.fileName ? s.fileName : 'N/A'}
                 </Td>
-                <Td key={`finding-name`} dataLabel={stackTraceColumns[1].title}>
+                <Td key={`class-name-${index}`} dataLabel={stackTraceColumns[1].title}>
                   {s.className ? s.className : 'N/A'}
                 </Td>
-                <Td key={`finding-explanation`} dataLabel={stackTraceColumns[2].title}>
+                <Td key={`method-name-${index}`} dataLabel={stackTraceColumns[2].title}>
                   {s.methodName ? s.methodName : 'N/A'}
                 </Td>
-                <Td key={`finding-score`} dataLabel={stackTraceColumns[3].title}>
+                <Td key={`line-number-${index}`} dataLabel={stackTraceColumns[3].title}>
                   {s.lineNumber ? s.lineNumber : 'N/A'}
                 </Td>
-                <Td key={`finding-score`} dataLabel={stackTraceColumns[4].title}>
+                <Td key={`native-method-${index}`} dataLabel={stackTraceColumns[4].title}>
                   {s.nativeMethod ? `${s.nativeMethod}` : 'false'}
                 </Td>
               </Tr>
@@ -402,18 +402,18 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
             </Tr>
           </Thead>
           <Tbody>
-            {locks.map((l: LockInfo) => (
-              <Tr key={`lock-infos`}>
-                <Td key={`lock-id`} dataLabel={lockInstancesColumns[0].title}>
+            {locks.map((l: LockInfo, index: number) => (
+              <Tr key={`lock-infos-${index}`}>
+                <Td key={`lock-id-${index}`} dataLabel={lockInstancesColumns[0].title}>
                   {l.lockId ? l.lockId : 'N/A'}
                 </Td>
-                <Td key={`lock-class-name`} dataLabel={lockInstancesColumns[1].title}>
+                <Td key={`lock-class-name-${index}`} dataLabel={lockInstancesColumns[1].title}>
                   {l.className ? l.className : 'N/A'}
                 </Td>
-                <Td key={`lock-operation`} dataLabel={lockInstancesColumns[2].title}>
+                <Td key={`lock-operation-${index}`} dataLabel={lockInstancesColumns[2].title}>
                   {l.operation ? l.operation : 'N/A'}
                 </Td>
-                <Td key={`lock-owner-id`} dataLabel={lockInstancesColumns[3].title}>
+                <Td key={`lock-owner-id-${index}`} dataLabel={lockInstancesColumns[3].title}>
                   {l.ownerThreadId ? l.ownerThreadId : 'N/A'}
                 </Td>
               </Tr>
@@ -554,15 +554,15 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
 
   const findingsRows = React.useMemo(
     () =>
-      analysisResult?.specificFindings.map((f: AnalysisFinding) => (
-        <Tr key={`findings`}>
-          <Td key={`finding-name`} dataLabel={findingsColumns[0].title}>
+      analysisResult?.specificFindings.map((f: AnalysisFinding, index: number) => (
+        <Tr key={`findings-${index}`}>
+          <Td key={`finding-name-${index}`} dataLabel={findingsColumns[0].title}>
             {f.resultName}
           </Td>
-          <Td key={`finding-explanation`} dataLabel={findingsColumns[1].title}>
+          <Td key={`finding-explanation-${index}`} dataLabel={findingsColumns[1].title}>
             {f.explanation}
           </Td>
-          <Td key={`finding-score`} dataLabel={findingsColumns[2].title}>
+          <Td key={`finding-score-${index}`} dataLabel={findingsColumns[2].title}>
             {f.score}
           </Td>
         </Tr>
@@ -573,7 +573,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
   const deadlockTable = React.useMemo(() => {
     if (displayedDeadlockRowData.length) {
       return displayedDeadlockRowData.map((d: DeadlockRowData, index) => (
-        <Table aria-label="Deadlock Table" variant={TableVariant.compact}>
+        <Table key={`deadlock-table-${index}`} aria-label="Deadlock Table" variant={TableVariant.compact}>
           <Thead>
             <Tr>
               <Th />
