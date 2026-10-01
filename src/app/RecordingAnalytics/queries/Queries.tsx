@@ -96,13 +96,14 @@ const SAMPLE_QUERIES: SampleQuery[] = [
     id: 'cpu-load-p95',
     description: 'CPU load 95th percentile (jvmUser)',
     query: `SELECT "jvmUser"
-            FROM (
-                SELECT "jvmUser",
-                      ROW_NUMBER() OVER (ORDER BY "jvmUser" DESC) as rn,
-                      COUNT(*) OVER () as total
-                FROM jfr."jdk.CPULoad"
-            )
-            WHERE rn = CAST(total * 0.05 AS INTEGER)`,
+    FROM (
+        SELECT "jvmUser",
+               ROW_NUMBER() OVER (ORDER BY "jvmUser") AS rn,
+               COUNT(*) OVER () AS total
+        FROM jfr."jdk.CPULoad"
+        WHERE "jvmUser" IS NOT NULL
+    )
+    WHERE rn = CEIL(total * 0.95)`,
   },
   {
     id: 'first-class-loaded-detailed',
