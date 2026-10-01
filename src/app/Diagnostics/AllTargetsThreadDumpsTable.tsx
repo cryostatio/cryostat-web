@@ -228,7 +228,7 @@ export const AllTargetsThreadDumpsTable: React.FC<AllTargetsThreadDumpsTableProp
       addSubscription(
         context.api
           .graphql<any>(
-            `query ThreadDumpCountForTarget($id: BigInteger!) {
+            `query ThreadDumpCountForTarget($id: String!) {
                 targetNodes(filter: { targetIds: [$id] }) {
                   target {
                     threadDumps {

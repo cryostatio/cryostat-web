@@ -228,7 +228,7 @@ export const AllTargetsHeapDumpsTable: React.FC<AllTargetsHeapDumpsTableProps> =
       addSubscription(
         context.api
           .graphql<any>(
-            `query HeapDumpCountForTarget($id: BigInteger!) {
+            `query HeapDumpCountForTarget($id: String!) {
                 targetNodes(filter: { targetIds: [$id] }) {
                   target {
                     heapDumps {

@@ -23,7 +23,7 @@ import { of, Subject } from 'rxjs';
 import { render } from '../utils';
 
 const mockFooTarget: Target = {
-  id: 1,
+  id: '1',
   jvmId: 'abcd1234',
   agent: false,
   connectUrl: 'service:jmx:rmi://someFooUrl',

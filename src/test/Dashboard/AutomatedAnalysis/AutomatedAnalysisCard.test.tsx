@@ -74,7 +74,7 @@ jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(
   of([
     {
-      id: 1,
+      id: '1',
       remoteId: 1,
       state: RecordingState.RUNNING,
       duration: 0,
