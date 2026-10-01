@@ -106,7 +106,7 @@ exports[`<AllTargetsThreadDumpsTable /> renders correctly 1`] = `
       <table
         aria-label="all-targets-table"
         class="pf-v6-c-table pf-m-grid-md pf-m-sticky-header"
-        data-ouia-component-id="OUIA-Generated-Table-:r0:"
+        data-ouia-component-id="OUIA-Generated-Table-1"
         data-ouia-component-type="PF6/Table"
         data-ouia-safe="true"
         role="grid"
@@ -116,7 +116,7 @@ exports[`<AllTargetsThreadDumpsTable /> renders correctly 1`] = `
         >
           <tr
             class="pf-v6-c-table__tr"
-            data-ouia-component-id="OUIA-Generated-TableRow-:r1:"
+            data-ouia-component-id="OUIA-Generated-TableRow-1"
             data-ouia-component-type="PF6/TableRow"
             data-ouia-safe="true"
           >
@@ -207,7 +207,7 @@ exports[`<AllTargetsThreadDumpsTable /> renders correctly 1`] = `
         >
           <tr
             class="pf-v6-c-table__tr"
-            data-ouia-component-id="OUIA-Generated-TableRow-:r2:"
+            data-ouia-component-id="OUIA-Generated-TableRow-2"
             data-ouia-component-type="PF6/TableRow"
             data-ouia-safe="true"
           >
@@ -222,7 +222,7 @@ exports[`<AllTargetsThreadDumpsTable /> renders correctly 1`] = `
                 aria-label="Details"
                 aria-labelledby="simple-node0 expand-toggle0"
                 class="pf-v6-c-button pf-m-plain"
-                data-ouia-component-id="OUIA-Generated-Button-plain-:r3:"
+                data-ouia-component-id="OUIA-Generated-Button-plain-1"
                 data-ouia-component-type="PF6/Button"
                 data-ouia-safe="true"
                 id="expand-toggle0"
@@ -265,7 +265,7 @@ exports[`<AllTargetsThreadDumpsTable /> renders correctly 1`] = `
             >
               <button
                 class="pf-v6-c-button pf-m-plain"
-                data-ouia-component-id="OUIA-Generated-Button-plain-1"
+                data-ouia-component-id="OUIA-Generated-Button-plain-2"
                 data-ouia-component-type="PF6/Button"
                 data-ouia-safe="true"
                 type="button"
@@ -305,7 +305,7 @@ exports[`<AllTargetsThreadDumpsTable /> renders correctly 1`] = `
           </tr>
           <tr
             class="pf-v6-c-table__tr pf-v6-c-table__expandable-row"
-            data-ouia-component-id="OUIA-Generated-TableRow-:r4:"
+            data-ouia-component-id="OUIA-Generated-TableRow-3"
             data-ouia-component-type="PF6/TableRow"
             data-ouia-safe="true"
             hidden=""
@@ -319,7 +319,7 @@ exports[`<AllTargetsThreadDumpsTable /> renders correctly 1`] = `
           </tr>
           <tr
             class="pf-v6-c-table__tr"
-            data-ouia-component-id="OUIA-Generated-TableRow-:r5:"
+            data-ouia-component-id="OUIA-Generated-TableRow-4"
             data-ouia-component-type="PF6/TableRow"
             data-ouia-safe="true"
           >
@@ -334,7 +334,7 @@ exports[`<AllTargetsThreadDumpsTable /> renders correctly 1`] = `
                 aria-label="Details"
                 aria-labelledby="simple-node1 expand-toggle1"
                 class="pf-v6-c-button pf-m-plain"
-                data-ouia-component-id="OUIA-Generated-Button-plain-:r6:"
+                data-ouia-component-id="OUIA-Generated-Button-plain-3"
                 data-ouia-component-type="PF6/Button"
                 data-ouia-safe="true"
                 id="expand-toggle1"
@@ -377,7 +377,7 @@ exports[`<AllTargetsThreadDumpsTable /> renders correctly 1`] = `
             >
               <button
                 class="pf-v6-c-button pf-m-plain"
-                data-ouia-component-id="OUIA-Generated-Button-plain-2"
+                data-ouia-component-id="OUIA-Generated-Button-plain-4"
                 data-ouia-component-type="PF6/Button"
                 data-ouia-safe="true"
                 type="button"
@@ -417,7 +417,7 @@ exports[`<AllTargetsThreadDumpsTable /> renders correctly 1`] = `
           </tr>
           <tr
             class="pf-v6-c-table__tr pf-v6-c-table__expandable-row"
-            data-ouia-component-id="OUIA-Generated-TableRow-:r7:"
+            data-ouia-component-id="OUIA-Generated-TableRow-5"
             data-ouia-component-type="PF6/TableRow"
             data-ouia-safe="true"
             hidden=""

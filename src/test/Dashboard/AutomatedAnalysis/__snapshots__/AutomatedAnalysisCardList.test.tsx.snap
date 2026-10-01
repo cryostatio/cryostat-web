@@ -11,7 +11,7 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
       <table
         aria-label="Automated analysis data list"
         class="pf-v6-c-table pf-m-grid-md pf-m-sticky-header"
-        data-ouia-component-id="OUIA-Generated-Table-:r0:"
+        data-ouia-component-id="OUIA-Generated-Table-1"
         data-ouia-component-type="PF6/Table"
         data-ouia-safe="true"
         role="grid"
@@ -21,7 +21,7 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
         >
           <tr
             class="pf-v6-c-table__tr"
-            data-ouia-component-id="OUIA-Generated-TableRow-:r1:"
+            data-ouia-component-id="OUIA-Generated-TableRow-1"
             data-ouia-component-type="PF6/TableRow"
             data-ouia-safe="true"
           >
@@ -114,7 +114,7 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
         >
           <tr
             class="pf-v6-c-table__tr"
-            data-ouia-component-id="OUIA-Generated-TableRow-:r2:"
+            data-ouia-component-id="OUIA-Generated-TableRow-2"
             data-ouia-component-type="PF6/TableRow"
             data-ouia-safe="true"
           >
@@ -282,7 +282,7 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
           </tr>
           <tr
             class="pf-v6-c-table__tr"
-            data-ouia-component-id="OUIA-Generated-TableRow-:r3:"
+            data-ouia-component-id="OUIA-Generated-TableRow-3"
             data-ouia-component-type="PF6/TableRow"
             data-ouia-safe="true"
           >
@@ -407,7 +407,7 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
           </tr>
           <tr
             class="pf-v6-c-table__tr"
-            data-ouia-component-id="OUIA-Generated-TableRow-:r4:"
+            data-ouia-component-id="OUIA-Generated-TableRow-4"
             data-ouia-component-type="PF6/TableRow"
             data-ouia-safe="true"
           >
@@ -532,7 +532,7 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
           </tr>
           <tr
             class="pf-v6-c-table__tr"
-            data-ouia-component-id="OUIA-Generated-TableRow-:r5:"
+            data-ouia-component-id="OUIA-Generated-TableRow-5"
             data-ouia-component-type="PF6/TableRow"
             data-ouia-safe="true"
           >
