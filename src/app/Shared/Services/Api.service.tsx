@@ -2341,21 +2341,15 @@ export class ApiService {
   }
 
   private transformTarget(target: Target): TargetForTest {
-    const out: TargetForTest = {
+    return {
       alias: target.alias,
       connectUrl: target.connectUrl,
-      labels: {},
-      annotations: { cryostat: {}, platform: {} },
+      labels: this.transformLabelsToObject(target.labels),
+      annotations: {
+        cryostat: this.transformLabelsToObject(target.annotations.cryostat),
+        platform: this.transformLabelsToObject(target.annotations.platform),
+      },
     };
-    for (const l of target.labels) {
-      out.labels[l.key] = l.value;
-    }
-    for (const s of ['cryostat', 'platform']) {
-      for (const [key, value] of Object.entries(out.annotations[s])) {
-        target.annotations[s][key] = value;
-      }
-    }
-    return out;
   }
 
   sendRequest(
