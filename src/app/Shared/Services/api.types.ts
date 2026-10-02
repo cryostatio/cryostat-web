@@ -551,18 +551,11 @@ export interface TargetNode extends _AbstractNode {
 
 export type AsyncProfile = components['schemas']['AsyncProfile'];
 
-export interface AsyncProfilerSession {
-  id: string;
-  events: string[];
-  startTime: number;
-  duration: number;
-}
+export type AsyncProfilerSession = components['schemas']['StartProfileRequest'];
 
-export interface AsyncProfilerStatus {
-  status: boolean;
-  availableEvents: string[];
-  currentProfile?: AsyncProfilerSession;
-}
+export type ProfilerStatus = components['schemas']['ProfilerStatus'];
+
+export type AsyncProfilerStatus = components['schemas']['AsyncProfilerStatus'];
 
 // ======================================
 // Unified Logging resources
