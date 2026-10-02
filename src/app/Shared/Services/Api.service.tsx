@@ -2215,11 +2215,10 @@ export class ApiService {
   }
 
   downloadUnifiedLog(target: Target, log: UnifiedLog): void {
+    const logId = log.logId!;
     this.ctx
-      .url(log.downloadUrl ?? `/api/beta/diagnostics/targets/${target.id}/unified-logs/${log.logId}`)
-      .subscribe((resourceUrl) =>
-        this.downloadFile(resourceUrl, new URLSearchParams({ filename: log.logId }), log.logId),
-      );
+      .url(log.downloadUrl ?? `/api/beta/diagnostics/targets/${target.id}/unified-logs/${logId}`)
+      .subscribe((resourceUrl) => this.downloadFile(resourceUrl, new URLSearchParams({ filename: logId }), logId));
   }
 
   deleteUnifiedLog(target: Target, logId: string): Observable<boolean> {
