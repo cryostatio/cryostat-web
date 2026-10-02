@@ -45,7 +45,7 @@ const mockThreadDumpLabels = [
 ];
 
 const mockArchivedThreadDump: ThreadDump = {
-  jvmId: mockTarget.jvmId,
+  jvmId: mockTarget.jvmId!,
   threadDumpId: 'someArchivedRecording_some_random',
   downloadUrl: 'http://downloadUrl',
   metadata: { labels: mockThreadDumpLabels },

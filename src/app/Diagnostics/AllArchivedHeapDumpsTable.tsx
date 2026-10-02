@@ -225,7 +225,7 @@ export const AllArchivedHeapDumpsTable: React.FC<AllArchivedHeapDumpsTableProps>
                 return {
                   ...heapDump,
                   metadata: {
-                    ...(heapDump.metadata ?? {}),
+                    ...heapDump.metadata,
                     labels: updatedHeapDumpInfo?.heapDump?.metadata?.labels ?? [],
                   },
                 };

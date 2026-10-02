@@ -27,6 +27,7 @@ const mockThreadDumpLabels = [
 ];
 const mockThreadDump: ThreadDump = {
   threadDumpId: 'someThreadDump',
+  jvmId: 'someJvmId',
   downloadUrl: 'http://downloadUrl',
   metadata: { labels: mockThreadDumpLabels },
   lastModified: 1234567890,
