@@ -471,20 +471,7 @@ export interface EventProbe {
 // ======================================
 // Rule resources
 // ======================================
-export interface Rule {
-  id?: number;
-  name: string;
-  description: string;
-  matchExpression: string;
-  enabled: boolean;
-  eventSpecifier: string;
-  archivalPeriodSeconds: number;
-  initialDelaySeconds: number;
-  preservedArchives: number;
-  maxAgeSeconds: number;
-  maxSizeBytes: number;
-  metadata: Metadata;
-}
+export type Rule = components['schemas']['Rule'];
 
 // ======================================
 // Smart Triggers Resources
