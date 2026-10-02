@@ -28,10 +28,7 @@ export type ApiVersion = 'unversioned' | 'v4' | 'v4.1' | 'beta';
 
 export type BuildInfo = components['schemas']['BuildInfo'];
 
-export interface KeyValue {
-  key: string;
-  value: string;
-}
+export type KeyValue = components['schemas']['KeyValue'];
 
 export const isKeyValue = (o: any): o is KeyValue => {
   return typeof o === 'object' && _.isEqual(new Set(['key', 'value']), new Set(Object.getOwnPropertyNames(o)));
@@ -41,15 +38,10 @@ export const keyValueToString = (kv: KeyValue): string => {
   return `${kv.key}=${kv.value}`;
 };
 
-export interface Metadata {
-  labels: KeyValue[];
-}
+export type Metadata = components['schemas']['Metadata'];
 
 export type TargetMetadata = Metadata & {
-  annotations: {
-    cryostat: KeyValue[];
-    platform: KeyValue[];
-  };
+  annotations: components['schemas']['Annotations'];
 };
 
 export function isTargetMetadata(metadata: Metadata | TargetMetadata): metadata is TargetMetadata {
@@ -591,18 +583,7 @@ export enum AutomatedAnalysisScore {
 // ======================================
 // Discovery/Target resources
 // ======================================
-export interface Target {
-  id?: number; // present in responses but we must not include it in requests to create targets
-  jvmId?: string; // present in responses, but we do not need to provide it in requests
-  agent: boolean;
-  connectUrl: string;
-  alias: string;
-  labels: KeyValue[];
-  annotations: {
-    cryostat: KeyValue[];
-    platform: KeyValue[];
-  };
-}
+export type Target = components['schemas']['Target'];
 
 export type NullableTarget = Target | undefined;
 
