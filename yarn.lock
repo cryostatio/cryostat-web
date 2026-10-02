@@ -5712,7 +5712,7 @@ __metadata:
     victory-tooltip: "npm:37.3.6"
     victory-voronoi-container: "npm:37.3.6"
     victory-zoom-container: "npm:37.3.6"
-    wait-on: "npm:9.4.0"
+    wait-on: "npm:9.4.1"
     webpack: "npm:5.111.1"
     webpack-bundle-analyzer: "npm:5.4.0"
     webpack-cli: "npm:7.2.3"
@@ -16662,9 +16662,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wait-on@npm:9.4.0":
-  version: 9.4.0
-  resolution: "wait-on@npm:9.4.0"
+"wait-on@npm:9.4.1":
+  version: 9.4.1
+  resolution: "wait-on@npm:9.4.1"
   dependencies:
     axios: "npm:^1.20.0"
     joi: "npm:^18.2.9"
@@ -16672,7 +16672,7 @@ __metadata:
     rxjs: "npm:^7.8.2"
   bin:
     wait-on: bin/wait-on
-  checksum: 10/228e7c2033a134cdb8f836083aeaaca162713ea976149ec84d693dc64c092e3ba0c5658a36923012785c5867a02bc11d0819c47fe9cf5a90f5c79c9215fcbc2b
+  checksum: 10/f67797ccd4ee8e8879cc9d3b0fe77a2dcb3c2268522ce73f41e332ababd55f102a55df8ae501393cb7ffe763f78a2ad3a78e5b29a1e75efb2aed1378a2eba842
   languageName: node
   linkType: hard
 
