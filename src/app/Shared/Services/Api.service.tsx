@@ -327,7 +327,7 @@ export class ApiService {
               body: JSON.stringify({
                 ...rule,
                 metadata: {
-                  labels: this.transformLabelsToObject(rule?.metadata?.labels ?? []),
+                  labels: this.transformLabelsToObject(rule.metadata.labels),
                 },
               }),
               headers,
