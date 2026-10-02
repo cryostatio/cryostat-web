@@ -93,16 +93,16 @@
     "webpack-merge": "6.0.1"
   },
   "dependencies": {
-    "@patternfly/quickstarts": "6.4.0",
-    "@patternfly/react-catalog-view-extension": "6.4.0",
+    "@patternfly/quickstarts": "6.5.0",
+    "@patternfly/react-catalog-view-extension": "6.5.0",
     "@patternfly/react-charts": "8.5.1",
-    "@patternfly/react-code-editor": "6.4.3",
-    "@patternfly/react-core": "6.4.3",
-    "@patternfly/react-icons": "6.4.0",
-    "@patternfly/react-styles": "6.4.0",
-    "@patternfly/react-table": "6.4.3",
-    "@patternfly/react-templates": "6.4.3",
-    "@patternfly/react-topology": "6.4.0",
+    "@patternfly/react-code-editor": "6.5.1",
+    "@patternfly/react-core": "6.5.1",
+    "@patternfly/react-icons": "6.5.1",
+    "@patternfly/react-styles": "6.5.1",
+    "@patternfly/react-table": "6.5.1",
+    "@patternfly/react-templates": "6.5.1",
+    "@patternfly/react-topology": "6.5.0",
     "@reduxjs/toolkit": "2.12.0",
     "@types/lodash": "4.17.25",
     "@types/react": "18.3.31",
@@ -147,7 +147,7 @@
     "@types/react": "18.3.31",
     "lodash": "4.18.1",
     "dompurify": "3.4.16",
-    "@patternfly/react-core": "6.4.3"
+    "@patternfly/react-core": "6.5.1"
   },
   "packageManager": "yarn@4.18.1"
 }
