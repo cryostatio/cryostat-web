@@ -271,20 +271,17 @@ export class ApiService {
     abortSignal?: Observable<void>,
   ): Observable<boolean> {
     const body = new window.FormData();
-    Object.entries(rule).forEach((e) => {
-      if (!e || !e[0] || !e[1]) {
-        return;
-      }
-      if (e[0] === 'metadata') {
-        const labels = {};
-        e[1].labels.forEach((kv: KeyValue) => {
-          labels[kv.key] = kv.value;
-        });
-        body.append(e[0], JSON.stringify({ labels }));
-      } else {
-        body.append(e[0], e[1]);
-      }
-    });
+    body.append('name', rule.name);
+    body.append('description', rule.description);
+    body.append('matchExpression', rule.matchExpression);
+    body.append('enabled', String(rule.enabled));
+    body.append('eventSpecifier', rule.eventSpecifier);
+    body.append('archivalPeriodSeconds', String(rule.archivalPeriodSeconds));
+    body.append('initialDelaySeconds', String(rule.initialDelaySeconds));
+    body.append('preservedArchives', String(rule.preservedArchives));
+    body.append('maxAgeSeconds', String(rule.maxAgeSeconds));
+    body.append('maxSizeBytes', String(rule.maxSizeBytes));
+    body.append('metadata', JSON.stringify({ labels: this.transformLabelsToObject(rule.metadata.labels) }));
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
     return this.sendUploadRequest('v4', 'rules', 'Rule Upload Failed', body, onUploadProgress, abortSignal).pipe(
       map((resp) => resp.ok),

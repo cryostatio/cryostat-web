@@ -15,7 +15,7 @@
  */
 
 import { ApiService } from '@app/Shared/Services/Api.service';
-import { Metadata, Target, TargetMetadata } from '@app/Shared/Services/api.types';
+import { Metadata, Rule, Target, TargetMetadata } from '@app/Shared/Services/api.types';
 import { NotificationService } from '@app/Shared/Services/Notifications.service';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { firstValueFrom, of } from 'rxjs';
@@ -153,6 +153,41 @@ describe('ApiService', () => {
       );
 
       expect(result).toBe(false);
+    });
+  });
+
+  describe('uploadRule', () => {
+    it('includes falsy field values (enabled=false, zero-valued numbers) in the uploaded FormData', async () => {
+      const rule: Rule = {
+        name: 'test-rule',
+        description: '',
+        matchExpression: 'true',
+        enabled: false,
+        eventSpecifier: 'template=Continuous,type=TARGET',
+        archivalPeriodSeconds: 0,
+        initialDelaySeconds: 0,
+        preservedArchives: 0,
+        maxAgeSeconds: 0,
+        maxSizeBytes: 0,
+        metadata: { labels: [] },
+      };
+
+      let uploadedBody: FormData | undefined;
+      jest.spyOn(svc as any, 'sendUploadRequest').mockImplementation((...args: unknown[]) => {
+        uploadedBody = args[3] as FormData;
+        return of(responseOf({}));
+      });
+
+      await firstValueFrom(svc.uploadRule(rule));
+
+      expect(uploadedBody).toBeDefined();
+      expect(uploadedBody!.get('enabled')).toBe('false');
+      expect(uploadedBody!.get('archivalPeriodSeconds')).toBe('0');
+      expect(uploadedBody!.get('initialDelaySeconds')).toBe('0');
+      expect(uploadedBody!.get('preservedArchives')).toBe('0');
+      expect(uploadedBody!.get('maxAgeSeconds')).toBe('0');
+      expect(uploadedBody!.get('maxSizeBytes')).toBe('0');
+      expect(uploadedBody!.get('name')).toBe('test-rule');
     });
   });
 });
