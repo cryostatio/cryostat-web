@@ -90,7 +90,11 @@ export class XMLHttpError extends Error {
   }
 }
 
-export type TargetStub = Omit<Target, 'agent' | 'jvmId' | 'labels' | 'annotations'>;
+export type TargetReference = Omit<Target, 'agent' | 'jvmId' | 'labels' | 'annotations'>;
+
+// The non-credential subset of the schema's target-creation request body
+// (components['schemas']['TargetStub']); credentials are submitted separately by ApiService#createTarget.
+export type TargetCreateRequest = Pick<components['schemas']['TargetStub'], 'alias' | 'connectUrl'>;
 
 export type TargetForTest = Pick<Target, 'alias' | 'connectUrl'> & {
   labels: object;
@@ -217,11 +221,7 @@ export interface HeapDumpsResponse {
 // ======================================
 // Recording resources
 // ======================================
-export interface RecordingDirectory {
-  connectUrl: string;
-  jvmId: string;
-  recordings: ArchivedRecording[];
-}
+export type RecordingDirectory = components['schemas']['ArchivedRecordingDirectory'];
 
 export enum RecordingState {
   STOPPED = 'STOPPED',
@@ -253,27 +253,13 @@ export interface Recording {
   metadata: Metadata;
 }
 
-export interface ThreadDumpDirectory {
-  jvmId: string;
-  threadDumps: ThreadDump[];
-}
+export type ThreadDumpDirectory = components['schemas']['ArchivedThreadDumpDirectory'];
 
 export type ThreadDump = components['schemas']['ThreadDump'];
 
-export interface StackFrame {
-  className: string;
-  methodName: string;
-  fileName: string;
-  lineNumber: number;
-  nativeMethod: boolean;
-}
+export type StackFrame = components['schemas']['StackFrame'];
 
-export interface LockInfo {
-  lockId?: string;
-  className?: string;
-  operation?: string;
-  ownerThreadId?: string;
-}
+export type LockInfo = components['schemas']['LockInfo'];
 
 export interface DeadlockInfo {
   threadName: string;
@@ -285,26 +271,9 @@ export interface DeadlockInfo {
   locks: LockInfo[];
 }
 
-export interface ThreadInfo {
-  name: string;
-  threadId?: number;
-  nativeId?: number;
-  priority?: number;
-  daemon?: boolean;
-  state?: string;
-  cpuTimeSec: number;
-  elapsedTimeSec: number;
-  stackTrace?: StackFrame[];
-  locks?: LockInfo[];
-  additionalInfo?: string;
-  carryingVirtualThreadId?: number;
-}
+export type ThreadInfo = components['schemas']['ThreadInfo'];
 
-export interface AnalysisFinding {
-  resultName: string;
-  explanation: string;
-  score: number;
-}
+export type AnalysisFinding = components['schemas']['ThreadDumpAnalysisResult'];
 
 export interface ThreadDumpAnalysisResult {
   aggregateThreadStates: { data: string; count: number }[];
@@ -338,10 +307,7 @@ export interface ActiveRecording extends Recording {
   remoteId: number;
 }
 
-export interface HeapDumpDirectory {
-  jvmId: string;
-  heapDumps: HeapDump[];
-}
+export type HeapDumpDirectory = components['schemas']['ArchivedHeapDumpDirectory'];
 
 export type HeapDump = components['schemas']['HeapDump'];
 
@@ -420,19 +386,12 @@ export interface HeapDumpCountResponse {
 // ======================================
 // Credential resources
 // ======================================
-export interface MatchedCredential {
-  id: number;
-  matchExpression: string;
-  targets: Target[];
-}
+export type MatchedCredential = components['schemas']['CredentialMatchResult'];
 
 // ======================================
 // Agent-related resources
 // ======================================
-export interface ProbeTemplate {
-  name: string;
-  xml: string;
-}
+export type ProbeTemplate = components['schemas']['ProbeTemplateResponse'];
 
 export interface EventProbe {
   id: string;
@@ -477,28 +436,13 @@ export interface SmartTriggerRequest {
 // ======================================
 // Template resources
 // ======================================
-export interface OptionDescriptor {
-  name: string;
-  description: string;
-  defaultValue: string;
-}
+export type OptionDescriptor = components['schemas']['SerializableOptionDescriptor'];
 
-export interface EventType {
-  name: string;
-  typeId: string;
-  description: string;
-  category: string[];
-  options: { [key: string]: OptionDescriptor }[];
-}
+export type EventType = components['schemas']['SerializableEventTypeInfo'];
 
-export type TemplateType = 'TARGET' | 'CUSTOM' | 'PRESET';
+export type TemplateType = components['schemas']['TemplateType'];
 
-export interface EventTemplate {
-  name: string;
-  description: string;
-  provider: string;
-  type: TemplateType;
-}
+export type EventTemplate = components['schemas']['Template'];
 
 // ======================================
 // Report resources
@@ -605,12 +549,7 @@ export interface TargetNode extends _AbstractNode {
 // async-profiler resources
 // ======================================
 
-export interface AsyncProfile {
-  id: string;
-  startTime: number;
-  duration: number;
-  size: number;
-}
+export type AsyncProfile = components['schemas']['AsyncProfile'];
 
 export interface AsyncProfilerSession {
   id: string;
@@ -767,14 +706,7 @@ export interface NotificationMessageMapper {
 /**
  * Revision information from REVINFO table
  */
-export interface AuditRevision {
-  /** Revision number (primary key) */
-  rev: number;
-  /** Revision timestamp in milliseconds since epoch */
-  revtstmp: number;
-  /** Username of the user who made the change (optional) */
-  username?: string;
-}
+export type AuditRevision = components['schemas']['RevisionSummary'];
 
 /**
  * Revision type enum matching Hibernate Envers values

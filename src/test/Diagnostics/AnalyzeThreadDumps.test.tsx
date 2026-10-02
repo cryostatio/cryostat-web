@@ -140,7 +140,7 @@ const mockThreadDumpAnalysis: ThreadDumpAnalysisResult = {
         {
           lockId: 'someLockId',
           className: 'someClass',
-          operation: 'someOperation',
+          operation: 'LOCKED',
           ownerThreadId: '2',
         },
       ],
@@ -169,7 +169,7 @@ const mockThreadDumpAnalysis: ThreadDumpAnalysisResult = {
         {
           lockId: 'someLockId',
           className: 'someClass',
-          operation: 'someOperation',
+          operation: 'LOCKED',
           ownerThreadId: '2',
         },
       ],

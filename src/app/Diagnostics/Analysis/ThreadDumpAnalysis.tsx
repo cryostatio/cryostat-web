@@ -324,7 +324,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
   const onToggle = React.useCallback(
     (t: ThreadInfo) => {
       setOpenRows((old) => {
-        const typeId = hashCode(t.name);
+        const typeId = hashCode(t.name ?? '');
         if (old.some((id) => id === typeId)) {
           return old.filter((id) => id !== typeId);
         }
@@ -487,7 +487,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
             t.elapsedTimeSec,
             t.additionalInfo,
           ],
-          isExpanded: openRows.some((id) => id === hashCode(t.name)),
+          isExpanded: openRows.some((id) => id === hashCode(t.name ?? '')),
           children: threadSubTable(t),
         });
       });
