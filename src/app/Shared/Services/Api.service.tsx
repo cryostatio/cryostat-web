@@ -2083,17 +2083,11 @@ export class ApiService {
   }
 
   getAsyncProfilerStatus(target: Target, suppressNotifications = false): Observable<AsyncProfilerStatus> {
-    return this.doGet<{
-      currentProfile: {
-        id: string;
-        events: string[];
-        startTime: number;
-        duration: number;
-      };
-      status: string;
-      availableEvents: string[];
-    }>(`targets/${target.id}/async-profiler/status`, 'beta', undefined, suppressNotifications).pipe(
-      map((s) => ({ ...s, status: s['status'] === 'RUNNING' })),
+    return this.doGet<AsyncProfilerStatus>(
+      `targets/${target.id}/async-profiler/status`,
+      'beta',
+      undefined,
+      suppressNotifications,
     );
   }
 
@@ -2105,10 +2099,8 @@ export class ApiService {
     );
   }
 
-  getAsyncProfilerAvailableEvents(target: Target): Observable<string[]> {
-    return this.doGet<string[]>(`targets/${target.id}/async-profiler/status`, 'beta').pipe(
-      map((s) => s['availableEvents']),
-    );
+  getAsyncProfilerAvailableEvents(target: Target): Observable<Record<string, string[]>> {
+    return this.getAsyncProfilerStatus(target).pipe(map((s) => s.availableEvents));
   }
 
   startAsyncProfile(target: Target, events: string[], duration: number) {
