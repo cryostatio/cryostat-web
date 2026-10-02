@@ -52,6 +52,7 @@ const mockRecordingLabels = [
 ];
 
 const mockArchivedRecording: ArchivedRecording = {
+  jvmId: mockJvmId,
   name: 'someArchivedRecording_some_random',
   downloadUrl: 'http://downloadUrl',
   reportUrl: 'http://reportUrl',

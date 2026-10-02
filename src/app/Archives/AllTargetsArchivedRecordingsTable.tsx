@@ -18,7 +18,7 @@ import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { SynthesisForm } from '@app/Recordings/SynthesisForm';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
-import { Target, TargetDiscoveryEvent, NotificationCategory, Metadata } from '@app/Shared/Services/api.types';
+import { ArchivedRecording, Target, TargetDiscoveryEvent, NotificationCategory } from '@app/Shared/Services/api.types';
 import { isEqualTarget, indexOfTarget, includesTarget } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
@@ -105,16 +105,6 @@ const tableColumns: TableColumn[] = [
 ];
 
 const MOST_RECENT_ARCHIVE_COLUMN_INDEX = 2;
-
-interface ArchivedRecording {
-  jvmId?: string;
-  name: string;
-  downloadUrl: string;
-  reportUrl: string;
-  metadata: Metadata;
-  size: number;
-  archivedTime: number;
-}
 
 type ArchivesForTarget = {
   target: Target;

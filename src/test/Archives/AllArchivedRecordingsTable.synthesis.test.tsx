@@ -28,6 +28,7 @@ const mockConnectUrl2 = 'service:jmx:rmi://synthUrl2';
 const mockJvmId2 = 'synthJvmId2';
 
 const mockRecording: ArchivedRecording = {
+  jvmId: mockJvmId1,
   name: 'someRecording',
   downloadUrl: 'http://downloadUrl',
   reportUrl: 'http://reportUrl',

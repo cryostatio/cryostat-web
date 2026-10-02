@@ -226,7 +226,7 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
                 return {
                   ...threadDump,
                   metadata: {
-                    ...(threadDump.metadata ?? {}),
+                    ...threadDump.metadata,
                     labels: updatedThreadDumpInfo?.threadDump?.metadata?.labels ?? [],
                   },
                 };

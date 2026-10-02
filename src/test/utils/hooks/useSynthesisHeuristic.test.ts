@@ -32,6 +32,7 @@ const makeRecording = (
   sizeBytes = 1024,
   name = `rec-${startMs}`,
 ): ArchivedRecording => ({
+  jvmId: 'someJvmId',
   name,
   downloadUrl: '',
   reportUrl: '',
@@ -144,6 +145,7 @@ describe('useSynthesisHeuristic', () => {
 
     it('excludes recordings without required timing labels', () => {
       const noLabels: ArchivedRecording = {
+        jvmId: 'someJvmId',
         name: 'no-timing',
         downloadUrl: '',
         reportUrl: '',
@@ -157,6 +159,7 @@ describe('useSynthesisHeuristic', () => {
 
     it('excludes recordings with archivedTime of zero (falsy)', () => {
       const zeroTime: ArchivedRecording = {
+        jvmId: 'someJvmId',
         name: 'zero-time',
         downloadUrl: '',
         reportUrl: '',

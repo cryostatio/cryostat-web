@@ -258,14 +258,7 @@ export interface ThreadDumpDirectory {
   threadDumps: ThreadDump[];
 }
 
-export interface ThreadDump {
-  downloadUrl: string;
-  threadDumpId: string;
-  jvmId?: string;
-  lastModified?: number;
-  size: number;
-  metadata?: Metadata;
-}
+export type ThreadDump = components['schemas']['ThreadDump'];
 
 export interface StackFrame {
   className: string;
@@ -330,11 +323,7 @@ export interface ThreadDumpAnalysisResult {
   jvmInfo: string;
 }
 
-export interface ArchivedRecording extends Recording {
-  jvmId?: string;
-  archivedTime: number;
-  size: number;
-}
+export type ArchivedRecording = components['schemas']['ArchivedRecording'];
 
 export interface ActiveRecording extends Recording {
   id: number;
@@ -354,14 +343,7 @@ export interface HeapDumpDirectory {
   heapDumps: HeapDump[];
 }
 
-export interface HeapDump {
-  downloadUrl: string;
-  heapDumpId: string;
-  jvmId?: string;
-  lastModified?: number;
-  size: number;
-  metadata?: Metadata;
-}
+export type HeapDump = components['schemas']['HeapDump'];
 
 export interface ActiveRecordingsFilterInput {
   name?: string;
