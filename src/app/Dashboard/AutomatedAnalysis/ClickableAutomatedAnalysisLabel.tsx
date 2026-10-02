@@ -122,7 +122,7 @@ export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysi
       className={`${clickableAutomatedAnalysisKey}-popover`}
     >
       <Label
-        aria-label={result.name}
+        aria-label={result.name ?? undefined}
         icon={icon}
         color={colorScheme}
         className={isHoveredOrFocused ? `clickable-label-hovered` : ''}

@@ -18,6 +18,11 @@ import { HeapDumpAnalysisResult } from '@app/Diagnostics/Analysis/HeapDumps/type
 import { AlertVariant } from '@patternfly/react-core';
 import _ from 'lodash';
 import { Observable } from 'rxjs';
+import {
+  AnalysisResult as GqlAnalysisResult,
+  Evaluation as GqlEvaluation,
+  Suggestion as GqlSuggestion,
+} from 'src/schema/graphql.types';
 import { components } from 'src/schema/openapi.types';
 
 export type ApiVersion = 'unversioned' | 'v4' | 'v4.1' | 'beta';
@@ -448,25 +453,15 @@ export type GenerationError = Error & {
   messageDetail: Observable<string>;
 };
 
-export interface AnalysisResult {
-  name: string;
-  topic: string;
-  score: number;
-  evaluation: Evaluation;
-}
+// Sourced from the GraphQL schema, not openapi: these are only ever fetched via the
+// AggregateReportsForAllTargets/AggregateReportForTarget GraphQL queries. Only `score` reflects a
+// primitive `double` field on the server (io.cryostat.core.reports.InterruptibleReportGenerator);
+// every other field is a plain object/String with no non-null guarantee.
+export type AnalysisResult = GqlAnalysisResult;
 
-export interface Evaluation {
-  summary: string;
-  explanation: string;
-  solution: string;
-  suggestions: Suggestion[];
-}
+export type Evaluation = GqlEvaluation;
 
-export interface Suggestion {
-  setting: string;
-  name: string;
-  value: string;
-}
+export type Suggestion = GqlSuggestion;
 
 export enum AutomatedAnalysisScore {
   NA_SCORE = -1,

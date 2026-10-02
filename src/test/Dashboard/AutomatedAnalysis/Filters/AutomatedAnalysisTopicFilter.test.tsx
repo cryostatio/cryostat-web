@@ -96,8 +96,8 @@ const mockEvaluations1: AnalysisResult[] = [mockRuleEvaluation1];
 const mockEvaluations2: AnalysisResult[] = [mockRuleEvaluation2, mockRuleEvaluation3, mockNaRuleEvaluation];
 
 const mockCategorizedEvaluations: CategorizedRuleEvaluations[] = [
-  [mockRuleEvaluation1.topic, mockEvaluations1],
-  [mockRuleEvaluation2.topic, mockEvaluations2],
+  [mockRuleEvaluation1.topic!, mockEvaluations1],
+  [mockRuleEvaluation2.topic!, mockEvaluations2],
 ];
 
 const allMockEvaluations = mockEvaluations1.concat(mockEvaluations2);
@@ -112,7 +112,7 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
 
   beforeEach(() => {
     emptyFilteredTopics = [];
-    filteredTopics = [mockRuleEvaluation1.topic];
+    filteredTopics = [mockRuleEvaluation1.topic!];
   });
 
   afterEach(cleanup);
@@ -148,7 +148,7 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
     expect(selectMenu).toBeVisible();
 
     allMockEvaluations.forEach((r) => {
-      const option = within(selectMenu).getByText(r.topic);
+      const option = within(selectMenu).getByText(r.topic!);
       expect(option).toBeInTheDocument();
       expect(option).toBeVisible();
     });
@@ -184,7 +184,7 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
     expect(selectMenu).toBeVisible();
 
     allMockEvaluations.forEach((r) => {
-      const option = within(selectMenu).getByText(r.topic);
+      const option = within(selectMenu).getByText(r.topic!);
       expect(option).toBeInTheDocument();
       expect(option).toBeVisible();
     });
@@ -221,7 +221,7 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
     expect(selectMenu).toBeVisible();
 
     allMockEvaluations.forEach((r) => {
-      const option = within(selectMenu).getByText(r.topic);
+      const option = within(selectMenu).getByText(r.topic!);
       expect(option).toBeInTheDocument();
       expect(option).toBeVisible();
     });
@@ -265,7 +265,7 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
     expect(selectMenu).toBeVisible();
 
     allMockEvaluations.forEach((r) => {
-      const option = within(selectMenu).getByText(r.topic);
+      const option = within(selectMenu).getByText(r.topic!);
       expect(option).toBeInTheDocument();
       expect(option).toBeVisible();
     });
@@ -308,7 +308,7 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
-    const notToShowName = within(selectMenu).queryByText(mockRuleEvaluation1.topic);
+    const notToShowName = within(selectMenu).queryByText(mockRuleEvaluation1.topic!);
     expect(notToShowName).not.toBeInTheDocument();
   });
 
@@ -345,13 +345,13 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
     expect(selectMenu).toBeVisible();
 
     allMockEvaluations.forEach((r) => {
-      const option = within(selectMenu).getByText(r.topic);
+      const option = within(selectMenu).getByText(r.topic!);
       expect(option).toBeInTheDocument();
       expect(option).toBeVisible();
     });
 
     await act(async () => {
-      await user.click(screen.getByText(mockRuleEvaluation1.topic));
+      await user.click(screen.getByText(mockRuleEvaluation1.topic!));
     });
 
     expect(submitNameInput).toHaveBeenCalledTimes(1);

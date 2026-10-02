@@ -107,7 +107,7 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
       },
     });
 
-    expect(screen.getByText(mockRuleEvaluation1.name)).toBeInTheDocument();
+    expect(screen.getByText(mockRuleEvaluation1.name!)).toBeInTheDocument();
   });
 
   it('displays popover when critical label is clicked', async () => {
@@ -117,7 +117,7 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
       },
     });
 
-    const label = screen.getByText(mockRuleEvaluation1.name);
+    const label = screen.getByText(mockRuleEvaluation1.name!);
     expect(label).toBeInTheDocument();
 
     await act(async () => {
@@ -132,12 +132,12 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
 
     expect(document.getElementsByClassName('pf-m-danger').item(0)).toBeInTheDocument();
 
-    const summary = screen.getByText(mockRuleEvaluation1.evaluation.summary);
-    const explanation = screen.getByText(mockRuleEvaluation1.evaluation.explanation);
-    const solution = screen.getByText(mockRuleEvaluation1.evaluation.solution);
-    const setting = screen.getByText(mockRuleEvaluation1.evaluation.suggestions[0].setting);
+    const summary = screen.getByText(mockRuleEvaluation1.evaluation!.summary!);
+    const explanation = screen.getByText(mockRuleEvaluation1.evaluation!.explanation!);
+    const solution = screen.getByText(mockRuleEvaluation1.evaluation!.solution!);
+    const setting = screen.getByText(mockRuleEvaluation1.evaluation!.suggestions![0]!.setting!);
     const keyval = screen.getByText(
-      `${mockRuleEvaluation1.evaluation.suggestions[0].name}=${mockRuleEvaluation1.evaluation.suggestions[0].value}`,
+      `${mockRuleEvaluation1.evaluation!.suggestions![0]!.name!}=${mockRuleEvaluation1.evaluation!.suggestions![0]!.value!}`,
     );
     const score = screen.getByText(String(mockRuleEvaluation1.score) + '.0');
 
@@ -152,7 +152,7 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
       name: /danger rule1/i,
     });
 
-    expect(within(heading).getByText(mockRuleEvaluation1.name)).toBeInTheDocument();
+    expect(within(heading).getByText(mockRuleEvaluation1.name!)).toBeInTheDocument();
 
     await act(async () => {
       await user.click(label);
@@ -175,7 +175,7 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
       },
     });
 
-    const label = screen.getByText(mockRuleEvaluation2.name);
+    const label = screen.getByText(mockRuleEvaluation2.name!);
     expect(label).toBeInTheDocument();
 
     await act(async () => {
@@ -190,12 +190,12 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
 
     expect(document.getElementsByClassName('pf-m-warning').item(0)).toBeInTheDocument();
 
-    const summary = screen.getByText(mockRuleEvaluation2.evaluation.summary);
-    const explanation = screen.getByText(mockRuleEvaluation2.evaluation.explanation);
-    const solution = screen.getByText(mockRuleEvaluation2.evaluation.solution);
-    const setting = screen.getByText(mockRuleEvaluation2.evaluation.suggestions[0].setting);
+    const summary = screen.getByText(mockRuleEvaluation2.evaluation!.summary!);
+    const explanation = screen.getByText(mockRuleEvaluation2.evaluation!.explanation!);
+    const solution = screen.getByText(mockRuleEvaluation2.evaluation!.solution!);
+    const setting = screen.getByText(mockRuleEvaluation2.evaluation!.suggestions![0]!.setting!);
     const keyval = screen.getByText(
-      `${mockRuleEvaluation2.evaluation.suggestions[0].name}=${mockRuleEvaluation2.evaluation.suggestions[0].value}`,
+      `${mockRuleEvaluation2.evaluation!.suggestions![0]!.name!}=${mockRuleEvaluation2.evaluation!.suggestions![0]!.value!}`,
     );
     const score = screen.getByText(String(mockRuleEvaluation2.score) + '.0');
 
@@ -210,7 +210,7 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
       name: /warning rule2/i,
     });
 
-    expect(within(heading).getByText(mockRuleEvaluation2.name)).toBeInTheDocument();
+    expect(within(heading).getByText(mockRuleEvaluation2.name!)).toBeInTheDocument();
 
     await act(async () => {
       await user.click(label);
@@ -232,7 +232,7 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
       },
     });
 
-    const label = screen.getByText(mockRuleEvaluation3.name);
+    const label = screen.getByText(mockRuleEvaluation3.name!);
     expect(label).toBeInTheDocument();
 
     await act(async () => {
@@ -247,12 +247,12 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
 
     expect(document.getElementsByClassName('pf-m-success').item(0)).toBeInTheDocument();
 
-    const summary = screen.getByText(mockRuleEvaluation3.evaluation.summary);
-    const explanation = screen.getByText(mockRuleEvaluation3.evaluation.explanation);
-    const solution = screen.getByText(mockRuleEvaluation3.evaluation.solution);
-    const setting = screen.getByText(mockRuleEvaluation3.evaluation.suggestions[0].setting);
+    const summary = screen.getByText(mockRuleEvaluation3.evaluation!.summary!);
+    const explanation = screen.getByText(mockRuleEvaluation3.evaluation!.explanation!);
+    const solution = screen.getByText(mockRuleEvaluation3.evaluation!.solution!);
+    const setting = screen.getByText(mockRuleEvaluation3.evaluation!.suggestions![0]!.setting!);
     const keyval = screen.getByText(
-      `${mockRuleEvaluation3.evaluation.suggestions[0].name}=${mockRuleEvaluation3.evaluation.suggestions[0].value}`,
+      `${mockRuleEvaluation3.evaluation!.suggestions![0]!.name!}=${mockRuleEvaluation3.evaluation!.suggestions![0]!.value!}`,
     );
     const score = screen.getByText(String(mockRuleEvaluation3.score) + '.0');
 
@@ -267,7 +267,7 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
       name: /success rule3/i,
     });
 
-    expect(within(heading).getByText(mockRuleEvaluation3.name)).toBeInTheDocument();
+    expect(within(heading).getByText(mockRuleEvaluation3.name!)).toBeInTheDocument();
 
     await act(async () => {
       await user.click(label);
@@ -289,7 +289,7 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
       },
     });
 
-    const label = screen.getByText(mockNaRuleEvaluation.name);
+    const label = screen.getByText(mockNaRuleEvaluation.name!);
     expect(label).toBeInTheDocument();
 
     await act(async () => {
@@ -303,12 +303,12 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
     expect(closeButton).toBeInTheDocument();
 
     expect(document.getElementsByClassName('pf-m-custom').item(0)).toBeInTheDocument();
-    const summary = screen.getByText(mockNaRuleEvaluation.evaluation.summary);
-    const explanation = screen.getByText(mockNaRuleEvaluation.evaluation.explanation);
-    const solution = screen.getByText(mockNaRuleEvaluation.evaluation.solution);
-    const setting = screen.getByText(mockNaRuleEvaluation.evaluation.suggestions[0].setting);
+    const summary = screen.getByText(mockNaRuleEvaluation.evaluation!.summary!);
+    const explanation = screen.getByText(mockNaRuleEvaluation.evaluation!.explanation!);
+    const solution = screen.getByText(mockNaRuleEvaluation.evaluation!.solution!);
+    const setting = screen.getByText(mockNaRuleEvaluation.evaluation!.suggestions![0]!.setting!);
     const keyval = screen.getByText(
-      `${mockNaRuleEvaluation.evaluation.suggestions[0].name}=${mockNaRuleEvaluation.evaluation.suggestions[0].value}`,
+      `${mockNaRuleEvaluation.evaluation!.suggestions![0]!.name!}=${mockNaRuleEvaluation.evaluation!.suggestions![0]!.value!}`,
     );
     const score = screen.getByText('N/A');
 
@@ -323,7 +323,7 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
       name: /custom N\/A rule/i,
     });
 
-    expect(within(heading).getByText(mockNaRuleEvaluation.name)).toBeInTheDocument();
+    expect(within(heading).getByText(mockNaRuleEvaluation.name!)).toBeInTheDocument();
 
     await act(async () => {
       await user.click(label);

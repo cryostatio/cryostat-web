@@ -208,7 +208,7 @@ export const filterAutomatedAnalysis = (
 
   if (filters.Name != null && !!filters.Name.length) {
     filtered = filtered.map(([topic, evaluations]) => {
-      return [topic, evaluations.filter((evaluation) => filters.Name.includes(evaluation.name))] as [
+      return [topic, evaluations.filter((evaluation) => filters.Name.includes(evaluation.name ?? ''))] as [
         string,
         AnalysisResult[],
       ];
