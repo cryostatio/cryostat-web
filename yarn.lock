@@ -4599,7 +4599,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.18.1":
+"axios@npm:^1.20.0":
   version: 1.20.0
   resolution: "axios@npm:1.20.0"
   dependencies:
@@ -5712,7 +5712,7 @@ __metadata:
     victory-tooltip: "npm:37.3.6"
     victory-voronoi-container: "npm:37.3.6"
     victory-zoom-container: "npm:37.3.6"
-    wait-on: "npm:9.1.0"
+    wait-on: "npm:9.4.0"
     webpack: "npm:5.111.1"
     webpack-bundle-analyzer: "npm:5.4.0"
     webpack-cli: "npm:7.2.3"
@@ -10900,7 +10900,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"joi@npm:^18.2.3":
+"joi@npm:^18.2.9":
   version: 18.2.9
   resolution: "joi@npm:18.2.9"
   dependencies:
@@ -11620,7 +11620,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimist@npm:^1.2.0, minimist@npm:^1.2.5, minimist@npm:^1.2.6, minimist@npm:^1.2.8":
+"minimist@npm:^1.2.0, minimist@npm:^1.2.5, minimist@npm:^1.2.6":
   version: 1.2.8
   resolution: "minimist@npm:1.2.8"
   checksum: 10/908491b6cc15a6c440ba5b22780a0ba89b9810e1aea684e253e43c4e3b8d56ec1dcdd7ea96dde119c29df59c936cde16062159eae4225c691e19c70b432b6e6f
@@ -16662,18 +16662,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wait-on@npm:9.1.0":
-  version: 9.1.0
-  resolution: "wait-on@npm:9.1.0"
+"wait-on@npm:9.4.0":
+  version: 9.4.0
+  resolution: "wait-on@npm:9.4.0"
   dependencies:
-    axios: "npm:^1.18.1"
-    joi: "npm:^18.2.3"
+    axios: "npm:^1.20.0"
+    joi: "npm:^18.2.9"
     lodash: "npm:^4.18.1"
-    minimist: "npm:^1.2.8"
     rxjs: "npm:^7.8.2"
   bin:
     wait-on: bin/wait-on
-  checksum: 10/1ab545585a77640dfecbe155ba930c14662b5e4dc6967f4109ce81fe3ac27e84acfe7b3374c4c0d9354a55666f31d4cf25dd2d7490526fe3678967bc875a66a9
+  checksum: 10/228e7c2033a134cdb8f836083aeaaca162713ea976149ec84d693dc64c092e3ba0c5658a36923012785c5867a02bc11d0819c47fe9cf5a90f5c79c9215fcbc2b
   languageName: node
   linkType: hard
 
