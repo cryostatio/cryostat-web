@@ -36,7 +36,7 @@ import {
   CachedReportValue,
   AnalysisResult,
   SimpleResponse,
-  TargetStub,
+  TargetReference,
   AggregateReport,
   CachedHeapDumpReportValue,
 } from '@app/Shared/Services/api.types';
@@ -525,7 +525,10 @@ class FakeApiService extends ApiService {
   }
 
   // Automated analysis card
-  getCurrentReportForTarget(_target: Target | TargetStub[], _aggregateOnly?: boolean): Observable<AggregateReport> {
+  getCurrentReportForTarget(
+    _target: Target | TargetReference[],
+    _aggregateOnly?: boolean,
+  ): Observable<AggregateReport> {
     return of({
       aggregate: {
         count: 2,
