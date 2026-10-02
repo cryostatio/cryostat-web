@@ -374,7 +374,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
           });
         }
       });
-      (rule.metadata?.labels ?? []).forEach((label) => {
+      rule.metadata.labels.forEach((label) => {
         if (label.key === AUTOANALYZE_KEY) {
           options.push({
             key: t('AUTOANALYZE'),
