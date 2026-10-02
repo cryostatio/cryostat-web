@@ -122,26 +122,30 @@ const mockThreadDumpAnalysis: ThreadDumpAnalysisResult = {
   ],
   deadlockInfos: [
     {
-      threadName: 'someThread',
-      waitingForMonitor: 'someMonitor',
-      waitingForObject: 'someObject',
-      waitingForObjectType: 'someObjectType',
-      heldBy: 'someOtherThread',
-      stackTrace: [
+      threads: [
         {
-          className: 'someClass',
-          methodName: 'someMethod',
-          fileName: 'someFile',
-          lineNumber: 123,
-          nativeMethod: false,
-        },
-      ],
-      locks: [
-        {
-          lockId: 'someLockId',
-          className: 'someClass',
-          operation: 'LOCKED',
-          ownerThreadId: '2',
+          threadName: 'someThread',
+          waitingForMonitor: 'someMonitor',
+          waitingForObject: 'someObject',
+          waitingForObjectType: 'someObjectType',
+          heldBy: 'someOtherThread',
+          stackTrace: [
+            {
+              className: 'someClass',
+              methodName: 'someMethod',
+              fileName: 'someFile',
+              lineNumber: 123,
+              nativeMethod: false,
+            },
+          ],
+          locks: [
+            {
+              lockId: 'someLockId',
+              className: 'someClass',
+              operation: 'LOCKED',
+              ownerThreadId: '2',
+            },
+          ],
         },
       ],
     },
@@ -538,6 +542,48 @@ describe('<ThreadDumpAnalysis />', () => {
       expect(header).toBeInTheDocument();
       expect(header).toBeVisible();
     });
+  });
+
+  it('flattens multiple deadlock cycles, each with multiple threads, into one row per thread', async () => {
+    const multiCycleAnalysis: ThreadDumpAnalysisResult = {
+      ...mockThreadDumpAnalysis,
+      deadlockInfos: [
+        {
+          threads: [{ threadName: 'cycle1-thread1' }, { threadName: 'cycle1-thread2' }],
+        },
+        {
+          threads: [{ threadName: 'cycle2-thread1' }],
+        },
+      ],
+    };
+    jest.spyOn(defaultServices.api, 'analyzeThreadDump').mockReturnValue(of(multiCycleAnalysis));
+
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/analyze-thread-dumps',
+            element: <ThreadDumpAnalysis />,
+          },
+        ],
+      },
+      preloadedState: preloadedState,
+    });
+
+    const dropDownArrow = screen.getByRole('button', { name: 'thread dump selector toggle' });
+    await act(async () => {
+      await user.click(dropDownArrow);
+    });
+    const selectMenu = await screen.findByRole('menu');
+    await act(async () => {
+      await user.click(within(selectMenu).getByText(mockThreadDump.threadDumpId));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('cycle1-thread1')).toBeInTheDocument();
+    });
+    expect(screen.getByText('cycle1-thread2')).toBeInTheDocument();
+    expect(screen.getByText('cycle2-thread1')).toBeInTheDocument();
   });
 
   it('expands threads to show their stack traces and locks', async () => {

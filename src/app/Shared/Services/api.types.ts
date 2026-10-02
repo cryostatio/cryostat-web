@@ -261,36 +261,17 @@ export type StackFrame = components['schemas']['StackFrame'];
 
 export type LockInfo = components['schemas']['LockInfo'];
 
-export interface DeadlockInfo {
-  threadName: string;
-  waitingForMonitor: string;
-  waitingForObject: string;
-  waitingForObjectType: string;
-  heldBy: string;
-  stackTrace: StackFrame[];
-  locks: LockInfo[];
-}
+// A single deadlocked thread's participation in a deadlock cycle.
+export type DeadlockedThread = components['schemas']['DeadlockedThread'];
+
+// A detected deadlock cycle; the threads participating in it are in `threads`.
+export type DeadlockInfo = components['schemas']['DeadlockInfo'];
 
 export type ThreadInfo = components['schemas']['ThreadInfo'];
 
 export type AnalysisFinding = components['schemas']['ThreadDumpAnalysisResult'];
 
-export interface ThreadDumpAnalysisResult {
-  aggregateThreadStates: { data: string; count: number }[];
-  aggregateLockInfo: { data: string; count: number }[];
-  aggregateStackTraces: { data: StackFrame[]; count: number }[];
-  runningMethods: { data: string; count: number }[];
-  deadlockInfos: DeadlockInfo[];
-  threads: ThreadInfo[];
-  specificFindings: AnalysisFinding[];
-  jniInfo: {
-    globalRefs?: number;
-    weakRefs?: number;
-    globalRefsMemory?: number;
-    weakRefsMemory?: number;
-  };
-  jvmInfo: string;
-}
+export type ThreadDumpAnalysisResult = components['schemas']['ThreadDumpAnalysis'];
 
 export type ArchivedRecording = components['schemas']['ArchivedRecording'];
 
