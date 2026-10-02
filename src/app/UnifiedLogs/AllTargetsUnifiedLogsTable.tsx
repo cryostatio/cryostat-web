@@ -103,8 +103,8 @@ export const AllTargetsUnifiedLogsTable: React.FC<AllTargetsUnifiedLogsTableProp
       setUnifiedLogsForTargets(
         dirs.map((dir) => ({
           jvmId: dir.jvmId,
-          archiveCount: dir.logs.length,
-          logs: dir.logs,
+          archiveCount: dir.unifiedLogs.length,
+          logs: dir.unifiedLogs,
         })),
       );
     },
@@ -171,7 +171,7 @@ export const AllTargetsUnifiedLogsTable: React.FC<AllTargetsUnifiedLogsTableProp
               if (log.logId === updatedLogInfo.unifiedLog.logId) {
                 return {
                   ...log,
-                  metadata: { ...(log.metadata ?? {}), labels: updatedLogInfo?.unifiedLog?.metadata?.labels ?? [] },
+                  metadata: { ...log.metadata, labels: updatedLogInfo?.unifiedLog?.metadata?.labels ?? [] },
                 };
               }
               return log;

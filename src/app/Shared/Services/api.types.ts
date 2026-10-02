@@ -549,19 +549,11 @@ export interface UnifiedLoggingStatus {
   decorators?: string;
 }
 
-export interface UnifiedLog {
-  logId: string;
-  jvmId: string;
-  size: number;
-  lastModified?: number;
-  downloadUrl?: string;
-  metadata?: Metadata;
-}
+// `downloadUrl` and `logId` are null for a live logging session with no archived artifact yet;
+// they are only populated when listing or pulling archived logs.
+export type UnifiedLog = components['schemas']['UnifiedLog'];
 
-export interface UnifiedLogDirectory {
-  jvmId: string;
-  logs: UnifiedLog[];
-}
+export type UnifiedLogDirectory = components['schemas']['ArchivedUnifiedLogDirectory'];
 
 // ======================================
 // Notification resources
