@@ -17,7 +17,7 @@ import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { modalPrefillClearIntent, RootState } from '@app/Shared/Redux/ReduxStore';
 import {
   AnalysisFinding,
-  DeadlockInfo,
+  DeadlockedThread,
   LockInfo,
   NotificationCategory,
   NullableTarget,
@@ -114,7 +114,7 @@ interface ThreadRowData {
 }
 
 interface DeadlockRowData {
-  deadlockInfo: DeadlockInfo;
+  deadlockInfo: DeadlockedThread;
   isExpanded: boolean;
   cellContents: React.ReactNode[];
   children?: React.ReactNode;
@@ -335,9 +335,9 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
   );
 
   const onDeadlockRowToggle = React.useCallback(
-    (d: DeadlockInfo) => {
+    (d: DeadlockedThread) => {
       setOpenDeadlockRows((old) => {
-        const typeId = hashCode(d.threadName);
+        const typeId = hashCode(d.threadName ?? '');
         if (old.some((id) => id === typeId)) {
           return old.filter((id) => id !== typeId);
         }
@@ -425,7 +425,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
   }, []);
 
   const threadSubTable = React.useCallback(
-    (t: ThreadInfo | DeadlockInfo) => {
+    (t: ThreadInfo | DeadlockedThread) => {
       var stackTraceExists = t.stackTrace && t.stackTrace.length;
       var locksExists = t.locks && t.locks.length;
       return (
@@ -440,20 +440,21 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
 
   const displayedDeadlockRowData = React.useMemo(() => {
     const rows: DeadlockRowData[] = [];
+    const deadlockedThreads = (analysisResult?.deadlockInfos ?? []).flatMap((d) => d.threads ?? []);
     const sorted = sortResources(
       {
         index: sortBy.index ?? 1,
         direction: sortBy.direction ?? SortByDirection.asc,
       },
-      analysisResult?.deadlockInfos ? analysisResult.deadlockInfos : [],
+      deadlockedThreads,
       threadColumns,
     );
     if (analysisResult) {
-      sorted.forEach((d: DeadlockInfo) => {
+      sorted.forEach((d: DeadlockedThread) => {
         rows.push({
           deadlockInfo: d,
           cellContents: [d.threadName, d.waitingForMonitor, d.waitingForObject, d.waitingForObjectType, d.heldBy],
-          isExpanded: openDeadlockRows.some((id) => id === hashCode(d.threadName)),
+          isExpanded: openDeadlockRows.some((id) => id === hashCode(d.threadName ?? '')),
           children: threadSubTable(d),
         });
       });
@@ -808,21 +809,21 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
                 JNI Information
                 <Content component={ContentVariants.dl}>
                   {' '}
-                  Global References: {analysisResult.jniInfo.globalRefs ? analysisResult.jniInfo.globalRefs : 'N/A'}
+                  Global References: {analysisResult.jniInfo?.globalRefs ? analysisResult.jniInfo.globalRefs : 'N/A'}
                 </Content>
                 <Content component={ContentVariants.dl}>
                   {' '}
                   Global References Memory:{' '}
-                  {analysisResult.jniInfo.globalRefsMemory ? analysisResult.jniInfo.globalRefsMemory : 'N/A'}
+                  {analysisResult.jniInfo?.globalRefsMemory ? analysisResult.jniInfo.globalRefsMemory : 'N/A'}
                 </Content>
                 <Content component={ContentVariants.dl}>
                   {' '}
-                  Weak References: {analysisResult.jniInfo.weakRefs ? analysisResult.jniInfo.weakRefs : 'N/A'}
+                  Weak References: {analysisResult.jniInfo?.weakRefs ? analysisResult.jniInfo.weakRefs : 'N/A'}
                 </Content>
                 <Content component={ContentVariants.dl}>
                   {' '}
                   Weak References Memory:{' '}
-                  {analysisResult.jniInfo.weakRefsMemory ? analysisResult.jniInfo.weakRefsMemory : 'N/A'}
+                  {analysisResult.jniInfo?.weakRefsMemory ? analysisResult.jniInfo.weakRefsMemory : 'N/A'}
                 </Content>
               </Content>
             </CardBody>
