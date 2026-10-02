@@ -18,6 +18,7 @@ import { HeapDumpAnalysisResult } from '@app/Diagnostics/Analysis/HeapDumps/type
 import { AlertVariant } from '@patternfly/react-core';
 import _ from 'lodash';
 import { Observable } from 'rxjs';
+import { components } from 'src/schema/openapi.types';
 
 export type ApiVersion = 'unversioned' | 'v4' | 'v4.1' | 'beta';
 
@@ -25,11 +26,7 @@ export type ApiVersion = 'unversioned' | 'v4' | 'v4.1' | 'beta';
 // Common Resources
 // ======================================
 
-export interface BuildInfo {
-  git: {
-    hash: string;
-  };
-}
+export type BuildInfo = components['schemas']['BuildInfo'];
 
 export interface KeyValue {
   key: string;
