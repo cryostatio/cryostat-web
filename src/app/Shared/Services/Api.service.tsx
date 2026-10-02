@@ -60,7 +60,8 @@ import {
   XMLHttpRequestConfig,
   XMLHttpResponse,
   KeyValue,
-  TargetStub,
+  TargetReference,
+  TargetCreateRequest,
   TargetForTest,
   Metadata,
   TargetMetadata,
@@ -200,7 +201,7 @@ export class ApiService {
   }
 
   createTarget(
-    target: TargetStub,
+    target: TargetCreateRequest,
     credentials?: { username?: string; password?: string },
     storeCredentials = false,
     dryrun = false,
@@ -231,7 +232,7 @@ export class ApiService {
     );
   }
 
-  deleteTarget(target: TargetStub): Observable<boolean> {
+  deleteTarget(target: TargetReference): Observable<boolean> {
     return this.sendRequest('v4', `targets/${target.id}`, {
       method: 'DELETE',
     }).pipe(
@@ -242,21 +243,21 @@ export class ApiService {
   }
 
   getTargetTriggers(
-    target: TargetStub,
+    target: TargetReference,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<SmartTrigger[]> {
     return this.doGet(`targets/${target.id}/smart_triggers`, 'beta', undefined, suppressNotifications, skipStatusCheck);
   }
 
-  deleteTrigger(uuid: string, target: TargetStub): Observable<boolean> {
+  deleteTrigger(uuid: string, target: TargetReference): Observable<boolean> {
     return this.sendRequest('beta', `targets/${target.id}/smart_triggers/${uuid}`, { method: 'DELETE' }).pipe(
       map((resp) => resp.ok),
       first(),
     );
   }
 
-  addTriggers(definition: SmartTriggerRequest, target: TargetStub): Observable<boolean> {
+  addTriggers(definition: SmartTriggerRequest, target: TargetReference): Observable<boolean> {
     const body = new window.FormData();
     body.append('definition', JSON.stringify([definition]));
     return this.sendRequest('beta', `targets/${target.id}/smart_triggers/`, { method: 'POST', body }).pipe(
@@ -981,7 +982,7 @@ export class ApiService {
   }
 
   getActiveProbesForTarget(
-    target: TargetStub,
+    target: TargetReference,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<EventProbe[]> {
@@ -1086,7 +1087,7 @@ export class ApiService {
   }
 
   getCurrentReportForTarget(
-    target: TargetStub | TargetStub[],
+    target: TargetReference | TargetReference[],
     aggregateOnly = false,
     reportFilter = {},
   ): Observable<AggregateReport> {
@@ -1235,22 +1236,24 @@ export class ApiService {
 
   downloadTemplate(template: EventTemplate): void {
     let url: Observable<string> | undefined;
-    switch (template.type) {
+    const type = template.type;
+    const name = template.name!;
+    switch (type) {
       case 'TARGET':
         url = this.target.target().pipe(
           filter((t) => !!t),
           first(),
           map(
             (target) =>
-              `/api/v4/targets/${target!.id}/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
+              `/api/v4/targets/${target!.id}/event_templates/${encodeURIComponent(type)}/${encodeURIComponent(name)}`,
           ),
           concatMap((resourceUrl) => this.ctx.url(resourceUrl)),
         );
         break;
       default:
-        url = of(
-          `/api/v4/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
-        ).pipe(concatMap((u) => this.ctx.url(u)));
+        url = of(`/api/v4/event_templates/${encodeURIComponent(type!)}/${encodeURIComponent(name)}`).pipe(
+          concatMap((u) => this.ctx.url(u)),
+        );
         break;
     }
     if (!url) {
@@ -1782,7 +1785,7 @@ export class ApiService {
     );
   }
 
-  targetRecordingRemoteIdByOrigin(target: TargetStub, origin: string): Observable<number | undefined> {
+  targetRecordingRemoteIdByOrigin(target: TargetReference, origin: string): Observable<number | undefined> {
     return this.graphql<any>(
       `
         query ActiveRecordingIdForRecordingByOriginLabel($id: BigInteger!) {
@@ -1815,7 +1818,7 @@ export class ApiService {
     );
   }
 
-  targetHasJFRMetricsRecording(target: TargetStub, filter: ActiveRecordingsFilterInput = {}): Observable<boolean> {
+  targetHasJFRMetricsRecording(target: TargetReference, filter: ActiveRecordingsFilterInput = {}): Observable<boolean> {
     return this.graphql<RecordingCountResponse>(
       `
         query ActiveRecordingsForJFRMetrics($id: BigInteger!, $recordingFilter: ActiveRecordingsFilterInput) {
@@ -1849,7 +1852,7 @@ export class ApiService {
   }
 
   checkCredentialForTarget(
-    target: TargetStub,
+    target: TargetReference,
     credentials: { username: string; password: string },
   ): Observable<
     | {
@@ -1902,7 +1905,7 @@ export class ApiService {
     );
   }
 
-  getTargetMBeanMetrics(target: TargetStub, queries: string[]): Observable<MBeanMetrics> {
+  getTargetMBeanMetrics(target: TargetReference, queries: string[]): Observable<MBeanMetrics> {
     return this.graphql<MBeanMetricsResponse>(
       `
         query MBeanMXMetricsForTarget($id: BigInteger!) {
@@ -1927,7 +1930,7 @@ export class ApiService {
     );
   }
 
-  getTargetArchivedRecordings(target: TargetStub): Observable<ArchivedRecording[]> {
+  getTargetArchivedRecordings(target: TargetReference): Observable<ArchivedRecording[]> {
     return this.graphql<any>(
       `
         query ArchivedRecordingsForTarget($id: BigInteger!) {
@@ -1957,7 +1960,7 @@ export class ApiService {
     ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []));
   }
 
-  getTargetThreadDumps(target: TargetStub): Observable<ThreadDump[]> {
+  getTargetThreadDumps(target: TargetReference): Observable<ThreadDump[]> {
     return this.graphql<any>(
       `
         query ThreadDumpsForTarget($id: BigInteger!) {
@@ -1990,7 +1993,7 @@ export class ApiService {
     ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.threadDumps?.data as ThreadDump[]) ?? []));
   }
 
-  getTargetHeapDumps(target: TargetStub): Observable<HeapDump[]> {
+  getTargetHeapDumps(target: TargetReference): Observable<HeapDump[]> {
     return this.graphql<any>(
       `
         query HeapDumpsForTarget($id: BigInteger!) {
@@ -2024,7 +2027,7 @@ export class ApiService {
   }
 
   getTargetActiveRecordings(
-    target: TargetStub,
+    target: TargetReference,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<ActiveRecording[]> {
@@ -2061,7 +2064,7 @@ export class ApiService {
   }
 
   getTargetEventTemplates(
-    target: TargetStub,
+    target: TargetReference,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<EventTemplate[]> {
@@ -2075,7 +2078,7 @@ export class ApiService {
   }
 
   getTargetEventTypes(
-    target: TargetStub,
+    target: TargetReference,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<EventType[]> {
