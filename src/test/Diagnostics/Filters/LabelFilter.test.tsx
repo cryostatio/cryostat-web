@@ -35,6 +35,7 @@ const mockHeapDumpLabelList = ['someLabel=someValue', 'anotherLabel=anotherValue
 
 const mockHeapDump: HeapDump = {
   heapDumpId: 'someHeapDump',
+  jvmId: 'someJvmId',
   downloadUrl: 'http://downloadUrl',
   metadata: { labels: mockHeapDumpLabels },
   lastModified: 1234567890,
