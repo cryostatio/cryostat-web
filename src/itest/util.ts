@@ -68,6 +68,11 @@ export class Cryostat {
     return Cryostat.instance;
   }
 
+  /** Clears the singleton so the next {@link getInstance} call creates a fresh instance. */
+  public static resetInstance(): void {
+    Cryostat.instance = undefined as unknown as Cryostat;
+  }
+
   async navigateToDashboard(): Promise<Dashboard> {
     await this.driver.get('http://localhost:9091');
     return new Dashboard(this.driver);
@@ -365,4 +370,34 @@ export enum CardType {
   AUTOMATED_ANALYSIS,
   JFR_METRICS_CHART,
   MBEAN_METRICS_CHART,
+}
+
+/**
+ * Installs a window-level error collector on the current page.  Call this after
+ * each navigation (before the page content has had a chance to throw) so that
+ * any uncaught errors and unhandled promise rejections are captured.  The
+ * collected messages are stored on `window.__itestErrors` and can later be
+ * read with {@link getCollectedBrowserErrors}.
+ */
+export async function installBrowserErrorCollector(driver: WebDriver): Promise<void> {
+  await driver.executeScript(`
+    if (!window.__itestErrors) {
+      window.__itestErrors = [];
+      window.addEventListener('error', function(e) {
+        window.__itestErrors.push('error: ' + (e.message || String(e)));
+      });
+      window.addEventListener('unhandledrejection', function(e) {
+        window.__itestErrors.push('unhandledrejection: ' + (e.reason ? (e.reason.message || String(e.reason)) : 'unknown'));
+      });
+    }
+  `);
+}
+
+/**
+ * Returns the list of uncaught errors collected since the last call to
+ * {@link installBrowserErrorCollector} on this page.
+ */
+export async function getCollectedBrowserErrors(driver: WebDriver): Promise<string[]> {
+  const errors = await driver.executeScript<string[]>(`return window.__itestErrors || [];`);
+  return errors;
 }
