@@ -735,10 +735,10 @@ const UnifiedLogRow: React.FC<UnifiedLogRowProps> = ({
               updateFilters: updateFilters,
               labelFilters: labelFilters,
             }}
-            labels={log.metadata?.labels ?? []}
+            labels={log.metadata.labels}
           />
         </Td>
-        <Td dataLabel={tableColumns[3].title}>{formatBytes(log.size ?? 0)}</Td>
+        <Td dataLabel={tableColumns[3].title}>{formatBytes(log.size)}</Td>
         <Td isActionCell>
           <Dropdown
             toggle={toggle}
