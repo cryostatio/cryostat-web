@@ -33,7 +33,7 @@ const getRecordingTiming = (r: ArchivedRecording): { startMs: number; endMs: num
   if (!r.archivedTime) return null;
 
   const labels: Record<string, string> = {};
-  (r.metadata?.labels ?? []).forEach(({ key, value }) => {
+  r.metadata.labels.forEach(({ key, value }) => {
     labels[key] = value;
   });
 
