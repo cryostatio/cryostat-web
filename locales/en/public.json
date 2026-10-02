@@ -942,6 +942,8 @@
     "SEARCH_PLACEHOLDER": "Find by Match Expression..."
   },
   "SynthesisForm": {
+    "AUTOANALYZE_LABEL": "Automatically analyze",
+    "AUTOANALYZE_ARIA_LABEL": "Toggle automatic analysis of synthesized recording",
     "CANDIDATES_LABEL": "Candidates: {{count}}",
     "COVERAGE_ARIA_LABEL": "Coverage of requested time window by recordings",
     "COVERAGE_TITLE": "Time window coverage",
