@@ -5683,7 +5683,7 @@ __metadata:
     regenerator-runtime: "npm:0.14.1"
     rimraf: "npm:6.1.3"
     rxjs: "npm:7.8.2"
-    selenium-webdriver: "npm:4.49.0"
+    selenium-webdriver: "npm:4.50.0"
     semver: "npm:7.8.5"
     showdown: "npm:2.1.0"
     style-loader: "npm:4.0.0"
@@ -11105,15 +11105,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jszip@npm:^3.10.1":
-  version: 3.10.1
-  resolution: "jszip@npm:3.10.1"
+"jszip@npm:^3.10.2":
+  version: 3.10.2
+  resolution: "jszip@npm:3.10.2"
   dependencies:
     lie: "npm:~3.3.0"
     pako: "npm:~1.0.2"
     readable-stream: "npm:~2.3.6"
     setimmediate: "npm:^1.0.5"
-  checksum: 10/bfbfbb9b0a27121330ac46ab9cdb3b4812433faa9ba4a54742c87ca441e31a6194ff70ae12acefa5fe25406c432290e68003900541d948a169b23d30c34dd984
+  checksum: 10/86666f57397df56a29968e5cbf25a6b50a4812ab7258e1165ae907e6d3b442e84290cd5eefa9cdd4298653009ebe4599dae17f3de30050e4bf4a5e54462fdfd6
   languageName: node
   linkType: hard
 
@@ -14258,15 +14258,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"selenium-webdriver@npm:4.49.0":
-  version: 4.49.0
-  resolution: "selenium-webdriver@npm:4.49.0"
+"selenium-webdriver@npm:4.50.0":
+  version: 4.50.0
+  resolution: "selenium-webdriver@npm:4.50.0"
   dependencies:
     "@bazel/runfiles": "npm:^6.5.0"
-    jszip: "npm:^3.10.1"
+    jszip: "npm:^3.10.2"
     tmp: "npm:^0.2.7"
-    ws: "npm:^8.21.3"
-  checksum: 10/59bab5563c7ed7c3bd3b8f3e634f58e0351231f097fced6394d1571a897afed506e09e6d1f90f37a32b2a2211b109f923e8b1a89ae8d7f174d056af443b9f6f2
+    ws: "npm:^8.22.0"
+  checksum: 10/55369703281dde7b1f855b231338081b9d7dae29017d8214059925245344a660c9e25630779334c80794d214a4f32c9f862cf58ddf67cc3a5f0889581d60104b
   languageName: node
   linkType: hard
 
@@ -17198,9 +17198,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.21.3":
-  version: 8.21.3
-  resolution: "ws@npm:8.21.3"
+"ws@npm:^8.22.0":
+  version: 8.22.0
+  resolution: "ws@npm:8.22.0"
   peerDependencies:
     bufferutil: ^4.0.1
     utf-8-validate: ">=5.0.2"
@@ -17209,7 +17209,7 @@ __metadata:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: 10/8856922c26fd2d106931c16310d9a0bc2d6d37ed8771352bfa0d2a36df0ab5cb1f6528c6db8213f3333cf4ce93925e56f13604df0454cb0d4289fef922bebcdd
+  checksum: 10/ed771c2766bdb5724a66872f60ffc1a39f06e1a5bc8849f453c273e97c91a40ed5a224f06dc0e22f44b4a9e03938bf746fc5938d6887433cc0f4c416237d3b10
   languageName: node
   linkType: hard
 
