@@ -23,7 +23,7 @@ import {
   Evaluation as GqlEvaluation,
   Suggestion as GqlSuggestion,
 } from 'src/schema/graphql.types';
-import { components } from 'src/schema/openapi.types';
+import { components, paths } from 'src/schema/openapi.types';
 
 export type ApiVersion = 'unversioned' | 'v4' | 'v4.1' | 'beta';
 
@@ -215,35 +215,38 @@ export interface HeapDumpsResponse {
 // ======================================
 export type RecordingDirectory = components['schemas']['ArchivedRecordingDirectory'];
 
-export enum RecordingState {
-  STOPPED = 'STOPPED',
-  STARTING = 'STARTING',
-  RUNNING = 'RUNNING',
-  STOPPING = 'STOPPING',
-}
+export type RecordingState = components['schemas']['RecordingState'];
 
-export interface AdvancedRecordingOptions {
-  toDisk?: boolean;
-  maxSize?: number;
-  maxAge?: number;
-}
+// A Record (rather than a bare array) so that adding, removing, or renaming a state in the schema
+// causes a compile error here via excess/missing-property checking, instead of silently drifting.
+const RECORDING_STATE_MEMBERS: Record<RecordingState, true> = {
+  NEW: true,
+  DELAYED: true,
+  RUNNING: true,
+  STOPPED: true,
+  CLOSED: true,
+};
+export const RECORDING_STATES = Object.keys(RECORDING_STATE_MEMBERS) as RecordingState[];
+
+// The recording-creation request body, as declared inline on the POST
+// /api/v4/targets/{targetId}/recordings path (not under components['schemas'], so it's referenced
+// via `paths` instead).
+type RecordingCreateForm =
+  paths['/api/v4/targets/{targetId}/recordings']['post']['requestBody']['content']['application/x-www-form-urlencoded'];
+
+export type AdvancedRecordingOptions = Pick<RecordingCreateForm, 'toDisk' | 'maxSize' | 'maxAge'>;
 
 export interface RecordingAttributes {
   name: string;
-  events: string;
-  duration?: number;
-  archiveOnStop?: boolean;
+  events: NonNullable<RecordingCreateForm['events']>;
+  duration?: RecordingCreateForm['duration'];
+  archiveOnStop?: RecordingCreateForm['archiveOnStop'];
   replace?: RecordingReplace;
   advancedOptions?: AdvancedRecordingOptions;
   metadata?: Metadata;
 }
 
-export interface Recording {
-  name: string;
-  downloadUrl: string;
-  reportUrl: string;
-  metadata: Metadata;
-}
+export type Recording = Pick<ActiveRecording, 'name' | 'downloadUrl' | 'reportUrl' | 'metadata'>;
 
 export type ThreadDumpDirectory = components['schemas']['ArchivedThreadDumpDirectory'];
 
@@ -267,18 +270,7 @@ export type ThreadDumpAnalysisResult = components['schemas']['ThreadDumpAnalysis
 
 export type ArchivedRecording = components['schemas']['ArchivedRecording'];
 
-export interface ActiveRecording extends Recording {
-  id: number;
-  state: RecordingState;
-  duration: number; // In miliseconds
-  startTime: number;
-  archiveOnStop: boolean;
-  continuous: boolean;
-  toDisk: boolean;
-  maxSize: number;
-  maxAge: number;
-  remoteId: number;
-}
+export type ActiveRecording = components['schemas']['LinkedRecordingDescriptor'];
 
 export type HeapDumpDirectory = components['schemas']['ArchivedHeapDumpDirectory'];
 

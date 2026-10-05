@@ -15,7 +15,7 @@
  */
 
 import { getPaletteColours, Palette } from '@app/Settings/types';
-import { TargetNode, ActiveRecording, RecordingState, AggregateReport } from '@app/Shared/Services/api.types';
+import { TargetNode, ActiveRecording, AggregateReport } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -141,10 +141,7 @@ export const ActiveRecordingDecorator: React.FC<DecoratorProps> = ({ element, qu
     addSubscription(context.settings.palette().subscribe(setPalette));
   }, [addSubscription, context.settings, setPalette]);
 
-  const runningRecs = React.useMemo(
-    () => recordings.filter((rec) => rec.state === RecordingState.RUNNING),
-    [recordings],
-  );
+  const runningRecs = React.useMemo(() => recordings.filter((rec) => rec.state === 'RUNNING'), [recordings]);
 
   const iconConfig = React.useMemo(() => {
     if (loading) {

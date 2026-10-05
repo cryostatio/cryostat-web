@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import assert from 'assert';
-import { RecordingState } from '@app/Shared/Services/api.types';
 import { WebDriver } from 'selenium-webdriver';
 import { Cryostat, Recordings, setupDriver, sleep } from './util';
 
@@ -49,8 +48,8 @@ describe('Recording workflow steps', function () {
     const active = await recordings.getRecordings();
     assert.equal(active.length, 1);
 
-    const state = await recordings.getRecordingState(active[0], RecordingState.RUNNING);
-    assert.equal(state, RecordingState.RUNNING);
+    const state = await recordings.getRecordingState(active[0], 'RUNNING');
+    assert.equal(state, 'RUNNING');
   });
 
   it('stops a Recording', async function () {
@@ -59,8 +58,8 @@ describe('Recording workflow steps', function () {
 
     await recordings.stopRecording(active[0]);
 
-    const state = await recordings.getRecordingState(active[0], RecordingState.STOPPED);
-    assert.equal(state, RecordingState.STOPPED);
+    const state = await recordings.getRecordingState(active[0], 'STOPPED');
+    assert.equal(state, 'STOPPED');
   });
 
   it('archives a new Recording', async function () {
