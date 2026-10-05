@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export enum Resource {
-  TARGET = 'target',
-  RECORDING = 'recording',
-  ARCHIVE = 'archive',
-  RULE = 'rule',
-  CREDENTIAL = 'credential',
-  SMART_TRIGGER = 'smart-trigger',
+
+import { fromOpenApi } from '@msw/source/open-api';
+import openApiSpec from '../../../.schemas/openapi.json';
+import { graphqlHandlers } from './graphql';
+import { restHandlers, wsHandlers } from './rest';
+
+export async function createHandlers() {
+  const openApiHandlers = await fromOpenApi(openApiSpec as any);
+  // Stateful custom handlers backed by @mswjs/data take precedence,
+  // falling back to schema-generated @msw/source handlers for un-overridden endpoints
+  return [...restHandlers, ...graphqlHandlers, ...wsHandlers, ...openApiHandlers];
 }

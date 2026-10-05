@@ -34,282 +34,106 @@ import QuickStarts from './QuickStarts/QuickStartsCatalogPage';
 import { RecordingAnalytics } from './RecordingAnalytics/RecordingAnalytics';
 import Recordings from './Recordings/Recordings';
 import Reports from './Reports/Reports';
+import {
+  IRouteMeta,
+  navGroups,
+  overviewRouteDefs,
+  flightRecorderRouteDefs,
+  diagnosticsRouteDefs,
+  securityRouteDefs,
+  consoleRouteDefs,
+  nonNavRouteDefs,
+} from './routeDefs';
 import RulesTable from './Rules/Rules';
 import AuditLog from './Security/AuditLog';
 import { Certificates } from './Security/Certificates';
 import { StoredCredentialsView } from './Security/Credentials/StoredCredentials';
 import Settings from './Settings/Settings';
 import { DefaultFallBack, ErrorBoundary } from './Shared/Components/ErrorBoundary';
-import { FeatureLevel } from './Shared/Services/service.types';
 import Topology from './Topology/Topology';
 import CaptureSmartTriggers from './Triggers/CaptureSmartTriggers';
 import UnifiedLogs from './UnifiedLogs/UnifiedLogs';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
-import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
+import { accessibleRouteChangeHandler, BASEPATH } from './utils/utils';
 
 let routeFocusTimer: number;
-const OVERVIEW = 'Routes.NavGroups.OVERVIEW';
-const FLIGHT_RECORDER = 'Routes.NavGroups.FLIGHT_RECORDER';
-const DIAGNOSTICS = 'Routes.NavGroups.DIAGNOSTICS';
-const SECURITY = 'Routes.NavGroups.SECURITY';
-const CONSOLE = 'Routes.NavGroups.CONSOLE';
-const navGroups = [OVERVIEW, FLIGHT_RECORDER, DIAGNOSTICS, SECURITY, CONSOLE];
 
-const ANALYZE = 'Routes.ANALYZE';
-const CAPTURE = 'Routes.CAPTURE';
-// const navSubgroups = [ANALYZE, CAPTURE];
-
-export interface IAppRoute {
-  label?: string;
+export interface IAppRoute extends IRouteMeta {
   component: React.ComponentType;
-  path: string;
-  title: string;
-  description?: string; // non-empty description is used to filter routes for the NotFound page
-  navGroup?: string;
-  navSubgroup?: string;
-  featureLevel?: FeatureLevel;
   children?: IAppRoute[];
 }
 
-const overviewRoutes: IAppRoute[] = [
-  {
-    component: Dashboard,
-    label: 'Dashboard',
-    path: toPath('/'),
-    title: 'Dashboard',
-    navGroup: OVERVIEW,
-    children: [
-      {
-        component: DashboardSolo,
+/**
+ * Merges a component map keyed by path into a metadata tree, producing a full
+ * IAppRoute tree.  Paths that do not have a matching component entry are
+ * silently omitted.
+ */
+const withComponents = (defs: IRouteMeta[], components: Record<string, React.ComponentType>): IAppRoute[] => {
+  const result: IAppRoute[] = [];
+  for (const def of defs) {
+    const component = components[def.path];
+    if (!component) continue;
 
-        path: toPath('/d-solo'),
-        title: 'Dashboard',
-      },
-    ],
-  },
-  {
-    component: Topology,
-    label: 'Topology',
-    path: toPath('/topology'),
-    title: 'Topology',
-    navGroup: OVERVIEW,
-  },
-];
+    const { children: _children, ...rest } = def;
+    const route: IAppRoute = { ...rest, component };
+    if (def.children) {
+      route.children = withComponents(def.children, components);
+    }
+    result.push(route);
+  }
+  return result;
+};
 
-const flightRecorderRoutes: IAppRoute[] = [
-  {
-    component: Recordings,
-    label: 'Recordings',
-    path: toPath('/recordings'),
-    title: 'Recordings',
-    description: 'Create, view and archive JFR Recordings on single target JVMs.',
-    navGroup: FLIGHT_RECORDER,
-    navSubgroup: CAPTURE,
-  },
-  {
-    component: Events,
-    label: 'Events',
-    path: toPath('/events'),
-    title: 'Events',
-    description: 'View available JFR Event Templates and types for target JVMs, as well as upload custom templates.',
-    navGroup: FLIGHT_RECORDER,
-    navSubgroup: CAPTURE,
-  },
-  {
-    component: RulesTable,
-    label: 'Automated Rules',
-    path: toPath('/rules'),
-    title: 'Automated Rules',
-    description:
-      'Create Recordings on multiple target JVMs at once using Automated Rules consisting of a name, Match Expression, template, archival period, and more.',
-    navGroup: FLIGHT_RECORDER,
-    navSubgroup: CAPTURE,
-  },
-  {
-    component: CaptureSmartTriggers,
-    label: 'Triggers',
-    path: toPath('/triggers'),
-    title: 'Triggers',
-    description: 'Create Smart Triggers on targets that start recordings when specified MBean conditions are met',
-    navGroup: FLIGHT_RECORDER,
-    navSubgroup: CAPTURE,
-  },
-  {
-    component: Instrumentation,
-    label: 'Instrumentation',
-    path: toPath('/instrumentation'),
-    title: 'Instrumentation',
-    description: 'Instrument Targets to dynamically insert JFR event emission.',
-    navGroup: FLIGHT_RECORDER,
-    navSubgroup: CAPTURE,
-  },
-  {
-    component: AsyncProfiler,
-    label: 'async-profiler',
-    path: toPath('/async-profiler'),
-    title: 'async-profiler',
-    description: 'async-profiler',
-    navGroup: FLIGHT_RECORDER,
-    navSubgroup: CAPTURE,
-    featureLevel: FeatureLevel.BETA,
-    children: [
-      {
-        component: CreateAsyncProfilerSession,
-        path: toPath('/async-profiler/create'),
-        title: 'Create Async Profiler session',
-      },
-    ],
-  },
-  {
-    component: Archives,
-    label: 'Archives',
-    path: toPath('/archives'),
-    title: 'Archives',
-    description:
-      'View Archived Recordings across all target JVMs, as well as upload Recordings directly to the archive.',
-    navGroup: FLIGHT_RECORDER,
-    navSubgroup: ANALYZE,
-  },
-  {
-    component: Reports,
-    label: 'Automated Reports',
-    path: toPath('/reports'),
-    title: 'Automated Reports',
-    description: 'View Automated Analysis Reports across all target JVMs.',
-    navGroup: FLIGHT_RECORDER,
-    navSubgroup: ANALYZE,
-  },
-  {
-    component: RecordingAnalytics,
-    label: 'Analytics',
-    path: toPath('/recording-analytics'),
-    title: 'Analytics',
-    description: 'Perform advanced analytics queries on archived Flight Recordings.',
-    navGroup: FLIGHT_RECORDER,
-    navSubgroup: ANALYZE,
-  },
-];
+const overviewComponents: Record<string, React.ComponentType> = {
+  [overviewRouteDefs[0].path]: Dashboard,
+  [overviewRouteDefs[0].children![0].path]: DashboardSolo,
+  [overviewRouteDefs[1].path]: Topology,
+};
 
-const diagnosticsRoutes: IAppRoute[] = [
-  {
-    component: CaptureDiagnostics,
-    label: 'Capture',
-    path: toPath('/diagnostics'),
-    title: 'Capture',
-    description: 'Perform garbage collection and create thread dumps on single target JVMs.',
-    navGroup: DIAGNOSTICS,
-  },
-  {
-    component: AnalyzeThreadDumps,
-    label: 'Thread Dump Archives',
-    path: toPath('/thread-dumps'),
-    title: 'Thread Dump Archives',
-    description: 'View thread dumps on single target JVMs.',
-    navGroup: DIAGNOSTICS,
-    navSubgroup: ANALYZE,
-  },
-  {
-    component: ThreadDumpAnalysis,
-    label: 'Analyze Thread Dumps',
-    path: toPath('/analyze-thread-dumps'),
-    title: 'Analyze Thread Dumps',
-    description: 'Analyze Thread Dump Data',
-    navGroup: DIAGNOSTICS,
-    navSubgroup: ANALYZE,
-  },
-  {
-    component: AnalyzeHeapDumps,
-    label: 'Heap Dump Archives',
-    path: toPath('/heapdumps'),
-    title: 'Heap Dump Archives',
-    description: 'Create and view heap dumps on single target JVMs.',
-    navGroup: DIAGNOSTICS,
-    navSubgroup: ANALYZE,
-  },
-  {
-    component: HeapDumpAnalysis,
-    label: 'Analyze Heap Dumps',
-    path: toPath('/analyze-heap-dumps'),
-    title: 'Analyze Heap Dumps',
-    description: 'Analyze Heap Dump Data',
-    navGroup: DIAGNOSTICS,
-    navSubgroup: ANALYZE,
-  },
-  {
-    component: UnifiedLogs,
-    label: 'Unified Log Archives',
-    path: toPath('/unified-logs'),
-    title: 'Unified Log Archives',
-    description: 'Manage Unified Logging sessions and view collected log archives.',
-    navGroup: DIAGNOSTICS,
-    navSubgroup: ANALYZE,
-    featureLevel: FeatureLevel.BETA,
-  },
-];
+const flightRecorderComponents: Record<string, React.ComponentType> = {
+  [flightRecorderRouteDefs[0].path]: Recordings,
+  [flightRecorderRouteDefs[1].path]: Events,
+  [flightRecorderRouteDefs[2].path]: RulesTable,
+  [flightRecorderRouteDefs[3].path]: CaptureSmartTriggers,
+  [flightRecorderRouteDefs[4].path]: Instrumentation,
+  [flightRecorderRouteDefs[5].path]: AsyncProfiler,
+  [flightRecorderRouteDefs[5].children![0].path]: CreateAsyncProfilerSession,
+  [flightRecorderRouteDefs[6].path]: Archives,
+  [flightRecorderRouteDefs[7].path]: Reports,
+  [flightRecorderRouteDefs[8].path]: RecordingAnalytics,
+};
 
-const securityRoutes: IAppRoute[] = [
-  {
-    component: Certificates,
-    label: 'Certificates',
-    path: toPath('/certificates'),
-    title: 'Certificates',
-    description: 'View SSL/TLS certificates Cryostat trusts when communicating with target applications.',
-    navGroup: SECURITY,
-  },
-  {
-    component: StoredCredentialsView,
-    label: 'Credentials',
-    path: toPath('/credentials'),
-    title: 'Credentials',
-    description: 'Encrypted credentials keyring which Cryostat uses to authenticate to target applications.',
-    navGroup: SECURITY,
-  },
-  {
-    component: AuditLog,
-    label: 'Audit Log',
-    path: toPath('/audit-log'),
-    title: 'Audit Log',
-    description: 'View audit log of changes to Cryostat entities.',
-    navGroup: SECURITY,
-  },
-];
+const diagnosticsComponents: Record<string, React.ComponentType> = {
+  [diagnosticsRouteDefs[0].path]: CaptureDiagnostics,
+  [diagnosticsRouteDefs[1].path]: AnalyzeThreadDumps,
+  [diagnosticsRouteDefs[2].path]: ThreadDumpAnalysis,
+  [diagnosticsRouteDefs[3].path]: AnalyzeHeapDumps,
+  [diagnosticsRouteDefs[4].path]: HeapDumpAnalysis,
+  [diagnosticsRouteDefs[5].path]: UnifiedLogs,
+};
 
-const consoleRoutes: IAppRoute[] = [
-  {
-    component: About,
-    label: 'About',
-    path: toPath('/about'),
-    title: 'About',
-    description: 'Get information, help, or support for Cryostat.',
-    navGroup: CONSOLE,
-  },
-];
+const securityComponents: Record<string, React.ComponentType> = {
+  [securityRouteDefs[0].path]: Certificates,
+  [securityRouteDefs[1].path]: StoredCredentialsView,
+  [securityRouteDefs[2].path]: AuditLog,
+};
 
-const nonNavRoutes: IAppRoute[] = [
-  {
-    component: Settings,
-    path: toPath('/settings'),
-    title: 'Settings',
-    description: 'View or modify Cryostat web-client application settings.',
-  },
-  {
-    component: QuickStarts,
-    label: 'Quick starts',
-    path: toPath('/quickstarts'),
-    title: 'Quick starts',
-    description: 'Get started with Cryostat.',
-  },
-];
+const consoleComponents: Record<string, React.ComponentType> = {
+  [consoleRouteDefs[0].path]: About,
+};
 
-const routes: IAppRoute[] = [
-  ...overviewRoutes,
-  ...flightRecorderRoutes,
-  ...diagnosticsRoutes,
-  ...securityRoutes,
-  ...consoleRoutes,
-  ...nonNavRoutes,
-];
+const nonNavComponents: Record<string, React.ComponentType> = {
+  [nonNavRouteDefs[0].path]: Settings,
+  [nonNavRouteDefs[1].path]: QuickStarts,
+};
+
+const overviewRoutes: IAppRoute[] = withComponents(overviewRouteDefs, overviewComponents);
+const flightRecorderRoutes: IAppRoute[] = withComponents(flightRecorderRouteDefs, flightRecorderComponents);
+const diagnosticsRoutes: IAppRoute[] = withComponents(diagnosticsRouteDefs, diagnosticsComponents);
+const securityRoutes: IAppRoute[] = withComponents(securityRouteDefs, securityComponents);
+const consoleRoutes: IAppRoute[] = withComponents(consoleRouteDefs, consoleComponents);
+const nonNavRoutes: IAppRoute[] = withComponents(nonNavRouteDefs, nonNavComponents);
 
 const flatten = (routes: IAppRoute[]): IAppRoute[] => {
   const ret: IAppRoute[] = [];
@@ -324,6 +148,15 @@ const flatten = (routes: IAppRoute[]): IAppRoute[] => {
   }
   return ret;
 };
+
+const routes: IAppRoute[] = [
+  ...overviewRoutes,
+  ...flightRecorderRoutes,
+  ...diagnosticsRoutes,
+  ...securityRoutes,
+  ...consoleRoutes,
+  ...nonNavRoutes,
+];
 
 // a custom hook for sending focus to the primary content container
 // after a view has loaded so that subsequent press of tab key

@@ -13,20 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-declare module '*.png';
-declare module '*.jpg';
-declare module '*.jpeg';
-declare module '*.gif';
-declare module '*.svg';
-declare module '*.css';
-declare module '*.wav';
-declare module '*.mp3';
-declare module '*.m4a';
-declare module '*.rdf';
-declare module '*.ttl';
-declare module '*.pdf';
 
-declare module '@msw/source/open-api' {
-  import { HttpHandler } from 'msw';
-  export function fromOpenApi(document: any): Promise<Array<HttpHandler>>;
-}
+import type { CodegenConfig } from '@graphql-codegen/cli';
+
+const config: CodegenConfig = {
+  overwrite: true,
+  schema: [
+    `
+    scalar BigInteger
+    scalar Map
+    scalar Upload
+    `,
+    '.schemas/schema.graphql',
+  ],
+  generates: {
+    'src/schema/graphql.types.ts': {
+      plugins: ['typescript'],
+      config: {
+        scalars: {
+          BigInteger: 'number',
+          Map: 'Record<string, unknown>',
+        },
+      },
+    },
+  },
+};
+
+export default config;

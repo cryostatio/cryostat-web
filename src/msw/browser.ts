@@ -13,24 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { App } from '@app/index';
-import ReactDOM from 'react-dom';
 
-async function prepare() {
-  if (process.env.PREVIEW === 'true') {
-    const { startWorker } = await import('./msw/browser');
-    await startWorker();
+import { setupWorker, SetupWorker } from 'msw/browser';
+import { seedDatabase } from './db';
+import { createHandlers } from './handlers';
+
+let workerInstance: SetupWorker | null = null;
+
+export async function getWorker(): Promise<SetupWorker> {
+  if (!workerInstance) {
+    const handlers = await createHandlers();
+    workerInstance = setupWorker(...handlers);
   }
+  return workerInstance;
 }
 
-prepare()
-  .then(() => {
-    ReactDOM.render(<App />, document.getElementById('root') as HTMLElement);
-  })
-  .catch((err) => {
-    console.error('Failed to start preview mock worker:', err);
-    ReactDOM.render(
-      <div role="alert">Failed to start the application: {String(err)}</div>,
-      document.getElementById('root') as HTMLElement,
-    );
+export async function startWorker() {
+  seedDatabase();
+  const worker = await getWorker();
+  return worker.start({
+    onUnhandledRequest: 'bypass',
+    serviceWorker: {
+      url: '/mockServiceWorker.js',
+    },
   });
+}
