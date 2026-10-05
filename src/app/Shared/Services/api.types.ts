@@ -464,14 +464,20 @@ export enum NodeType {
   NODE = 'Node', // Default/fallback for unknown
 }
 
+// The schema's DiscoveryNode models a single flexible type (optional `children` and `target` on the
+// same object); the app instead encodes "environment node xor target node" as a discriminated
+// union. `children`/`target` are therefore hand-written below, but `name`/`labels` are picked from
+// the schema so they can't silently drift from the real wire shape.
+type DiscoveryNodeFields = Pick<components['schemas']['DiscoveryNode'], 'name' | 'labels'>;
+
 export interface LineageNode {
-  readonly name: string;
+  readonly name: DiscoveryNodeFields['name'];
   readonly nodeType: NodeType;
 }
 
 interface _AbstractNode extends LineageNode {
   readonly id: number;
-  readonly labels: KeyValue[];
+  readonly labels: DiscoveryNodeFields['labels'];
 }
 
 export interface EnvironmentNode extends _AbstractNode {
