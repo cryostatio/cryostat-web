@@ -49,7 +49,7 @@ describe('Recording workflow steps', function () {
     const active = await recordings.getRecordings();
     assert.equal(active.length, 1);
 
-    const state = await recordings.getRecordingState(active[0]);
+    const state = await recordings.getRecordingState(active[0], RecordingState.RUNNING);
     assert.equal(state, RecordingState.RUNNING);
   });
 
@@ -59,7 +59,7 @@ describe('Recording workflow steps', function () {
 
     await recordings.stopRecording(active[0]);
 
-    const state = await recordings.getRecordingState(active[0]);
+    const state = await recordings.getRecordingState(active[0], RecordingState.STOPPED);
     assert.equal(state, RecordingState.STOPPED);
   });
 

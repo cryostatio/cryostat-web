@@ -315,8 +315,19 @@ export class Recordings {
     return this.driver.findElements(By.xpath(`${tableXPath}//tbody`));
   }
 
-  async getRecordingState(recording: WebElement): Promise<string> {
-    return recording.findElement(By.xpath(`.//td[@data-label='State']`)).getText();
+  async getRecordingState(recording: WebElement, expectedState?: string, timeout = 10000): Promise<string> {
+    const readState = () => recording.findElement(By.xpath(`.//td[@data-label='State']`)).getText();
+
+    if (!expectedState) {
+      return readState();
+    }
+
+    let state = '';
+    await this.driver.wait(async () => {
+      state = await readState();
+      return state === expectedState;
+    }, timeout);
+    return state;
   }
 
   async stopRecording(recording: WebElement) {
