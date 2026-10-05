@@ -8,7 +8,7 @@ exports[`<RecordingAnalytics /> renders correctly 1`] = `
     </h1>
     <div
       class="pf-v6-c-card pf-m-full-height"
-      data-ouia-component-id="OUIA-Generated-Card-13"
+      data-ouia-component-id="OUIA-Generated-Card-:r1s:"
       data-ouia-component-type="PF6/Card"
       data-ouia-safe="true"
       id=""
@@ -18,10 +18,10 @@ exports[`<RecordingAnalytics /> renders correctly 1`] = `
       >
         <div
           class="pf-v6-c-toolbar"
-          data-ouia-component-id="OUIA-Generated-Toolbar-13"
+          data-ouia-component-id="OUIA-Generated-Toolbar-:r1u:"
           data-ouia-component-type="PF6/Toolbar"
           data-ouia-safe="true"
-          id="pf-random-id-12"
+          id="pf-random-id-:r1t:"
         >
           <div
             class="pf-v6-c-toolbar__content"
@@ -112,7 +112,7 @@ exports[`<RecordingAnalytics /> renders correctly 1`] = `
         </div>
         <div
           class="pf-v6-c-tabs pf-m-animate-current pf-m-initializing-accent"
-          data-ouia-component-id="OUIA-Generated-Tabs-13"
+          data-ouia-component-id="OUIA-Generated-Tabs-:r20:"
           data-ouia-component-type="PF6/Tabs"
           data-ouia-safe="true"
           id="recording-analytics"
