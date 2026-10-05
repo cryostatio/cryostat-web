@@ -706,7 +706,12 @@ export interface paths {
             /** Format: binary */
             heapDump?: string;
             jobId?: string;
-            labels?: components['schemas']['JsonObject'];
+            /**
+             * @description A JSON object of string key-value labels, sent as the raw text of
+             *     the form field.
+             * @example {"key":"value"}
+             */
+            labels?: string;
           };
         };
       };
@@ -767,11 +772,7 @@ export interface paths {
         };
         cookie?: never;
       };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['HttpServerResponse'];
-        };
-      };
+      requestBody?: never;
       responses: {
         /** @description OK */
         200: {
@@ -781,13 +782,6 @@ export interface paths {
           content: {
             'application/json': unknown;
           };
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
         };
         /** @description Not Authorized */
         401: {
@@ -976,11 +970,7 @@ export interface paths {
         };
         cookie?: never;
       };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['HttpServerResponse'];
-        };
-      };
+      requestBody?: never;
       responses: {
         /** @description OK */
         200: {
@@ -990,13 +980,6 @@ export interface paths {
           content: {
             'text/plain': string;
           };
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
         };
         /** @description Not Authorized */
         401: {
@@ -1128,11 +1111,7 @@ export interface paths {
         };
         cookie?: never;
       };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['HttpServerResponse'];
-        };
-      };
+      requestBody?: never;
       responses: {
         /** @description OK */
         200: {
@@ -1142,13 +1121,6 @@ export interface paths {
           content: {
             'text/plain': string;
           };
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
         };
         /** @description Not Authorized */
         401: {
@@ -2028,6 +2000,7 @@ export interface paths {
     post: {
       parameters: {
         query: {
+          autoanalyze?: boolean;
           fromTimestamp: number;
           tag?: string;
           toTimestamp: number;
@@ -2038,11 +2011,7 @@ export interface paths {
         };
         cookie?: never;
       };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['HttpServerResponse'];
-        };
-      };
+      requestBody?: never;
       responses: {
         /** @description OK */
         200: {
@@ -2052,13 +2021,6 @@ export interface paths {
           content: {
             'application/json': unknown;
           };
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
         };
         /** @description Not Authorized */
         401: {
@@ -2196,7 +2158,12 @@ export interface paths {
       requestBody: {
         content: {
           'application/x-www-form-urlencoded': {
-            labels?: components['schemas']['JsonObject'];
+            /**
+             * @description A JSON object of string key-value labels, sent as the raw text of
+             *     the form field.
+             * @example {"key":"value"}
+             */
+            labels?: string;
             /** Format: int32 */
             maxFiles?: number;
             /** Format: binary */
@@ -3003,7 +2970,7 @@ export interface paths {
           };
           content: {
             'application/json': {
-              [key: string]: components['schemas']['AnalysisResult1'];
+              [key: string]: components['schemas']['AnalysisResult'];
             };
           };
         };
@@ -3042,11 +3009,7 @@ export interface paths {
         };
         cookie?: never;
       };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['HttpServerResponse'];
-        };
-      };
+      requestBody?: never;
       responses: {
         /** @description OK */
         200: {
@@ -3056,13 +3019,6 @@ export interface paths {
           content: {
             'application/json': unknown;
           };
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
         };
         /** @description Not Authorized */
         401: {
@@ -3115,7 +3071,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          'application/json': components['schemas']['DiscoveryPublication'];
+          'application/json': components['schemas']['DiscoveryPublicationRequest'];
         };
       };
       responses: {
@@ -3180,7 +3136,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          'application/json': components['schemas']['AgentRegistration'];
+          'application/json': components['schemas']['AgentRegistrationRequest'];
         };
       };
       responses: {
@@ -3705,7 +3661,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          'application/json': components['schemas']['JsonObject'];
+          'application/json': components['schemas']['PluginRegistrationRequest'];
         };
       };
       responses: {
@@ -3816,7 +3772,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          'application/json': components['schemas']['DiscoveryNode'][];
+          'application/json': components['schemas']['DiscoveryNodeRequest'][];
         };
       };
       responses: {
@@ -4357,11 +4313,7 @@ export interface paths {
         };
         cookie?: never;
       };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['HttpServerResponse'];
-        };
-      };
+      requestBody?: never;
       responses: {
         /** @description OK */
         200: {
@@ -4371,13 +4323,6 @@ export interface paths {
           content: {
             'text/plain': string;
           };
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
         };
         /** @description Not Authorized */
         401: {
@@ -4938,7 +4883,12 @@ export interface paths {
       requestBody: {
         content: {
           'application/x-www-form-urlencoded': {
-            labels?: components['schemas']['JsonObject'];
+            /**
+             * @description A JSON object of string key-value labels, sent as the raw text of
+             *     the form field.
+             * @example {"key":"value"}
+             */
+            labels?: string;
             /** Format: binary */
             recording?: string;
           };
@@ -5066,11 +5016,7 @@ export interface paths {
         };
         cookie?: never;
       };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['HttpServerResponse'];
-        };
-      };
+      requestBody?: never;
       responses: {
         /** @description OK */
         200: {
@@ -5158,7 +5104,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          'application/json': components['schemas']['Rule'];
+          'application/json': components['schemas']['RuleRequest'];
           'application/x-www-form-urlencoded': {
             /** Format: int32 */
             archivalPeriodSeconds?: number;
@@ -5338,7 +5284,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          'application/json': components['schemas']['JsonObject'];
+          'application/json': components['schemas']['RuleUpdateRequest'];
         };
       };
       responses: {
@@ -6245,7 +6191,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          'application/json': components['schemas']['HttpServerResponse'];
+          'text/plain': string;
         };
       };
       responses: {
@@ -6300,11 +6246,7 @@ export interface paths {
         };
         cookie?: never;
       };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['HttpServerResponse'];
-        };
-      };
+      requestBody?: never;
       responses: {
         /** @description OK */
         200: {
@@ -6314,13 +6256,6 @@ export interface paths {
           content: {
             'text/plain': string;
           };
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
         };
         /** @description Not Authorized */
         401: {
@@ -6370,11 +6305,7 @@ export interface paths {
         };
         cookie?: never;
       };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['HttpServerResponse'];
-        };
-      };
+      requestBody?: never;
       responses: {
         /** @description OK */
         200: {
@@ -6605,47 +6536,41 @@ export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
     AgentCredentialRequest: {
-      matchExpression?: string;
-      password?: string;
-      username?: string;
+      matchExpression: string;
+      password: string;
+      username: string;
     };
-    AgentRegistration: {
-      callback?: string;
+    AgentRegistrationRequest: {
+      callback: string;
       context?: {
         [key: string]: string;
       };
-      credential?: components['schemas']['AgentCredentialRequest'];
+      credential: components['schemas']['AgentCredentialRequest'];
       fillStrategy?: components['schemas']['DiscoveryFillStrategy'];
-      nodes?: components['schemas']['DiscoveryNode'][];
-      realm?: string;
+      nodes?: components['schemas']['DiscoveryNodeRequest'][];
+      realm: string;
     };
     AggregateLockInfoResult: {
       /** Format: int64 */
-      count?: number;
-      data?: string;
+      count: number;
+      data: string;
     };
     AggregateMethodResult: {
       /** Format: int64 */
-      count?: number;
-      data?: string;
+      count: number;
+      data: string;
     };
     AggregateStackTraceResult: {
       /** Format: int64 */
-      count?: number;
-      data?: components['schemas']['StackFrame'][];
+      count: number;
+      data: components['schemas']['StackFrame'][];
     };
     AggregateThreadStateResult: {
       /** Format: int64 */
-      count?: number;
-      data?: Record<string, never>;
+      count: number;
+      data: components['schemas']['ThreadState'];
     };
     AnalysisResult: {
-      explanation?: string;
-      resultName?: string;
-      /** Format: int32 */
-      score?: number;
-    };
-    AnalysisResult1: {
       evaluation?: components['schemas']['Evaluation'];
       name?: string;
       /** Format: double */
@@ -6653,6 +6578,11 @@ export interface components {
       topic?: string;
     };
     Annotations: {
+      cryostat: components['schemas']['KeyValue'][];
+      platform: components['schemas']['KeyValue'][];
+    };
+    /** @description Annotations as accepted in request bodies */
+    AnnotationsRequest: {
       cryostat?: {
         [key: string]: string;
       };
@@ -6661,73 +6591,68 @@ export interface components {
       };
     };
     Annotations_Flat: {
-      cryostat?: {
-        [key: string]: string;
-      };
-      platform?: {
-        [key: string]: string;
-      };
+      cryostat: components['schemas']['KeyValue_Flat'][];
+      platform: components['schemas']['KeyValue_Flat'][];
     };
     ApplicationHealth: {
-      build?: components['schemas']['BuildInfo'];
-      cryostatVersion?: string;
-      dashboardAvailable?: boolean;
-      dashboardConfigured?: boolean;
-      datasourceAvailable?: boolean;
-      datasourceConfigured?: boolean;
-      reportsAvailable?: boolean;
-      reportsConfigured?: boolean;
+      build: components['schemas']['BuildInfo'];
+      cryostatVersion: string;
+      dashboardAvailable: boolean;
+      dashboardConfigured: boolean;
+      datasourceAvailable: boolean;
+      datasourceConfigured: boolean;
+      reportsAvailable: boolean;
+      reportsConfigured: boolean;
     };
     ArchivedHeapDumpDirectory: {
-      heapDumps?: components['schemas']['HeapDump'][];
-      jvmId?: string;
+      heapDumps: components['schemas']['HeapDump'][];
+      jvmId: string;
     };
     ArchivedRecording: {
       /** Format: int64 */
-      archivedTime?: number;
-      downloadUrl?: string;
-      jvmId?: string;
-      metadata?: components['schemas']['Metadata'];
-      name?: string;
-      reportUrl?: string;
+      archivedTime: number;
+      downloadUrl: string;
+      jvmId: string;
+      metadata: components['schemas']['Metadata'];
+      name: string;
+      reportUrl: string;
       /** Format: int64 */
-      size?: number;
+      size: number;
     };
     ArchivedRecordingDirectory: {
-      connectUrl?: string;
-      jvmId?: string;
-      recordings?: components['schemas']['ArchivedRecording'][];
+      connectUrl: string;
+      jvmId: string;
+      recordings: components['schemas']['ArchivedRecording'][];
     };
     ArchivedThreadDumpDirectory: {
-      jvmId?: string;
-      threadDumps?: components['schemas']['ThreadDump'][];
+      jvmId: string;
+      threadDumps: components['schemas']['ThreadDump'][];
     };
     ArchivedUnifiedLogDirectory: {
-      jvmId?: string;
-      unifiedLogs?: components['schemas']['UnifiedLog'][];
+      jvmId: string;
+      unifiedLogs: components['schemas']['UnifiedLog'][];
     };
     AsyncProfile: {
       /** Format: int64 */
-      duration?: number;
-      id?: string;
+      duration: number;
+      id: string;
       /** Format: int64 */
-      size?: number;
+      size: number;
       /** Format: int64 */
-      startTime?: number;
+      startTime: number;
     };
     AsyncProfilerStatus: {
-      availableEvents?: {
+      availableEvents: {
         [key: string]: string[];
       };
       currentProfile?: components['schemas']['StartProfileRequest'];
-      status?: components['schemas']['ProfilerStatus'];
+      status: components['schemas']['ProfilerStatus'];
     };
     AuthResponse: {
-      username?: string;
+      username: string;
     };
     BuildInfo: {
       git?: components['schemas']['GitInfo'];
-      gitinfo?: components['schemas']['GitInfo'];
     };
     /** @enum {string} */
     ContentType:
@@ -6752,17 +6677,17 @@ export interface components {
     };
     CredentialMatchResult: {
       /** Format: int64 */
-      id?: number;
-      matchExpression?: components['schemas']['MatchExpression'];
-      targets?: components['schemas']['Target'][];
+      id: number;
+      matchExpression: components['schemas']['MatchExpression'];
+      targets: components['schemas']['Target'][];
     };
     /** @enum {string} */
     CredentialTestResult: 'SUCCESS' | 'FAILURE' | 'NA';
     DashboardUrl: {
-      grafanaDashboardUrl?: string;
+      grafanaDashboardUrl: string;
     };
     DatasourceUrl: {
-      grafanaDatasourceUrl?: string;
+      grafanaDatasourceUrl: string;
     };
     /**
      * Format: date
@@ -6787,19 +6712,27 @@ export interface components {
       children?: components['schemas']['DiscoveryNode'][];
       /** Format: int64 */
       id?: number;
-      labels: {
-        [key: string]: string;
-      };
+      labels: components['schemas']['KeyValue'][];
       name: string;
       nodeType: string;
       target?: components['schemas']['Target'];
     };
-    DiscoveryNode_Flat: {
+    /** @description A discovery node as accepted in request bodies */
+    DiscoveryNodeRequest: {
+      children?: components['schemas']['DiscoveryNodeRequest'][];
       /** Format: int64 */
       id?: number;
       labels: {
         [key: string]: string;
       };
+      name: string;
+      nodeType: string;
+      target?: components['schemas']['TargetRequest'];
+    };
+    DiscoveryNode_Flat: {
+      /** Format: int64 */
+      id?: number;
+      labels: components['schemas']['KeyValue_Flat'][];
       name: string;
       nodeType: string;
       target?: components['schemas']['Target_Flat'];
@@ -6818,13 +6751,13 @@ export interface components {
       id: components['schemas']['UUID'];
       realm: components['schemas']['DiscoveryNode_Flat'];
     };
-    DiscoveryPublication: {
+    DiscoveryPublicationRequest: {
       context?: {
         [key: string]: string;
       } | null;
       /** @enum {string|null} */
       fillStrategy?: components['schemas']['DiscoveryFillStrategy'];
-      nodes?: components['schemas']['DiscoveryNode'][];
+      nodes?: components['schemas']['DiscoveryNodeRequest'][];
     };
     /**
      * Format: duration
@@ -6867,20 +6800,14 @@ export interface components {
       hash?: string;
     };
     HeapDump: {
-      downloadUrl?: string;
-      heapDumpId?: string;
-      jvmId?: string;
+      downloadUrl: string;
+      heapDumpId: string;
+      jvmId: string;
       /** Format: int64 */
-      lastModified?: number;
-      metadata?: components['schemas']['Metadata'];
+      lastModified: number;
+      metadata: components['schemas']['Metadata'];
       /** Format: int64 */
-      size?: number;
-    };
-    HttpServerResponse: {
-      chunked?: boolean;
-      /** Format: int32 */
-      statusCode?: number;
-      statusMessage?: string;
+      size: number;
     };
     JniInfo: {
       /** Format: int32 */
@@ -6892,31 +6819,43 @@ export interface components {
       /** Format: int64 */
       weakRefsMemory?: number;
     };
-    JsonObject: {
-      key?: string;
-      value?: unknown;
-    }[];
+    /**
+     * @description A single entry of a string-to-string map. Cryostat emits such maps as arrays of
+     *     these objects, but accepts them in request bodies as plain JSON objects.
+     */
+    KeyValue: {
+      key: string;
+      value: string;
+    };
+    /**
+     * @description A single entry of a string-to-string map. Cryostat emits such maps as arrays of
+     *     these objects, but accepts them in request bodies as plain JSON objects.
+     */
+    KeyValue_Flat: {
+      key: string;
+      value: string;
+    };
     LinkedRecordingDescriptor: {
-      archiveOnStop?: boolean;
-      continuous?: boolean;
-      downloadUrl?: string;
+      archiveOnStop: boolean;
+      continuous: boolean;
+      downloadUrl: string;
       /** Format: int64 */
-      duration?: number;
+      duration: number;
       /** Format: int64 */
-      id?: number;
+      id: number;
       /** Format: int64 */
-      maxAge?: number;
+      maxAge: number;
       /** Format: int64 */
-      maxSize?: number;
-      metadata?: components['schemas']['Metadata'];
-      name?: string;
+      maxSize: number;
+      metadata: components['schemas']['Metadata'];
+      name: string;
       /** Format: int64 */
-      remoteId?: number;
-      reportUrl?: string;
+      remoteId: number;
+      reportUrl: string;
       /** Format: int64 */
-      startTime?: number;
-      state?: components['schemas']['RecordingState'];
-      toDisk?: boolean;
+      startTime: number;
+      state: components['schemas']['RecordingState'];
+      toDisk: boolean;
     };
     /** @enum {string} */
     Location: 'ENTRY' | 'EXIT' | 'WRAP';
@@ -6928,24 +6867,29 @@ export interface components {
     };
     /** @enum {string} */
     LockOperation: 'LOCKED' | 'WAITING_TO_LOCK' | 'WAITING_ON' | 'PARKING' | 'ELIMINATED';
-    MatchExpression: {
-      /** Format: int64 */
-      id?: number;
-      script: string;
-    };
+    /**
+     * @description A Common Expression Language snippet evaluated against a target JVM's properties.
+     * @example true
+     * @example target.alias == 'my-app'
+     */
+    MatchExpression: string;
     MatchedExpression: {
-      expression?: string;
+      expression: string;
       /** Format: int64 */
       id?: number;
-      targets?: components['schemas']['Target'][];
+      targets: components['schemas']['Target'][];
     };
     Metadata: {
-      labels?: {
+      labels: components['schemas']['KeyValue'][];
+    };
+    MetadataBody: {
+      labels: {
         [key: string]: string;
       };
     };
-    MetadataBody: {
-      labels?: {
+    /** @description Recording metadata as accepted in request bodies */
+    MetadataRequest: {
+      labels: {
         [key: string]: string;
       };
     };
@@ -6968,15 +6912,21 @@ export interface components {
       relationKey?: string;
     };
     PluginRegistration: {
-      env?: {
-        [key: string]: string;
-      };
-      id?: string;
+      env: components['schemas']['KeyValue'][];
+      id: string;
+      token: string;
+    };
+    /** @description A discovery plugin registration or registration refresh */
+    PluginRegistrationRequest: {
+      callback: string;
+      /** Format: uuid */
+      id?: components['schemas']['UUID'];
+      realm: string;
       token?: string;
     };
     ProbeResponse: {
       description?: string;
-      name?: string;
+      name: string;
     };
     ProbeTemplate: {
       allowConverter?: boolean;
@@ -6986,48 +6936,69 @@ export interface components {
       fileName?: string;
     };
     ProbeTemplateResponse: {
-      name?: string;
-      xml?: string;
+      name: string;
+      xml: string;
     };
     /** @enum {string} */
     ProfilerStatus: 'STOPPED' | 'RUNNING' | 'UNKNOWN';
     /** @enum {string} */
     RecordingState: 'NEW' | 'DELAYED' | 'RUNNING' | 'STOPPED' | 'CLOSED';
     ReportRule: {
-      id?: string;
-      name?: string;
-      requiredEvents?: {
+      id: string;
+      name: string;
+      requiredEvents: {
         [key: string]: components['schemas']['EventAvailability'];
       };
-      topic?: string;
+      topic: string;
     };
     RequestData: {
-      matchExpression?: string;
+      matchExpression: string;
       targetIds?: number[];
     };
     RevisionDetail: {
-      entities?: {
+      entities: {
         [key: string]: unknown[];
       };
       /** Format: int64 */
-      rev?: number;
+      rev: number;
       /** Format: int64 */
-      revtstmp?: number;
+      revtstmp: number;
       username?: string;
     };
     RevisionSummary: {
       /** Format: int64 */
-      rev?: number;
+      rev: number;
       /** Format: int64 */
-      revtstmp?: number;
+      revtstmp: number;
       username?: string;
     };
     RevisionsResponse: {
-      revisions?: components['schemas']['RevisionSummary'][];
+      revisions: components['schemas']['RevisionSummary'][];
       /** Format: int64 */
-      totalCount?: number;
+      totalCount: number;
     };
     Rule: {
+      /** Format: int32 */
+      archivalPeriodSeconds: number;
+      description: string;
+      enabled: boolean;
+      eventSpecifier: string;
+      /** Format: int64 */
+      id?: number;
+      /** Format: int32 */
+      initialDelaySeconds: number;
+      matchExpression: components['schemas']['MatchExpression'];
+      /** Format: int32 */
+      maxAgeSeconds: number;
+      /** Format: int32 */
+      maxSizeBytes: number;
+      metadata: components['schemas']['Metadata'];
+      name: string;
+      /** Format: int32 */
+      preservedArchives: number;
+    };
+    /** @description An Automated Rule as accepted in request bodies */
+    RuleRequest: {
       /** Format: int32 */
       archivalPeriodSeconds?: number;
       description: string;
@@ -7042,24 +7013,43 @@ export interface components {
       maxAgeSeconds?: number;
       /** Format: int32 */
       maxSizeBytes?: number;
-      metadata: components['schemas']['Metadata'];
+      metadata: components['schemas']['MetadataRequest'];
       name: string;
       /** Format: int32 */
       preservedArchives?: number;
     };
-    SerializableEventTypeInfo: {
-      category?: string[];
+    /** @description A partial update to an existing Automated Rule */
+    RuleUpdateRequest: {
+      /** Format: int32 */
+      archivalPeriodSeconds?: number;
       description?: string;
+      enabled?: boolean;
+      eventSpecifier?: string;
+      /** Format: int32 */
+      initialDelaySeconds?: number;
+      matchExpression?: components['schemas']['MatchExpression'];
+      /** Format: int32 */
+      maxAgeSeconds?: number;
+      /** Format: int32 */
+      maxSizeBytes?: number;
+      metadata?: components['schemas']['MetadataRequest'];
       name?: string;
-      options?: {
+      /** Format: int32 */
+      preservedArchives?: number;
+    };
+    SerializableEventTypeInfo: {
+      category: string[];
+      description: string;
+      name: string;
+      options: {
         [key: string]: components['schemas']['SerializableOptionDescriptor'];
       };
-      typeId?: string;
+      typeId: string;
     };
     SerializableOptionDescriptor: {
-      defaultValue?: string;
-      description?: string;
-      name?: string;
+      defaultValue: string;
+      description: string;
+      name: string;
     };
     SmartTrigger: {
       ID?: string;
@@ -7089,11 +7079,11 @@ export interface components {
     };
     StartProfileRequest: {
       /** Format: int64 */
-      duration?: number;
-      events?: string[];
+      duration: number;
+      events: string[];
       id?: string;
       /** Format: int64 */
-      startTime?: number;
+      startTime: number;
     };
     Suggestion: {
       name?: string;
@@ -7101,9 +7091,21 @@ export interface components {
       value?: string;
     };
     Target: {
-      readonly agent?: boolean;
+      readonly agent: boolean;
       alias: string;
       annotations: components['schemas']['Annotations'];
+      /** Format: uri */
+      connectUrl: string;
+      /** Format: int64 */
+      id?: number;
+      jvmId?: string;
+      labels: components['schemas']['KeyValue'][];
+    };
+    /** @description A target as accepted in request bodies */
+    TargetRequest: {
+      readonly agent?: boolean;
+      alias: string;
+      annotations: components['schemas']['AnnotationsRequest'];
       /** Format: uri */
       connectUrl: string;
       /** Format: int64 */
@@ -7114,15 +7116,15 @@ export interface components {
       };
     };
     TargetStub: {
-      alias?: string;
+      alias: string;
       /** Format: uri */
-      connectUrl?: string;
+      connectUrl: string;
       credential?: components['schemas']['Credential'] | null;
       password?: string;
       username?: string;
     };
     Target_Flat: {
-      readonly agent?: boolean;
+      readonly agent: boolean;
       alias: string;
       annotations: components['schemas']['Annotations_Flat'];
       /** Format: uri */
@@ -7130,9 +7132,7 @@ export interface components {
       /** Format: int64 */
       id?: number;
       jvmId?: string;
-      labels: {
-        [key: string]: string;
-      };
+      labels: components['schemas']['KeyValue_Flat'][];
     };
     Template: {
       description?: string;
@@ -7143,25 +7143,31 @@ export interface components {
     /** @enum {string} */
     TemplateType: 'TARGET' | 'CUSTOM' | 'PRESET';
     ThreadDump: {
-      downloadUrl?: string;
-      jvmId?: string;
+      downloadUrl: string;
+      jvmId: string;
       /** Format: int64 */
-      lastModified?: number;
-      metadata?: components['schemas']['Metadata'];
+      lastModified: number;
+      metadata: components['schemas']['Metadata'];
       /** Format: int64 */
-      size?: number;
-      threadDumpId?: string;
+      size: number;
+      threadDumpId: string;
     };
     ThreadDumpAnalysis: {
-      aggregateLockInfo?: components['schemas']['AggregateLockInfoResult'][];
-      aggregateStackTraces?: components['schemas']['AggregateStackTraceResult'][];
-      aggregateThreadStates?: components['schemas']['AggregateThreadStateResult'][];
+      aggregateLockInfo: components['schemas']['AggregateLockInfoResult'][];
+      aggregateStackTraces: components['schemas']['AggregateStackTraceResult'][];
+      aggregateThreadStates: components['schemas']['AggregateThreadStateResult'][];
       deadlockInfos?: components['schemas']['DeadlockInfo'][];
       jniInfo?: components['schemas']['JniInfo'];
       jvmInfo?: string;
-      runningMethods?: components['schemas']['AggregateMethodResult'][];
-      specificFindings?: components['schemas']['AnalysisResult'][];
-      threads?: components['schemas']['ThreadInfo'][];
+      runningMethods: components['schemas']['AggregateMethodResult'][];
+      specificFindings: components['schemas']['ThreadDumpAnalysisResult'][];
+      threads: components['schemas']['ThreadInfo'][];
+    };
+    ThreadDumpAnalysisResult: {
+      explanation: string;
+      resultName: string;
+      /** Format: int32 */
+      score: number;
     };
     ThreadInfo: {
       additionalInfo?: string;
@@ -7179,34 +7185,36 @@ export interface components {
       /** Format: int32 */
       priority?: number;
       stackTrace?: components['schemas']['StackFrame'][];
-      state?: Record<string, never>;
+      state?: components['schemas']['ThreadState'];
       /** Format: int64 */
       threadId?: number;
     };
+    /** @enum {string} */
+    ThreadState: 'NEW' | 'RUNNABLE' | 'BLOCKED' | 'WAITING' | 'TIMED_WAITING' | 'TERMINATED';
     /** @enum {string} */
     TriggerState: 'NEW' | 'WAITING_HIGH' | 'WAITING_LOW' | 'RECORDING_ACTIVE' | 'RECORDING_STOPPING' | 'COMPLETE';
     /** Format: uuid */
     UUID: string;
     UnifiedLog: {
       downloadUrl?: string;
-      jvmId?: string;
+      jvmId: string;
       /** Format: int64 */
-      lastModified?: number;
+      lastModified: number;
       logId?: string;
-      metadata?: components['schemas']['Metadata'];
+      metadata: components['schemas']['Metadata'];
       /** Format: int64 */
-      size?: number;
+      size: number;
     };
     UnifiedLogStatus: {
       decorators?: string;
-      enabled?: boolean;
+      enabled: boolean;
       logFilePath?: string;
       what?: string;
     };
     ViewList: {
-      app?: string[];
-      env?: string[];
-      vm?: string[];
+      app: string[];
+      env: string[];
+      vm: string[];
     };
   };
   responses: never;

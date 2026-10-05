@@ -89,8 +89,8 @@ export type AnalysisResult = {
 
 export type Annotations = {
   __typename?: 'Annotations';
-  cryostat?: Maybe<Array<Maybe<Entry_String_String>>>;
-  platform?: Maybe<Array<Maybe<Entry_String_String>>>;
+  cryostat: Array<Maybe<Entry_String_String>>;
+  platform: Array<Maybe<Entry_String_String>>;
 };
 
 export type AnnotationsCryostatArgs = {
@@ -108,11 +108,11 @@ export type ArchivedRecording = {
   doDelete: ArchivedRecording;
   /** Update the metadata associated with an archived recording */
   doPutMetadata: ArchivedRecording;
-  downloadUrl?: Maybe<Scalars['String']['output']>;
-  jvmId?: Maybe<Scalars['String']['output']>;
-  metadata?: Maybe<Metadata>;
-  name?: Maybe<Scalars['String']['output']>;
-  reportUrl?: Maybe<Scalars['String']['output']>;
+  downloadUrl: Scalars['String']['output'];
+  jvmId: Scalars['String']['output'];
+  metadata: Metadata;
+  name: Scalars['String']['output'];
+  reportUrl: Scalars['String']['output'];
   size: Scalars['BigInteger']['output'];
 };
 
@@ -140,7 +140,7 @@ export type ArchivedRecordingsFilterInput = {
 export type AsyncProfile = {
   __typename?: 'AsyncProfile';
   duration: Scalars['BigInteger']['output'];
-  id?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
   size: Scalars['BigInteger']['output'];
   startTime: Scalars['BigInteger']['output'];
 };
@@ -233,11 +233,11 @@ export type HeapDump = {
   doDelete: HeapDump;
   /** Update the metadata for a heap dump */
   doPutMetadata: HeapDump;
-  downloadUrl?: Maybe<Scalars['String']['output']>;
-  heapDumpId?: Maybe<Scalars['String']['output']>;
-  jvmId?: Maybe<Scalars['String']['output']>;
+  downloadUrl: Scalars['String']['output'];
+  heapDumpId: Scalars['String']['output'];
+  jvmId: Scalars['String']['output'];
   lastModified: Scalars['BigInteger']['output'];
-  metadata?: Maybe<Metadata>;
+  metadata: Metadata;
   size: Scalars['BigInteger']['output'];
 };
 
@@ -300,7 +300,7 @@ export type MemoryUtilization = {
 
 export type Metadata = {
   __typename?: 'Metadata';
-  labels?: Maybe<Array<Maybe<Entry_String_String>>>;
+  labels: Array<Maybe<Entry_String_String>>;
 };
 
 export type MetadataLabelsArgs = {
@@ -492,15 +492,10 @@ export type RecordingSettingsInput = {
 
 /** Running state of an active Flight Recording */
 export enum RecordingState {
-  /** CLOSED */
   Closed = 'CLOSED',
-  /** DELAYED */
   Delayed = 'DELAYED',
-  /** NEW */
   New = 'NEW',
-  /** RUNNING */
   Running = 'RUNNING',
-  /** STOPPED */
   Stopped = 'STOPPED',
 }
 
@@ -655,12 +650,12 @@ export type ThreadDump = {
   doDelete: ThreadDump;
   /** Update the metadata for a thread dump */
   doPutMetadata: ThreadDump;
-  downloadUrl?: Maybe<Scalars['String']['output']>;
-  jvmId?: Maybe<Scalars['String']['output']>;
+  downloadUrl: Scalars['String']['output'];
+  jvmId: Scalars['String']['output'];
   lastModified: Scalars['BigInteger']['output'];
-  metadata?: Maybe<Metadata>;
+  metadata: Metadata;
   size: Scalars['BigInteger']['output'];
-  threadDumpId?: Maybe<Scalars['String']['output']>;
+  threadDumpId: Scalars['String']['output'];
 };
 
 export type ThreadDumpDoPutMetadataArgs = {
