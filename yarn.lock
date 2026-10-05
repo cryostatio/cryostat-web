@@ -1119,7 +1119,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/cli@npm:^7.4.3":
+"@graphql-codegen/cli@npm:7.4.3":
   version: 7.4.3
   resolution: "@graphql-codegen/cli@npm:7.4.3"
   dependencies:
@@ -1273,7 +1273,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/typescript-operations@npm:^6.1.6, @graphql-codegen/typescript-operations@npm:^6.1.7":
+"@graphql-codegen/typescript-operations@npm:6.1.7, @graphql-codegen/typescript-operations@npm:^6.1.6":
   version: 6.1.7
   resolution: "@graphql-codegen/typescript-operations@npm:6.1.7"
   dependencies:
@@ -1292,7 +1292,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/typescript@npm:^6.1.0":
+"@graphql-codegen/typescript@npm:6.1.0, @graphql-codegen/typescript@npm:^6.1.0":
   version: 6.1.0
   resolution: "@graphql-codegen/typescript@npm:6.1.0"
   dependencies:
@@ -1602,7 +1602,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/mock@npm:^9.1.14":
+"@graphql-tools/mock@npm:9.1.14":
   version: 9.1.14
   resolution: "@graphql-tools/mock@npm:9.1.14"
   dependencies:
@@ -1640,7 +1640,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/schema@npm:^10.0.0, @graphql-tools/schema@npm:^10.1.1":
+"@graphql-tools/schema@npm:10.1.1, @graphql-tools/schema@npm:^10.0.0, @graphql-tools/schema@npm:^10.1.1":
   version: 10.1.1
   resolution: "@graphql-tools/schema@npm:10.1.1"
   dependencies:
@@ -2915,7 +2915,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@msw/source@npm:^0.6.1":
+"@msw/source@npm:0.6.1":
   version: 0.6.1
   resolution: "@msw/source@npm:0.6.1"
   dependencies:
@@ -2932,7 +2932,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mswjs/data@npm:^0.16.2":
+"@mswjs/data@npm:0.16.2":
   version: 0.16.2
   resolution: "@mswjs/data@npm:0.16.2"
   dependencies:
@@ -4465,7 +4465,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/js-yaml@npm:^4.0.9":
+"@types/js-yaml@npm:4.0.9":
   version: 4.0.9
   resolution: "@types/js-yaml@npm:4.0.9"
   checksum: 10/a0ce595db8a987904badd21fc50f9f444cb73069f4b95a76cc222e0a17b3ff180669059c763ec314bc4c3ce284379177a9da80e83c5f650c6c1310cafbfaa8e6
@@ -7047,13 +7047,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "cryostat-web@workspace:."
   dependencies:
-    "@graphql-codegen/cli": "npm:^7.4.3"
-    "@graphql-codegen/typescript": "npm:^6.1.0"
-    "@graphql-codegen/typescript-operations": "npm:^6.1.7"
-    "@graphql-tools/mock": "npm:^9.1.14"
-    "@graphql-tools/schema": "npm:^10.1.1"
-    "@msw/source": "npm:^0.6.1"
-    "@mswjs/data": "npm:^0.16.2"
+    "@graphql-codegen/cli": "npm:7.4.3"
+    "@graphql-codegen/typescript": "npm:6.1.0"
+    "@graphql-codegen/typescript-operations": "npm:6.1.7"
+    "@graphql-tools/mock": "npm:9.1.14"
+    "@graphql-tools/schema": "npm:10.1.1"
+    "@msw/source": "npm:0.6.1"
+    "@mswjs/data": "npm:0.16.2"
     "@patternfly/quickstarts": "npm:6.4.0"
     "@patternfly/react-catalog-view-extension": "npm:6.4.0"
     "@patternfly/react-charts": "npm:8.5.1"
@@ -7072,7 +7072,7 @@ __metadata:
     "@types/humanize-duration": "npm:3.27.4"
     "@types/jest": "npm:30.0.0"
     "@types/js-base64": "npm:3.3.1"
-    "@types/js-yaml": "npm:^4.0.9"
+    "@types/js-yaml": "npm:4.0.9"
     "@types/lodash": "npm:4.17.25"
     "@types/react": "npm:18.3.31"
     "@types/react-test-renderer": "npm:18.3.1"
@@ -7091,7 +7091,7 @@ __metadata:
     eslint-plugin-unused-imports: "npm:4.4.1"
     eslint-webpack-plugin: "npm:6.0.0"
     file-loader: "npm:6.2.0"
-    graphql: "npm:^17.0.2"
+    graphql: "npm:17.0.2"
     html-webpack-plugin: "npm:5.6.8"
     humanize-duration: "npm:3.35.0"
     i18next: "npm:25.10.10"
@@ -7101,7 +7101,7 @@ __metadata:
     jest: "npm:30.5.2"
     jest-environment-jsdom: "npm:30.5.2"
     js-base64: "npm:3.9.4"
-    js-yaml: "npm:^5.4.2"
+    js-yaml: "npm:5.4.2"
     license-check-and-add: "npm:4.0.5"
     lodash: "npm:4.18.1"
     marked: "npm:15.0.12"
@@ -7110,10 +7110,10 @@ __metadata:
     mock-socket: "npm:9.3.1"
     monaco-editor: "npm:0.57.0"
     monaco-editor-webpack-plugin: "npm:7.1.1"
-    msw: "npm:^2.15.0"
+    msw: "npm:2.15.0"
     nanoid: "npm:5.1.16"
     npm-run-all2: "npm:9.0.3"
-    openapi-typescript: "npm:^7.13.0"
+    openapi-typescript: "npm:7.13.0"
     prettier: "npm:3.9.9"
     prop-types: "npm:15.8.1"
     raw-loader: "npm:4.0.2"
@@ -10441,17 +10441,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"graphql@npm:17.0.2":
+  version: 17.0.2
+  resolution: "graphql@npm:17.0.2"
+  checksum: 10/e3760187b08cafd0755cc504bf272623cba8a05c29671c9ec5709fe634aaf62011a98e7831f67add3775261a0617e1b0d548da99ab70532b72d6dd5e1f0915ca
+  languageName: node
+  linkType: hard
+
 "graphql@npm:^16.13.2, graphql@npm:^16.8.1":
   version: 16.14.2
   resolution: "graphql@npm:16.14.2"
   checksum: 10/cd9a2581508f82621112a4dc625714e81ce725ab0a62502d97c14f61fee180e85276ac64bf9094f4fbf237737832ad4bb970aa26088f9dffece56f8919a49a29
-  languageName: node
-  linkType: hard
-
-"graphql@npm:^17.0.2":
-  version: 17.0.2
-  resolution: "graphql@npm:17.0.2"
-  checksum: 10/e3760187b08cafd0755cc504bf272623cba8a05c29671c9ec5709fe634aaf62011a98e7831f67add3775261a0617e1b0d548da99ab70532b72d6dd5e1f0915ca
   languageName: node
   linkType: hard
 
@@ -12752,6 +12752,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"js-yaml@npm:5.4.2":
+  version: 5.4.2
+  resolution: "js-yaml@npm:5.4.2"
+  dependencies:
+    argparse: "npm:^2.0.1"
+  bin:
+    js-yaml: bin/js-yaml.mjs
+  checksum: 10/f2461abd1d6268fb226733f0a0e0aa48004bb824116e3dfa75f1a1279001936343b672066dfecdb852ac3ca883452706c383a760aa90430cb68ba395aa2cbc84
+  languageName: node
+  linkType: hard
+
 "js-yaml@npm:^3.13.1":
   version: 3.15.2
   resolution: "js-yaml@npm:3.15.2"
@@ -12772,17 +12783,6 @@ __metadata:
   bin:
     js-yaml: bin/js-yaml.js
   checksum: 10/2bcec3a8118d7f744badeb04e14366578d234a736f353d41fe35d2305e4ce2409a8e041d277f07cd6bbc8aaa12128d650a68ce43247072519bede20962d2126f
-  languageName: node
-  linkType: hard
-
-"js-yaml@npm:^5.4.2":
-  version: 5.4.2
-  resolution: "js-yaml@npm:5.4.2"
-  dependencies:
-    argparse: "npm:^2.0.1"
-  bin:
-    js-yaml: bin/js-yaml.mjs
-  checksum: 10/f2461abd1d6268fb226733f0a0e0aa48004bb824116e3dfa75f1a1279001936343b672066dfecdb852ac3ca883452706c383a760aa90430cb68ba395aa2cbc84
   languageName: node
   linkType: hard
 
@@ -13816,7 +13816,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msw@npm:^2.0.8, msw@npm:^2.15.0":
+"msw@npm:2.15.0, msw@npm:^2.0.8":
   version: 2.15.0
   resolution: "msw@npm:2.15.0"
   dependencies:
@@ -14308,7 +14308,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi-typescript@npm:^7.13.0":
+"openapi-typescript@npm:7.13.0":
   version: 7.13.0
   resolution: "openapi-typescript@npm:7.13.0"
   dependencies:
