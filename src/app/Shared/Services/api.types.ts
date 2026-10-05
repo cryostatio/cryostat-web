@@ -111,9 +111,7 @@ export type TargetForTest = Pick<Target, 'alias' | 'connectUrl'> & {
 // ======================================
 export type GrafanaDashboardUrlGetResponse = components['schemas']['DashboardUrl'];
 
-export interface GrafanaDatasourceUrlGetResponse {
-  grafanaDatasourceUrl: string;
-}
+export type GrafanaDatasourceUrlGetResponse = components['schemas']['DatasourceUrl'];
 
 export interface HealthGetResponse {
   cryostatVersion: string;
