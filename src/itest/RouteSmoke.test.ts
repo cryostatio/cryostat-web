@@ -69,13 +69,19 @@ const MAIN_CONTAINER_ID = 'primary-app-container';
  * 1. The error boundary fallback is NOT rendered.
  * 2. The 404/NotFound page is NOT rendered.
  */
-async function smokeTestRoute(driver: WebDriver, path: string): Promise<void> {
+async function smokeTestRoute(driver: WebDriver, path: string, expectedTitle: string): Promise<void> {
   await driver.get(`${BASE_URL}${path}`);
 
   // Wait until the main page container is present — this indicates the app
-  // shell and the route component have mounted.  Falls back to a 10s timeout
-  // so the test fails fast rather than hanging indefinitely.
+  // shell has mounted.  Falls back to a 10s timeout so the test fails fast
+  // rather than hanging indefinitely.
   await driver.wait(until.elementLocated(By.id(MAIN_CONTAINER_ID)), 10000);
+
+  // The container mounting only confirms the shell rendered, not that the
+  // expected route's content loaded. Each route sets document.title via
+  // useDocumentTitle, so wait for that as a stable marker of the specific
+  // route's result before inspecting the page source.
+  await driver.wait(async () => (await driver.getTitle()) === expectedTitle, 10000);
 
   const pageSource = await driver.getPageSource();
 
@@ -134,9 +140,9 @@ describe('Route smoke test: PRODUCTION routes', function () {
     await driver.close();
   });
 
-  for (const { path } of productionRoutes) {
+  for (const { path, title } of productionRoutes) {
     it(`renders without errors: ${path}`, async function () {
-      await smokeTestRoute(driver, path);
+      await smokeTestRoute(driver, path, title);
     });
   }
 });
@@ -161,9 +167,9 @@ describe('Route smoke test: BETA routes', function () {
     await driver.close();
   });
 
-  for (const { path } of betaRoutes) {
+  for (const { path, title } of betaRoutes) {
     it(`renders without errors: ${path}`, async function () {
-      await smokeTestRoute(driver, path);
+      await smokeTestRoute(driver, path, title);
     });
   }
 });
