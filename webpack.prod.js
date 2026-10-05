@@ -1,11 +1,28 @@
+const fs = require('fs');
 const path = require('path');
 const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
-const { EnvironmentPlugin } = require('webpack');
+const { EnvironmentPlugin, sources } = require('webpack');
 const { stylePaths } = require('./stylePaths');
+
+const MOCK_SERVICE_WORKER_SRC = path.resolve(__dirname, 'src', 'app', 'assets', 'mockServiceWorker.js');
+
+class CopyMockServiceWorkerPlugin {
+  apply(compiler) {
+    compiler.hooks.thisCompilation.tap('CopyMockServiceWorkerPlugin', (compilation) => {
+      compilation.hooks.processAssets.tap(
+        { name: 'CopyMockServiceWorkerPlugin', stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL },
+        () => {
+          const content = fs.readFileSync(MOCK_SERVICE_WORKER_SRC, 'utf8');
+          compilation.emitAsset('mockServiceWorker.js', new sources.RawSource(content));
+        },
+      );
+    });
+  }
+}
 
 module.exports = merge(common('production'), {
   mode: 'production',
@@ -47,7 +64,8 @@ module.exports = merge(common('production'), {
       PREVIEW: process.env.PREVIEW || 'false',
       I18N_NAMESPACE: process.env.I18N_NAMESPACE || '',
       BASEPATH: process.env.BASEPATH || ''
-    })
+    }),
+    new CopyMockServiceWorkerPlugin()
   ],
   module: {
     rules: [
