@@ -38,6 +38,7 @@ function fetchRemote(url, redirectsRemaining = MAX_REDIRECTS) {
           return resolve(fetchRemote(res.headers.location, redirectsRemaining - 1));
         }
         if (res.statusCode !== 200) {
+          res.resume();
           return reject(new Error(`HTTP ${res.statusCode} when fetching ${url}`));
         }
         let data = '';
