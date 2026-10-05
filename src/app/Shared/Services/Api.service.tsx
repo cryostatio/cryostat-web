@@ -63,7 +63,8 @@ import {
   KeyValue,
   TargetReference,
   TargetCreateRequest,
-  TargetForTest,
+  MatchExpressionTestRequest,
+  MatchedExpression,
   Metadata,
   MetadataBody,
   MetadataRequest,
@@ -1705,12 +1706,13 @@ export class ApiService {
     });
   }
 
-  // Filter targets that the expression matches
+  // Filter targets that the expression matches.
   matchTargetsWithExpr(matchExpression: string, targets: Target[]): Observable<Target[]> {
-    const body = JSON.stringify({
+    const requestData: MatchExpressionTestRequest = {
       matchExpression,
-      targets: targets.map((t) => this.transformTarget(t)),
-    });
+      targetIds: targets.map((t) => t.id!),
+    };
+    const body = JSON.stringify(requestData);
     return this.ctx
       .headers({
         'Content-Type': 'application/json',
@@ -1732,7 +1734,7 @@ export class ApiService {
         ),
         first(),
         concatMap((resp: Response) => resp.json()),
-        map((r) => r.targets),
+        map((r: MatchedExpression) => r.targets),
       );
   }
 
@@ -2336,18 +2338,6 @@ export class ApiService {
       anchor.click();
       anchor.remove();
     });
-  }
-
-  private transformTarget(target: Target): TargetForTest {
-    return {
-      alias: target.alias,
-      connectUrl: target.connectUrl,
-      labels: this.transformLabelsToObject(target.labels),
-      annotations: {
-        cryostat: this.transformLabelsToObject(target.annotations.cryostat),
-        platform: this.transformLabelsToObject(target.annotations.platform),
-      },
-    };
   }
 
   sendRequest(
