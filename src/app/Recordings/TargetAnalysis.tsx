@@ -200,8 +200,8 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
       return [];
     }
     const map = new Map<string, AnalysisResult[]>();
-    report!
-      .data!.map((e) => e.value)
+    report!.data
+      .flatMap((e) => (e?.value ? [e.value] : []))
       .forEach((evaluation) => {
         const topic = evaluation.topic ?? '';
         const topicValue = map.get(topic);
