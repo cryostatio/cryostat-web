@@ -524,12 +524,7 @@ export type AsyncProfilerStatus = components['schemas']['AsyncProfilerStatus'];
 // Unified Logging resources
 // ======================================
 
-export interface UnifiedLoggingStatus {
-  enabled: boolean;
-  logFilePath?: string;
-  what?: string;
-  decorators?: string;
-}
+export type UnifiedLoggingStatus = components['schemas']['UnifiedLogStatus'];
 
 // `downloadUrl` and `logId` are null for a live logging session with no archived artifact yet;
 // they are only populated when listing or pulling archived logs.
