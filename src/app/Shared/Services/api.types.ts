@@ -109,9 +109,7 @@ export type TargetForTest = Pick<Target, 'alias' | 'connectUrl'> & {
 // ======================================
 // Health Resources
 // ======================================
-export interface GrafanaDashboardUrlGetResponse {
-  grafanaDashboardUrl: string;
-}
+export type GrafanaDashboardUrlGetResponse = components['schemas']['DashboardUrl'];
 
 export interface GrafanaDatasourceUrlGetResponse {
   grafanaDatasourceUrl: string;
