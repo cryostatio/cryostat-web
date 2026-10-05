@@ -21,7 +21,6 @@ import { ApiService } from '@app/Shared/Services/Api.service';
 import {
   Target,
   ActiveRecording,
-  RecordingState,
   Recording,
   MBeanMetrics,
   ActiveRecordingsFilterInput,
@@ -116,7 +115,7 @@ export const fakeAARecording: ActiveRecording = {
   },
   startTime: 1680732807,
   id: 0,
-  state: RecordingState.RUNNING,
+  state: 'RUNNING',
   duration: 0, // Continuous
   continuous: false,
   toDisk: false,

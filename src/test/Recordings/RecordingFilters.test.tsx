@@ -26,7 +26,7 @@ import {
   TargetRecordingFilters,
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { Target, ActiveRecording, RecordingState, ArchivedRecording } from '@app/Shared/Services/api.types';
+import { Target, ActiveRecording, ArchivedRecording } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
 import { Toolbar, ToolbarContent } from '@patternfly/react-core';
@@ -60,7 +60,7 @@ const mockActiveRecording: ActiveRecording = {
   metadata: { labels: mockRecordingLabels },
   startTime: 1234567890,
   id: 0,
-  state: RecordingState.RUNNING,
+  state: 'RUNNING',
   duration: 0,
   continuous: false,
   toDisk: false,
