@@ -2028,6 +2028,7 @@ export interface paths {
     post: {
       parameters: {
         query: {
+          autoanalyze?: boolean;
           fromTimestamp: number;
           tag?: string;
           toTimestamp: number;
