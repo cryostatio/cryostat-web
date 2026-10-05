@@ -23,12 +23,19 @@ const SCHEMA_FILES = ['openapi.yaml', 'schema.graphql'];
 const DEFAULT_GITHUB_REPO = 'cryostatio/cryostat';
 const DEFAULT_REF = process.env.CRYOSTAT_BACKEND_REF || 'main';
 
-function fetchRemote(url) {
+const FETCH_TIMEOUT_MS = 30000;
+const MAX_REDIRECTS = 5;
+
+function fetchRemote(url, redirectsRemaining = MAX_REDIRECTS) {
   return new Promise((resolve, reject) => {
-    https
+    const req = https
       .get(url, (res) => {
         if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-          return resolve(fetchRemote(res.headers.location));
+          if (redirectsRemaining <= 0) {
+            res.resume();
+            return reject(new Error(`Too many redirects when fetching ${url}`));
+          }
+          return resolve(fetchRemote(res.headers.location, redirectsRemaining - 1));
         }
         if (res.statusCode !== 200) {
           return reject(new Error(`HTTP ${res.statusCode} when fetching ${url}`));
@@ -40,6 +47,10 @@ function fetchRemote(url) {
         res.on('end', () => resolve(data));
       })
       .on('error', reject);
+
+    req.setTimeout(FETCH_TIMEOUT_MS, () => {
+      req.destroy(new Error(`Timed out after ${FETCH_TIMEOUT_MS}ms when fetching ${url}`));
+    });
   });
 }
 
@@ -103,7 +114,7 @@ async function syncSchemas() {
         fs.writeFileSync(jsonPath, JSON.stringify(jsonDoc, null, 2), 'utf8');
         console.log(`[schema:sync] Converted openapi.yaml to ${jsonPath}`);
       } catch (e) {
-        console.warn(`[schema:sync] Warning: Could not convert openapi.yaml to JSON:`, e.message);
+        throw new Error(`Could not convert openapi.yaml to JSON: ${e.message}`);
       }
     }
   }
