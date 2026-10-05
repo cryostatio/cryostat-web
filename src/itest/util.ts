@@ -109,19 +109,32 @@ export class Cryostat {
     return await this.driver.executeScript('arguments[0].click();', notiBadge);
   }
 
-  async getLatestNotification(): Promise<ITestNotification> {
-    const latestNotification = await this.driver.wait(
-      until.elementLocated(By.className('pf-v6-c-alert-group pf-m-toast')),
-    );
-    return {
-      title: await getDirectTextContent(
-        this.driver,
-        await latestNotification.findElement(By.css('li:last-of-type .pf-v6-c-alert__title')),
-      ),
-      description: await latestNotification
-        .findElement(By.css('li:last-of-type .pf-v6-c-alert__description'))
-        .getText(),
+  async getLatestNotification(expectedTitle?: string, timeout = 10000): Promise<ITestNotification> {
+    const readLatest = async (): Promise<ITestNotification> => {
+      const latestNotification = await this.driver.wait(
+        until.elementLocated(By.className('pf-v6-c-alert-group pf-m-toast')),
+      );
+      return {
+        title: await getDirectTextContent(
+          this.driver,
+          await latestNotification.findElement(By.css('li:last-of-type .pf-v6-c-alert__title')),
+        ),
+        description: await latestNotification
+          .findElement(By.css('li:last-of-type .pf-v6-c-alert__description'))
+          .getText(),
+      };
     };
+
+    if (!expectedTitle) {
+      return readLatest();
+    }
+
+    let latest: ITestNotification = { title: '', description: '' };
+    await this.driver.wait(async () => {
+      latest = await readLatest();
+      return latest.title === expectedTitle;
+    }, timeout);
+    return latest;
   }
 }
 
