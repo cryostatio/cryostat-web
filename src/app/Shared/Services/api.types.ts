@@ -113,16 +113,7 @@ export type GrafanaDashboardUrlGetResponse = components['schemas']['DashboardUrl
 
 export type GrafanaDatasourceUrlGetResponse = components['schemas']['DatasourceUrl'];
 
-export interface HealthGetResponse {
-  cryostatVersion: string;
-  build: BuildInfo;
-  datasourceConfigured: boolean;
-  datasourceAvailable: boolean;
-  dashboardConfigured: boolean;
-  dashboardAvailable: boolean;
-  reportsConfigured: boolean;
-  reportsAvailable: boolean;
-}
+export type HealthGetResponse = components['schemas']['ApplicationHealth'];
 
 // ======================================
 // Auth Resources
