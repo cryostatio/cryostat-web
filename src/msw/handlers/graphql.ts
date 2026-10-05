@@ -62,7 +62,7 @@ export const graphqlHandlers = [
             {
               target: {
                 archivedRecordings: {
-                  data: db.archive.getAll(),
+                  data: db.archive.findMany({ where: { jvmId: { equals: target?.jvmId } } }),
                 },
               },
             },
@@ -85,7 +85,7 @@ export const graphqlHandlers = [
             {
               target: {
                 activeRecordings: {
-                  data: db.recording.getAll(),
+                  data: db.recording.findMany({ where: { jvmId: { equals: target?.jvmId } } }),
                 },
               },
             },
@@ -361,8 +361,8 @@ export const graphqlHandlers = [
             {
               target: {
                 ...target,
-                activeRecordings: { data: db.recording.getAll() },
-                archivedRecordings: { data: db.archive.getAll() },
+                activeRecordings: { data: db.recording.findMany({ where: { jvmId: { equals: target?.jvmId } } }) },
+                archivedRecordings: { data: db.archive.findMany({ where: { jvmId: { equals: target?.jvmId } } }) },
               },
             },
           ],

@@ -272,9 +272,11 @@ export const restHandlers = [
     const recordingName = params.recordingName as string;
     const jvmId = params.jvmId as string;
     const target = db.target.findFirst({ where: { jvmId: { equals: jvmId } } });
-    const recording = db.archive.findFirst({ where: { name: { equals: recordingName } } });
+    const recording = db.archive.findFirst({
+      where: { name: { equals: recordingName }, jvmId: { equals: jvmId } },
+    });
     if (recording) {
-      db.archive.delete({ where: { name: { equals: recordingName } } });
+      db.archive.delete({ where: { name: { equals: recording.name } } });
       mockWsBroadcaster.broadcast({
         meta: {
           category: 'ArchivedRecordingDeleted',
