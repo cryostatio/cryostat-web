@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RecordingState } from '@app/Shared/Services/api.types';
+import { RECORDING_STATES, RecordingState } from '@app/Shared/Services/api.types';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Badge, MenuToggle, MenuToggleElement, Select, SelectOption } from '@patternfly/react-core';
 import * as React from 'react';
@@ -61,7 +61,7 @@ export const RecordingStateFilter: React.FC<RecordingStateFilterProps> = ({ filt
       onOpenChange={(isOpen) => setIsOpen(isOpen)}
       onOpenChangeKeys={['Escape']}
     >
-      {Object.values(RecordingState).map((rs) => (
+      {RECORDING_STATES.map((rs) => (
         <SelectOption
           aria-label={`${rs} State`}
           key={rs}
