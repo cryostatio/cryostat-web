@@ -2915,20 +2915,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@msw/source@npm:^0.6.1":
-  version: 0.6.1
-  resolution: "@msw/source@npm:0.6.1"
+"@msw/source@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "@msw/source@npm:0.7.0"
   dependencies:
-    "@mswjs/interceptors": "npm:^0.40.0"
+    "@mswjs/interceptors": "npm:^0.45.1"
     "@stoplight/json": "npm:^3.21.7"
     "@types/har-format": "npm:^1.2.16"
-    "@yellow-ticket/seed-json-schema": "npm:^0.1.7"
+    "@yellow-ticket/seed-json-schema": "npm:^0.1.8"
     openapi-types: "npm:^12.1.3"
     outvariant: "npm:^1.4.3"
-    yaml: "npm:^2.8.2"
+    yaml: "npm:^2.9.1"
   peerDependencies:
-    msw: ^2.10.0
-  checksum: 10/7df0919133e5a55aed38682ecd262881b2a9f34ffa2673942ceee1c7c668cfed2484fd007fa253318659a6ce7c1c9589310cc080ca1df1265e66cae90d0fcf46
+    msw: ^3.0.0
+  checksum: 10/2efc83477cd9457c3e33d67d791116e18bb2e6384d22d525bdd1ef11023e1c7e38fb9db5d1aee2af521c3a070739a1dc71a4a500e3e63ac912270c1018efcf4b
   languageName: node
   linkType: hard
 
@@ -2957,20 +2957,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mswjs/interceptors@npm:^0.40.0":
-  version: 0.40.0
-  resolution: "@mswjs/interceptors@npm:0.40.0"
-  dependencies:
-    "@open-draft/deferred-promise": "npm:^2.2.0"
-    "@open-draft/logger": "npm:^0.3.0"
-    "@open-draft/until": "npm:^2.0.0"
-    is-node-process: "npm:^1.2.0"
-    outvariant: "npm:^1.4.3"
-    strict-event-emitter: "npm:^0.5.1"
-  checksum: 10/789da7765704049593fe3d34a1a02a2168692cbc5f063bcebc457859650a1fb8ef7baf56d0b9bebd909505c482bff4a745c48137b053516a7db3c843961c3255
-  languageName: node
-  linkType: hard
-
 "@mswjs/interceptors@npm:^0.41.3":
   version: 0.41.9
   resolution: "@mswjs/interceptors@npm:0.41.9"
@@ -2982,6 +2968,20 @@ __metadata:
     outvariant: "npm:^1.4.3"
     strict-event-emitter: "npm:^0.5.1"
   checksum: 10/aed6a80913d345e37a0cd58f1318736d765d5295cefae35ea104f6bfc5b224f96eb71635593f470579c1251efb1d18ad426e884ba01f85cfe3ff135e3b82e7a2
+  languageName: node
+  linkType: hard
+
+"@mswjs/interceptors@npm:^0.45.1":
+  version: 0.45.7
+  resolution: "@mswjs/interceptors@npm:0.45.7"
+  dependencies:
+    "@open-draft/until": "npm:^3.0.1"
+    "@types/debug": "npm:^4.1.13"
+    debug: "npm:^4.4.3"
+    is-node-process: "npm:^1.2.0"
+    outvariant: "npm:^1.4.3"
+    rettime: "npm:^0.11.12"
+  checksum: 10/f22a883b0f023a4a46c88889008b849c5a3e1b79dd273f36cbaf7012b2aaba21bc0703a4b3dd6d75c22398cd6a999178539319da8db3e76141cde39267ff9842
   languageName: node
   linkType: hard
 
@@ -3079,6 +3079,13 @@ __metadata:
   version: 2.1.0
   resolution: "@open-draft/until@npm:2.1.0"
   checksum: 10/622be42950afc8e89715d0fd6d56cbdcd13e36625e23b174bd3d9f06f80e25f9adf75d6698af93bca1e1bf465b9ce00ec05214a12189b671fb9da0f58215b6f4
+  languageName: node
+  linkType: hard
+
+"@open-draft/until@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@open-draft/until@npm:3.0.1"
+  checksum: 10/ffb5073b9fbbb7847a6805bd4c851968442ce0eff184cb2d052a988c328befdf639cf2eb2a18b91ced972639d5ab2fe40d8fe5da2199809422892555194e42b3
   languageName: node
   linkType: hard
 
@@ -4289,6 +4296,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/debug@npm:^4.1.13":
+  version: 4.1.13
+  resolution: "@types/debug@npm:4.1.13"
+  dependencies:
+    "@types/ms": "npm:*"
+  checksum: 10/5091d4ebda85236e6f4a6ecea552860e521e11d1d388d3f6255b40726f5a4a7cf1baa0d09f60853838e4cac6c12a13b14114d5f422ccecaee4d1d07dab349900
+  languageName: node
+  linkType: hard
+
 "@types/eslint@npm:^9.6.1":
   version: 9.6.1
   resolution: "@types/eslint@npm:9.6.1"
@@ -4543,6 +4559,13 @@ __metadata:
   version: 3.0.5
   resolution: "@types/minimatch@npm:3.0.5"
   checksum: 10/c41d136f67231c3131cf1d4ca0b06687f4a322918a3a5adddc87ce90ed9dbd175a3610adee36b106ae68c0b92c637c35e02b58c8a56c424f71d30993ea220b92
+  languageName: node
+  linkType: hard
+
+"@types/ms@npm:*":
+  version: 2.1.0
+  resolution: "@types/ms@npm:2.1.0"
+  checksum: 10/532d2ebb91937ccc4a89389715e5b47d4c66e708d15942fe6cc25add6dc37b2be058230a327dd50f43f89b8b6d5d52b74685a9e8f70516edfc9bdd6be910eff4
   languageName: node
   linkType: hard
 
@@ -5294,7 +5317,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@yellow-ticket/seed-json-schema@npm:^0.1.7":
+"@yellow-ticket/seed-json-schema@npm:^0.1.8":
   version: 0.1.8
   resolution: "@yellow-ticket/seed-json-schema@npm:0.1.8"
   dependencies:
@@ -7052,7 +7075,7 @@ __metadata:
     "@graphql-codegen/typescript-operations": "npm:^6.1.7"
     "@graphql-tools/mock": "npm:^9.1.14"
     "@graphql-tools/schema": "npm:^10.1.1"
-    "@msw/source": "npm:^0.6.1"
+    "@msw/source": "npm:^0.7.0"
     "@mswjs/data": "npm:^0.16.2"
     "@patternfly/quickstarts": "npm:6.4.0"
     "@patternfly/react-catalog-view-extension": "npm:6.4.0"
@@ -16075,6 +16098,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rettime@npm:^0.11.12":
+  version: 0.11.12
+  resolution: "rettime@npm:0.11.12"
+  checksum: 10/a85faa82ca460c43f216df1b8db71747c54bc3c269fb99d8bddb9bed5bfd600da4c1ad2ea9368b68f98692d6d1014ff767e40576e024a1b5d8b7abb2e46e58bf
+  languageName: node
+  linkType: hard
+
 "reusify@npm:^1.0.4":
   version: 1.0.4
   resolution: "reusify@npm:1.0.4"
@@ -19651,7 +19681,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:^2.3.1, yaml@npm:^2.8.2":
+"yaml@npm:^2.3.1, yaml@npm:^2.9.1":
   version: 2.9.1
   resolution: "yaml@npm:2.9.1"
   bin:
