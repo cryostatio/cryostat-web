@@ -74,7 +74,7 @@ export const restHandlers = [
   // Targets - Create
   http.post('*/api/v4/targets', async ({ request }) => {
     const url = new URL(request.url);
-    if (url.searchParams.get('dryrun')) {
+    if (url.searchParams.get('dryrun') === 'true') {
       return new HttpResponse(null, { status: 200 });
     }
     const formData = await request.formData();
