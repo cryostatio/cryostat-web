@@ -151,13 +151,7 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
     setLoading(true);
     // this will trigger a ReportSuccess notification which we are listening for,
     // and the response body with the job ID is not particularly relevant
-    addSubscription(
-      context.api
-        .sendRequest('v4.1', `/targets/${target.id}/reports`, {
-          method: 'POST',
-        })
-        .subscribe(),
-    );
+    addSubscription(context.api.generateTargetReport(target).subscribe());
   }, [target, hasSources, addSubscription, context.api, setLoading]);
 
   React.useEffect(() => {

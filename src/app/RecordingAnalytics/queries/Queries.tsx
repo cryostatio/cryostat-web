@@ -218,10 +218,7 @@ export const Queries: React.FC<QueriesProps> = ({ jvmId, filename }) => {
     body.append('query', query.trim());
     addSubscription(
       context.api
-        .sendRequest('beta', `recording_analytics/${jvmId}/${filename}`, {
-          method: 'POST',
-          body,
-        })
+        .analyzeRecording(jvmId, filename, body)
         .pipe(concatMap((r) => r.json()))
         .subscribe({
           next: (v) => {

@@ -14,30 +14,21 @@
  * limitations under the License.
  */
 import CreateRecording from '@app/CreateRecording/CreateRecording';
-import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useModalFromLocationState } from '@app/utils/hooks/useModalFromLocationState';
-import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import { Card, CardBody, Modal, ModalBody, ModalHeader } from '@patternfly/react-core';
 import * as React from 'react';
 import { ActiveRecordingsTable } from './ActiveRecordingsTable';
 
 export const Recordings: React.FC = () => {
-  const context = React.useContext(ServiceContext);
-  const addSubscription = useSubscriptions();
-  const [archiveEnabled, setArchiveEnabled] = React.useState(false);
   const [createRecordingModalOpen, _, closeCreateRecordingModal] = useModalFromLocationState();
-
-  React.useEffect(() => {
-    addSubscription(context.api.isArchiveEnabled().subscribe((v) => setArchiveEnabled(v)));
-  }, [addSubscription, context.api, setArchiveEnabled]);
 
   return (
     <TargetView pageTitle="Recordings">
       <Card isCompact>
         <CardBody>
-          <ActiveRecordingsTable archiveEnabled={archiveEnabled} />
+          <ActiveRecordingsTable />
         </CardBody>
       </Card>
       <Modal

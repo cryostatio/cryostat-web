@@ -64,7 +64,7 @@ export const RecordingAnalytics: React.FC = () => {
 
   const refreshRecordingDirectories = React.useCallback(() => {
     addSubscription(
-      context.api.doGet<RecordingDirectory[]>('fs/recordings', 'beta').subscribe((v) => {
+      context.api.getArchivedRecordingDirectories().subscribe((v) => {
         setRecordingDirectories(v);
       }),
     );
