@@ -22,6 +22,7 @@ import {
   ActiveRecordingsFilterInput as GqlActiveRecordingsFilterInput,
   AnalysisResult as GqlAnalysisResult,
   Evaluation as GqlEvaluation,
+  Report as GqlReport,
   Suggestion as GqlSuggestion,
 } from 'src/schema/graphql.types';
 import { components, paths } from 'src/schema/openapi.types';
@@ -285,17 +286,7 @@ export type ActiveRecordingsFilterInput = GqlActiveRecordingsFilterInput;
  */
 export const UPLOADS_SUBDIRECTORY = 'uploads';
 
-export interface AggregateReport {
-  aggregate?: {
-    count: number;
-    max: number;
-  };
-  data?: {
-    key: string;
-    value: AnalysisResult;
-  }[];
-  lastUpdated?: number;
-}
+export type AggregateReport = GqlReport;
 
 export interface RecordingCountResponse {
   data: {
