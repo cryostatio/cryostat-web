@@ -675,16 +675,13 @@ export interface AuditRevisionDetail extends AuditRevision {
 /**
  * Query parameters for audit log search
  */
-export interface AuditQueryParams {
-  /** Start of time range (timestamp in milliseconds) */
-  startTime: number;
-  /** End of time range (timestamp in milliseconds) */
-  endTime: number;
-  /** Page number for pagination (optional, 0-based) */
-  page?: number;
-  /** Number of results per page (optional, default 50) */
-  pageSize?: number;
-}
+// The audit revisions query parameters, as declared inline on the GET /api/beta/audit/revisions
+// path (not under components['schemas'], so it's referenced via `paths` instead). The schema marks
+// startTime/endTime optional since they're plain query params, but this app always supplies them.
+type AuditRevisionsQuery = NonNullable<paths['/api/beta/audit/revisions']['get']['parameters']['query']>;
+
+export type AuditQueryParams = Required<Pick<AuditRevisionsQuery, 'startTime' | 'endTime'>> &
+  Pick<AuditRevisionsQuery, 'page' | 'pageSize'>;
 
 /**
  * Response from audit revisions query
