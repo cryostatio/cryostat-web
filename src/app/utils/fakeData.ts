@@ -536,6 +536,7 @@ class FakeApiService extends ApiService {
         count: 2,
         max: 50,
       },
+      lastUpdated: Date.now(),
       data: [
         {
           key: 'rule a',
