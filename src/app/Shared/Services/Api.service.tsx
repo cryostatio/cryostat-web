@@ -65,7 +65,10 @@ import {
   TargetCreateRequest,
   TargetForTest,
   Metadata,
+  MetadataBody,
+  MetadataRequest,
   TargetMetadata,
+  TargetMetadataRequest,
   isTargetMetadata,
   MBeanMetricsResponse,
   BuildInfo,
@@ -561,12 +564,12 @@ export class ApiService {
     );
   }
 
-  // FIXME remove this, all API endpoints that allow us to send labels in the request body should accept it in as-is JSON form
   stringifyRecordingLabels(labels: KeyValue | KeyValue[]): string {
     return JSON.stringify(labels).replace(/"([^"]+)":/g, '$1:');
   }
 
-  // FIXME remove this, all API endpoints that allow us to send labels in the request body should accept it in as-is JSON form
+  // Request bodies take labels as a flat string-to-string map rather than the KeyValue array form
+  // used in responses
   transformAndStringifyToRawLabels(labels: KeyValue[]): string {
     const rawLabels = {};
     for (const label of labels) {
@@ -575,7 +578,7 @@ export class ApiService {
     return JSON.stringify(rawLabels);
   }
 
-  transformMetadataToObject(metadata: Metadata | TargetMetadata): object {
+  transformMetadataToObject(metadata: Metadata | TargetMetadata): MetadataRequest | TargetMetadataRequest {
     if (isTargetMetadata(metadata)) {
       return {
         labels: this.transformLabelsToObject(metadata.labels),
@@ -591,7 +594,7 @@ export class ApiService {
     }
   }
 
-  transformLabelsToObject(labels: KeyValue[]): object {
+  transformLabelsToObject(labels: KeyValue[]): MetadataBody['labels'] {
     const out = {};
     for (const label of labels) {
       out[label.key] = label.value;

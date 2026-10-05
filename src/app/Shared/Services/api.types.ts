@@ -55,6 +55,18 @@ export function isTargetMetadata(metadata: Metadata | TargetMetadata): metadata 
   return (metadata as TargetMetadata).annotations !== undefined;
 }
 
+// Cryostat emits labels and annotations as KeyValue arrays in responses, but accepts them in request
+// bodies as plain string-to-string maps.
+export type MetadataBody = components['schemas']['MetadataBody'];
+
+export type MetadataRequest = components['schemas']['MetadataRequest'];
+
+export type AnnotationsRequest = components['schemas']['AnnotationsRequest'];
+
+export type TargetMetadataRequest = MetadataRequest & {
+  annotations: AnnotationsRequest;
+};
+
 export type SimpleResponse = Pick<Response, 'ok' | 'status'>;
 
 export type FetchFn = (url: string, init?: RequestInit) => Promise<Response>;
