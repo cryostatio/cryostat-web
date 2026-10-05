@@ -44,6 +44,7 @@ import {
   ProbeTemplate,
   EventProbe,
   Recording,
+  RecordingState,
   EventTemplate,
   ArchivedRecording,
   UPLOADS_SUBDIRECTORY,
@@ -1809,7 +1810,10 @@ export class ApiService {
     );
   }
 
-  targetHasJFRMetricsRecording(target: TargetReference, filter: ActiveRecordingsFilterInput = {}): Observable<boolean> {
+  targetHasJFRMetricsRecording(
+    target: TargetReference,
+    filter: { state?: RecordingState; labels?: string[] } = {},
+  ): Observable<boolean> {
     return this.graphql<RecordingCountResponse>(
       `
         query ActiveRecordingsForJFRMetrics($id: BigInteger!, $recordingFilter: ActiveRecordingsFilterInput) {
@@ -1825,7 +1829,7 @@ export class ApiService {
         }`,
       {
         id: target.id!,
-        recordingFilter: filter,
+        recordingFilter: filter as ActiveRecordingsFilterInput,
       },
       true,
       true,

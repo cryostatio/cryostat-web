@@ -23,7 +23,7 @@ import {
   ActiveRecording,
   Recording,
   MBeanMetrics,
-  ActiveRecordingsFilterInput,
+  RecordingState,
   ArchivedRecording,
   EventTemplate,
   EventProbe,
@@ -477,7 +477,10 @@ class FakeApiService extends ApiService {
   }
 
   // JFR Metrics card
-  targetHasJFRMetricsRecording(_target: Target, _filter?: ActiveRecordingsFilterInput): Observable<boolean> {
+  targetHasJFRMetricsRecording(
+    _target: Target,
+    _filter?: { state?: RecordingState; labels?: string[] },
+  ): Observable<boolean> {
     return of(true);
   }
 
