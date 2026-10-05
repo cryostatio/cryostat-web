@@ -19,6 +19,7 @@ import { AlertVariant } from '@patternfly/react-core';
 import _ from 'lodash';
 import { Observable } from 'rxjs';
 import {
+  ActiveRecordingsFilterInput as GqlActiveRecordingsFilterInput,
   AnalysisResult as GqlAnalysisResult,
   Evaluation as GqlEvaluation,
   Suggestion as GqlSuggestion,
@@ -276,17 +277,7 @@ export type HeapDumpDirectory = components['schemas']['ArchivedHeapDumpDirectory
 
 export type HeapDump = components['schemas']['HeapDump'];
 
-export interface ActiveRecordingsFilterInput {
-  name?: string;
-  state?: string;
-  continuous?: boolean;
-  toDisk?: boolean;
-  durationMsGreaterThanEqual?: number;
-  durationMsLessThanEqual?: number;
-  startTimeMsBeforeEqual?: number;
-  startTimeMsAfterEqual?: number;
-  labels?: string[] | string;
-}
+export type ActiveRecordingsFilterInput = GqlActiveRecordingsFilterInput;
 
 /**
  * New target specific archived recording apis now enforce a non-empty target field
