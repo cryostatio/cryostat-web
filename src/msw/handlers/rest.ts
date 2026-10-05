@@ -185,8 +185,10 @@ export const restHandlers = [
 
   // Match expressions
   http.post('*/api/v4/matchExpressions', async ({ request }) => {
-    const body = (await request.json()) as any;
-    return HttpResponse.json({ targets: body.targets ?? [] });
+    const body = (await request.json()) as components['schemas']['RequestData'];
+    const targetIds = body.targetIds ?? [];
+    const targets = db.target.getAll().filter((t: any) => targetIds.includes(t.id));
+    return HttpResponse.json({ expression: body.matchExpression, targets });
   }),
 
   // Event Templates - Global

@@ -112,27 +112,21 @@ describe('ApiService', () => {
   });
 
   describe('matchTargetsWithExpr / isTargetMatched', () => {
-    it('includes non-empty annotations in the outgoing request body', async () => {
+    it('identifies targets by id rather than sending them in full', async () => {
       let sentBody: any;
       jest.spyOn(svc, 'sendRequest').mockImplementation((_apiVersion, _path, config) => {
         sentBody = JSON.parse(config!.body as string);
-        return of(responseOf({ targets: [] }));
+        return of(responseOf({ expression: 'true', targets: [] }));
       });
 
       await firstValueFrom(svc.matchTargetsWithExpr('true', [fakeTarget]));
 
-      expect(sentBody.targets).toHaveLength(1);
-      expect(sentBody.targets[0].annotations.cryostat).toEqual({ REALM: 'Custom Targets' });
-      expect(sentBody.targets[0].annotations.platform).toEqual({});
-      expect(sentBody.targets[0].labels).toEqual({ app: 'cryostat' });
+      expect(sentBody).toEqual({ matchExpression: 'true', targetIds: [fakeTarget.id] });
+      expect(sentBody.targets).toBeUndefined();
     });
 
-    it('matches a target against an expression over target.annotations.cryostat', async () => {
-      jest.spyOn(svc, 'sendRequest').mockImplementation((_apiVersion, _path, config) => {
-        const body = JSON.parse(config!.body as string);
-        const matched = body.targets.filter((t: any) => t.annotations.cryostat.REALM === 'Custom Targets');
-        return of(responseOf({ targets: matched }));
-      });
+    it('matches when the server returns the target', async () => {
+      jest.spyOn(svc, 'sendRequest').mockReturnValue(of(responseOf({ expression: 'true', targets: [fakeTarget] })));
 
       const result = await firstValueFrom(
         svc.isTargetMatched('target.annotations.cryostat.REALM == "Custom Targets"', fakeTarget),
@@ -141,12 +135,8 @@ describe('ApiService', () => {
       expect(result).toBe(true);
     });
 
-    it('does not match when the expression references annotations the target lacks', async () => {
-      jest.spyOn(svc, 'sendRequest').mockImplementation((_apiVersion, _path, config) => {
-        const body = JSON.parse(config!.body as string);
-        const matched = body.targets.filter((t: any) => t.annotations.cryostat.REALM === 'Kubernetes');
-        return of(responseOf({ targets: matched }));
-      });
+    it('does not match when the server omits the target', async () => {
+      jest.spyOn(svc, 'sendRequest').mockReturnValue(of(responseOf({ expression: 'false', targets: [] })));
 
       const result = await firstValueFrom(
         svc.isTargetMatched('target.annotations.cryostat.REALM == "Kubernetes"', fakeTarget),

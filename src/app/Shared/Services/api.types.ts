@@ -115,10 +115,9 @@ export type TargetReference = Omit<Target, 'agent' | 'jvmId' | 'labels' | 'annot
 // (components['schemas']['TargetStub']); credentials are submitted separately by ApiService#createTarget.
 export type TargetCreateRequest = Pick<components['schemas']['TargetStub'], 'alias' | 'connectUrl'>;
 
-export type TargetForTest = Pick<Target, 'alias' | 'connectUrl'> & {
-  labels: object;
-  annotations: { cryostat: object; platform: object };
-};
+export type MatchExpressionTestRequest = components['schemas']['RequestData'];
+
+export type MatchedExpression = components['schemas']['MatchedExpression'];
 
 // ======================================
 // Health Resources
