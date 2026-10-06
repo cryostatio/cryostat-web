@@ -16,7 +16,7 @@
 
 import { DurationFilter, DurationRange } from '@app/Recordings/Filters/DurationFilter';
 import { DurationUnit } from '@app/Shared/Components/DurationUnitSelect';
-import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
+import { ActiveRecording } from '@app/Shared/Services/api.types';
 import { cleanup, screen, waitFor, act } from '@testing-library/react';
 import { render, testT } from '../../utils';
 
@@ -33,7 +33,7 @@ const mockRecording: ActiveRecording = {
   metadata: { labels: mockRecordingLabels },
   startTime: 1234567890,
   id: 0,
-  state: RecordingState.RUNNING,
+  state: 'RUNNING',
   duration: 30000,
   continuous: false,
   toDisk: false,

@@ -15,7 +15,7 @@
  */
 
 import { RecordingStateFilter } from '@app/Recordings/Filters/RecordingStateFilter';
-import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
+import { ActiveRecording, RECORDING_STATES, RecordingState } from '@app/Shared/Services/api.types';
 import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
 import { render, testT } from '../../utils';
 
@@ -32,7 +32,7 @@ const mockRecording: ActiveRecording = {
   metadata: { labels: mockRecordingLabels },
   startTime: 1234567890,
   id: 0,
-  state: RecordingState.RUNNING,
+  state: 'RUNNING',
   duration: 0,
   continuous: false,
   toDisk: false,
@@ -44,7 +44,7 @@ const mockRecording: ActiveRecording = {
 const mockAnotherRecording = {
   ...mockRecording,
   name: 'anotherRecording',
-  state: RecordingState.STOPPED,
+  state: 'STOPPED',
 } as ActiveRecording;
 
 const onStateSelectToggle = jest.fn((_state) => {
@@ -100,7 +100,7 @@ describe('<RecordingStateFilter />', () => {
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
-    Object.values(RecordingState).forEach((rs) => {
+    RECORDING_STATES.forEach((rs) => {
       const selectOption = within(selectMenu).getByText(rs);
       expect(selectOption).toBeInTheDocument();
       expect(selectOption).toBeVisible();
@@ -131,7 +131,7 @@ describe('<RecordingStateFilter />', () => {
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
-    Object.values(RecordingState).forEach((rs) => {
+    RECORDING_STATES.forEach((rs) => {
       const selectOption = within(selectMenu).getByText(rs);
       expect(selectOption).toBeInTheDocument();
       expect(selectOption).toBeVisible();
@@ -169,7 +169,7 @@ describe('<RecordingStateFilter />', () => {
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
-    Object.values(RecordingState).forEach((rs) => {
+    RECORDING_STATES.forEach((rs) => {
       const selectOption = within(selectMenu).getByText(rs);
       expect(selectOption).toBeInTheDocument();
       expect(selectOption).toBeVisible();
@@ -215,7 +215,7 @@ describe('<RecordingStateFilter />', () => {
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
-    Object.values(RecordingState).forEach((rs) => {
+    RECORDING_STATES.forEach((rs) => {
       const selectOption = within(selectMenu).getByText(rs);
       expect(selectOption).toBeInTheDocument();
       expect(selectOption).toBeVisible();
@@ -263,7 +263,7 @@ describe('<RecordingStateFilter />', () => {
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
-    Object.values(RecordingState).forEach((rs) => {
+    RECORDING_STATES.forEach((rs) => {
       const selectOption = within(selectMenu).getByText(rs);
       expect(selectOption).toBeInTheDocument();
       expect(selectOption).toBeVisible();

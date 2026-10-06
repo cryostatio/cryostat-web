@@ -23,13 +23,7 @@ import {
   TargetRecordingFilters,
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import {
-  ActiveRecording,
-  RecordingState,
-  NotificationMessage,
-  Target,
-  keyValueToString,
-} from '@app/Shared/Services/api.types';
+import { ActiveRecording, NotificationMessage, Target, keyValueToString } from '@app/Shared/Services/api.types';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { defaultServices, ServiceContext, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
@@ -61,7 +55,7 @@ const mockRecording: ActiveRecording = {
   reportUrl: 'http://reportUrl',
   metadata: { labels: mockRecordingLabels },
   startTime: 1234567890,
-  state: RecordingState.RUNNING,
+  state: 'RUNNING',
   duration: 1000, // 1000ms
   continuous: false,
   toDisk: false,
@@ -159,7 +153,7 @@ describe('<ActiveRecordingsTable />', () => {
 
   beforeEach(async () => {
     mockRecording.metadata.labels = mockRecordingLabels;
-    mockRecording.state = RecordingState.RUNNING;
+    mockRecording.state = 'RUNNING';
     preloadedState = {
       ...basePreloadedState,
       recordingFilters: {

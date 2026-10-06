@@ -35,7 +35,6 @@ import {
   KeyValue,
   NotificationCategory,
   NullableTarget,
-  RecordingState,
   Target,
   keyValueToString,
 } from '@app/Shared/Services/api.types';
@@ -292,7 +291,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
           const updated = [...old];
           for (const r of updated) {
             if (r.id === event.message.recording.id) {
-              r.state = RecordingState.STOPPED;
+              r.state = 'STOPPED';
             }
           }
           return updated;
@@ -420,7 +419,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
     filteredRecordings.forEach((r: ActiveRecording) => {
       if (checkedIndices.includes(r.id)) {
         handleRowCheck(false, r.id);
-        if (r.state === RecordingState.RUNNING || r.state === RecordingState.STARTING) {
+        if (r.state !== 'STOPPED' && r.state !== 'CLOSED') {
           tasks.push(context.api.stopRecording(r.remoteId).pipe(first()));
         }
       }
@@ -665,7 +664,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
       return true;
     }
     const filtered = props.filteredRecordings.filter((r) => props.checkedIndices.includes(r.id));
-    const anyRunning = filtered.some((r) => r.state === RecordingState.RUNNING || r.state == RecordingState.STARTING);
+    const anyRunning = filtered.some((r) => r.state !== 'STOPPED' && r.state !== 'CLOSED');
     return !anyRunning;
   }, [props.actionLoadings, props.checkedIndices, props.filteredRecordings]);
 

@@ -15,7 +15,7 @@
  */
 
 import { NameFilter } from '@app/Recordings/Filters/NameFilter';
-import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
+import { ActiveRecording } from '@app/Shared/Services/api.types';
 import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
 import { render } from '../../utils';
 
@@ -32,7 +32,7 @@ const mockRecording: ActiveRecording = {
   metadata: { labels: mockRecordingLabels },
   startTime: 1234567890,
   id: 0,
-  state: RecordingState.RUNNING,
+  state: 'RUNNING',
   duration: 0,
   continuous: false,
   toDisk: false,

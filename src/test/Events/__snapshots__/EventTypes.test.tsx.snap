@@ -583,7 +583,7 @@ exports[`<EventTypes /> renders correctly 1`] = `
               data-ouia-safe="true"
               data-pf-content="true"
             >
-              0=[undefined]	
+              some_key=[some_value]	
             </p>
           </div>
         </td>

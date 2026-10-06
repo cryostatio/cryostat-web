@@ -80,25 +80,28 @@ export const CreateAsyncProfilerSession: React.FC = () => {
     addSubscription(context.target.target().subscribe((t) => setTarget(t)));
   }, [addSubscription, context, context.target, setTarget]);
 
-  const convertEventsToTree = React.useCallback((rawEvents: string[]): DualListSelectorTreeItemData[] => {
-    const out: DualListSelectorTreeItemData[] = [];
-    Object.keys(rawEvents).forEach((k) => {
-      const category: DualListSelectorTreeItemData = {
-        id: k.trim(),
-        text: k.trim(),
-        isChecked: false,
-        hasBadge: true,
-        defaultExpanded: true,
-        children: rawEvents[k].map((e) => ({
-          id: e.trim(),
-          text: e.trim(),
+  const convertEventsToTree = React.useCallback(
+    (rawEvents: Record<string, string[]>): DualListSelectorTreeItemData[] => {
+      const out: DualListSelectorTreeItemData[] = [];
+      Object.keys(rawEvents).forEach((k) => {
+        const category: DualListSelectorTreeItemData = {
+          id: k.trim(),
+          text: k.trim(),
           isChecked: false,
-        })),
-      };
-      out.push(category);
-    });
-    return out;
-  }, []);
+          hasBadge: true,
+          defaultExpanded: true,
+          children: rawEvents[k].map((e) => ({
+            id: e.trim(),
+            text: e.trim(),
+            isChecked: false,
+          })),
+        };
+        out.push(category);
+      });
+      return out;
+    },
+    [],
+  );
 
   React.useEffect(() => {
     if (!target) {

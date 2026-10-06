@@ -53,6 +53,7 @@ const mockTarget: Target = {
 };
 
 const mockRecording: ArchivedRecording = {
+  jvmId: mockJvmId,
   name: 'someRecording',
   downloadUrl: 'http://downloadUrl',
   reportUrl: 'http://reportUrl',

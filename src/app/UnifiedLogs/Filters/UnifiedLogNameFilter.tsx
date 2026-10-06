@@ -55,7 +55,7 @@ export const UnifiedLogNameFilter: React.FC<UnifiedLogNameFilterProps> = ({ logs
   const onInputChange = React.useCallback((_, inputVal: string) => setFilterValue(inputVal), [setFilterValue]);
 
   const nameOptions = React.useMemo(() => {
-    return logs.map((r) => r.logId).filter((n) => !filteredNames.includes(n));
+    return logs.map((r) => r.logId).filter((n): n is string => !!n && !filteredNames.includes(n));
   }, [logs, filteredNames]);
 
   const filteredNameOptions = React.useMemo(() => {

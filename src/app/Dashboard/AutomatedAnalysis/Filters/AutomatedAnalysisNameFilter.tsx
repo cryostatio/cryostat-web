@@ -64,7 +64,9 @@ export const AutomatedAnalysisNameFilter: React.FC<AutomatedAnalysisNameFilterPr
     const flatEvalMap: string[] = [] as string[];
     for (const topic of evaluations.map((r) => r[1])) {
       for (const rule of topic) {
-        flatEvalMap.push(rule.name);
+        if (rule.name) {
+          flatEvalMap.push(rule.name);
+        }
       }
     }
     return flatEvalMap.filter((n) => !filteredNames.includes(n)).sort();

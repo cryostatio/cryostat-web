@@ -21,10 +21,9 @@ import { ApiService } from '@app/Shared/Services/Api.service';
 import {
   Target,
   ActiveRecording,
-  RecordingState,
   Recording,
   MBeanMetrics,
-  ActiveRecordingsFilterInput,
+  RecordingState,
   ArchivedRecording,
   EventTemplate,
   EventProbe,
@@ -36,7 +35,7 @@ import {
   CachedReportValue,
   AnalysisResult,
   SimpleResponse,
-  TargetStub,
+  TargetReference,
   AggregateReport,
   CachedHeapDumpReportValue,
 } from '@app/Shared/Services/api.types';
@@ -116,7 +115,7 @@ export const fakeAARecording: ActiveRecording = {
   },
   startTime: 1680732807,
   id: 0,
-  state: RecordingState.RUNNING,
+  state: 'RUNNING',
   duration: 0, // Continuous
   continuous: false,
   toDisk: false,
@@ -478,7 +477,10 @@ class FakeApiService extends ApiService {
   }
 
   // JFR Metrics card
-  targetHasJFRMetricsRecording(_target: Target, _filter?: ActiveRecordingsFilterInput): Observable<boolean> {
+  targetHasJFRMetricsRecording(
+    _target: Target,
+    _filter?: { state?: RecordingState; labels?: string[] },
+  ): Observable<boolean> {
     return of(true);
   }
 
@@ -525,12 +527,16 @@ class FakeApiService extends ApiService {
   }
 
   // Automated analysis card
-  getCurrentReportForTarget(_target: Target | TargetStub[], _aggregateOnly?: boolean): Observable<AggregateReport> {
+  getCurrentReportForTarget(
+    _target: Target | TargetReference[],
+    _aggregateOnly?: boolean,
+  ): Observable<AggregateReport> {
     return of({
       aggregate: {
         count: 2,
         max: 50,
       },
+      lastUpdated: Date.now(),
       data: [
         {
           key: 'rule a',

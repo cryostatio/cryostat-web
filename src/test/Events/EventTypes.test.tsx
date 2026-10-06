@@ -37,7 +37,7 @@ const mockEventType: EventType = {
   typeId: 'org.some_eventId',
   description: 'Some Descriptions',
   category: ['Category 1', 'Category 2'],
-  options: [{ some_key: { name: 'some_name', description: 'a_desc', defaultValue: 'some_value' } }],
+  options: { some_key: { name: 'some_name', description: 'a_desc', defaultValue: 'some_value' } },
 };
 
 jest.spyOn(defaultServices.api, 'getTargetEventTypes').mockReturnValue(of([mockEventType]));

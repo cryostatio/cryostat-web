@@ -130,7 +130,7 @@ export const restHandlers = [
       connectUrl: t.connectUrl,
       jvmId: t.jvmId,
       agent: t.agent,
-      labels: t.labels as any,
+      labels: t.labels,
       annotations: t.annotations,
     }));
     return HttpResponse.json(payload);
@@ -148,18 +148,18 @@ export const restHandlers = [
     const discoveryTree: components['schemas']['DiscoveryNode'] = {
       name: 'Universe',
       nodeType: 'Universe',
-      labels: {},
+      labels: [],
       children: realmTypes.map((r: string) => ({
         name: r,
         nodeType: 'Realm',
-        labels: {},
+        labels: [],
         id: Date.now(),
         children: targets
           .filter((t: any) => getRealmValue(t) === r)
           .map((t: any) => ({
             name: t.alias,
             nodeType: 'Target',
-            labels: {},
+            labels: [],
             target: {
               id: t.id,
               alias: t.alias,
@@ -185,8 +185,10 @@ export const restHandlers = [
 
   // Match expressions
   http.post('*/api/v4/matchExpressions', async ({ request }) => {
-    const body = (await request.json()) as any;
-    return HttpResponse.json({ targets: body.targets ?? [] });
+    const body = (await request.json()) as components['schemas']['RequestData'];
+    const targetIds = body.targetIds ?? [];
+    const targets = db.target.getAll().filter((t: any) => targetIds.includes(t.id));
+    return HttpResponse.json({ expression: body.matchExpression, targets });
   }),
 
   // Event Templates - Global

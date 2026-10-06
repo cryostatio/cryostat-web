@@ -76,8 +76,8 @@ const mockEvaluations1: AnalysisResult[] = [mockRuleEvaluation1];
 const mockEvaluations2: AnalysisResult[] = [mockRuleEvaluation2, mockRuleEvaluation3, mockNaRuleEvaluation];
 
 const mockCategorizedEvaluations: CategorizedRuleEvaluations[] = [
-  [mockRuleEvaluation1.topic, mockEvaluations1],
-  [mockRuleEvaluation2.topic, mockEvaluations2],
+  [mockRuleEvaluation1.topic!, mockEvaluations1],
+  [mockRuleEvaluation2.topic!, mockEvaluations2],
 ];
 
 describe('<AutomatedAnalysisCardList />', () => {

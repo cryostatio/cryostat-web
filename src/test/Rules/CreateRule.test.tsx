@@ -181,13 +181,13 @@ describe('<CreateRule />', () => {
     // Select a template
     await user.click(screen.getByText('Select a Template'));
 
-    const option = await screen.findByText(mockEventTemplate.name);
+    const option = await screen.findByText(mockEventTemplate.name!);
     expect(option).toBeInTheDocument();
     expect(option).toBeVisible();
 
     await user.click(option);
 
-    const oldSelection = screen.getByText(mockEventTemplate.name);
+    const oldSelection = screen.getByText(mockEventTemplate.name!);
     expect(oldSelection).toBeInTheDocument();
     expect(oldSelection).toBeVisible();
 

@@ -15,7 +15,7 @@
  */
 
 import { ApiService } from '@app/Shared/Services/Api.service';
-import { NotificationCategory, Target, RecordingState } from '@app/Shared/Services/api.types';
+import { NotificationCategory, Target } from '@app/Shared/Services/api.types';
 import { NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
 import { SettingsService } from '@app/Shared/Services/Settings.service';
 import { TargetService } from '@app/Shared/Services/Target.service';
@@ -137,7 +137,7 @@ export class JFRMetricsChartController {
       return of(false);
     }
     return this._api.targetHasJFRMetricsRecording(target, {
-      state: RecordingState.RUNNING,
+      state: 'RUNNING',
       labels: [`origin=${RECORDING_NAME}`],
     });
   }
