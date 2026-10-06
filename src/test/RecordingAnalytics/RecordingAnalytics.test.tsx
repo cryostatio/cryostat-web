@@ -106,7 +106,7 @@ const mockRecordingDirectories: RecordingDirectory[] = [
 ];
 
 describe('<RecordingAnalytics />', () => {
-  let mockDoGet: jest.SpyInstance;
+  let mockGetArchivedRecordingDirectories: jest.SpyInstance;
   let archivedRecordingCreatedSubject: Subject<any>;
   let archivedRecordingDeletedSubject: Subject<any>;
 
@@ -116,7 +116,9 @@ describe('<RecordingAnalytics />', () => {
 
     jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.BETA));
     jest.spyOn(defaultServices.settings, 'largeUi').mockReturnValue(of(false));
-    mockDoGet = jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of(mockRecordingDirectories) as any);
+    mockGetArchivedRecordingDirectories = jest
+      .spyOn(defaultServices.api, 'getArchivedRecordingDirectories')
+      .mockReturnValue(of(mockRecordingDirectories) as any);
     jest.spyOn(defaultServices.notificationChannel, 'messages').mockImplementation((category) => {
       switch (category) {
         case NotificationCategory.ArchivedRecordingCreated:
@@ -149,7 +151,7 @@ describe('<RecordingAnalytics />', () => {
 
   it('loads recording directories on mount', async () => {
     renderPage();
-    await waitFor(() => expect(mockDoGet).toHaveBeenCalledWith('fs/recordings', 'beta'));
+    await waitFor(() => expect(mockGetArchivedRecordingDirectories).toHaveBeenCalled());
   });
 
   it('displays JVM ID dropdown with loaded JVM IDs', async () => {
@@ -273,7 +275,7 @@ describe('<RecordingAnalytics />', () => {
 
   it('refreshes recording directories when ArchivedRecordingCreated notification is received', async () => {
     renderPage();
-    await waitFor(() => expect(mockDoGet).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(mockGetArchivedRecordingDirectories).toHaveBeenCalledTimes(1));
 
     const updatedDirectories = [
       ...mockRecordingDirectories,
@@ -292,10 +294,10 @@ describe('<RecordingAnalytics />', () => {
         ],
       },
     ];
-    mockDoGet.mockReturnValue(of(updatedDirectories) as any);
+    mockGetArchivedRecordingDirectories.mockReturnValue(of(updatedDirectories) as any);
     archivedRecordingCreatedSubject.next({ message: { jvmId: 'jvm-3', recording: { name: 'new-recording.jfr' } } });
 
-    await waitFor(() => expect(mockDoGet).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(mockGetArchivedRecordingDirectories).toHaveBeenCalledTimes(2));
     await waitFor(() =>
       expect(within(screen.getAllByTestId('simple-dropdown')[0]).getByText('jvm-3')).toBeInTheDocument(),
     );
@@ -303,16 +305,16 @@ describe('<RecordingAnalytics />', () => {
 
   it('refreshes recording directories when ArchivedRecordingDeleted notification is received', async () => {
     renderPage();
-    await waitFor(() => expect(mockDoGet).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(mockGetArchivedRecordingDirectories).toHaveBeenCalledTimes(1));
 
     const updatedDirectories = [
       { ...mockRecordingDirectories[0], recordings: [mockRecordingDirectories[0].recordings[0]] },
       mockRecordingDirectories[1],
     ];
-    mockDoGet.mockReturnValue(of(updatedDirectories) as any);
+    mockGetArchivedRecordingDirectories.mockReturnValue(of(updatedDirectories) as any);
     archivedRecordingDeletedSubject.next({ message: { jvmId: 'jvm-1', recording: { name: 'recording2.jfr' } } });
 
-    await waitFor(() => expect(mockDoGet).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(mockGetArchivedRecordingDirectories).toHaveBeenCalledTimes(2));
     await waitFor(() =>
       expect(
         within(within(screen.getAllByTestId('simple-dropdown')[0]).getByTestId('dropdown-items')).queryByText(

@@ -15,6 +15,7 @@
  */
 
 import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/types';
+import { ViewList } from '@app/RecordingAnalytics/views/Views';
 import { createBlobURL } from '@app/utils/utils';
 import { ValidatedOptions } from '@patternfly/react-core';
 import _ from 'lodash';
@@ -2195,6 +2196,30 @@ export class ApiService {
         body,
       },
       undefined,
+      suppressNotifications,
+    );
+  }
+
+  getRecordingViews(jvmId: string, filename: string, suppressNotifications = false): Observable<ViewList> {
+    return this.doGet<ViewList>(
+      `targets/${encodeURIComponent(jvmId)}/recordings/${encodeURIComponent(filename)}/views`,
+      'beta',
+      undefined,
+      suppressNotifications,
+    );
+  }
+
+  getRecordingView(
+    jvmId: string,
+    filename: string,
+    params: URLSearchParams,
+    suppressNotifications = false,
+  ): Observable<Response> {
+    return this.sendRequest(
+      'beta',
+      `targets/${encodeURIComponent(jvmId)}/recordings/${encodeURIComponent(filename)}/view`,
+      { method: 'GET' },
+      params,
       suppressNotifications,
     );
   }
