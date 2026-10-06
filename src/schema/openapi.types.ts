@@ -19,2228 +19,6 @@
  */
 
 export interface paths {
-  '/api/beta/audit/export': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Export Revisions */
-    get: {
-      parameters: {
-        query?: {
-          endTime?: number;
-          startTime?: number;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': unknown;
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/audit/revisions': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get Revisions */
-    get: {
-      parameters: {
-        query?: {
-          endTime?: number;
-          page?: number;
-          pageSize?: number;
-          startTime?: number;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['RevisionsResponse'];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/audit/revisions/{rev}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get Revision Detail */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          rev: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['RevisionDetail'];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/audit/target_lineage/{jvmId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Target Lineage By Jvm Id */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          jvmId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['DiscoveryNode'];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/audit/targets/{jvmId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Target By Jvm Id */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          jvmId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['Target'];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/diagnostics/fs/heapdumps': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List Fs Heap Dumps */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['ArchivedHeapDumpDirectory'][];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/diagnostics/fs/heapdumps/{jvmId}/{heapDumpId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete Heap Dump By Path */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          heapDumpId: string;
-          jvmId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description No Content */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/diagnostics/fs/threaddumps': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List Fs Thread Dumps */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['ArchivedThreadDumpDirectory'][];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/diagnostics/fs/threaddumps/{jvmId}/{threadDumpId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete Thread Dump */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          jvmId: string;
-          threadDumpId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description No Content */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/diagnostics/fs/unified-logs': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List Fs Unified Logs */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['ArchivedUnifiedLogDirectory'][];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/diagnostics/fs/unified-logs/{jvmId}/{logId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete Unified Log By Path */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          jvmId: string;
-          logId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description No Content */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Patch Fs Unified Log Metadata */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          jvmId: string;
-          logId: string;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['MetadataBody'];
-        };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['UnifiedLog'];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  '/api/beta/diagnostics/heapdump/download/{encodedKey}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Handle Heap Dumps Storage Download */
-    get: {
-      parameters: {
-        query?: {
-          filename?: string;
-        };
-        header?: never;
-        path: {
-          encodedKey: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': unknown;
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/diagnostics/heapdump/upload/{jvmId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Upload Heap Dump */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          jvmId: string;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/x-www-form-urlencoded': {
-            /** Format: binary */
-            heapDump?: string;
-            jobId?: string;
-            labels?: components['schemas']['JsonObject'];
-          };
-        };
-      };
-      responses: {
-        /** @description Created */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/diagnostics/targets/{jvmId}/heapdump/{heapDumpId}/analyze': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Analyze Heap Dump */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          heapDumpId: string;
-          jvmId: string;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['HttpServerResponse'];
-        };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': unknown;
-          };
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/diagnostics/targets/{jvmId}/threaddump/{threadDumpId}/analyze': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Analyze Thread Dump */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          jvmId: string;
-          threadDumpId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['ThreadDumpAnalysis'];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/diagnostics/targets/{targetId}/gc': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * Initiate a garbage collection on the specified target
-     * @description Request the remote target to perform a garbage collection. The target JVM is free to ignore this
-     *     request. This is generally equivalent to a System.gc() call made within the target JVM.
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Created */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/diagnostics/targets/{targetId}/heapdump': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get Heap Dumps */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['HeapDump'][];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /**
-     * Initiates a heap dump on the specified target
-     * @description Request the remote target to perform a heap dump.
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['HttpServerResponse'];
-        };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'text/plain': string;
-          };
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/diagnostics/targets/{targetId}/heapdump/{heapDumpId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete Heap Dump */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          heapDumpId: string;
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description No Content */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/diagnostics/targets/{targetId}/threaddump': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get Thread Dumps */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['ThreadDump'][];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /** Thread Dump */
-    post: {
-      parameters: {
-        query?: {
-          format?: string;
-        };
-        header?: never;
-        path: {
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['HttpServerResponse'];
-        };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'text/plain': string;
-          };
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/diagnostics/targets/{targetId}/threaddump/{threadDumpId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete Thread Dump */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          targetId: number;
-          threadDumpId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description No Content */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/diagnostics/targets/{targetId}/unified-logging': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Unified Logging Status */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['UnifiedLogStatus'];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /** Enable Unified Logging */
-    post: {
-      parameters: {
-        query?: {
-          decorators?: string;
-          what?: string;
-        };
-        header?: never;
-        path: {
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['UnifiedLog'];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    /** Disable Unified Logging */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description No Content */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Reconfigure Unified Logging */
-    patch: {
-      parameters: {
-        query?: {
-          decorators?: string;
-          what?: string;
-        };
-        header?: never;
-        path: {
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['UnifiedLog'];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  '/api/beta/diagnostics/targets/{targetId}/unified-logging/pull': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Pull Unified Log */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['UnifiedLog'];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/diagnostics/targets/{targetId}/unified-logs': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List Unified Logs */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['UnifiedLog'][];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/diagnostics/targets/{targetId}/unified-logs/{logId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Download Unified Log */
-    get: {
-      parameters: {
-        query?: {
-          filename?: string;
-        };
-        header?: never;
-        path: {
-          logId: string;
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': unknown;
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete Unified Log */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          logId: string;
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description No Content */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Patch Unified Log Metadata */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          logId: string;
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['MetadataBody'];
-        };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['UnifiedLog'];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  '/api/beta/diagnostics/threaddump/download/{encodedKey}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Handle Thread Dumps Storage Download */
-    get: {
-      parameters: {
-        query?: {
-          filename?: string;
-        };
-        header?: never;
-        path: {
-          encodedKey: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': unknown;
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/diagnostics/unified-logs/download/{encodedKey}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Handle Unified Log Storage Download */
-    get: {
-      parameters: {
-        query?: {
-          filename?: string;
-        };
-        header?: never;
-        path: {
-          encodedKey: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': unknown;
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/discovery/credential_exists': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Check if a Credential already exists with an identical MatchExpression script. */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/x-www-form-urlencoded': {
-            script?: string;
-          };
-          'multipart/form-data': {
-            script?: string;
-          };
-        };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['Credential'];
-          };
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/fs/recordings': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List all archived recordings grouped by target */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['ArchivedRecordingDirectory'][];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/fs/recordings/{jvmId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List all archived recordings belonging to the specified target */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          jvmId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['ArchivedRecordingDirectory'][];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/fs/recordings/{jvmId}/{filename}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete an archived recording by name belonging to the specified target */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          filename: string;
-          jvmId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description No Content */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/recording_analytics/{jvmId}/{filename}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Execute Query */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          filename: string;
-          jvmId: string;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/x-www-form-urlencoded': {
-            query?: string;
-          };
-        };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': string[][];
-          };
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/recording_synthesis/{jvmId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Synthesize */
-    post: {
-      parameters: {
-        query: {
-          fromTimestamp: number;
-          tag?: string;
-          toTimestamp: number;
-        };
-        header?: never;
-        path: {
-          jvmId: string;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['HttpServerResponse'];
-        };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': unknown;
-          };
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/recordings/{connectUrl}/{filename}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete an archived recording belonging to the specified target */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description the connection URL associated with the target */
-          connectUrl: string;
-          filename: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description No Content */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/recordings/{jvmId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List archived recordings belonging to the specified target */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          jvmId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['ArchivedRecording'][];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /**
-     * Upload a JFR binary file to archives, associated with a particular target
-     * @description Upload a JFR binary file into the archives, associating the archived recording with a particular
-     *     target JVM. This is primarily used by the Cryostat Agent for pushing harvested recording files.
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          jvmId: string;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/x-www-form-urlencoded': {
-            labels?: components['schemas']['JsonObject'];
-            /** Format: int32 */
-            maxFiles?: number;
-            /** Format: binary */
-            recording?: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Created */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   '/api/beta/targets/{jvmId}/recordings/{filename}/view': {
     parameters: {
       query?: never;
@@ -2353,929 +131,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/beta/targets/{jvmId}/smart_triggers/sync': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Sync Recordings */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          jvmId: string;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'text/plain': string;
-        };
-      };
-      responses: {
-        /** @description Created */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/targets/{targetId}/async-profiler': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List existing async-profiler profiles on the specified target */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['AsyncProfile'][];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /** Create a new async-profiler profile on the specified target */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['StartProfileRequest'];
-        };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'text/plain': string;
-          };
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/targets/{targetId}/async-profiler/status': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get specified target's async-profiler status */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['AsyncProfilerStatus'];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/targets/{targetId}/async-profiler/{profileId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Download an async-profiler binary file in JFR format */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          profileId: string;
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/octet-stream': string;
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete an async-profiler profile from the specified target */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          profileId: string;
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description No Content */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/targets/{targetId}/smart_triggers': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve all currently active Smart Triggers for a target */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['SmartTrigger'][];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /**
-     * Define a new Smart Trigger for a target
-     * @description Define a new Smart Trigger. A custom trigger definition must consist of both an expression
-     *     that defines the overall trigger condition and the name of an event template that is used
-     *     for the JFR Recording. The entire trigger expression must be enclosed in square brackets,
-     *     with the recording template name specified after a ~. For an example definition:
-     *     [ProcessCpuLoad > 0.2 ; TargetDuration > duration("30s")]~profile
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/x-www-form-urlencoded': {
-            definition?: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Created */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/targets/{targetId}/smart_triggers/{uuid}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /**
-     * Delete a currently active Smart Trigger for a target
-     * @description Delete an active Smart Trigger. A custom trigger definition must consist of both an expression
-     *     that defines the overall trigger condition and the name of an event template that is used
-     *     for the JFR Recording. The entire trigger expression must be enclosed in square brackets,
-     *     with the recording template name specified after a ~. For an example definition:
-     *     [ProcessCpuLoad > 0.2 ; TargetDuration > duration("30s")]~profile
-     */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          targetId: number;
-          uuid: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description No Content */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v4.1/metrics/reports': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Retrieve the latest aggregate report data
-     * @description Retrieve the latest aggregate report data across all targets with recent automated analysis reports
-     *     scores. These are multi-dimensional metrics in Prometheus format.
-     */
-    get: {
-      parameters: {
-        query?: {
-          minScore?: number;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'text/plain': string[];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v4.1/metrics/reports/{jvmId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Retrieve the latest aggregate report data for the specified target
-     * @description Retrieve the latest aggregate report data for a given target's recent automated analysis reports
-     *     scores. These are multi-dimensional metrics in Prometheus format.
-     */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          jvmId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'text/plain': string;
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v4.1/reports_rules': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List Report Rules */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['ReportRule'][];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v4.1/targets/{targetId}/reports': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Retrieve current automated analysis report for a target
-     * @description Get the current cached automated analysis report for the specified target, if any. If no such
-     *     report currently exists for the specified target then the response will be an HTTP 404 Not Found,
-     *     and automated analysis report generation will not be triggered.
-     */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': {
-              [key: string]: components['schemas']['AnalysisResult1'];
-            };
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /**
-     * Perform "target analysis" on the specified target
-     * @description Composite action that 1) creates a Snapshot active recording on the specified target, 2) archives
-     *     that Snapshot immediately, 3) performs automated analysis report generation on the archived file.
-     *     The response will include a Location header pointing the client to an endpoint where the report can
-     *     be retrieved, which may require the client to wait for a Job UUID notification.
-     */
-    post: {
-      parameters: {
-        query?: {
-          clean?: boolean;
-        };
-        header?: never;
-        path: {
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['HttpServerResponse'];
-        };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': unknown;
-          };
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v4.2/discovery/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * Publish updated target discovery information
-     * @description Using its plugin ID and current token, a discovery plugin uses this endpoint to publish a JSON
-     *     request body containing a list of discovery nodes. The discovery plugin itself is a Realm node in
-     *     the overall discovery tree, so the published list of nodes here will replace the plugin Realm
-     *     node's list of children.
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: {
-          'Cryostat-Discovery-Authentication'?: string;
-        };
-        path: {
-          id: components['schemas']['UUID'];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['DiscoveryPublication'];
-        };
-      };
-      responses: {
-        /** @description Created */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v4.3/discovery/agents': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * Register and publish a Cryostat Agent
-     * @description Register a Cryostat Agent as a discovery plugin, create its associated Stored Credential, and
-     *     publish its target nodes in one request. This endpoint is intentionally Agent-specific; the
-     *     general Discovery Plugin registration and publication endpoints remain available for other
-     *     Discovery Plugin implementations.
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['AgentRegistration'];
-        };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['PluginRegistration'];
-          };
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v4.3/targets/{targetId}/recordings_sync': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * Resynchronize active recordings on the specified target
-     * @description Reconcile Cryostat's active recording model with the recordings present on the target.
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          targetId: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Active recordings synchronized */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v4/activedownload/{id}': {
+  '/api/v5/active-download/{id}': {
     parameters: {
       query?: never;
       header?: never;
@@ -3294,7 +150,7 @@ export interface paths {
         query?: never;
         header?: never;
         path: {
-          id: number;
+          id: components['schemas']['UUID'];
         };
         cookie?: never;
       };
@@ -3333,7 +189,271 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/auth': {
+  '/api/v5/audit/export': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Export Revisions */
+    get: {
+      parameters: {
+        query?: {
+          endTime?: number;
+          startTime?: number;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': unknown;
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/audit/revisions': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Revisions */
+    get: {
+      parameters: {
+        query?: {
+          endTime?: number;
+          page?: number;
+          pageSize?: number;
+          startTime?: number;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['RevisionsResponse'];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/audit/revisions/{rev}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Revision Detail */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          rev: number;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['RevisionDetail'];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/audit/target-lineage/{jvmId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Target Lineage By Jvm Id */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['DiscoveryNode'];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/audit/targets/{jvmId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Target By Jvm Id */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['Target'];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/auth': {
     parameters: {
       query?: never;
       header?: never;
@@ -3377,7 +497,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/credentials': {
+  '/api/v5/credentials': {
     parameters: {
       query?: never;
       header?: never;
@@ -3487,7 +607,76 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/credentials/test/{targetId}': {
+  '/api/v5/credentials/check-exists': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Check if a Credential already exists with an identical MatchExpression
+     *             script.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          'application/x-www-form-urlencoded': {
+            script?: string;
+          };
+          'multipart/form-data': {
+            script?: string;
+          };
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['Credential'];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/credentials/test/{targetId}': {
     parameters: {
       query?: never;
       header?: never;
@@ -3502,7 +691,7 @@ export interface paths {
         query?: never;
         header?: never;
         path: {
-          targetId: number;
+          targetId: components['schemas']['UUID'];
         };
         cookie?: never;
       };
@@ -3553,7 +742,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/credentials/{id}': {
+  '/api/v5/credentials/{id}': {
     parameters: {
       query?: never;
       header?: never;
@@ -3571,7 +760,7 @@ export interface paths {
         query?: never;
         header?: never;
         path: {
-          id: number;
+          id: components['schemas']['UUID'];
         };
         cookie?: never;
       };
@@ -3610,7 +799,7 @@ export interface paths {
         query?: never;
         header?: never;
         path: {
-          id: number;
+          id: components['schemas']['UUID'];
         };
         cookie?: never;
       };
@@ -3644,18 +833,333 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/discovery': {
+  '/api/v5/diagnostics/heap-dump': {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** Retrieve the entire discovery tree. */
+    /** List Heap Dumps */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['ArchivedHeapDumpDirectory'][];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/diagnostics/heap-dump/download/{encodedKey}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Handle Heap Dumps Storage Download */
     get: {
       parameters: {
         query?: {
-          mergeRealms?: boolean;
+          filename?: string;
+        };
+        header?: never;
+        path: {
+          encodedKey: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': unknown;
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/diagnostics/thread-dump': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Thread Dumps */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['ArchivedThreadDumpDirectory'][];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/diagnostics/thread-dump/download/{encodedKey}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Handle Thread Dumps Storage Download */
+    get: {
+      parameters: {
+        query?: {
+          filename?: string;
+        };
+        header?: never;
+        path: {
+          encodedKey: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': unknown;
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/diagnostics/unified-logs': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Unified Logs */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['ArchivedUnifiedLogDirectory'][];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/diagnostics/unified-logs/download/{encodedKey}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Handle Unified Log Storage Download */
+    get: {
+      parameters: {
+        query?: {
+          filename?: string;
+        };
+        header?: never;
+        path: {
+          encodedKey: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': unknown;
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/discovery/plugins': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List currently registered discovery plugins
+     * @description Retrieve a list of currently registered discovery plugins only, not including their subtrees.
+     */
+    get: {
+      parameters: {
+        query?: {
+          realm?: string;
         };
         header?: never;
         path?: never;
@@ -3669,7 +1173,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            'application/json': components['schemas']['DiscoveryNode'];
+            'application/json': components['schemas']['DiscoveryPlugin_Flat'][];
           };
         };
         /** @description Not Authorized */
@@ -3747,7 +1251,74 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/discovery/{id}': {
+  '/api/v5/discovery/plugins/agent': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Register and publish a Cryostat Agent
+     * @description Register a Cryostat Agent as a discovery plugin, create its associated Stored Credential, and
+     *     publish its target nodes in one request. This endpoint is intentionally Agent-specific; the
+     *     general Discovery Plugin registration and publication endpoints remain available for other
+     *     Discovery Plugin implementations.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          'application/json': components['schemas']['AgentRegistration'];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['PluginRegistration'];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/discovery/plugins/registration-check/{id}': {
     parameters: {
       query?: never;
       header?: never;
@@ -3796,154 +1367,6 @@ export interface paths {
       };
     };
     put?: never;
-    /**
-     * Publish updated target discovery information
-     * @description Using its plugin ID and current token, a discovery plugin uses this endpoint to publish a JSON
-     *     request body containing a list of discovery nodes. The discovery plugin itself is a Realm node in
-     *     the overall discovery tree, so the published list of nodes here will replace the plugin Realm
-     *     node's list of children.
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: {
-          'Cryostat-Discovery-Authentication'?: string;
-        };
-        path: {
-          id: components['schemas']['UUID'];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['DiscoveryNode'][];
-        };
-      };
-      responses: {
-        /** @description Created */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    /**
-     * Delete the given plugin's registration
-     * @description Delete the plugin's registration along with its discovery Realm node and all of its children. This
-     *     is used when a discovery plugin is shutting down.
-     */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: {
-          'Cryostat-Discovery-Authentication'?: string;
-        };
-        path: {
-          id: components['schemas']['UUID'];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description No Content */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v4/discovery_plugins': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * List currently registered discovery plugins
-     * @description Retrieve a list of currently registered discovery plugins only, not including their subtrees.
-     */
-    get: {
-      parameters: {
-        query?: {
-          realm?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['DiscoveryPlugin_Flat'][];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
     post?: never;
     delete?: never;
     options?: never;
@@ -3951,7 +1374,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/discovery_plugins/{id}': {
+  '/api/v5/discovery/plugins/{id}': {
     parameters: {
       query?: never;
       header?: never;
@@ -4001,13 +1424,174 @@ export interface paths {
     };
     put?: never;
     post?: never;
+    /**
+     * Delete the given plugin's registration
+     * @description Delete the plugin's registration along with its discovery Realm node and all of its children. This
+     *     is used when a discovery plugin is shutting down.
+     */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: {
+          'Cryostat-Discovery-Authentication'?: string;
+        };
+        path: {
+          id: components['schemas']['UUID'];
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description No Content */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/discovery/plugins/{id}/publish': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Publish updated target discovery information
+     * @description Using its plugin ID and current token, a discovery plugin uses this endpoint to publish a JSON
+     *     request body containing a list of discovery nodes. The discovery plugin itself is a Realm node in
+     *     the overall discovery tree, so the published list of nodes here will replace the plugin Realm
+     *     node's list of children.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: {
+          'Cryostat-Discovery-Authentication'?: string;
+        };
+        path: {
+          id: components['schemas']['UUID'];
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          'application/json': components['schemas']['DiscoveryPublication'];
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
     delete?: never;
     options?: never;
     head?: never;
     patch?: never;
     trace?: never;
   };
-  '/api/v4/download/{encodedKey}': {
+  '/api/v5/discovery/tree': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Retrieve the entire discovery tree. */
+    get: {
+      parameters: {
+        query?: {
+          mergeRealms?: boolean;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['DiscoveryNode'];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/download/{encodedKey}': {
     parameters: {
       query?: never;
       header?: never;
@@ -4065,7 +1649,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/event_templates': {
+  '/api/v5/event-templates': {
     parameters: {
       query?: never;
       header?: never;
@@ -4171,7 +1755,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/event_templates/{templateName}': {
+  '/api/v5/event-templates/{templateName}': {
     parameters: {
       query?: never;
       header?: never;
@@ -4225,7 +1809,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/event_templates/{templateType}': {
+  '/api/v5/event-templates/{templateType}': {
     parameters: {
       query?: never;
       header?: never;
@@ -4277,7 +1861,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/event_templates/{templateType}/{templateName}': {
+  '/api/v5/event-templates/{templateType}/{templateName}': {
     parameters: {
       query?: never;
       header?: never;
@@ -4334,7 +1918,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/grafana/{encodedKey}': {
+  '/api/v5/grafana/{encodedKey}': {
     parameters: {
       query?: never;
       header?: never;
@@ -4401,19 +1985,14 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/grafana_dashboard_url': {
+  '/api/v5/jmc-agent/probe-templates': {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /**
-     * Return the URL which users can visit to access the associated Grafana dashboard instance.
-     * @description Returns the URL for the associated Grafana dashboard instance. If there is an internally-accessible
-     *     (for Cryostat) URL and an externally-accessible URL (for users) URL, the externally-accessible URL
-     *     is preferred. If neither are configured then the response is an HTTP 400 Bad Request.
-     */
+    /** List defined probe templates */
     get: {
       parameters: {
         query?: never;
@@ -4429,37 +2008,103 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            'application/json': components['schemas']['DashboardUrl'];
+            'application/json': components['schemas']['ProbeTemplateResponse'][];
           };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
         };
       };
     };
     put?: never;
-    post?: never;
+    /**
+     * Create a probe template
+     * @description Create a probe template. This requires a probe template file upload in XML format. See
+     *         https://github.com/openjdk/jmc/blob/master/agent/README.md and
+     *         https://github.com/openjdk/jmc/blob/master/agent/src/main/resources/org/openjdk/jmc/agent/impl/jfrprobes_schema.xsd
+     *         for more information about this file format.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          'application/x-www-form-urlencoded': {
+            name?: string;
+            /** Format: binary */
+            probeTemplate?: string;
+          };
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['ProbeTemplate'];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
     delete?: never;
     options?: never;
     head?: never;
     patch?: never;
     trace?: never;
   };
-  '/api/v4/grafana_datasource_url': {
+  '/api/v5/jmc-agent/probe-templates/{probeTemplateName}': {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /**
-     * Return the URL to the associated jfr-datasource instance.
-     * @description Returns the URL for the jfr-datasource instance which Cryostat is configured to use. This datasource
-     *     accepts JFR file uploads from Cryostat and allows the Grafana dashboard to perform queries on the
-     *     data within the recording file.
-     */
+    /** Get a specific probe template */
     get: {
       parameters: {
         query?: never;
         header?: never;
-        path?: never;
+        path: {
+          probeTemplateName: string;
+        };
         cookie?: never;
       };
       requestBody?: never;
@@ -4470,20 +2115,68 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            'application/json': components['schemas']['DatasourceUrl'];
+            'application/xml': string;
           };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
         };
       };
     };
     put?: never;
     post?: never;
-    delete?: never;
+    /** Delete the specified probe template */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          probeTemplateName: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description No Content */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
     options?: never;
     head?: never;
     patch?: never;
     trace?: never;
   };
-  '/api/v4/logout': {
+  '/api/v5/logout': {
     parameters: {
       query?: never;
       header?: never;
@@ -4524,7 +2217,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/matchExpressions': {
+  '/api/v5/match-expressions': {
     parameters: {
       query?: never;
       header?: never;
@@ -4632,7 +2325,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/matchExpressions/{id}': {
+  '/api/v5/match-expressions/{id}': {
     parameters: {
       query?: never;
       header?: never;
@@ -4645,7 +2338,7 @@ export interface paths {
         query?: never;
         header?: never;
         path: {
-          id: number;
+          id: components['schemas']['UUID'];
         };
         cookie?: never;
       };
@@ -4684,126 +2377,25 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/probes': {
+  '/api/v5/metrics/reports': {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** List defined probe templates */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['ProbeTemplateResponse'][];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
     /**
-     * Create a probe template
-     * @description Create a probe template. This requires a probe template file upload in XML format. See
-     *         https://github.com/openjdk/jmc/blob/master/agent/README.md and
-     *         https://github.com/openjdk/jmc/blob/master/agent/src/main/resources/org/openjdk/jmc/agent/impl/jfrprobes_schema.xsd
-     *         for more information about this file format.
+     * Retrieve the latest aggregate report data
+     * @description Retrieve the latest aggregate report data across all targets with recent automated analysis reports
+     *     scores. These are multi-dimensional metrics in Prometheus format.
      */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/x-www-form-urlencoded': {
-            name?: string;
-            /** Format: binary */
-            probeTemplate?: string;
-          };
-        };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['ProbeTemplate'];
-          };
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v4/probes/{probeTemplateName}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get a specific probe template */
     get: {
       parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          probeTemplateName: string;
+        query?: {
+          minScore?: number;
         };
+        header?: never;
+        path?: never;
         cookie?: never;
       };
       requestBody?: never;
@@ -4814,7 +2406,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            'application/xml': string;
+            'text/plain': string[];
           };
         };
         /** @description Not Authorized */
@@ -4835,24 +2427,43 @@ export interface paths {
     };
     put?: never;
     post?: never;
-    /** Delete the specified probe template */
-    delete: {
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/metrics/reports/{jvmId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Retrieve the latest aggregate report data for the specified target
+     * @description Retrieve the latest aggregate report data for a given target's recent automated analysis reports
+     *     scores. These are multi-dimensional metrics in Prometheus format.
+     */
+    get: {
       parameters: {
         query?: never;
         header?: never;
         path: {
-          probeTemplateName: string;
+          jvmId: string;
         };
         cookie?: never;
       };
       requestBody?: never;
       responses: {
-        /** @description No Content */
-        204: {
+        /** @description OK */
+        200: {
           headers: {
             [name: string]: unknown;
           };
-          content?: never;
+          content: {
+            'text/plain': string;
+          };
         };
         /** @description Not Authorized */
         401: {
@@ -4870,22 +2481,22 @@ export interface paths {
         };
       };
     };
+    put?: never;
+    post?: never;
+    delete?: never;
     options?: never;
     head?: never;
     patch?: never;
     trace?: never;
   };
-  '/api/v4/recordings': {
+  '/api/v5/recordings': {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /**
-     * List all archived recordings
-     * @description List all archived recordings from all targets, including (re-)uploaded files.
-     */
+    /** List all archived recordings grouped by target */
     get: {
       parameters: {
         query?: never;
@@ -4901,7 +2512,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            'application/json': components['schemas']['ArchivedRecording'][];
+            'application/json': components['schemas']['ArchivedRecordingDirectory'][];
           };
         };
         /** @description Not Authorized */
@@ -4920,6 +2531,22 @@ export interface paths {
         };
       };
     };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/recordings/uploads': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
     put?: never;
     /**
      * Upload a JFR binary file to archives
@@ -4985,7 +2612,114 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/recordings/{filename}': {
+  '/api/v5/recordings/{jvmId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List archived recordings belonging to the specified target */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['ArchivedRecording'][];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    /**
+     * Upload a JFR binary file to archives, associated with a particular target
+     * @description Upload a JFR binary file into the archives, associating the archived recording with a particular
+     *     target JVM. This is primarily used by the Cryostat Agent for pushing harvested recording files.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          'application/x-www-form-urlencoded': {
+            labels?: components['schemas']['JsonObject'];
+            /** Format: int32 */
+            maxFiles?: number;
+            /** Format: binary */
+            recording?: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/recordings/{jvmId}/{filename}': {
     parameters: {
       query?: never;
       header?: never;
@@ -4995,16 +2729,15 @@ export interface paths {
     get?: never;
     put?: never;
     post?: never;
-    /**
-     * Delete an archived recording by filename
-     * @deprecated
-     */
+    /** Delete an archived recording belonging to the specified target */
     delete: {
       parameters: {
         query?: never;
         header?: never;
         path: {
           filename: string;
+          /** @description the target JVM ID */
+          jvmId: string;
         };
         cookie?: never;
       };
@@ -5038,7 +2771,123 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/reports/{encodedKey}': {
+  '/api/v5/recordings/{jvmId}/{filename}/analytics': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Execute Query */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          filename: string;
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          'application/x-www-form-urlencoded': {
+            query?: string;
+          };
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': string[][];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/reports/rules': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Report Rules */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['ReportRule'][];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/reports/{encodedKey}': {
     parameters: {
       query?: never;
       header?: never;
@@ -5105,7 +2954,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/rules': {
+  '/api/v5/rules': {
     parameters: {
       query?: never;
       header?: never;
@@ -5236,20 +3085,20 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/rules/{name}': {
+  '/api/v5/rules/{id}': {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** Get an Automated Rule by name */
+    /** Get an Automated Rule by id */
     get: {
       parameters: {
         query?: never;
         header?: never;
         path: {
-          name: string;
+          id: components['schemas']['UUID'];
         };
         cookie?: never;
       };
@@ -5282,7 +3131,7 @@ export interface paths {
     };
     put?: never;
     post?: never;
-    /** Delete an Automated Rule by name */
+    /** Delete an Automated Rule */
     delete: {
       parameters: {
         query?: {
@@ -5290,7 +3139,7 @@ export interface paths {
         };
         header?: never;
         path: {
-          name: string;
+          id: components['schemas']['UUID'];
         };
         cookie?: never;
       };
@@ -5332,7 +3181,7 @@ export interface paths {
         };
         header?: never;
         path: {
-          name: string;
+          id: components['schemas']['UUID'];
         };
         cookie?: never;
       };
@@ -5369,7 +3218,7 @@ export interface paths {
     };
     trace?: never;
   };
-  '/api/v4/targets': {
+  '/api/v5/targets': {
     parameters: {
       query?: never;
       header?: never;
@@ -5379,7 +3228,7 @@ export interface paths {
     /**
      * List currently discovered targets
      * @description Get a list of the currently discovered targets. These are essentialy the same as the leaf nodes of
-     *     the discovery tree. See 'GET /api/v4/discovery'.
+     *     the discovery tree. See 'GET /api/v5/discovery'.
      */
     get: {
       parameters: {
@@ -5491,7 +3340,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/targets/{id}': {
+  '/api/v5/targets/{id}': {
     parameters: {
       query?: never;
       header?: never;
@@ -5507,7 +3356,7 @@ export interface paths {
         query?: never;
         header?: never;
         path: {
-          id: number;
+          id: components['schemas']['UUID'];
         };
         cookie?: never;
       };
@@ -5540,18 +3389,33 @@ export interface paths {
     };
     put?: never;
     post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
     /**
-     * Delete the specified target
-     * @description Delete the specified target by ID. Only allows deletion of targets that were defined by the same
-     *     Custom Target discovery API. Other targets must be removed by the discovery mechanisms which
-     *     discovered them.
+     * Delete a custom target by JVM ID
+     * @description Delete a custom target definition by its JVM ID. Only allows deletion of targets that were defined by the
+     *     Custom Target API. Other targets must be removed by the discovery mechanisms which discovered them.
      */
     delete: {
       parameters: {
         query?: never;
         header?: never;
         path: {
-          id: number;
+          jvmId: string;
         };
         cookie?: never;
       };
@@ -5585,7 +3449,1187 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/targets/{id}/event_templates': {
+  '/api/v5/targets/{jvmId}/async-profiler': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List existing async-profiler profiles on the specified target */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['AsyncProfile'][];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    /** Create a new async-profiler profile on the specified target */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          'application/json': components['schemas']['StartProfileRequest'];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'text/plain': string;
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}/async-profiler/status': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get specified target's async-profiler status */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['AsyncProfilerStatus'];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}/async-profiler/{profileId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Download an async-profiler binary file in JFR format */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+          profileId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/octet-stream': string;
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    /** Delete an async-profiler profile from the specified target */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+          profileId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description No Content */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}/diagnostics/gc': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Initiate a garbage collection on the specified target
+     * @description Request the remote target to perform a garbage collection. The target JVM is free to ignore this
+     *     request. This is generally equivalent to a System.gc() call made within the target JVM.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Created */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}/diagnostics/heap-dump': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Heap Dumps */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['HeapDump'][];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    /**
+     * Initiates a heap dump on the specified target
+     * @description Request the remote target to perform a heap dump.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          'application/json': components['schemas']['HttpServerResponse'];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'text/plain': string;
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}/diagnostics/heap-dump/upload': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Upload Heap Dump */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          'application/x-www-form-urlencoded': {
+            /** Format: binary */
+            heapDump?: string;
+            jobId?: string;
+            labels?: components['schemas']['JsonObject'];
+          };
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}/diagnostics/heap-dump/{heapDumpId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** Delete Heap Dump */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          heapDumpId: string;
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description No Content */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}/diagnostics/heap-dump/{heapDumpId}/analyze': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Analyze Heap Dump */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          heapDumpId: string;
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          'application/json': components['schemas']['HttpServerResponse'];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': unknown;
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}/diagnostics/thread-dump': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Thread Dumps */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['ThreadDump'][];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    /** Thread Dump */
+    post: {
+      parameters: {
+        query?: {
+          format?: string;
+        };
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          'application/json': components['schemas']['HttpServerResponse'];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'text/plain': string;
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}/diagnostics/thread-dump/{threadDumpId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** Delete Thread Dump */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+          threadDumpId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description No Content */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}/diagnostics/thread-dump/{threadDumpId}/analyze': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Analyze Thread Dump */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+          threadDumpId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['ThreadDumpAnalysis'];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}/diagnostics/unified-logging': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Unified Logging Status */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['UnifiedLogStatus'];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    /** Enable Unified Logging */
+    post: {
+      parameters: {
+        query?: {
+          decorators?: string;
+          what?: string;
+        };
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['UnifiedLog'];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    /** Disable Unified Logging */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description No Content */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    /** Reconfigure Unified Logging */
+    patch: {
+      parameters: {
+        query?: {
+          decorators?: string;
+          what?: string;
+        };
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['UnifiedLog'];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}/diagnostics/unified-logs': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Unified Logs */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['UnifiedLog'][];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}/diagnostics/unified-logs/pull': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Pull Unified Log */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['UnifiedLog'];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}/diagnostics/unified-logs/{logId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Download Unified Log */
+    get: {
+      parameters: {
+        query?: {
+          filename?: string;
+        };
+        header?: never;
+        path: {
+          jvmId: string;
+          logId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': unknown;
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    /** Delete Unified Log */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+          logId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description No Content */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    /** Patch Unified Log Metadata */
+    patch: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+          logId: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          'application/json': components['schemas']['MetadataBody'];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['UnifiedLog'];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}/event-templates': {
     parameters: {
       query?: never;
       header?: never;
@@ -5603,7 +4647,7 @@ export interface paths {
         query?: never;
         header?: never;
         path: {
-          id: number;
+          jvmId: string;
         };
         cookie?: never;
       };
@@ -5642,7 +4686,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/targets/{id}/event_templates/{templateType}/{templateName}': {
+  '/api/v5/targets/{jvmId}/event-templates/{templateType}/{templateName}': {
     parameters: {
       query?: never;
       header?: never;
@@ -5658,7 +4702,7 @@ export interface paths {
         query?: never;
         header?: never;
         path: {
-          id: number;
+          jvmId: string;
           templateName: string;
           templateType: components['schemas']['TemplateType'];
         };
@@ -5699,7 +4743,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/targets/{id}/events': {
+  '/api/v5/targets/{jvmId}/events': {
     parameters: {
       query?: never;
       header?: never;
@@ -5720,7 +4764,7 @@ export interface paths {
         };
         header?: never;
         path: {
-          id: number;
+          jvmId: string;
         };
         cookie?: never;
       };
@@ -5759,7 +4803,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/targets/{id}/probes': {
+  '/api/v5/targets/{jvmId}/jmc-agent/probes': {
     parameters: {
       query?: never;
       header?: never;
@@ -5772,7 +4816,7 @@ export interface paths {
         query?: never;
         header?: never;
         path: {
-          id: number;
+          jvmId: string;
         };
         cookie?: never;
       };
@@ -5811,7 +4855,7 @@ export interface paths {
         query?: never;
         header?: never;
         path: {
-          id: number;
+          jvmId: string;
         };
         cookie?: never;
       };
@@ -5845,7 +4889,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/targets/{id}/probes/{probeTemplateName}': {
+  '/api/v5/targets/{jvmId}/jmc-agent/probes/{probeTemplateName}': {
     parameters: {
       query?: never;
       header?: never;
@@ -5863,7 +4907,7 @@ export interface paths {
         query?: never;
         header?: never;
         path: {
-          id: number;
+          jvmId: string;
           probeTemplateName: string;
         };
         cookie?: never;
@@ -5899,7 +4943,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/targets/{targetId}/recordingOptions': {
+  '/api/v5/targets/{jvmId}/recording-options': {
     parameters: {
       query?: never;
       header?: never;
@@ -5915,7 +4959,7 @@ export interface paths {
         query?: never;
         header?: never;
         path: {
-          targetId: number;
+          jvmId: string;
         };
         cookie?: never;
       };
@@ -5964,7 +5008,7 @@ export interface paths {
         query?: never;
         header?: never;
         path: {
-          targetId: number;
+          jvmId: string;
         };
         cookie?: never;
       };
@@ -6007,7 +5051,7 @@ export interface paths {
     };
     trace?: never;
   };
-  '/api/v4/targets/{targetId}/recordings': {
+  '/api/v5/targets/{jvmId}/recordings': {
     parameters: {
       query?: never;
       header?: never;
@@ -6024,7 +5068,7 @@ export interface paths {
         query?: never;
         header?: never;
         path: {
-          targetId: number;
+          jvmId: string;
         };
         cookie?: never;
       };
@@ -6070,7 +5114,7 @@ export interface paths {
         query?: never;
         header?: never;
         path: {
-          targetId: number;
+          jvmId: string;
         };
         cookie?: never;
       };
@@ -6133,7 +5177,180 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/targets/{targetId}/recordings/{remoteId}': {
+  '/api/v5/targets/{jvmId}/recordings-sync': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Resynchronize active recordings on the specified target
+     * @description Reconcile Cryostat's active recording model with the recordings present on the target.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Active recordings synchronized */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}/recordings/snapshot': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Create a JFR Snapshot on the specified target */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['LinkedRecordingDescriptor'];
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}/recordings/synthesis': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Synthesize */
+    post: {
+      parameters: {
+        query: {
+          autoanalyze?: boolean;
+          fromTimestamp: number;
+          tag?: string;
+          toTimestamp: number;
+        };
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          'application/json': components['schemas']['HttpServerResponse'];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': unknown;
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}/recordings/{remoteId}': {
     parameters: {
       query?: never;
       header?: never;
@@ -6152,8 +5369,8 @@ export interface paths {
         query?: never;
         header?: never;
         path: {
+          jvmId: string;
           remoteId: number;
-          targetId: number;
         };
         cookie?: never;
       };
@@ -6196,8 +5413,8 @@ export interface paths {
         query?: never;
         header?: never;
         path: {
+          jvmId: string;
           remoteId: number;
-          targetId: number;
         };
         cookie?: never;
       };
@@ -6238,8 +5455,8 @@ export interface paths {
         query?: never;
         header?: never;
         path: {
+          jvmId: string;
           remoteId: number;
-          targetId: number;
         };
         cookie?: never;
       };
@@ -6276,7 +5493,7 @@ export interface paths {
     };
     trace?: never;
   };
-  '/api/v4/targets/{targetId}/recordings/{remoteId}/upload': {
+  '/api/v5/targets/{jvmId}/recordings/{remoteId}/upload': {
     parameters: {
       query?: never;
       header?: never;
@@ -6295,8 +5512,8 @@ export interface paths {
         query?: never;
         header?: never;
         path: {
+          jvmId: string;
           remoteId: number;
-          targetId: number;
         };
         cookie?: never;
       };
@@ -6344,7 +5561,121 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/targets/{targetId}/reports/{recordingId}': {
+  '/api/v5/targets/{jvmId}/reports': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Retrieve current automated analysis report for a target
+     * @description Get the current cached automated analysis report for the specified target, if any. If no such
+     *     report currently exists for the specified target then the response will be an HTTP 404 Not Found,
+     *     and automated analysis report generation will not be triggered.
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': {
+              [key: string]: components['schemas']['AnalysisResult1'];
+            };
+          };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    /**
+     * Perform "target analysis" on the specified target
+     * @description Composite action that 1) creates a Snapshot active recording on the specified target, 2) archives
+     *     that Snapshot immediately, 3) performs automated analysis report generation on the archived file.
+     *     The response will include a Location header pointing the client to an endpoint where the report can
+     *     be retrieved, which may require the client to wait for a Job UUID notification.
+     */
+    post: {
+      parameters: {
+        query?: {
+          clean?: boolean;
+        };
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          'application/json': components['schemas']['HttpServerResponse'];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': unknown;
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}/reports/{recordingId}': {
     parameters: {
       query?: never;
       header?: never;
@@ -6365,8 +5696,8 @@ export interface paths {
         };
         header?: never;
         path: {
+          jvmId: string;
           recordingId: number;
-          targetId: number;
         };
         cookie?: never;
       };
@@ -6409,22 +5740,20 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/targets/{targetId}/snapshot': {
+  '/api/v5/targets/{jvmId}/smart-triggers': {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    get?: never;
-    put?: never;
-    /** Create a JFR Snapshot on the specified target */
-    post: {
+    /** Retrieve all currently active Smart Triggers for a target */
+    get: {
       parameters: {
         query?: never;
         header?: never;
         path: {
-          targetId: number;
+          jvmId: string;
         };
         cookie?: never;
       };
@@ -6436,8 +5765,64 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            'application/json': components['schemas']['LinkedRecordingDescriptor'];
+            'application/json': components['schemas']['SmartTrigger'][];
           };
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    /**
+     * Define a new Smart Trigger for a target
+     * @description Define a new Smart Trigger. A custom trigger definition must consist of both an expression
+     *     that defines the overall trigger condition and the name of an event template that is used
+     *     for the JFR Recording. The entire trigger expression must be enclosed in square brackets,
+     *     with the recording template name specified after a ~. For an example definition:
+     *     [ProcessCpuLoad > 0.2 ; TargetDuration > duration("30s")]~profile
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          'application/x-www-form-urlencoded': {
+            definition?: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
         };
         /** @description Not Authorized */
         401: {
@@ -6461,7 +5846,119 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v4/tls/certs': {
+  '/api/v5/targets/{jvmId}/smart-triggers/sync': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Sync Recordings */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          'text/plain': string;
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/targets/{jvmId}/smart-triggers/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Delete a currently active Smart Trigger for a target
+     * @description Delete an active Smart Trigger. A custom trigger definition must consist of both an expression
+     *     that defines the overall trigger condition and the name of an event template that is used
+     *     for the JFR Recording. The entire trigger expression must be enclosed in square brackets,
+     *     with the recording template name specified after a ~. For an example definition:
+     *     [ProcessCpuLoad > 0.2 ; TargetDuration > duration("30s")]~profile
+     */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+          jvmId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description No Content */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Authorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v5/tls/certs': {
     parameters: {
       query?: never;
       header?: never;
@@ -6671,12 +6168,7 @@ export interface components {
     ApplicationHealth: {
       build?: components['schemas']['BuildInfo'];
       cryostatVersion?: string;
-      dashboardAvailable?: boolean;
-      dashboardConfigured?: boolean;
-      datasourceAvailable?: boolean;
-      datasourceConfigured?: boolean;
-      reportsAvailable?: boolean;
-      reportsConfigured?: boolean;
+      services?: components['schemas']['Services'];
     };
     ArchivedHeapDumpDirectory: {
       heapDumps?: components['schemas']['HeapDump'][];
@@ -6694,7 +6186,6 @@ export interface components {
       size?: number;
     };
     ArchivedRecordingDirectory: {
-      connectUrl?: string;
       jvmId?: string;
       recordings?: components['schemas']['ArchivedRecording'][];
     };
@@ -6744,26 +6235,18 @@ export interface components {
       | 'CLASS'
       | 'PERCENTAGE';
     Credential: {
-      /** Format: int64 */
-      id?: number;
+      id: components['schemas']['UUID'];
       matchExpression: components['schemas']['MatchExpression'];
       password: string;
       username: string;
     };
     CredentialMatchResult: {
-      /** Format: int64 */
-      id?: number;
+      id?: components['schemas']['UUID'];
       matchExpression?: components['schemas']['MatchExpression'];
       targets?: components['schemas']['Target'][];
     };
     /** @enum {string} */
     CredentialTestResult: 'SUCCESS' | 'FAILURE' | 'NA';
-    DashboardUrl: {
-      grafanaDashboardUrl?: string;
-    };
-    DatasourceUrl: {
-      grafanaDatasourceUrl?: string;
-    };
     /**
      * Format: date
      * @example 2022-03-10
@@ -6785,8 +6268,7 @@ export interface components {
     DiscoveryFillStrategy: 'NONE' | 'KUBERNETES';
     DiscoveryNode: {
       children?: components['schemas']['DiscoveryNode'][];
-      /** Format: int64 */
-      id?: number;
+      id: components['schemas']['UUID'];
       labels: {
         [key: string]: string;
       };
@@ -6795,8 +6277,7 @@ export interface components {
       target?: components['schemas']['Target'];
     };
     DiscoveryNode_Flat: {
-      /** Format: int64 */
-      id?: number;
+      id: components['schemas']['UUID'];
       labels: {
         [key: string]: string;
       };
@@ -6854,6 +6335,12 @@ export interface components {
     };
     /** @enum {string} */
     EventAvailability: 'AVAILABLE' | 'ENABLED' | 'DISABLED' | 'NONE' | 'UNKNOWN';
+    ExternalService: {
+      available?: boolean;
+      configured?: boolean;
+      /** Format: uri */
+      url?: string;
+    };
     Field: {
       contentType?: components['schemas']['ContentType'];
       converter?: string;
@@ -6882,6 +6369,10 @@ export interface components {
       statusCode?: number;
       statusMessage?: string;
     };
+    InternalService: {
+      available?: boolean;
+      configured?: boolean;
+    };
     JniInfo: {
       /** Format: int32 */
       globalRefs?: number;
@@ -6902,8 +6393,7 @@ export interface components {
       downloadUrl?: string;
       /** Format: int64 */
       duration?: number;
-      /** Format: int64 */
-      id?: number;
+      id?: components['schemas']['UUID'];
       /** Format: int64 */
       maxAge?: number;
       /** Format: int64 */
@@ -6929,14 +6419,12 @@ export interface components {
     /** @enum {string} */
     LockOperation: 'LOCKED' | 'WAITING_TO_LOCK' | 'WAITING_ON' | 'PARKING' | 'ELIMINATED';
     MatchExpression: {
-      /** Format: int64 */
-      id?: number;
+      id: components['schemas']['UUID'];
       script: string;
     };
     MatchedExpression: {
       expression?: string;
-      /** Format: int64 */
-      id?: number;
+      id?: components['schemas']['UUID'];
       targets?: components['schemas']['Target'][];
     };
     Metadata: {
@@ -7003,7 +6491,7 @@ export interface components {
     };
     RequestData: {
       matchExpression?: string;
-      targetIds?: number[];
+      targetIds?: string[];
     };
     RevisionDetail: {
       entities?: {
@@ -7033,8 +6521,7 @@ export interface components {
       description: string;
       enabled?: boolean;
       eventSpecifier: string;
-      /** Format: int64 */
-      id?: number;
+      id: components['schemas']['UUID'];
       /** Format: int32 */
       initialDelaySeconds?: number;
       matchExpression: components['schemas']['MatchExpression'];
@@ -7060,6 +6547,11 @@ export interface components {
       defaultValue?: string;
       description?: string;
       name?: string;
+    };
+    Services: {
+      dashboard?: components['schemas']['ExternalService'];
+      datasource?: components['schemas']['InternalService'];
+      reports?: components['schemas']['InternalService'];
     };
     SmartTrigger: {
       ID?: string;
@@ -7106,8 +6598,7 @@ export interface components {
       annotations: components['schemas']['Annotations'];
       /** Format: uri */
       connectUrl: string;
-      /** Format: int64 */
-      id?: number;
+      id: components['schemas']['UUID'];
       jvmId?: string;
       labels: {
         [key: string]: string;
@@ -7127,8 +6618,7 @@ export interface components {
       annotations: components['schemas']['Annotations_Flat'];
       /** Format: uri */
       connectUrl: string;
-      /** Format: int64 */
-      id?: number;
+      id: components['schemas']['UUID'];
       jvmId?: string;
       labels: {
         [key: string]: string;
