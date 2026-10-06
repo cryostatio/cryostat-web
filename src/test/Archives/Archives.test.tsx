@@ -53,11 +53,6 @@ jest.mock('@app/Archives/AllTargetsArchivedRecordingsTable', () => {
   };
 });
 
-jest
-  .spyOn(defaultServices.api, 'isArchiveEnabled')
-  .mockReturnValueOnce(of(false)) // Test archives disabled case
-  .mockReturnValue(of(true));
-
 const mockTarget: Target = {
   agent: false,
   connectUrl: 'http://localhost',
@@ -70,22 +65,11 @@ const mockTarget: Target = {
 };
 jest
   .spyOn(defaultServices.target, 'target')
-  .mockReturnValueOnce(of(mockTarget)) // Test archives disabled case
   .mockReturnValueOnce(of(undefined)) // Test no target selection case
   .mockReturnValue(of(mockTarget));
 
 describe('<Archives />', () => {
   afterEach(cleanup);
-
-  it('handles the case where archiving is disabled', async () => {
-    render({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
-
-    expect(screen.queryByText('Targets')).not.toBeInTheDocument();
-    expect(screen.queryByText('Target Archives Table')).not.toBeInTheDocument();
-    expect(screen.queryByText('Uploads Table')).not.toBeInTheDocument();
-    expect(screen.queryByText('Uploads')).not.toBeInTheDocument();
-    expect(screen.getByText('Archives Unavailable')).toBeInTheDocument();
-  });
 
   it('handles no target selection as All Targets table', async () => {
     render({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
@@ -99,7 +83,7 @@ describe('<Archives />', () => {
     expect(screen.getByText('Archives')).toBeInTheDocument();
   });
 
-  it('handles the case where archiving is enabled', async () => {
+  it('has expected tab titles', async () => {
     render({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
 
     expect(screen.getByText('Targets')).toBeInTheDocument();

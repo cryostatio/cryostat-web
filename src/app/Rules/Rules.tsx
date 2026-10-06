@@ -253,7 +253,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
     (rule: Rule, clean = true) => {
       addSubscription(
         context.api
-          .deleteRule(rule.name, clean)
+          .deleteRule(rule, clean)
           .pipe(first())
           .subscribe(() => undefined /* do nothing - notification will handle updating state */),
       );

@@ -27,7 +27,7 @@ interface UseTargetLineageResult {
   targetNode: EnvironmentNode | TargetNode | null;
 }
 
-const formatFallbackDisplayName = (connectUrl: string | undefined, jvmId: string, alias?: string): string => {
+export const formatFallbackDisplayName = (connectUrl: string | undefined, jvmId: string, alias?: string): string => {
   if (alias && connectUrl) {
     return `${alias} (${connectUrl})`;
   }

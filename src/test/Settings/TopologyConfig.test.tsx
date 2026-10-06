@@ -21,7 +21,7 @@ import React from 'react';
 import { of } from 'rxjs';
 import { render } from '../utils';
 
-jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(
+jest.spyOn(defaultServices.api, 'getReportRules').mockReturnValue(
   of([
     {
       id: 'VMOperations',

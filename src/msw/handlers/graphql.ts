@@ -33,7 +33,7 @@ function extractQueryName(query: string): string {
 }
 
 export const graphqlHandlers = [
-  http.post('*/api/v4/graphql', async ({ request }) => {
+  http.post('*/api/v5/graphql', async ({ request }) => {
     const body = (await request.json()) as any;
     const query = body?.query || '';
     const variables = body?.variables || {};
@@ -98,7 +98,7 @@ export const graphqlHandlers = [
           targetNodes: [
             {
               target: {
-                id: target?.id || 1,
+                id: target?.id || '1',
                 report: {
                   lastUpdated: Date.now(),
                   aggregate: {

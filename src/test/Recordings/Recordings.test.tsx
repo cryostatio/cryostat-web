@@ -63,8 +63,6 @@ const mockFooTarget: Target = {
 
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockFooTarget));
 
-jest.spyOn(defaultServices.api, 'isArchiveEnabled').mockReturnValue(of(true));
-
 describe('<Recordings />', () => {
   afterEach(cleanup);
 

@@ -62,15 +62,14 @@ const mockViewList = {
 const MOCK_VIEW_TEXT = '====================\nView: recording\n====================\nEvent Count   42\n';
 
 describe('<Views />', () => {
-  let mockDoGet: jest.SpyInstance;
-  let mockSendRequest: jest.SpyInstance;
+  let mockGetRecordingViews: jest.SpyInstance;
+  let mockGetRecordingView: jest.SpyInstance;
 
   beforeEach(() => {
-    mockDoGet = jest.spyOn(defaultServices.api, 'doGet').mockImplementation((path: string) => {
-      if ((path as string).endsWith('/views')) return of(mockViewList) as any;
-      return of([]) as any;
-    });
-    mockSendRequest = jest.spyOn(defaultServices.api, 'sendRequest').mockReturnValue(
+    mockGetRecordingViews = jest
+      .spyOn(defaultServices.api, 'getRecordingViews')
+      .mockReturnValue(of(mockViewList) as any);
+    mockGetRecordingView = jest.spyOn(defaultServices.api, 'getRecordingView').mockReturnValue(
       of({
         ok: true,
         status: 200,
@@ -121,15 +120,13 @@ describe('<Views />', () => {
 
   it('fetches view list when jvmId and filename are provided', async () => {
     renderViews('jvm-1', 'recording1.jfr');
-    await waitFor(() =>
-      expect(mockDoGet).toHaveBeenCalledWith('targets/jvm-1/recordings/recording1.jfr/views', 'beta'),
-    );
+    await waitFor(() => expect(mockGetRecordingViews).toHaveBeenCalledWith('jvm-1', 'recording1.jfr'));
   });
 
   it('does not fetch view list when jvmId is empty', async () => {
     renderViews('', 'recording1.jfr');
     await waitFor(() => expect(screen.getByLabelText('Render view')).toBeDisabled());
-    expect(mockDoGet).not.toHaveBeenCalled();
+    expect(mockGetRecordingViews).not.toHaveBeenCalled();
   });
 
   it('view selector shows grouped options from the fetched view list', async () => {
@@ -155,12 +152,7 @@ describe('<Views />', () => {
     await user.click(screen.getByLabelText('Render view'));
 
     await waitFor(() =>
-      expect(mockSendRequest).toHaveBeenCalledWith(
-        'beta',
-        'targets/jvm-1/recordings/recording1.jfr/view',
-        { method: 'GET' },
-        expect.any(URLSearchParams),
-      ),
+      expect(mockGetRecordingView).toHaveBeenCalledWith('jvm-1', 'recording1.jfr', expect.any(URLSearchParams)),
     );
 
     await waitFor(() => {
@@ -175,9 +167,9 @@ describe('<Views />', () => {
     await waitFor(() => expect(screen.getByLabelText('Render view')).not.toBeDisabled());
     await user.click(screen.getByLabelText('Render view'));
 
-    await waitFor(() => expect(mockSendRequest).toHaveBeenCalled());
+    await waitFor(() => expect(mockGetRecordingView).toHaveBeenCalled());
 
-    const params: URLSearchParams = mockSendRequest.mock.calls[0][3];
+    const params: URLSearchParams = mockGetRecordingView.mock.calls[0][2];
     expect(params.get('view')).toBe('recording');
     expect(params.get('width')).toBe('120');
     expect(params.get('verbose')).toBe('false');
@@ -186,7 +178,7 @@ describe('<Views />', () => {
   });
 
   it('displays error message when view render fails', async () => {
-    mockSendRequest.mockReturnValue(throwError(() => new Error('render failed')));
+    mockGetRecordingView.mockReturnValue(throwError(() => new Error('render failed')));
 
     const { user } = renderViews('jvm-1', 'recording1.jfr');
 

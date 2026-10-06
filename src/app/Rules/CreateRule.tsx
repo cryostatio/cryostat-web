@@ -95,6 +95,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
   }, [location]);
 
   const [formData, setFormData] = React.useState<RuleFormData>({
+    id: '',
     name: '',
     nameValid: ValidatedOptions.default,
     enabled: true,
@@ -191,6 +192,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
     const maxSizeBytes = stateSource.maxSizeBytes as number | undefined;
     const archivalPeriodSeconds = stateSource.archivalPeriodSeconds as number | undefined;
     let {
+      id,
       name,
       enabled,
       description,
@@ -207,6 +209,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
     } = prefilled;
     setFormData((old) => ({
       ...old,
+      id: id ?? '',
       enabled: enabled ?? true,
       name: name ?? '',
       description: description ?? '',
@@ -294,6 +297,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
   const handleSubmit = React.useCallback((): void => {
     const notificationMessages: string[] = [];
     const {
+      id,
       name,
       nameValid,
       description,
@@ -326,6 +330,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
       ],
     };
     const rule: Rule = {
+      id,
       name,
       description,
       enabled,

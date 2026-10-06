@@ -19,11 +19,11 @@ import { factory, primaryKey } from '@mswjs/data';
 export const db = factory({
   target: {
     jvmId: primaryKey(String),
-    id: Number,
+    id: String,
     agent: Boolean,
     alias: String,
     connectUrl: String,
-    labels: Array,
+    labels: Object,
     annotations: Object,
   },
   recording: {
@@ -53,7 +53,7 @@ export const db = factory({
     archivedTime: Number,
   },
   rule: {
-    id: primaryKey(Number),
+    id: primaryKey(String),
     name: String,
     description: String,
     matchExpression: String,
@@ -64,17 +64,17 @@ export const db = factory({
     maxAgeSeconds: Number,
     maxSizeBytes: Number,
     enabled: Boolean,
+    metadata: Object,
   },
   credential: {
-    id: primaryKey(Number),
+    id: primaryKey(String),
     matchExpression: String,
-    numTargets: Number,
   },
 });
 
 export function seedDatabase() {
   db.target.create({
-    id: 1,
+    id: '1',
     agent: true,
     alias: 'Fake Target',
     connectUrl: 'http://fake-target.local:1234',

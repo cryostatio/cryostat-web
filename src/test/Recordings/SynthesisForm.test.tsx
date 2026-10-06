@@ -240,9 +240,9 @@ describe('<SynthesisForm />', () => {
   describe('HTTP 200 immediate success', () => {
     it('calls onSuccess immediately and does not show spinner', async () => {
       const onSuccess = jest.fn();
-      // Mock sendRequest to return a Response with status 200
+      // Mock synthesizeRecording to return a Response with status 200
       const mockResponse = { status: 200, ok: true, text: jest.fn() } as unknown as Response;
-      jest.spyOn(defaultServices.api, 'sendRequest').mockReturnValue(of(mockResponse));
+      jest.spyOn(defaultServices.api, 'synthesizeRecording').mockReturnValue(of(mockResponse));
 
       const { user } = renderForm({ recordings: [mockRecordingInWindow], onSuccess });
       await user.click(screen.getByText('Last 5 minutes'));
@@ -266,7 +266,7 @@ describe('<SynthesisForm />', () => {
         ok: true,
         text: jest.fn().mockResolvedValue(jobId),
       } as unknown as Response;
-      jest.spyOn(defaultServices.api, 'sendRequest').mockReturnValue(of(mockResponse202));
+      jest.spyOn(defaultServices.api, 'synthesizeRecording').mockReturnValue(of(mockResponse202));
 
       const { user } = renderForm({ recordings: [mockRecordingInWindow] });
       await user.click(screen.getByText('Last 5 minutes'));
@@ -287,7 +287,7 @@ describe('<SynthesisForm />', () => {
         ok: true,
         text: jest.fn().mockResolvedValue(jobId),
       } as unknown as Response;
-      jest.spyOn(defaultServices.api, 'sendRequest').mockReturnValue(of(mockResponse202));
+      jest.spyOn(defaultServices.api, 'synthesizeRecording').mockReturnValue(of(mockResponse202));
 
       const { user } = renderForm({ recordings: [mockRecordingInWindow], onSuccess });
       await user.click(screen.getByText('Last 5 minutes'));
@@ -313,7 +313,7 @@ describe('<SynthesisForm />', () => {
         ok: true,
         text: jest.fn().mockResolvedValue(jobId),
       } as unknown as Response;
-      jest.spyOn(defaultServices.api, 'sendRequest').mockReturnValue(of(mockResponse202));
+      jest.spyOn(defaultServices.api, 'synthesizeRecording').mockReturnValue(of(mockResponse202));
 
       const { user } = renderForm({ recordings: [mockRecordingInWindow] });
       await user.click(screen.getByText('Last 5 minutes'));
@@ -341,7 +341,7 @@ describe('<SynthesisForm />', () => {
         ok: true,
         text: jest.fn().mockResolvedValue(jobId),
       } as unknown as Response;
-      jest.spyOn(defaultServices.api, 'sendRequest').mockReturnValue(of(mockResponse202));
+      jest.spyOn(defaultServices.api, 'synthesizeRecording').mockReturnValue(of(mockResponse202));
 
       const { user } = renderForm({ recordings: [mockRecordingInWindow], onSuccess });
       await user.click(screen.getByText('Last 5 minutes'));
@@ -364,7 +364,7 @@ describe('<SynthesisForm />', () => {
   describe('HTTP request error', () => {
     it('shows an error alert when the HTTP request fails', async () => {
       jest
-        .spyOn(defaultServices.api, 'sendRequest')
+        .spyOn(defaultServices.api, 'synthesizeRecording')
         .mockReturnValue(new Observable((sub) => sub.error(new Error('Network failure'))));
 
       const { user } = renderForm({ recordings: [mockRecordingInWindow] });

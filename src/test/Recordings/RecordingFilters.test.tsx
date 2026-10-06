@@ -59,7 +59,7 @@ const mockActiveRecording: ActiveRecording = {
   reportUrl: 'http://reportUrl',
   metadata: { labels: mockRecordingLabels },
   startTime: 1234567890,
-  id: 0,
+  id: '0',
   state: RecordingState.RUNNING,
   duration: 0,
   continuous: false,

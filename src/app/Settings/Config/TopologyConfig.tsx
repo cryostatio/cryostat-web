@@ -19,6 +19,7 @@ import {
   topologySetIgnoreReportResultIntent,
 } from '@app/Shared/Redux/Configurations/TopologyConfigSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
+import { ReportRule } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
@@ -48,12 +49,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { tap } from 'rxjs';
 import { SettingTab, UserSetting } from '../types';
 
-interface ReportRule {
-  id: string;
-  name: string;
-  topic: string;
-}
-
 const getLeafIds = (node: DualListSelectorTreeItemData): string[] => {
   if (!node.children?.length) {
     return [node.id];
@@ -78,7 +73,7 @@ const Component = () => {
     setLoading(true);
     addSubscription(
       context.api
-        .doGet<ReportRule[]>('/reports_rules', 'v4.1')
+        .getReportRules()
         .pipe(tap(() => setLoading(false)))
         .subscribe((v) => setAllRules(treeify(v))),
     );

@@ -122,7 +122,7 @@ export const isQuotaExceededError = (err: unknown): err is DOMException => {
 // Discovery utils
 // ======================================
 export const DEFAULT_EMPTY_UNIVERSE: EnvironmentNode = {
-  id: 0,
+  id: '0',
   name: 'Universe',
   nodeType: NodeType.UNIVERSE,
   labels: [],

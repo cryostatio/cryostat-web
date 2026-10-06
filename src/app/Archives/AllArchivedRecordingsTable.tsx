@@ -156,7 +156,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   const refreshDirectoriesAndCounts = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.api.doGet<RecordingDirectory[]>('fs/recordings', 'beta').subscribe({
+      context.api.getArchivedRecordingDirectories().subscribe({
         next: handleDirectoriesAndCounts,
         error: handleError,
       }),

@@ -19,7 +19,7 @@ import { AlertVariant } from '@patternfly/react-core';
 import _ from 'lodash';
 import { Observable } from 'rxjs';
 
-export type ApiVersion = 'unversioned' | 'v4' | 'v4.1' | 'beta';
+export type ApiVersion = 'unversioned' | 'v5' | 'beta';
 
 // ======================================
 // Common Resources
@@ -111,23 +111,25 @@ export type TargetForTest = Pick<Target, 'alias' | 'connectUrl'> & {
 // ======================================
 // Health Resources
 // ======================================
-export interface GrafanaDashboardUrlGetResponse {
-  grafanaDashboardUrl: string;
+export interface Services {
+  dashboard: ExternalService;
+  datasource: InternalService;
+  reports: InternalService;
 }
 
-export interface GrafanaDatasourceUrlGetResponse {
-  grafanaDatasourceUrl: string;
+export interface InternalService {
+  configured: boolean;
+  available: boolean;
+}
+
+export interface ExternalService extends InternalService {
+  url: string;
 }
 
 export interface HealthGetResponse {
   cryostatVersion: string;
   build: BuildInfo;
-  datasourceConfigured: boolean;
-  datasourceAvailable: boolean;
-  dashboardConfigured: boolean;
-  dashboardAvailable: boolean;
-  reportsConfigured: boolean;
-  reportsAvailable: boolean;
+  services: Services;
 }
 
 // ======================================
@@ -348,7 +350,7 @@ export interface ArchivedRecording extends Recording {
 }
 
 export interface ActiveRecording extends Recording {
-  id: number;
+  id: string;
   state: RecordingState;
   duration: number; // In miliseconds
   startTime: number;
@@ -450,7 +452,7 @@ export interface HeapDumpCountResponse {
 // Credential resources
 // ======================================
 export interface MatchedCredential {
-  id: number;
+  id: string;
   matchExpression: string;
   targets: Target[];
 }
@@ -483,7 +485,7 @@ export interface EventProbe {
 // Rule resources
 // ======================================
 export interface Rule {
-  id?: number;
+  id?: string;
   name: string;
   description: string;
   matchExpression: string;
@@ -557,6 +559,12 @@ export interface CachedHeapDumpReportValue {
   timestamp: number;
 }
 
+export interface ReportRule {
+  id: string;
+  name: string;
+  topic: string;
+}
+
 // [topic, { ruleName, score, description, ... }}]
 export type CategorizedRuleEvaluations = [string, AnalysisResult[]];
 
@@ -595,7 +603,7 @@ export enum AutomatedAnalysisScore {
 // Discovery/Target resources
 // ======================================
 export interface Target {
-  id?: number; // present in responses but we must not include it in requests to create targets
+  id?: string; // present in responses but we must not include it in requests to create targets
   jvmId?: string; // present in responses, but we do not need to provide it in requests
   agent: boolean;
   connectUrl: string;
@@ -642,7 +650,7 @@ export interface LineageNode {
 }
 
 interface _AbstractNode extends LineageNode {
-  readonly id: number;
+  readonly id: string;
   readonly labels: KeyValue[];
 }
 
@@ -847,7 +855,7 @@ export enum RevisionType {
  */
 export interface AuditEntity {
   /** Entity ID */
-  id: number;
+  id: string;
   /** Revision number when this change occurred */
   rev: number;
   /** Type of operation (ADD/MODIFY/DELETE) */
