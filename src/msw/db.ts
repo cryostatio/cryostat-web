@@ -23,7 +23,7 @@ export const db = factory({
     agent: Boolean,
     alias: String,
     connectUrl: String,
-    labels: Array,
+    labels: Object,
     annotations: Object,
   },
   recording: {
@@ -53,7 +53,7 @@ export const db = factory({
     archivedTime: Number,
   },
   rule: {
-    id: primaryKey(Number),
+    id: primaryKey(String),
     name: String,
     description: String,
     matchExpression: String,
@@ -64,11 +64,11 @@ export const db = factory({
     maxAgeSeconds: Number,
     maxSizeBytes: Number,
     enabled: Boolean,
+    metadata: Object,
   },
   credential: {
-    id: primaryKey(Number),
+    id: primaryKey(String),
     matchExpression: String,
-    numTargets: Number,
   },
 });
 
@@ -79,13 +79,10 @@ export function seedDatabase() {
     alias: 'Fake Target',
     connectUrl: 'http://fake-target.local:1234',
     jvmId: '1234',
-    labels: [],
+    labels: {},
     annotations: {
-      platform: [{ key: 'io.cryostat.demo', value: 'this-is-not-real' }],
-      cryostat: [
-        { key: 'hello', value: 'world' },
-        { key: 'REALM', value: 'Some Realm' },
-      ],
+      platform: { 'io.cryostat.demo': 'this-is-not-real' },
+      cryostat: { hello: 'world', REALM: 'Some Realm' },
     },
   });
 }

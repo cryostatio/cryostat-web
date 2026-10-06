@@ -15,6 +15,7 @@
  */
 
 import build from '@app/build.json';
+import { MatchedCredential } from '@app/Shared/Services/api.types';
 import { http, HttpResponse, ws } from 'msw';
 import { components } from '../../schema/openapi.types';
 import { db } from '../db';
@@ -47,32 +48,33 @@ export const restHandlers = [
         },
       },
       cryostatVersion: `${build.version.replace(/(-\w+)*$/g, '')}-0-preview`,
-      dashboardAvailable: false,
-      dashboardConfigured: false,
-      datasourceAvailable: false,
-      datasourceConfigured: false,
-      reportsAvailable: true,
-      reportsConfigured: false,
+      services: {
+        dashboard: {
+          available: false,
+          configured: false,
+          url: '',
+        },
+        datasource: {
+          available: false,
+          configured: false,
+        },
+        reports: {
+          available: true,
+          configured: false,
+        },
+      },
     };
     return HttpResponse.json(health);
   }),
 
-  // Grafana endpoints
-  http.get('*/api/v4/grafana_datasource_url', () => new HttpResponse(null, { status: 500 })),
-  http.get('*/api/v4/grafana_dashboard_url', () => new HttpResponse(null, { status: 500 })),
-
   // Auth
-  http.post('*/api/v4/auth', () => {
+  http.post('*/api/v5/auth', () => {
     const auth: components['schemas']['AuthResponse'] = { username: 'preview-user' };
     return HttpResponse.json(auth);
   }),
-  http.post(
-    '*/api/v4/auth/token',
-    () => new HttpResponse('Resource downloads are not supported in this demo', { status: 400 }),
-  ),
 
   // Targets - Create
-  http.post('*/api/v4/targets', async ({ request }) => {
+  http.post('*/api/v5/targets', async ({ request }) => {
     const url = new URL(request.url);
     if (url.searchParams.get('dryrun') === 'true') {
       return new HttpResponse(null, { status: 200 });
@@ -88,15 +90,10 @@ export const restHandlers = [
       alias,
       connectUrl,
       jvmId,
-      labels: [],
+      labels: {},
       annotations: {
-        platform: [],
-        cryostat: [
-          {
-            key: 'REALM',
-            value: 'Custom Targets',
-          },
-        ],
+        platform: {},
+        cryostat: { REALM: 'Custom Targets' },
       },
     });
 
@@ -122,7 +119,7 @@ export const restHandlers = [
   }),
 
   // Targets - List
-  http.get('*/api/v4/targets', () => {
+  http.get('*/api/v5/targets', () => {
     const targets = db.target.getAll();
     const payload: components['schemas']['Target'][] = targets.map((t: any) => ({
       id: t.id,
@@ -130,33 +127,32 @@ export const restHandlers = [
       connectUrl: t.connectUrl,
       jvmId: t.jvmId,
       agent: t.agent,
-      labels: t.labels as any,
+      labels: t.labels,
       annotations: t.annotations,
     }));
     return HttpResponse.json(payload);
   }),
 
   // Discovery Tree
-  http.get('*/api/v4/discovery', () => {
+  http.get('*/api/v5/discovery/tree', () => {
     const targets = db.target.getAll();
-    const getRealmValue = (t: any): string => {
-      const cryostat: any[] = t.annotations?.cryostat ?? [];
-      return cryostat.find((a: any) => a.key === 'REALM')?.value || 'Custom Targets';
-    };
+    const getRealmValue = (t: any): string => (t.annotations?.cryostat ?? {})['REALM'] || 'Custom Targets';
     const realmTypes = Array.from(new Set(targets.map(getRealmValue)));
 
     const discoveryTree: components['schemas']['DiscoveryNode'] = {
+      id: 'universe',
       name: 'Universe',
       nodeType: 'Universe',
       labels: {},
       children: realmTypes.map((r: string) => ({
+        id: `realm-${r}`,
         name: r,
         nodeType: 'Realm',
         labels: {},
-        id: Date.now(),
         children: targets
           .filter((t: any) => getRealmValue(t) === r)
           .map((t: any) => ({
+            id: `target-${t.id}`,
             name: t.alias,
             nodeType: 'Target',
             labels: {},
@@ -177,20 +173,17 @@ export const restHandlers = [
     return HttpResponse.json(discoveryTree);
   }),
 
-  // Target probes (agent instrumentation)
-  http.get('*/api/v4/targets/:targetId/probes', () => HttpResponse.json([])),
-
   // Target event types
-  http.get('*/api/v4/targets/:targetId/events', () => HttpResponse.json([])),
+  http.get('*/api/v5/targets/:jvmId/events', () => HttpResponse.json([])),
 
   // Match expressions
-  http.post('*/api/v4/matchExpressions', async ({ request }) => {
+  http.post('*/api/v5/match-expressions', async ({ request }) => {
     const body = (await request.json()) as any;
     return HttpResponse.json({ targets: body.targets ?? [] });
   }),
 
   // Event Templates - Global
-  http.get('*/api/v4/event_templates', () => {
+  http.get('*/api/v5/event-templates', () => {
     return HttpResponse.json([
       {
         name: 'Preset Template',
@@ -202,7 +195,7 @@ export const restHandlers = [
   }),
 
   // Event Templates - Per Target
-  http.get('*/api/v4/targets/:targetId/event_templates', () => {
+  http.get('*/api/v5/targets/:jvmId/event-templates', () => {
     return HttpResponse.json([
       {
         name: 'Demo Template',
@@ -220,7 +213,7 @@ export const restHandlers = [
   }),
 
   // Target Delete
-  http.delete('*/api/v4/targets/:jvmId', ({ params }) => {
+  http.delete('*/api/v5/targets/:jvmId', ({ params }) => {
     const jvmId = params.jvmId as string;
     const target = db.target.findFirst({ where: { jvmId: { equals: jvmId } } });
     if (target) {
@@ -236,23 +229,32 @@ export const restHandlers = [
     return new HttpResponse(null, { status: 200 });
   }),
 
-  // Recordings - List for all targets
-  http.get('*/api/v4/recordings', () => {
+  // Recordings - List all, grouped by target (ArchivedRecordingDirectory[])
+  http.get('*/api/v5/recordings', () => {
     const archives = db.archive.getAll();
-    const payload: components['schemas']['ArchivedRecording'][] = archives.map((a: any) => ({
-      name: a.name,
-      downloadUrl: a.downloadUrl,
-      reportUrl: a.reportUrl,
-      metadata: a.metadata,
-      size: a.size || 0,
-      archivedTime: a.archivedTime || Date.now(),
-      jvmId: a.jvmId,
-    }));
+    const byJvmId = new Map<string, any[]>();
+    archives.forEach((a: any) => {
+      if (!byJvmId.has(a.jvmId)) {
+        byJvmId.set(a.jvmId, []);
+      }
+      byJvmId.get(a.jvmId)!.push({
+        name: a.name,
+        downloadUrl: a.downloadUrl,
+        reportUrl: a.reportUrl,
+        metadata: a.metadata,
+        size: a.size || 0,
+        archivedTime: a.archivedTime || Date.now(),
+        jvmId: a.jvmId,
+      });
+    });
+    const payload: components['schemas']['ArchivedRecordingDirectory'][] = Array.from(byJvmId.entries()).map(
+      ([jvmId, recordings]) => ({ jvmId, recordings }),
+    );
     return HttpResponse.json(payload);
   }),
 
   // Recordings - List by jvmId
-  http.get('*/api/v4/recordings/:jvmId', ({ params }) => {
+  http.get('*/api/v5/recordings/:jvmId', ({ params }) => {
     const jvmId = params.jvmId as string;
     const archives = db.archive.findMany({ where: { jvmId: { equals: jvmId } } });
     const payload: components['schemas']['ArchivedRecording'][] = archives.map((a: any) => ({
@@ -268,7 +270,7 @@ export const restHandlers = [
   }),
 
   // Recordings - Delete archived
-  http.delete('*/api/v4/recordings/:jvmId/:recordingName', ({ params }) => {
+  http.delete('*/api/v5/recordings/:jvmId/:recordingName', ({ params }) => {
     const recordingName = params.recordingName as string;
     const jvmId = params.jvmId as string;
     const target = db.target.findFirst({ where: { jvmId: { equals: jvmId } } });
@@ -292,9 +294,9 @@ export const restHandlers = [
   }),
 
   // Recordings - Create active recording
-  http.post('*/api/v4/targets/:targetId/recordings', async ({ params, request }) => {
-    const targetId = String(params.targetId);
-    const target = db.target.findFirst({ where: { id: { equals: targetId } } });
+  http.post('*/api/v5/targets/:jvmId/recordings', async ({ params, request }) => {
+    const jvmId = String(params.jvmId);
+    const target = db.target.findFirst({ where: { jvmId: { equals: jvmId } } });
     const formData = await request.formData();
     const recordingName = formData.get('recordingName')?.toString() || `recording-${Date.now()}`;
     const duration = Number(formData.get('duration') || 0);
@@ -314,10 +316,10 @@ export const restHandlers = [
       maxSize,
       maxAge,
       archiveOnStop: true,
-      downloadUrl: `/api/v4/targets/${targetId}/recordings/${encodeURIComponent(recordingName)}`,
-      reportUrl: `/api/v4/targets/${targetId}/reports/${encodeURIComponent(recordingName)}`,
-      metadata: { labels: [] },
-      jvmId: target?.jvmId || String(targetId),
+      downloadUrl: `/api/v5/targets/${jvmId}/recordings/${encodeURIComponent(recordingName)}`,
+      reportUrl: `/api/v5/targets/${jvmId}/reports/${encodeURIComponent(recordingName)}`,
+      metadata: { labels: {} },
+      jvmId,
     });
 
     mockWsBroadcaster.broadcast({
@@ -326,9 +328,9 @@ export const restHandlers = [
         type: { type: 'application', subType: 'json' },
       },
       message: {
-        target: target?.connectUrl || String(targetId),
+        target: target?.connectUrl || jvmId,
         recording,
-        jvmId: target?.jvmId,
+        jvmId,
       },
     });
 
@@ -336,18 +338,17 @@ export const restHandlers = [
   }),
 
   // Recordings - List active for target
-  http.get('*/api/v4/targets/:targetId/recordings', ({ params }) => {
-    const targetId = String(params.targetId);
-    const target = db.target.findFirst({ where: { id: { equals: targetId } } });
-    const recordings = db.recording.findMany({ where: { jvmId: { equals: target?.jvmId || String(targetId) } } });
+  http.get('*/api/v5/targets/:jvmId/recordings', ({ params }) => {
+    const jvmId = String(params.jvmId);
+    const recordings = db.recording.findMany({ where: { jvmId: { equals: jvmId } } });
     return HttpResponse.json(recordings);
   }),
 
   // Recordings - Delete active recording
-  http.delete('*/api/v4/targets/:targetId/recordings/:remoteId', ({ params }) => {
-    const targetId = String(params.targetId);
+  http.delete('*/api/v5/targets/:jvmId/recordings/:remoteId', ({ params }) => {
+    const jvmId = String(params.jvmId);
     const remoteId = Number(params.remoteId);
-    const target = db.target.findFirst({ where: { id: { equals: targetId } } });
+    const target = db.target.findFirst({ where: { jvmId: { equals: jvmId } } });
     const recording = db.recording.findFirst({ where: { remoteId: { equals: remoteId } } });
     if (recording) {
       db.recording.delete({ where: { remoteId: { equals: remoteId } } });
@@ -357,9 +358,9 @@ export const restHandlers = [
           type: { type: 'application', subType: 'json' },
         },
         message: {
-          target: target?.connectUrl || String(targetId),
+          target: target?.connectUrl || jvmId,
           recording,
-          jvmId: target?.jvmId,
+          jvmId,
         },
       });
     }
@@ -367,10 +368,10 @@ export const restHandlers = [
   }),
 
   // Recordings - Patch active recording state (STOP / SAVE)
-  http.patch('*/api/v4/targets/:targetId/recordings/:remoteId', async ({ params, request }) => {
-    const targetId = String(params.targetId);
+  http.patch('*/api/v5/targets/:jvmId/recordings/:remoteId', async ({ params, request }) => {
+    const jvmId = String(params.jvmId);
     const remoteId = Number(params.remoteId);
-    const target = db.target.findFirst({ where: { id: { equals: targetId } } });
+    const target = db.target.findFirst({ where: { jvmId: { equals: jvmId } } });
     const recording = db.recording.findFirst({ where: { remoteId: { equals: remoteId } } });
     const bodyText = await request.text();
 
@@ -386,16 +387,16 @@ export const restHandlers = [
             type: { type: 'application', subType: 'json' },
           },
           message: {
-            target: target?.connectUrl || String(targetId),
+            target: target?.connectUrl || jvmId,
             recording: { ...recording, state: 'STOPPED' },
-            jvmId: target?.jvmId,
+            jvmId,
           },
         });
       }
       if (bodyText.includes('SAVE')) {
         const archived = db.archive.create({
           name: `${recording.name}_${Date.now()}`,
-          jvmId: target?.jvmId || String(targetId),
+          jvmId,
           downloadUrl: recording.downloadUrl,
           reportUrl: recording.reportUrl,
           metadata: recording.metadata,
@@ -408,9 +409,9 @@ export const restHandlers = [
             type: { type: 'application', subType: 'json' },
           },
           message: {
-            target: target?.connectUrl || String(targetId),
+            target: target?.connectUrl || jvmId,
             recording: archived,
-            jvmId: target?.jvmId,
+            jvmId,
           },
         });
       }
@@ -419,11 +420,25 @@ export const restHandlers = [
   }),
 
   // Rules
-  http.get('*/api/v4/rules', () => HttpResponse.json(db.rule.getAll())),
-  http.post('*/api/v4/rules', async ({ request }) => {
-    const data = (await request.json()) as any;
+  http.get('*/api/v5/rules', () => HttpResponse.json(db.rule.getAll())),
+  http.post('*/api/v5/rules', async ({ request }) => {
+    const contentType = request.headers.get('content-type') || '';
+    let data: any;
+    if (contentType.includes('multipart/form-data')) {
+      const formData = await request.formData();
+      data = Object.fromEntries(formData.entries());
+    } else {
+      data = await request.json();
+    }
+    const metadata = typeof data.metadata === 'string' ? JSON.parse(data.metadata) : data.metadata || { labels: {} };
+    let enabled = true;
+    if (data.enabled === 'false') {
+      enabled = false;
+    } else if (data.enabled !== undefined) {
+      enabled = Boolean(data.enabled);
+    }
     const rule = db.rule.create({
-      id: Date.now(),
+      id: crypto.randomUUID(),
       name: data.name,
       description: data.description || '',
       matchExpression: data.matchExpression || '',
@@ -433,36 +448,71 @@ export const restHandlers = [
       preservedArchives: Number(data.preservedArchives || 0),
       maxAgeSeconds: Number(data.maxAgeSeconds || 0),
       maxSizeBytes: Number(data.maxSizeBytes || 0),
-      enabled: Boolean(data.enabled),
+      enabled,
+      metadata,
     });
     return HttpResponse.json(rule, { status: 201 });
   }),
-  http.delete('*/api/v4/rules/:id', ({ params }) => {
-    const id = Number(params.id);
+  http.patch('*/api/v5/rules/:id', async ({ params, request }) => {
+    const id = String(params.id);
+    const data = (await request.json()) as any;
+    const rule = db.rule.findFirst({ where: { id: { equals: id } } });
+    if (!rule) {
+      return new HttpResponse(null, { status: 404 });
+    }
+    db.rule.update({
+      where: { id: { equals: id } },
+      data: {
+        ...data,
+        id: rule.id,
+        metadata: data.metadata ?? rule.metadata,
+      },
+    });
+    return new HttpResponse(null, { status: 200 });
+  }),
+  http.delete('*/api/v5/rules/:id', ({ params }) => {
+    const id = String(params.id);
     db.rule.delete({ where: { id: { equals: id } } });
     return new HttpResponse(null, { status: 200 });
   }),
 
   // Credentials
-  http.get('*/api/v4/credentials', () => HttpResponse.json(db.credential.getAll())),
-  http.post('*/api/v4/credentials', async ({ request }) => {
+  // Note: the real v5 OpenAPI schema models `matchExpression` as a `{id, script}` object, but the
+  // app's hand-written MatchedCredential/Rule types (and all rendering code) treat it as a plain
+  // string. Mocking the schema's nested-object shape here would break the Rules/Credentials UI
+  // entirely in preview, so this mirrors the app's (string) expectation instead.
+  http.get('*/api/v5/credentials', () => {
+    const payload: MatchedCredential[] = db.credential.getAll().map((c: any) => ({
+      id: c.id,
+      matchExpression: c.matchExpression,
+      targets: [],
+    }));
+    return HttpResponse.json(payload);
+  }),
+  http.post('*/api/v5/credentials', async ({ request }) => {
     const formData = await request.formData();
     const matchExpression = formData.get('matchExpression')?.toString() || '';
     const cred = db.credential.create({
-      id: Date.now(),
+      id: crypto.randomUUID(),
       matchExpression,
-      numTargets: 1,
     });
     return HttpResponse.json(cred, { status: 201 });
   }),
-  http.get('*/api/v4/credentials/:id', ({ params }) => {
-    const id = Number(params.id);
+  http.get('*/api/v5/credentials/:id', ({ params }) => {
+    const id = String(params.id);
     const cred = db.credential.findFirst({ where: { id: { equals: id } } });
-    return HttpResponse.json(cred || { matchExpression: '', targets: [] });
+    const payload: MatchedCredential = cred
+      ? { id: cred.id, matchExpression: cred.matchExpression, targets: [] }
+      : { id, matchExpression: '', targets: [] };
+    return HttpResponse.json(payload);
   }),
-  http.delete('*/api/v4/credentials/:id', ({ params }) => {
-    const id = Number(params.id);
+  http.delete('*/api/v5/credentials/:id', ({ params }) => {
+    const id = String(params.id);
     db.credential.delete({ where: { id: { equals: id } } });
     return new HttpResponse(null, { status: 200 });
+  }),
+  http.post('*/api/v5/credentials/test/:id', async () => {
+    const result: components['schemas']['CredentialTestResult'] = 'SUCCESS';
+    return HttpResponse.json(result);
   }),
 ];
