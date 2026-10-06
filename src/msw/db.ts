@@ -79,10 +79,13 @@ export function seedDatabase() {
     alias: 'Fake Target',
     connectUrl: 'http://fake-target.local:1234',
     jvmId: '1234',
-    labels: {},
+    labels: [],
     annotations: {
-      platform: { 'io.cryostat.demo': 'this-is-not-real' },
-      cryostat: { hello: 'world', REALM: 'Some Realm' },
+      platform: [{ key: 'io.cryostat.demo', value: 'this-is-not-real' }],
+      cryostat: [
+        { key: 'hello', value: 'world' },
+        { key: 'REALM', value: 'Some Realm' },
+      ],
     },
   });
 }

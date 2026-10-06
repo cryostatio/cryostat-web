@@ -15,7 +15,7 @@
  */
 
 import build from '@app/build.json';
-import { MatchedCredential } from '@app/Shared/Services/api.types';
+import { MatchedCredential, Target as AppTarget } from '@app/Shared/Services/api.types';
 import { http, HttpResponse, ws } from 'msw';
 import { components } from '../../schema/openapi.types';
 import { db } from '../db';
@@ -90,10 +90,10 @@ export const restHandlers = [
       alias,
       connectUrl,
       jvmId,
-      labels: {},
+      labels: [],
       annotations: {
-        platform: {},
-        cryostat: { REALM: 'Custom Targets' },
+        platform: [],
+        cryostat: [{ key: 'REALM', value: 'Custom Targets' }],
       },
     });
 
@@ -105,14 +105,14 @@ export const restHandlers = [
       message: { event: { serviceRef: target, kind: 'FOUND' } },
     });
 
-    const targetPayload: components['schemas']['Target'] = {
+    const targetPayload: AppTarget = {
       id: target.id,
       alias: target.alias,
       connectUrl: target.connectUrl,
       jvmId: target.jvmId,
       agent: target.agent,
       labels: target.labels as any,
-      annotations: target.annotations,
+      annotations: target.annotations as any,
     };
 
     return HttpResponse.json(targetPayload, { status: 200 });
@@ -121,7 +121,7 @@ export const restHandlers = [
   // Targets - List
   http.get('*/api/v5/targets', () => {
     const targets = db.target.getAll();
-    const payload: components['schemas']['Target'][] = targets.map((t: any) => ({
+    const payload: AppTarget[] = targets.map((t: any) => ({
       id: t.id,
       alias: t.alias,
       connectUrl: t.connectUrl,
@@ -136,26 +136,27 @@ export const restHandlers = [
   // Discovery Tree
   http.get('*/api/v5/discovery/tree', () => {
     const targets = db.target.getAll();
-    const getRealmValue = (t: any): string => (t.annotations?.cryostat ?? {})['REALM'] || 'Custom Targets';
+    const getRealmValue = (t: any): string =>
+      (t.annotations?.cryostat ?? []).find((a: any) => a.key === 'REALM')?.value || 'Custom Targets';
     const realmTypes = Array.from(new Set(targets.map(getRealmValue)));
 
-    const discoveryTree: components['schemas']['DiscoveryNode'] = {
+    const discoveryTree: any = {
       id: 'universe',
       name: 'Universe',
       nodeType: 'Universe',
-      labels: {},
+      labels: [],
       children: realmTypes.map((r: string) => ({
         id: `realm-${r}`,
         name: r,
         nodeType: 'Realm',
-        labels: {},
+        labels: [],
         children: targets
           .filter((t: any) => getRealmValue(t) === r)
           .map((t: any) => ({
             id: `target-${t.id}`,
             name: t.alias,
             nodeType: 'Target',
-            labels: {},
+            labels: [],
             target: {
               id: t.id,
               alias: t.alias,

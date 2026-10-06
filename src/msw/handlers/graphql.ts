@@ -148,10 +148,10 @@ export const graphqlHandlers = [
           targetNodes: allTargets.map((t) => ({
             target: {
               ...t,
-              labels: {},
+              labels: [],
               annotations: {
-                cryostat: {},
-                platform: {},
+                cryostat: [],
+                platform: [],
               },
               activeRecordings: {
                 aggregate: {
