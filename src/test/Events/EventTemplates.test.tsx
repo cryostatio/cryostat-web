@@ -434,4 +434,48 @@ describe('<EventTemplates />', () => {
     expect(screen.getByText('someEventTemplate')).toBeInTheDocument();
     expect(screen.getByText('anotherEventTemplate')).toBeInTheDocument();
   });
+
+  it('ignores a stale response from the initial refresh once an upload-triggered refresh has resolved', async () => {
+    const initialResponse = new Subject<EventTemplate[]>();
+    const uploadResponse = new Subject<EventTemplate[]>();
+    jest
+      .spyOn(defaultServices.api, 'getTargetEventTemplates')
+      .mockReturnValueOnce(initialResponse)
+      .mockReturnValueOnce(uploadResponse);
+    jest
+      .spyOn(defaultServices.notificationChannel, 'messages')
+      .mockReturnValueOnce(
+        of({
+          ...mockCreateTemplateNotification,
+          message: { template: 'anotherEventTemplate' },
+        } as NotificationMessage),
+      )
+      .mockReturnValueOnce(of());
+
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/events',
+            element: <EventTemplates />,
+          },
+        ],
+      },
+    });
+
+    // the later-started, upload-triggered refresh resolves first, with the up-to-date list...
+    await act(async () => {
+      uploadResponse.next([mockCustomEventTemplate, mockAnotherTemplate]);
+      uploadResponse.complete();
+    });
+    // ...then the initial refresh, started earlier, resolves after it with a now-stale list
+    await act(async () => {
+      initialResponse.next([mockCustomEventTemplate]);
+      initialResponse.complete();
+    });
+
+    expect(screen.queryByText('Error retrieving Event Templates')).not.toBeInTheDocument();
+    expect(screen.getByText('someEventTemplate')).toBeInTheDocument();
+    expect(screen.getByText('anotherEventTemplate')).toBeInTheDocument();
+  });
 });

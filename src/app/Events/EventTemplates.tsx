@@ -106,6 +106,10 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
   const [errorMessage, setErrorMessage] = React.useState('');
   const [templateToDelete, setTemplateToDelete] = React.useState<EventTemplate | undefined>(undefined);
   const addSubscription = useSubscriptions();
+  // refreshTemplates can be called more than once in quick succession (on mount, on an
+  // upload notification, on the auto-refresh interval); each call gets its own id so a
+  // response from an older, superseded call is never applied over a newer one's.
+  const latestRefreshId = React.useRef(0);
 
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({
@@ -162,6 +166,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
   );
 
   const refreshTemplates = React.useCallback(() => {
+    const requestId = ++latestRefreshId.current;
     setIsLoading(true);
     addSubscription(
       context.target
@@ -173,8 +178,16 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
           ),
         )
         .subscribe({
-          next: handleTemplates,
-          error: handleError,
+          next: (templates) => {
+            if (requestId === latestRefreshId.current) {
+              handleTemplates(templates);
+            }
+          },
+          error: (error) => {
+            if (requestId === latestRefreshId.current) {
+              handleError(error);
+            }
+          },
         }),
     );
   }, [addSubscription, context.api, context.target, setIsLoading, handleTemplates, handleError]);
