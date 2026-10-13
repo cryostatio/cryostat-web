@@ -40,9 +40,9 @@
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "7.4.3",
-    "@graphql-codegen/typescript": "6.1.0",
-    "@graphql-codegen/typescript-operations": "6.1.7",
+    "@graphql-codegen/cli": "7.4.6",
+    "@graphql-codegen/typescript": "6.1.2",
+    "@graphql-codegen/typescript-operations": "6.1.10",
     "@graphql-tools/mock": "9.1.16",
     "@graphql-tools/schema": "10.1.3",
     "@msw/source": "0.6.1",
