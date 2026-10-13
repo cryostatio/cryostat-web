@@ -85,7 +85,7 @@
     "msw": "^2.15.0",
     "npm-run-all2": "9.0.3",
     "openapi-typescript": "^7.13.0",
-    "prettier": "3.9.9",
+    "prettier": "3.9.10",
     "prop-types": "15.8.1",
     "raw-loader": "4.0.2",
     "react-test-renderer": "18.3.1",
