@@ -15,26 +15,13 @@
  */
 
 import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/types';
+import { ViewList } from '@app/RecordingAnalytics/views/Views';
 import { createBlobURL } from '@app/utils/utils';
 import { ValidatedOptions } from '@patternfly/react-core';
 import _ from 'lodash';
-import {
-  BehaviorSubject,
-  combineLatest,
-  EMPTY,
-  forkJoin,
-  from,
-  Observable,
-  ObservableInput,
-  of,
-  ReplaySubject,
-  throwError,
-  finalize,
-} from 'rxjs';
+import { combineLatest, from, Observable, ObservableInput, of, ReplaySubject, finalize } from 'rxjs';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
 import {
-  GrafanaDatasourceUrlGetResponse,
-  GrafanaDashboardUrlGetResponse,
   HealthGetResponse,
   Target,
   Rule,
@@ -53,7 +40,6 @@ import {
   RecordingCountResponse,
   MBeanMetrics,
   EventType,
-  NotificationCategory,
   HttpError,
   SimpleResponse,
   XMLHttpError,
@@ -82,6 +68,11 @@ import {
   AuditRevisionDetail,
   FetchFn,
   SmartTriggerRequest,
+  AdvancedRecordingOptions,
+  ThreadDumpDirectory,
+  HeapDumpDirectory,
+  RecordingDirectory,
+  ReportRule,
 } from './api.types';
 import {
   isHttpError,
@@ -98,10 +89,8 @@ import { CryostatContext } from './Services';
 import { TargetService } from './Target.service';
 
 export class ApiService {
-  private readonly archiveEnabled = new BehaviorSubject<boolean>(true);
   private readonly cryostatVersionSubject = new ReplaySubject<string>(1);
   private readonly buildInfoSubject = new ReplaySubject<BuildInfo>(1);
-  private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
 
   constructor(
@@ -113,90 +102,16 @@ export class ApiService {
   ) {}
 
   testBaseServer() {
-    this.testHealth();
-    this.testArchiveAvailability();
-  }
-
-  private testHealth() {
-    const datasourceURL: Observable<GrafanaDashboardUrlGetResponse> = this.doGet('/grafana_datasource_url', 'v4');
-    const dashboardURL: Observable<GrafanaDashboardUrlGetResponse> = this.doGet('/grafana_dashboard_url', 'v4');
-    const health: Observable<HealthGetResponse> = this.doGet('/health', 'unversioned');
-
-    health
-      .pipe(
-        concatMap((jsonResp) => {
-          this.cryostatVersionSubject.next(jsonResp.cryostatVersion);
-          this.buildInfoSubject.next(jsonResp.build);
-          const toFetch: unknown[] = [];
-          const unconfigured: string[] = [];
-          const unavailable: string[] = [];
-          // if datasource or dashboard are not configured, display a warning
-          // if either is configured but not available, display an error
-          // if both configured and available then display nothing and just retrieve the URLs
-          if (jsonResp.datasourceConfigured) {
-            if (jsonResp.datasourceAvailable) {
-              toFetch.push(datasourceURL);
-            } else {
-              unavailable.push('datasource URL');
-            }
-          } else {
-            unconfigured.push('datasource URL');
-          }
-          if (jsonResp.dashboardConfigured) {
-            if (jsonResp.dashboardAvailable) {
-              toFetch.push(dashboardURL);
-            } else {
-              unavailable.push('dashboard URL');
-            }
-          } else {
-            unconfigured.push('dashboard URL');
-          }
-          if (unconfigured.length > 0) {
-            return throwError(() => ({
-              state: 'not configured',
-              message: unconfigured.join(', ') + ' unconfigured',
-            }));
-          }
-          if (unavailable.length > 0) {
-            return throwError(() => ({
-              state: 'unavailable',
-              message: unavailable.join(', ') + ' unavailable',
-            }));
-          }
-          return forkJoin(
-            toFetch as [Observable<GrafanaDatasourceUrlGetResponse>, Observable<GrafanaDashboardUrlGetResponse>],
-          );
-        }),
-      )
-      .subscribe({
-        next: (parts) => {
-          this.grafanaDatasourceUrlSubject.next(parts[0].grafanaDatasourceUrl);
-          this.grafanaDashboardUrlSubject.next(parts[1].grafanaDashboardUrl);
-        },
-        error: (err) => {
-          window.console.error(err);
-          if (err.state === 'unavailable') {
-            this.notifications.danger(`Grafana ${err.state}`, err.message, NotificationCategory.GrafanaConfiguration);
-          } else {
-            this.notifications.warning(`Grafana ${err.state}`, err.message, NotificationCategory.GrafanaConfiguration);
-          }
-        },
-      });
-  }
-
-  private testArchiveAvailability() {
-    this.doGet('recordings')
-      .pipe(
-        catchError(() => {
-          this.archiveEnabled.next(false);
-          return EMPTY;
-        }),
-      )
-      .subscribe();
+    const health: Observable<HealthGetResponse> = this.doGet('health', 'unversioned');
+    health.subscribe((resp) => {
+      this.cryostatVersionSubject.next(resp.cryostatVersion);
+      this.buildInfoSubject.next(resp.build);
+      this.grafanaDashboardUrlSubject.next(resp.services.dashboard.url);
+    });
   }
 
   getTargets(): Observable<Target[]> {
-    return this.doGet('targets', 'v4');
+    return this.doGet('targets', 'v5');
   }
 
   createTarget(
@@ -213,7 +128,7 @@ export class ApiService {
     credentials?.username && form.append('username', credentials.username);
     credentials?.password && form.append('password', credentials.password);
     return this.sendRequest(
-      'v4',
+      'v5',
       `targets`,
       {
         method: 'POST',
@@ -231,8 +146,8 @@ export class ApiService {
     );
   }
 
-  deleteTarget(target: TargetStub): Observable<boolean> {
-    return this.sendRequest('v4', `targets/${target.id}`, {
+  deleteTarget(target: Target): Observable<boolean> {
+    return this.sendRequest('v5', `targets/${target.jvmId!}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -242,24 +157,30 @@ export class ApiService {
   }
 
   getTargetTriggers(
-    target: TargetStub,
+    target: Target,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<SmartTrigger[]> {
-    return this.doGet(`targets/${target.id}/smart_triggers`, 'beta', undefined, suppressNotifications, skipStatusCheck);
+    return this.doGet(
+      `targets/${target.jvmId}/smart-triggers`,
+      'v5',
+      undefined,
+      suppressNotifications,
+      skipStatusCheck,
+    );
   }
 
-  deleteTrigger(uuid: string, target: TargetStub): Observable<boolean> {
-    return this.sendRequest('beta', `targets/${target.id}/smart_triggers/${uuid}`, { method: 'DELETE' }).pipe(
+  deleteTrigger(uuid: string, target: Target): Observable<boolean> {
+    return this.sendRequest('v5', `targets/${target.jvmId}/smart-triggers/${uuid}`, { method: 'DELETE' }).pipe(
       map((resp) => resp.ok),
       first(),
     );
   }
 
-  addTriggers(definition: SmartTriggerRequest, target: TargetStub): Observable<boolean> {
+  addTriggers(definition: SmartTriggerRequest, target: Target): Observable<boolean> {
     const body = new window.FormData();
     body.append('definition', JSON.stringify([definition]));
-    return this.sendRequest('beta', `targets/${target.id}/smart_triggers/`, { method: 'POST', body }).pipe(
+    return this.sendRequest('v5', `targets/${target.jvmId}/smart-triggers/`, { method: 'POST', body }).pipe(
       map((resp) => resp.ok),
       first(),
     );
@@ -286,7 +207,7 @@ export class ApiService {
       }
     });
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
-    return this.sendUploadRequest('v4', 'rules', 'Rule Upload Failed', body, onUploadProgress, abortSignal).pipe(
+    return this.sendUploadRequest('v5', 'rules', 'Rule Upload Failed', body, onUploadProgress, abortSignal).pipe(
       map((resp) => resp.ok),
       tap({
         next: () => (window.onbeforeunload = null),
@@ -303,9 +224,13 @@ export class ApiService {
       })
       .pipe(
         concatMap((headers) =>
-          this.sendRequest('v4', 'rules', {
+          this.sendRequest('v5', 'rules', {
             method: 'POST',
-            body: JSON.stringify({ ...rule, metadata: { labels: this.transformLabelsToObject(rule.metadata.labels) } }),
+            body: JSON.stringify({
+              ...rule,
+              id: undefined,
+              metadata: { labels: this.transformLabelsToObject(rule.metadata.labels) },
+            }),
             headers,
           }),
         ),
@@ -323,12 +248,13 @@ export class ApiService {
       .pipe(
         concatMap((headers) =>
           this.sendRequest(
-            'v4',
-            `rules/${rule.name}`,
+            'v5',
+            `rules/${rule.id}`,
             {
               method: 'PATCH',
               body: JSON.stringify({
                 ...rule,
+                id: undefined,
                 metadata: {
                   labels: this.transformLabelsToObject(rule?.metadata?.labels ?? []),
                 },
@@ -338,16 +264,15 @@ export class ApiService {
             new URLSearchParams({ clean: String(clean) }),
           ),
         ),
-
         map((resp) => resp.ok),
         first(),
       );
   }
 
-  deleteRule(name: string, clean = true): Observable<boolean> {
+  deleteRule(rule: Rule, clean = true): Observable<boolean> {
     return this.sendRequest(
-      'v4',
-      `rules/${name}`,
+      'v5',
+      `rules/${rule.id}`,
       {
         method: 'DELETE',
       },
@@ -397,7 +322,7 @@ export class ApiService {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
-        this.sendRequest('v4', `targets/${target!.id}/recordings`, {
+        this.sendRequest('v5', `targets/${target!.jvmId}/recordings`, {
           method: 'POST',
           body: form,
         }).pipe(
@@ -426,7 +351,7 @@ export class ApiService {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
-        this.sendRequest('v4', `targets/${target!.id}/snapshot`, {
+        this.sendRequest('v5', `targets/${target!.jvmId}/recordings/snapshot`, {
           method: 'POST',
         }).pipe(
           concatMap((resp) => (resp.status === 202 ? of(undefined) : (resp.json() as Promise<ActiveRecording>))),
@@ -438,15 +363,11 @@ export class ApiService {
     );
   }
 
-  isArchiveEnabled(): Observable<boolean> {
-    return this.archiveEnabled.asObservable();
-  }
-
   archiveRecording(remoteId: number): Observable<string> {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
-        this.sendRequest('v4', `targets/${target!.id}/recordings/${remoteId}`, {
+        this.sendRequest('v5', `targets/${target!.jvmId}/recordings/${remoteId}`, {
           method: 'PATCH',
           body: 'SAVE',
         }).pipe(
@@ -462,7 +383,7 @@ export class ApiService {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
-        this.sendRequest('v4', `targets/${target!.id}/recordings/${remoteId}`, {
+        this.sendRequest('v5', `targets/${target!.jvmId}/recordings/${remoteId}`, {
           method: 'PATCH',
           body: 'STOP',
         }).pipe(
@@ -478,7 +399,7 @@ export class ApiService {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
-        this.sendRequest('v4', `targets/${target!.id}/recordings/${remoteId}`, {
+        this.sendRequest('v5', `targets/${target!.jvmId}/recordings/${remoteId}`, {
           method: 'DELETE',
         }).pipe(
           map((resp) => resp.ok),
@@ -489,14 +410,10 @@ export class ApiService {
     );
   }
 
-  deleteArchivedRecording(connectUrl: string, recordingName: string): Observable<boolean> {
-    return this.sendRequest(
-      'beta',
-      `recordings/${encodeURIComponent(connectUrl)}/${encodeURIComponent(recordingName)}`,
-      {
-        method: 'DELETE',
-      },
-    ).pipe(
+  deleteArchivedRecording(jvmId: string, recordingName: string): Observable<boolean> {
+    return this.sendRequest('v5', `recordings/${encodeURIComponent(jvmId)}/${encodeURIComponent(recordingName)}`, {
+      method: 'DELETE',
+    }).pipe(
       map((resp) => resp.ok),
       first(),
     );
@@ -506,7 +423,7 @@ export class ApiService {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
-        this.sendRequest('v4', `targets/${target!.id}/recordings/${remoteId}/upload`, {
+        this.sendRequest('v5', `targets/${target!.jvmId}/recordings/${remoteId}/upload`, {
           method: 'POST',
         }).pipe(
           concatMap((resp) => resp.text()),
@@ -523,7 +440,7 @@ export class ApiService {
   ): Observable<string> {
     return sourceTarget.pipe(
       concatMap((target) =>
-        this.sendRequest('v4', `grafana/${window.btoa((target!.jvmId ?? 'uploads') + '/' + recordingName)}`, {
+        this.sendRequest('v5', `grafana/${window.btoa((target!.jvmId ?? 'uploads') + '/' + recordingName)}`, {
           method: 'POST',
         }).pipe(
           concatMap((resp) => resp.text()),
@@ -536,7 +453,7 @@ export class ApiService {
 
   // from file system path functions
   uploadArchivedRecordingToGrafanaFromPath(jvmId: string, recordingName: string): Observable<string> {
-    return this.sendRequest('v4', `grafana/${window.btoa((jvmId ?? 'uploads') + '/' + recordingName)}`, {
+    return this.sendRequest('v5', `grafana/${window.btoa((jvmId ?? 'uploads') + '/' + recordingName)}`, {
       method: 'POST',
     }).pipe(
       concatMap((resp) => resp.text()),
@@ -545,7 +462,7 @@ export class ApiService {
   }
 
   deleteArchivedRecordingFromPath(jvmId: string, recordingName: string): Observable<boolean> {
-    return this.sendRequest('beta', `fs/recordings/${encodeURIComponent(jvmId)}/${encodeURIComponent(recordingName)}`, {
+    return this.sendRequest('v5', `recordings/${encodeURIComponent(jvmId)}/${encodeURIComponent(recordingName)}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -631,7 +548,7 @@ export class ApiService {
   }
 
   deleteCustomEventTemplate(templateName: string): Observable<boolean> {
-    return this.sendRequest('v4', `event_templates/${encodeURIComponent(templateName)}`, {
+    return this.sendRequest('v5', `event-templates/${encodeURIComponent(templateName)}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -649,8 +566,8 @@ export class ApiService {
     const body = new window.FormData();
     body.append('template', file);
     return this.sendUploadRequest(
-      'v4',
-      'event_templates',
+      'v5',
+      'event-templates',
       'Template Upload Failed',
       body,
       onUploadProgress,
@@ -669,7 +586,7 @@ export class ApiService {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
-        this.sendRequest('v4', `targets/${target!.id}/probes`, {
+        this.sendRequest('v5', `targets/${target!.jvmId}/jmc-agent/probes`, {
           method: 'DELETE',
         }).pipe(
           map((resp) => resp.ok),
@@ -685,8 +602,8 @@ export class ApiService {
     return this.target.target().pipe(
       concatMap((target) =>
         this.sendRequest(
-          'beta',
-          `diagnostics/targets/${target?.id}/gc`,
+          'v5',
+          `targets/${target?.jvmId}/diagnostics/gc`,
           {
             method: 'POST',
           },
@@ -705,8 +622,8 @@ export class ApiService {
     return this.target.target().pipe(
       concatMap((target) =>
         this.sendRequest(
-          'beta',
-          `diagnostics/targets/${target?.id}/threaddump?format=threadPrint`,
+          'v5',
+          `targets/${target?.jvmId}/diagnostics/thread-dump?format=threadPrint`,
           {
             method: 'POST',
           },
@@ -725,8 +642,8 @@ export class ApiService {
     return this.target.target().pipe(
       concatMap((target) =>
         this.sendRequest(
-          'beta',
-          `diagnostics/targets/${target?.id}/heapdump`,
+          'v5',
+          `targets/${target?.jvmId}/diagnostics/heap-dump`,
           {
             method: 'POST',
           },
@@ -742,7 +659,7 @@ export class ApiService {
   }
 
   deleteThreadDump(target: Target, threadDumpId: string): Observable<boolean> {
-    return this.sendRequest('beta', `diagnostics/targets/${target?.id}/threaddump/${threadDumpId}`, {
+    return this.sendRequest('v5', `targets/${target?.jvmId}/diagnostics/thread-dump/${threadDumpId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -751,7 +668,7 @@ export class ApiService {
   }
 
   deleteArchivedThreadDumpFromPath(jvmId: string, threadDumpId: string): Observable<boolean> {
-    return this.sendRequest('beta', `diagnostics/fs/threaddumps/${jvmId}/${threadDumpId}`, {
+    return this.sendRequest('v5', `targets/${jvmId}/diagnostics/thread-dump/${threadDumpId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -760,7 +677,7 @@ export class ApiService {
   }
 
   deleteHeapDump(target: Target, heapDumpId: string): Observable<boolean> {
-    return this.sendRequest('beta', `diagnostics/targets/${target?.id}/heapdump/${heapDumpId}`, {
+    return this.sendRequest('v5', `targets/${target?.jvmId}/diagnostics/heap-dump/${heapDumpId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -769,7 +686,7 @@ export class ApiService {
   }
 
   deleteArchivedHeapDumpFromPath(jvmId: string, heapDumpId: string): Observable<boolean> {
-    return this.sendRequest('beta', `diagnostics/fs/heapdumps/${jvmId}/${heapDumpId}`, {
+    return this.sendRequest('v5', `targets/${jvmId}/diagnostics/heap-dump/${heapDumpId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -782,8 +699,8 @@ export class ApiService {
       filter((t) => !!t),
       concatMap((target) =>
         this.sendRequest(
-          'beta',
-          `diagnostics/targets/${target!.id}/threaddump`,
+          'v5',
+          `targets/${target!.jvmId}/diagnostics/thread-dump`,
           {
             method: 'GET',
           },
@@ -804,8 +721,8 @@ export class ApiService {
     suppressNotifications = false,
   ): Observable<ThreadDumpAnalysisResult> {
     return this.sendRequest(
-      'beta',
-      `diagnostics/targets/${jvmId}/threaddump/${threadDumpId}/analyze`,
+      'v5',
+      `targets/${jvmId}/diagnostics/thread-dump/${threadDumpId}/analyze`,
       {
         method: 'POST',
       },
@@ -822,8 +739,8 @@ export class ApiService {
       filter((t) => !!t),
       concatMap((target) =>
         this.sendRequest(
-          'beta',
-          `diagnostics/targets/${target!.id}/heapdump`,
+          'v5',
+          `targets/${target!.jvmId}/diagnostics/heap-dump`,
           {
             method: 'GET',
           },
@@ -842,7 +759,7 @@ export class ApiService {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
-        this.sendRequest('v4', `targets/${target!.id}/probes/${encodeURIComponent(templateName)}`, {
+        this.sendRequest('v5', `targets/${target!.jvmId}/jmc-agent/probes/${encodeURIComponent(templateName)}`, {
           method: 'POST',
         }).pipe(
           tap((resp) => {
@@ -872,8 +789,8 @@ export class ApiService {
     body.append('probeTemplate', file);
     body.append('name', file.name);
     return this.sendUploadRequest(
-      'v4',
-      'probes',
+      'v5',
+      'jmc-agent/probe-templates',
       'Custom Probe Template Upload Failed',
       body,
       onUploadProgress,
@@ -889,7 +806,7 @@ export class ApiService {
   }
 
   deleteCustomProbeTemplate(templateName: string): Observable<boolean> {
-    return this.sendRequest('v4', `probes/${encodeURIComponent(templateName)}`, {
+    return this.sendRequest('v5', `jmc-agent/probe-templates/${encodeURIComponent(templateName)}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -899,7 +816,7 @@ export class ApiService {
   }
 
   downloadProbeTemplate(template: ProbeTemplate): void {
-    this.ctx.url(`/api/v4/probes/${encodeURIComponent(template.name)}`).subscribe((resourceUrl) => {
+    this.ctx.url(`/api/v5/jmc-agent/probe-templates/${encodeURIComponent(template.name)}`).subscribe((resourceUrl) => {
       this.downloadFile(resourceUrl, undefined, template.name);
     });
   }
@@ -910,10 +827,6 @@ export class ApiService {
 
   buildInfo(): Observable<BuildInfo> {
     return this.buildInfoSubject.asObservable();
-  }
-
-  grafanaDatasourceUrl(): Observable<string> {
-    return this.grafanaDatasourceUrlSubject.asObservable();
   }
 
   grafanaDashboardUrl(): Observable<string> {
@@ -932,22 +845,8 @@ export class ApiService {
     url.subscribe((u) => window.open(u, '_blank'));
   }
 
-  doGet<T>(
-    path: string,
-    apiVersion: ApiVersion = 'v4',
-    params?: URLSearchParams,
-    suppressNotifications?: boolean,
-    skipStatusCheck?: boolean,
-  ): Observable<T> {
-    return this.sendRequest(apiVersion, path, { method: 'GET' }, params, suppressNotifications, skipStatusCheck).pipe(
-      map((resp) => resp.json()),
-      concatMap(from),
-      first(),
-    );
-  }
-
   getProbeTemplates(): Observable<ProbeTemplate[]> {
-    return this.sendRequest('v4', 'probes', { method: 'GET' }).pipe(
+    return this.sendRequest('v5', 'jmc-agent/probe-templates', { method: 'GET' }).pipe(
       concatMap((resp) => resp.json()),
       first(),
     );
@@ -958,8 +857,8 @@ export class ApiService {
       filter((t) => !!t),
       concatMap((target) =>
         this.sendRequest(
-          'v4',
-          `targets/${target!.id}/probes`,
+          'v5',
+          `targets/${target!.jvmId}/jmc-agent/probes`,
           {
             method: 'GET',
           },
@@ -975,13 +874,13 @@ export class ApiService {
   }
 
   getActiveProbesForTarget(
-    target: TargetStub,
+    target: Target,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<EventProbe[]> {
     return this.sendRequest(
-      'v4',
-      `targets/${target.id}/probes`,
+      'v5',
+      `targets/${target.jvmId}/jmc-agent/probes`,
       {
         method: 'GET',
       },
@@ -1080,15 +979,15 @@ export class ApiService {
   }
 
   getCurrentReportForTarget(
-    target: TargetStub | TargetStub[],
+    target: Target | Target[],
     aggregateOnly = false,
     reportFilter = {},
   ): Observable<AggregateReport> {
-    let targetIds: number[];
+    let jvmIds: string[];
     if (Array.isArray(target)) {
-      targetIds = target.map((t) => t.id!);
+      jvmIds = target.map((t) => t.jvmId!);
     } else {
-      targetIds = [target.id!];
+      jvmIds = [target.jvmId!];
     }
     const dataQ = `
                 data {
@@ -1112,8 +1011,8 @@ export class ApiService {
     `;
     return this.graphql<any>(
       `
-        query AggregateReportForTarget($targetIds: [ BigInteger! ], $reportFilter: ReportFilterInput) {
-          targetNodes(filter: { targetIds: $targetIds }) {
+        query AggregateReportForTarget($jvmIds: [ String! ], $reportFilter: ReportFilterInput) {
+          targetNodes(filter: { jvmIds: $jvmIds }) {
             target {
               id
               report(filter: $reportFilter) {
@@ -1128,7 +1027,7 @@ export class ApiService {
           }
         }
       `,
-      { targetIds, reportFilter },
+      { jvmIds, reportFilter },
     ).pipe(
       map((resp) => {
         const empty = {
@@ -1165,7 +1064,7 @@ export class ApiService {
         .pipe(
           concatMap((headers) =>
             this.sendRequest(
-              'v4',
+              'v5',
               'graphql',
               {
                 method: 'POST',
@@ -1236,14 +1135,14 @@ export class ApiService {
           first(),
           map(
             (target) =>
-              `/api/v4/targets/${target!.id}/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
+              `/api/v5/targets/${target!.jvmId}/event-templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
           ),
           concatMap((resourceUrl) => this.ctx.url(resourceUrl)),
         );
         break;
       default:
         url = of(
-          `/api/v4/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
+          `/api/v5/event-templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
         ).pipe(concatMap((u) => this.ctx.url(u)));
         break;
     }
@@ -1281,40 +1180,14 @@ export class ApiService {
     body.append('labels', JSON.stringify(labels));
 
     return this.sendUploadRequest(
-      'v4',
-      'recordings',
+      'v5',
+      'recordings/uploads',
       'Recording Upload Failed',
       body,
       onUploadProgress,
       abortSignal,
     ).pipe(
       concatMap((resp) => (resp instanceof Response ? resp.text() : Promise.resolve(resp.body as string))),
-      tap({
-        next: () => (window.onbeforeunload = null),
-        error: () => (window.onbeforeunload = null),
-      }),
-      first(),
-    );
-  }
-
-  uploadSSLCertificate(
-    file: File,
-    onUploadProgress?: (progress: number) => void,
-    abortSignal?: Observable<void>,
-  ): Observable<boolean> {
-    window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
-
-    const body = new window.FormData();
-    body.append('cert', file);
-    return this.sendUploadRequest(
-      'v4',
-      'certificates',
-      'Certificate Upload Failed',
-      body,
-      onUploadProgress,
-      abortSignal,
-    ).pipe(
-      map((resp) => resp.ok),
       tap({
         next: () => (window.onbeforeunload = null),
         error: () => (window.onbeforeunload = null),
@@ -1334,8 +1207,8 @@ export class ApiService {
       concatMap((target) =>
         this.graphql<any>(
           `
-        query PostRecordingMetadata($id: BigInteger!, $recordingName: String, $labels: [Entry_String_StringInput]) {
-          targetNodes(filter: { targetIds: [$id] }) {
+        query PostRecordingMetadata($jvmId: String!, $recordingName: String, $labels: [Entry_String_StringInput]) {
+          targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               archivedRecordings(filter: { name: $recordingName }) {
                 data {
@@ -1355,7 +1228,7 @@ export class ApiService {
           }
         }`,
           {
-            id: target.id!,
+            jvmId: target.jvmId!,
             recordingName,
             labels: labels.map((label) => ({ key: label.key, value: label.value })),
           },
@@ -1395,8 +1268,8 @@ export class ApiService {
   postThreadDumpMetadata(threadDumpId: string, labels: KeyValue[], target: Target): Observable<ThreadDump[]> {
     return this.graphql<any>(
       `
-        query PostThreadDumpMetadata($id: BigInteger!, $threadDumpId: String, $labels: [Entry_String_StringInput]) {
-          targetNodes(filter: { targetIds: [$id] }) {
+        query PostThreadDumpMetadata($jvmId: String!, $threadDumpId: String, $labels: [Entry_String_StringInput]) {
+          targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               threadDumps(filter: { name: $threadDumpId }) {
                 data {
@@ -1414,7 +1287,7 @@ export class ApiService {
           }
         }`,
       {
-        id: target.id!,
+        jvmId: target.jvmId!,
         threadDumpId,
         labels: labels.map((label) => ({ key: label.key, value: label.value })),
       },
@@ -1454,8 +1327,8 @@ export class ApiService {
   postHeapDumpMetadata(heapDumpId: string, labels: KeyValue[], target: Target): Observable<HeapDump[]> {
     return this.graphql<any>(
       `
-        query PostHeapDumpMetadata($id: BigInteger!, $heapDumpId: String, $labels: [Entry_String_StringInput]) {
-          targetNodes(filter: { targetIds: [$id] }) {
+        query PostHeapDumpMetadata($jvmId: String!, $heapDumpId: String, $labels: [Entry_String_StringInput]) {
+          targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               heapDumps(filter: { name: $heapDumpId }) {
                 data {
@@ -1473,7 +1346,7 @@ export class ApiService {
           }
         }`,
       {
-        id: target.id!,
+        jvmId: target.jvmId!,
         heapDumpId,
         labels: labels.map((label) => ({ key: label.key, value: label.value })),
       },
@@ -1517,8 +1390,8 @@ export class ApiService {
   ): Observable<ActiveRecording[]> {
     return this.graphql<any>(
       `
-        query PostActiveRecordingMetadata($id: BigInteger!, $recordingName: String, $labels: [Entry_String_StringInput]) {
-          targetNodes(filter: { targetIds: [$id] }) {
+        query PostActiveRecordingMetadata($jvmId: String!, $recordingName: String, $labels: [Entry_String_StringInput]) {
+          targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               activeRecordings(filter: { name: $recordingName }) {
                 data {
@@ -1538,7 +1411,7 @@ export class ApiService {
           }
         }`,
       {
-        id: target.id!,
+        jvmId: target.jvmId!,
         recordingName,
         labels: labels.map((label) => ({ key: label.key, value: label.value })),
       },
@@ -1554,7 +1427,7 @@ export class ApiService {
     body.append('username', username);
     body.append('password', password);
 
-    return this.sendRequest('v4', 'credentials', {
+    return this.sendRequest('v5', 'credentials', {
       method: 'POST',
       body,
     }).pipe(
@@ -1564,8 +1437,8 @@ export class ApiService {
     );
   }
 
-  getCredential(id: number): Observable<MatchedCredential> {
-    return this.sendRequest('v4', `credentials/${id}`, {
+  getCredential(id: string): Observable<MatchedCredential> {
+    return this.sendRequest('v5', `credentials/${id}`, {
       method: 'GET',
     }).pipe(
       concatMap((resp) => resp.json()),
@@ -1575,7 +1448,7 @@ export class ApiService {
 
   getCredentials(suppressNotifications = false, skipStatusCheck = false): Observable<MatchedCredential[]> {
     return this.sendRequest(
-      'v4',
+      'v5',
       `credentials`,
       {
         method: 'GET',
@@ -1589,8 +1462,8 @@ export class ApiService {
     );
   }
 
-  deleteCredentials(id: number): Observable<boolean> {
-    return this.sendRequest('v4', `credentials/${id}`, {
+  deleteCredentials(id: string): Observable<boolean> {
+    return this.sendRequest('v5', `credentials/${id}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -1600,7 +1473,7 @@ export class ApiService {
 
   getRules(suppressNotifications = false, skipStatusCheck = false): Observable<Rule[]> {
     return this.sendRequest(
-      'v4',
+      'v5',
       'rules',
       {
         method: 'GET',
@@ -1617,8 +1490,8 @@ export class ApiService {
   getDiscoveryTree(mergeRealms = true): Observable<EnvironmentNode> {
     const params = new URLSearchParams([['mergeRealms', `${mergeRealms}`]]);
     return this.sendRequest(
-      'v4',
-      'discovery',
+      'v5',
+      'discovery/tree',
       {
         method: 'GET',
       },
@@ -1630,7 +1503,7 @@ export class ApiService {
   }
 
   getTargetLineage(jvmId: string): Observable<EnvironmentNode> {
-    return this.doGet<EnvironmentNode>(`audit/target_lineage/${jvmId}`, 'beta', undefined, true);
+    return this.doGet<EnvironmentNode>(`audit/target-lineage/${jvmId}`, 'v5', undefined, true);
   }
 
   /**
@@ -1658,7 +1531,7 @@ export class ApiService {
       Expires: '0',
     });
 
-    return this.sendRequest('beta', `audit/revisions`, { method: 'GET', headers }, queryParams).pipe(
+    return this.sendRequest('v5', `audit/revisions`, { method: 'GET', headers }, queryParams).pipe(
       map((resp) => resp.json()),
       concatMap(from),
       first(),
@@ -1677,7 +1550,7 @@ export class ApiService {
       Expires: '0',
     });
 
-    return this.sendRequest('beta', `audit/revisions/${rev}`, { method: 'GET', headers }).pipe(
+    return this.sendRequest('v5', `audit/revisions/${rev}`, { method: 'GET', headers }).pipe(
       map((resp) => resp.json()),
       concatMap(from),
       first(),
@@ -1695,7 +1568,7 @@ export class ApiService {
       endTime: endTime.toString(),
     });
 
-    this.ctx.url(`/api/beta/audit/export?${queryParams.toString()}`).subscribe((resourceUrl) => {
+    this.ctx.url(`/api/v5/audit/export?${queryParams.toString()}`).subscribe((resourceUrl) => {
       const filename = `audit-log-${startTime}-${endTime}.json`;
       this.downloadFile(resourceUrl, undefined, filename);
     });
@@ -1714,8 +1587,8 @@ export class ApiService {
       .pipe(
         concatMap((headers) =>
           this.sendRequest(
-            'v4',
-            'matchExpressions',
+            'v5',
+            'match-expressions',
             {
               method: 'POST',
               body,
@@ -1776,11 +1649,11 @@ export class ApiService {
     );
   }
 
-  targetRecordingRemoteIdByOrigin(target: TargetStub, origin: string): Observable<number | undefined> {
+  targetRecordingRemoteIdByOrigin(target: Target, origin: string): Observable<number | undefined> {
     return this.graphql<any>(
       `
-        query ActiveRecordingIdForRecordingByOriginLabel($id: BigInteger!) {
-          targetNodes(filter: { targetIds: [$id] }) {
+        query ActiveRecordingIdForRecordingByOriginLabel($jvmId: String!) {
+          targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               activeRecordings(filter: {
                 labels: ["origin=${origin}"]
@@ -1793,7 +1666,7 @@ export class ApiService {
           }
         }
       `,
-      { id: target.id },
+      { jvmId: target.jvmId },
     ).pipe(
       map((resp) => {
         const nodes = resp.data?.targetNodes ?? [];
@@ -1809,11 +1682,11 @@ export class ApiService {
     );
   }
 
-  targetHasJFRMetricsRecording(target: TargetStub, filter: ActiveRecordingsFilterInput = {}): Observable<boolean> {
+  targetHasJFRMetricsRecording(target: Target, filter: ActiveRecordingsFilterInput = {}): Observable<boolean> {
     return this.graphql<RecordingCountResponse>(
       `
-        query ActiveRecordingsForJFRMetrics($id: BigInteger!, $recordingFilter: ActiveRecordingsFilterInput) {
-          targetNodes(filter: { targetIds: [$id] }) {
+        query ActiveRecordingsForJFRMetrics($jvmId: String!, $recordingFilter: ActiveRecordingsFilterInput) {
+          targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               activeRecordings(filter: $recordingFilter) {
                 aggregate {
@@ -1824,7 +1697,7 @@ export class ApiService {
           }
         }`,
       {
-        id: target.id!,
+        jvmId: target.jvmId!,
         recordingFilter: filter,
       },
       true,
@@ -1857,7 +1730,7 @@ export class ApiService {
     body.append('password', credentials.password);
 
     return this.sendRequest(
-      'v4',
+      'v5',
       `credentials/test/${target.id}`,
       { method: 'POST', body },
       undefined,
@@ -1896,11 +1769,11 @@ export class ApiService {
     );
   }
 
-  getTargetMBeanMetrics(target: TargetStub, queries: string[]): Observable<MBeanMetrics> {
+  getTargetMBeanMetrics(target: Target, queries: string[]): Observable<MBeanMetrics> {
     return this.graphql<MBeanMetricsResponse>(
       `
-        query MBeanMXMetricsForTarget($id: BigInteger!) {
-          targetNodes(filter: { targetIds: [$id] }) {
+        query MBeanMXMetricsForTarget($jvmId: String!) {
+          targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               mbeanMetrics {
                 ${queries.join('\n')}
@@ -1908,7 +1781,7 @@ export class ApiService {
             }
           }
         }`,
-      { id: target.id! },
+      { jvmId: target.jvmId! },
     ).pipe(
       map((resp) => {
         const nodes = resp.data?.targetNodes ?? [];
@@ -1921,11 +1794,11 @@ export class ApiService {
     );
   }
 
-  getTargetArchivedRecordings(target: TargetStub): Observable<ArchivedRecording[]> {
+  getTargetArchivedRecordings(target: Target): Observable<ArchivedRecording[]> {
     return this.graphql<any>(
       `
-        query ArchivedRecordingsForTarget($id: BigInteger!) {
-          targetNodes(filter: { targetIds: [$id] }) {
+        query ArchivedRecordingsForTarget($jvmId: String!) {
+          targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               archivedRecordings {
                 data {
@@ -1945,17 +1818,17 @@ export class ApiService {
             }
           }
         }`,
-      { id: target.id! },
+      { jvmId: target.jvmId! },
       true,
       true,
     ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []));
   }
 
-  getTargetThreadDumps(target: TargetStub): Observable<ThreadDump[]> {
+  getTargetThreadDumps(target: Target): Observable<ThreadDump[]> {
     return this.graphql<any>(
       `
-        query ThreadDumpsForTarget($id: BigInteger!) {
-          targetNodes(filter: { targetIds: [$id] }) {
+        query ThreadDumpsForTarget($jvmId: String!) {
+          targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               threadDumps {
                 data {
@@ -1978,17 +1851,17 @@ export class ApiService {
             }
           }
         }`,
-      { id: target.id! },
+      { jvmId: target.jvmId! },
       true,
       true,
     ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.threadDumps?.data as ThreadDump[]) ?? []));
   }
 
-  getTargetHeapDumps(target: TargetStub): Observable<HeapDump[]> {
+  getTargetHeapDumps(target: Target): Observable<HeapDump[]> {
     return this.graphql<any>(
       `
-        query HeapDumpsForTarget($id: BigInteger!) {
-          targetNodes(filter: { targetIds: [$id] }) {
+        query HeapDumpsForTarget($jvmId: String!) {
+          targetNodes(filter: { jvmIds: [$jvmId] }) {
             target {
               heapDumps {
                 data {
@@ -2011,18 +1884,18 @@ export class ApiService {
             }
           }
         }`,
-      { id: target.id! },
+      { jvmId: target.jvmId! },
       true,
       true,
     ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.heapDumps?.data as HeapDump[]) ?? []));
   }
 
   getTargetActiveRecordings(
-    target: TargetStub,
+    target: Target,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<ActiveRecording[]> {
-    return this.doGet(`targets/${target.id}/recordings`, 'v4', undefined, suppressNotifications, skipStatusCheck);
+    return this.doGet(`targets/${target.jvmId}/recordings`, 'v5', undefined, suppressNotifications, skipStatusCheck);
   }
 
   getUploadedRecordings(): Observable<ArchivedRecording[]> {
@@ -2051,31 +1924,27 @@ export class ApiService {
   }
 
   getEventTemplates(suppressNotifications = false, skipStatusCheck = false): Observable<EventTemplate[]> {
-    return this.doGet<EventTemplate[]>('event_templates', 'v4', undefined, suppressNotifications, skipStatusCheck);
+    return this.doGet<EventTemplate[]>('event-templates', 'v5', undefined, suppressNotifications, skipStatusCheck);
   }
 
   getTargetEventTemplates(
-    target: TargetStub,
+    target: Target,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<EventTemplate[]> {
     return this.doGet<EventTemplate[]>(
-      `targets/${target.id}/event_templates`,
-      'v4',
+      `targets/${target.jvmId}/event-templates`,
+      'v5',
       undefined,
       suppressNotifications,
       skipStatusCheck,
     );
   }
 
-  getTargetEventTypes(
-    target: TargetStub,
-    suppressNotifications = false,
-    skipStatusCheck = false,
-  ): Observable<EventType[]> {
+  getTargetEventTypes(target: Target, suppressNotifications = false, skipStatusCheck = false): Observable<EventType[]> {
     return this.doGet<EventType[]>(
-      `targets/${target.id}/events`,
-      'v4',
+      `targets/${target.jvmId}/events`,
+      'v5',
       undefined,
       suppressNotifications,
       skipStatusCheck,
@@ -2092,7 +1961,7 @@ export class ApiService {
       };
       status: string;
       availableEvents: string[];
-    }>(`targets/${target.id}/async-profiler/status`, 'beta', undefined, suppressNotifications).pipe(
+    }>(`targets/${target.jvmId}/async-profiler/status`, 'v5', undefined, suppressNotifications).pipe(
       map((s) => ({ ...s, status: s['status'] === 'RUNNING' })),
     );
   }
@@ -2106,7 +1975,7 @@ export class ApiService {
   }
 
   getAsyncProfilerAvailableEvents(target: Target): Observable<string[]> {
-    return this.doGet<string[]>(`targets/${target.id}/async-profiler/status`, 'beta').pipe(
+    return this.doGet<string[]>(`targets/${target.jvmId}/async-profiler/status`, 'v5').pipe(
       map((s) => s['availableEvents']),
     );
   }
@@ -2118,7 +1987,7 @@ export class ApiService {
       })
       .pipe(
         concatMap((headers) =>
-          this.sendRequest('beta', `targets/${target.id}/async-profiler`, {
+          this.sendRequest('v5', `targets/${target.jvmId}/async-profiler`, {
             method: 'POST',
             body: JSON.stringify({
               events,
@@ -2146,18 +2015,18 @@ export class ApiService {
   }
 
   getAsyncProfiles(target: Target): Observable<AsyncProfile[]> {
-    return this.doGet<AsyncProfile[]>(`targets/${target.id}/async-profiler`, 'beta');
+    return this.doGet<AsyncProfile[]>(`targets/${target.jvmId}/async-profiler`, 'v5');
   }
 
   downloadAsyncProfile(target: Target, profileId: string): void {
-    this.ctx.url(`/api/beta/targets/${target.id}/async-profiler/${profileId}`).subscribe((resourceUrl) => {
+    this.ctx.url(`/api/v5/targets/${target.jvmId}/async-profiler/${profileId}`).subscribe((resourceUrl) => {
       const jfrFilename = `${target.alias}_${profileId}.asprof.jfr`;
       this.downloadFile(resourceUrl, new URLSearchParams({ filename: jfrFilename }), jfrFilename);
     });
   }
 
   deleteAsyncProfile(target: Target, profileId: string): Observable<boolean> {
-    return this.sendRequest('beta', `targets/${target.id}/async-profiler/${profileId}`, {
+    return this.sendRequest('v5', `targets/${target.jvmId}/async-profiler/${profileId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -2168,8 +2037,8 @@ export class ApiService {
 
   getUnifiedLoggingStatus(target: Target, suppressNotifications = false): Observable<UnifiedLoggingStatus> {
     return this.doGet<UnifiedLoggingStatus>(
-      `diagnostics/targets/${target.id}/unified-logging`,
-      'beta',
+      `targets/${target.jvmId}/diagnostics/unified-logging`,
+      'v5',
       undefined,
       suppressNotifications,
     );
@@ -2177,7 +2046,7 @@ export class ApiService {
 
   enableUnifiedLogging(target: Target, what: string, decorators: string): Observable<boolean> {
     const params = new URLSearchParams({ what, decorators });
-    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logging?${params}`, {
+    return this.sendRequest('v5', `targets/${target.jvmId}/diagnostics/unified-logging?${params}`, {
       method: 'POST',
     }).pipe(
       map((resp) => resp.ok),
@@ -2187,7 +2056,7 @@ export class ApiService {
 
   reconfigureUnifiedLogging(target: Target, what: string, decorators: string): Observable<boolean> {
     const params = new URLSearchParams({ what, decorators });
-    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logging?${params}`, {
+    return this.sendRequest('v5', `targets/${target.jvmId}/diagnostics/unified-logging?${params}`, {
       method: 'PATCH',
     }).pipe(
       map((resp) => resp.ok),
@@ -2196,7 +2065,7 @@ export class ApiService {
   }
 
   disableUnifiedLogging(target: Target): Observable<boolean> {
-    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logging`, {
+    return this.sendRequest('v5', `targets/${target.jvmId}/diagnostics/unified-logging`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -2205,7 +2074,7 @@ export class ApiService {
   }
 
   pullUnifiedLog(target: Target): Observable<UnifiedLog | null> {
-    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logging/pull`, {
+    return this.sendRequest('v5', `targets/${target.jvmId}/diagnostics/unified-logs/pull`, {
       method: 'POST',
     }).pipe(
       concatMap((resp) => (resp.status === 204 ? Promise.resolve(null) : resp.json())),
@@ -2215,8 +2084,8 @@ export class ApiService {
 
   getUnifiedLogs(target: Target, suppressNotifications = false): Observable<UnifiedLog[]> {
     return this.doGet<UnifiedLog[]>(
-      `diagnostics/targets/${target.id}/unified-logs`,
-      'beta',
+      `targets/${target.jvmId}/diagnostics/unified-logs`,
+      'v5',
       undefined,
       suppressNotifications,
     );
@@ -2224,14 +2093,14 @@ export class ApiService {
 
   downloadUnifiedLog(target: Target, log: UnifiedLog): void {
     this.ctx
-      .url(log.downloadUrl ?? `/api/beta/diagnostics/targets/${target.id}/unified-logs/${log.logId}`)
+      .url(log.downloadUrl ?? `/api/v5/targets/${target.jvmId}/diagnostics/unified-logs/${log.logId}`)
       .subscribe((resourceUrl) =>
         this.downloadFile(resourceUrl, new URLSearchParams({ filename: log.logId }), log.logId),
       );
   }
 
   deleteUnifiedLog(target: Target, logId: string): Observable<boolean> {
-    return this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logs/${logId}`, {
+    return this.sendRequest('v5', `targets/${target.jvmId}/diagnostics/unified-logs/${logId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -2240,7 +2109,7 @@ export class ApiService {
   }
 
   deleteArchivedUnifiedLogFromPath(jvmId: string, logId: string): Observable<boolean> {
-    return this.sendRequest('beta', `diagnostics/fs/unified-logs/${jvmId}/${logId}`, {
+    return this.sendRequest('v5', `targets/${jvmId}/diagnostics/unified-logs/${logId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -2249,13 +2118,13 @@ export class ApiService {
   }
 
   getAllUnifiedLogs(suppressNotifications = false): Observable<UnifiedLogDirectory[]> {
-    return this.doGet<UnifiedLogDirectory[]>('diagnostics/fs/unified-logs', 'beta', undefined, suppressNotifications);
+    return this.doGet<UnifiedLogDirectory[]>('diagnostics/unified-logs', 'v5', undefined, suppressNotifications);
   }
 
   postUnifiedLogMetadataForJvmId(jvmId: string, logId: string, labels: KeyValue[]): Observable<UnifiedLog> {
     return this.ctx.headers({ 'Content-Type': 'application/json' }).pipe(
       concatMap((headers) =>
-        this.sendRequest('beta', `diagnostics/fs/unified-logs/${jvmId}/${logId}`, {
+        this.sendRequest('v5', `targets/${jvmId}/diagnostics/unified-logs/${logId}`, {
           method: 'PATCH',
           body: JSON.stringify({ labels: this.transformLabelsToObject(labels) }),
           headers,
@@ -2269,7 +2138,7 @@ export class ApiService {
   postUnifiedLogMetadata(target: Target, logId: string, labels: KeyValue[]): Observable<UnifiedLog> {
     return this.ctx.headers({ 'Content-Type': 'application/json' }).pipe(
       concatMap((headers) =>
-        this.sendRequest('beta', `diagnostics/targets/${target.id}/unified-logs/${logId}`, {
+        this.sendRequest('v5', `targets/${target.jvmId}/diagnostics/unified-logs/${logId}`, {
           method: 'PATCH',
           body: JSON.stringify({ labels: this.transformLabelsToObject(labels) }),
           headers,
@@ -2285,6 +2154,113 @@ export class ApiService {
     const filename = `cryostat-dashboard-${template.name}.json`;
     const resourceUrl = createBlobURL(stringifiedSerializedLayout, 'application/json');
     this.downloadFile(resourceUrl, undefined, filename, false);
+  }
+
+  getArchivedRecordingDirectories(suppressNotifications = false): Observable<RecordingDirectory[]> {
+    return this.doGet<RecordingDirectory[]>('recordings', 'v5', undefined, suppressNotifications);
+  }
+
+  getArchivedHeapDumpDirectories(suppressNotifications = false): Observable<HeapDumpDirectory[]> {
+    return this.doGet<HeapDumpDirectory[]>('diagnostics/heap-dump', 'v5', undefined, suppressNotifications);
+  }
+
+  getArchivedThreadDumpDirectories(suppressNotifications = false): Observable<ThreadDumpDirectory[]> {
+    return this.doGet<ThreadDumpDirectory[]>('diagnostics/thread-dump', 'v5', undefined, suppressNotifications);
+  }
+
+  getTargetRecordingOptions(
+    target: Target,
+    suppressNotifications = false,
+    skipStatusCheck = false,
+  ): Observable<AdvancedRecordingOptions> {
+    return this.doGet<AdvancedRecordingOptions>(
+      `targets/${target.jvmId}/recording-options`,
+      'v5',
+      undefined,
+      suppressNotifications,
+      skipStatusCheck,
+    );
+  }
+
+  analyzeRecording(
+    jvmId: string,
+    filename: string,
+    body: XMLHttpRequestBodyInit,
+    suppressNotifications = false,
+  ): Observable<Response> {
+    return this.sendRequest(
+      'v5',
+      `recordings/${encodeURIComponent(jvmId)}/${encodeURIComponent(filename)}/analytics`,
+      {
+        method: 'POST',
+        body,
+      },
+      undefined,
+      suppressNotifications,
+    );
+  }
+
+  getRecordingViews(jvmId: string, filename: string, suppressNotifications = false): Observable<ViewList> {
+    return this.doGet<ViewList>(
+      `targets/${encodeURIComponent(jvmId)}/recordings/${encodeURIComponent(filename)}/views`,
+      'beta',
+      undefined,
+      suppressNotifications,
+    );
+  }
+
+  getRecordingView(
+    jvmId: string,
+    filename: string,
+    params: URLSearchParams,
+    suppressNotifications = false,
+  ): Observable<Response> {
+    return this.sendRequest(
+      'beta',
+      `targets/${encodeURIComponent(jvmId)}/recordings/${encodeURIComponent(filename)}/view`,
+      { method: 'GET' },
+      params,
+      suppressNotifications,
+    );
+  }
+
+  synthesizeRecording(jvmId: string, params: URLSearchParams, suppressNotifications = false): Observable<Response> {
+    return this.sendRequest(
+      'v5',
+      `targets/${encodeURIComponent(jvmId)}/recordings/synthesis`,
+      { method: 'POST' },
+      params,
+      suppressNotifications,
+    );
+  }
+
+  generateTargetReport(target: Target, suppressNotifications = false): Observable<Response> {
+    return this.sendRequest(
+      'v5',
+      `targets/${target.jvmId}/reports`,
+      {
+        method: 'POST',
+      },
+      undefined,
+      suppressNotifications,
+    );
+  }
+
+  getReportRules(suppressNotifications = false, skipStatusCheck = false): Observable<ReportRule[]> {
+    return this.doGet<ReportRule[]>('reports/rules', 'v5', undefined, suppressNotifications, skipStatusCheck);
+  }
+
+  getTlsCertificates(suppressNotifications = false, skipStatusCheck = false): Observable<string[]> {
+    return this.doGet<string[]>('tls/certs', 'v5', undefined, suppressNotifications, skipStatusCheck);
+  }
+
+  checkAuthentication(): Observable<Response> {
+    return this.sendRequest('v5', 'auth', {
+      credentials: 'include',
+      mode: 'cors',
+      method: 'POST',
+      body: null,
+    });
   }
 
   private stringifyLayoutTemplate(template: LayoutTemplate): string {
@@ -2356,46 +2332,6 @@ export class ApiService {
       }
     }
     return out;
-  }
-
-  sendRequest(
-    apiVersion: ApiVersion,
-    path: string,
-    config?: RequestInit,
-    params?: URLSearchParams,
-    suppressNotifications = false,
-    skipStatusCheck = false,
-  ): Observable<Response> {
-    const p = apiVersion === 'unversioned' ? path : `/api/${apiVersion}/${path}`;
-    const req = () =>
-      combineLatest([
-        this.ctx.url(`${p}${params ? '?' + params : ''}`),
-        this.ctx.headers(config?.headers).pipe(
-          map((headers) => {
-            const cfg = config || {};
-            if (!cfg.headers) {
-              cfg.headers = new Headers();
-            }
-            const mergedHeaders = new Headers();
-            [headers, cfg.headers].forEach((source) => new Headers(source).forEach((v, k) => mergedHeaders.set(k, v)));
-            cfg.headers = mergedHeaders;
-            return cfg;
-          }),
-        ),
-      ]).pipe(
-        concatMap((parts) => from(this.fetchFn(parts[0], parts[1]))),
-        map((resp) => {
-          if (resp.ok) return resp;
-          throw new HttpError(resp);
-        }),
-        catchError((err) => {
-          if (skipStatusCheck) {
-            throw err;
-          }
-          return this.handleError<Response>(err, req, suppressNotifications);
-        }),
-      );
-    return req();
   }
 
   private handleError<T>(error: Error, retry: () => Observable<T>, suppressNotifications = false): ObservableInput<T> {
@@ -2594,5 +2530,59 @@ export class ApiService {
       this.notifications.danger(`Request failed`, error.message);
     }
     throw error;
+  }
+
+  private doGet<T>(
+    path: string,
+    apiVersion: ApiVersion = 'v5',
+    params?: URLSearchParams,
+    suppressNotifications?: boolean,
+    skipStatusCheck?: boolean,
+  ): Observable<T> {
+    return this.sendRequest(apiVersion, path, { method: 'GET' }, params, suppressNotifications, skipStatusCheck).pipe(
+      map((resp) => resp.json()),
+      concatMap(from),
+      first(),
+    );
+  }
+
+  private sendRequest(
+    apiVersion: ApiVersion,
+    path: string,
+    config?: RequestInit,
+    params?: URLSearchParams,
+    suppressNotifications = false,
+    skipStatusCheck = false,
+  ): Observable<Response> {
+    const p = apiVersion === 'unversioned' ? path : `/api/${apiVersion}/${path}`;
+    const req = () =>
+      combineLatest([
+        this.ctx.url(`${p}${params ? '?' + params : ''}`),
+        this.ctx.headers(config?.headers).pipe(
+          map((headers) => {
+            const cfg = config || {};
+            if (!cfg.headers) {
+              cfg.headers = new Headers();
+            }
+            const mergedHeaders = new Headers();
+            [headers, cfg.headers].forEach((source) => new Headers(source).forEach((v, k) => mergedHeaders.set(k, v)));
+            cfg.headers = mergedHeaders;
+            return cfg;
+          }),
+        ),
+      ]).pipe(
+        concatMap((parts) => from(this.fetchFn(parts[0], parts[1]))),
+        map((resp) => {
+          if (resp.ok) return resp;
+          throw new HttpError(resp);
+        }),
+        catchError((err) => {
+          if (skipStatusCheck) {
+            throw err;
+          }
+          return this.handleError<Response>(err, req, suppressNotifications);
+        }),
+      );
+    return req();
   }
 }

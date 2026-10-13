@@ -127,7 +127,7 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
   const refreshDirectoriesAndCounts = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.api.doGet<ThreadDumpDirectory[]>('diagnostics/fs/threaddumps', 'beta').subscribe({
+      context.api.getArchivedThreadDumpDirectories().subscribe({
         next: handleDirectoriesAndCounts,
         error: handleError,
       }),

@@ -24,6 +24,7 @@ export interface RuleToDeleteOrDisable {
 }
 
 interface _FormBaseData {
+  id?: string;
   name: string;
   enabled: boolean;
   matchExpression: string;

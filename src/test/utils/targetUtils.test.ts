@@ -24,7 +24,7 @@ import {
 
 describe('targetUtils', () => {
   describe('findInnermostTargetNode', () => {
-    const createTargetNode = (id: number, alias: string): TargetNode => ({
+    const createTargetNode = (id: string, alias: string): TargetNode => ({
       id,
       name: `Target-${id}`,
       nodeType: NodeType.JVM,
@@ -42,7 +42,7 @@ describe('targetUtils', () => {
     });
 
     const createEnvironmentNode = (
-      id: number,
+      id: string,
       name: string,
       children: (EnvironmentNode | TargetNode)[],
     ): EnvironmentNode => ({
@@ -54,59 +54,59 @@ describe('targetUtils', () => {
     });
 
     it('should return the target node when given a target node directly', () => {
-      const targetNode = createTargetNode(1, 'test-target');
+      const targetNode = createTargetNode('1', 'test-target');
       const result = findInnermostTargetNode(targetNode);
       expect(result).toBe(targetNode);
     });
 
     it('should find target node in a simple hierarchy', () => {
-      const targetNode = createTargetNode(2, 'nested-target');
-      const envNode = createEnvironmentNode(1, 'Environment', [targetNode]);
+      const targetNode = createTargetNode('2', 'nested-target');
+      const envNode = createEnvironmentNode('1', 'Environment', [targetNode]);
 
       const result = findInnermostTargetNode(envNode);
       expect(result).toBe(targetNode);
     });
 
     it('should find target node in a deep hierarchy', () => {
-      const targetNode = createTargetNode(4, 'deep-target');
-      const level3 = createEnvironmentNode(3, 'Level3', [targetNode]);
-      const level2 = createEnvironmentNode(2, 'Level2', [level3]);
-      const level1 = createEnvironmentNode(1, 'Level1', [level2]);
+      const targetNode = createTargetNode('4', 'deep-target');
+      const level3 = createEnvironmentNode('3', 'Level3', [targetNode]);
+      const level2 = createEnvironmentNode('2', 'Level2', [level3]);
+      const level1 = createEnvironmentNode('1', 'Level1', [level2]);
 
       const result = findInnermostTargetNode(level1);
       expect(result).toBe(targetNode);
     });
 
     it('should return the first target node found when multiple exist', () => {
-      const targetNode1 = createTargetNode(2, 'target-1');
-      const targetNode2 = createTargetNode(3, 'target-2');
-      const envNode = createEnvironmentNode(1, 'Environment', [targetNode1, targetNode2]);
+      const targetNode1 = createTargetNode('2', 'target-1');
+      const targetNode2 = createTargetNode('3', 'target-2');
+      const envNode = createEnvironmentNode('1', 'Environment', [targetNode1, targetNode2]);
 
       const result = findInnermostTargetNode(envNode);
       expect(result).toBe(targetNode1);
     });
 
     it('should return undefined when no target node exists', () => {
-      const emptyEnvNode = createEnvironmentNode(1, 'Empty', []);
+      const emptyEnvNode = createEnvironmentNode('1', 'Empty', []);
 
       const result = findInnermostTargetNode(emptyEnvNode);
       expect(result).toBeUndefined();
     });
 
     it('should return undefined when hierarchy only contains environment nodes', () => {
-      const level2 = createEnvironmentNode(2, 'Level2', []);
-      const level1 = createEnvironmentNode(1, 'Level1', [level2]);
+      const level2 = createEnvironmentNode('2', 'Level2', []);
+      const level1 = createEnvironmentNode('1', 'Level1', [level2]);
 
       const result = findInnermostTargetNode(level1);
       expect(result).toBeUndefined();
     });
 
     it('should handle complex branching hierarchies', () => {
-      const targetNode1 = createTargetNode(4, 'target-1');
-      const targetNode2 = createTargetNode(5, 'target-2');
-      const branch1 = createEnvironmentNode(2, 'Branch1', [targetNode1]);
-      const branch2 = createEnvironmentNode(3, 'Branch2', [targetNode2]);
-      const root = createEnvironmentNode(1, 'Root', [branch1, branch2]);
+      const targetNode1 = createTargetNode('4', 'target-1');
+      const targetNode2 = createTargetNode('5', 'target-2');
+      const branch1 = createEnvironmentNode('2', 'Branch1', [targetNode1]);
+      const branch2 = createEnvironmentNode('3', 'Branch2', [targetNode2]);
+      const root = createEnvironmentNode('1', 'Root', [branch1, branch2]);
 
       const result = findInnermostTargetNode(root);
       // Should find the first target in depth-first traversal
@@ -115,11 +115,11 @@ describe('targetUtils', () => {
     });
 
     it('should handle very deep hierarchies without stack overflow', () => {
-      let current: EnvironmentNode | TargetNode = createTargetNode(101, 'deep-target');
+      let current: EnvironmentNode | TargetNode = createTargetNode('101', 'deep-target');
 
       // Create a hierarchy 50 levels deep
       for (let i = 100; i > 0; i--) {
-        current = createEnvironmentNode(i, `Level-${i}`, [current]);
+        current = createEnvironmentNode(String(i), `Level-${i}`, [current]);
       }
 
       const result = findInnermostTargetNode(current as EnvironmentNode);
@@ -129,11 +129,11 @@ describe('targetUtils', () => {
 
     it('should stop at MAX_DEPTH to prevent infinite loops', () => {
       // Create a hierarchy deeper than MAX_DEPTH (100)
-      let current: EnvironmentNode | TargetNode = createTargetNode(151, 'very-deep-target');
+      let current: EnvironmentNode | TargetNode = createTargetNode('151', 'very-deep-target');
 
       // Create a hierarchy 150 levels deep
       for (let i = 150; i > 0; i--) {
-        current = createEnvironmentNode(i, `Level-${i}`, [current]);
+        current = createEnvironmentNode(String(i), `Level-${i}`, [current]);
       }
 
       const result = findInnermostTargetNode(current as EnvironmentNode);
@@ -142,10 +142,10 @@ describe('targetUtils', () => {
     });
 
     it('should handle mixed children with both environment and target nodes', () => {
-      const targetNode = createTargetNode(3, 'target');
-      const emptyEnv = createEnvironmentNode(4, 'EmptyEnv', []);
-      const parent = createEnvironmentNode(2, 'Parent', [emptyEnv, targetNode]);
-      const root = createEnvironmentNode(1, 'Root', [parent]);
+      const targetNode = createTargetNode('3', 'target');
+      const emptyEnv = createEnvironmentNode('4', 'EmptyEnv', []);
+      const parent = createEnvironmentNode('2', 'Parent', [emptyEnv, targetNode]);
+      const root = createEnvironmentNode('1', 'Root', [parent]);
 
       const result = findInnermostTargetNode(root);
       expect(result).toBe(targetNode);
@@ -153,7 +153,7 @@ describe('targetUtils', () => {
   });
 
   describe('extractLineagePath', () => {
-    const createTargetNode = (id: number, name: string, nodeType: NodeType = NodeType.JVM): TargetNode => ({
+    const createTargetNode = (id: string, name: string, nodeType: NodeType = NodeType.JVM): TargetNode => ({
       id,
       name,
       nodeType,
@@ -171,7 +171,7 @@ describe('targetUtils', () => {
     });
 
     const createEnvironmentNode = (
-      id: number,
+      id: string,
       name: string,
       nodeType: NodeType,
       children: (EnvironmentNode | TargetNode)[],
@@ -194,7 +194,7 @@ describe('targetUtils', () => {
     });
 
     it('should return single node for target node only', () => {
-      const targetNode = createTargetNode(1, 'Target-1', NodeType.POD);
+      const targetNode = createTargetNode('1', 'Target-1', NodeType.POD);
       const result = extractLineagePath(targetNode);
 
       expect(result).toHaveLength(1);
@@ -205,9 +205,9 @@ describe('targetUtils', () => {
     });
 
     it('should extract full path for simple hierarchy', () => {
-      const targetNode = createTargetNode(3, 'my-pod', NodeType.POD);
-      const namespace = createEnvironmentNode(2, 'my-namespace', NodeType.NAMESPACE, [targetNode]);
-      const realm = createEnvironmentNode(1, 'Kubernetes', NodeType.REALM, [namespace]);
+      const targetNode = createTargetNode('3', 'my-pod', NodeType.POD);
+      const namespace = createEnvironmentNode('2', 'my-namespace', NodeType.NAMESPACE, [targetNode]);
+      const realm = createEnvironmentNode('1', 'Kubernetes', NodeType.REALM, [namespace]);
 
       const result = extractLineagePath(realm);
 
@@ -218,12 +218,12 @@ describe('targetUtils', () => {
     });
 
     it('should extract full path for Kubernetes-like hierarchy', () => {
-      const pod = createTargetNode(6, 'my-app-abc-123', NodeType.POD);
-      const replicaset = createEnvironmentNode(5, 'my-app-abc', NodeType.REPLICASET, [pod]);
-      const deployment = createEnvironmentNode(4, 'my-app', NodeType.DEPLOYMENT, [replicaset]);
-      const namespace = createEnvironmentNode(3, 'production', NodeType.NAMESPACE, [deployment]);
-      const realm = createEnvironmentNode(2, 'Kubernetes', NodeType.REALM, [namespace]);
-      const universe = createEnvironmentNode(1, 'Universe', NodeType.UNIVERSE, [realm]);
+      const pod = createTargetNode('6', 'my-app-abc-123', NodeType.POD);
+      const replicaset = createEnvironmentNode('5', 'my-app-abc', NodeType.REPLICASET, [pod]);
+      const deployment = createEnvironmentNode('4', 'my-app', NodeType.DEPLOYMENT, [replicaset]);
+      const namespace = createEnvironmentNode('3', 'production', NodeType.NAMESPACE, [deployment]);
+      const realm = createEnvironmentNode('2', 'Kubernetes', NodeType.REALM, [namespace]);
+      const universe = createEnvironmentNode('1', 'Universe', NodeType.UNIVERSE, [realm]);
 
       const result = extractLineagePath(universe);
 
@@ -237,7 +237,7 @@ describe('targetUtils', () => {
     });
 
     it('should return empty array when environment node has no children (no target)', () => {
-      const emptyEnv = createEnvironmentNode(1, 'Empty', NodeType.REALM, []);
+      const emptyEnv = createEnvironmentNode('1', 'Empty', NodeType.REALM, []);
       const result = extractLineagePath(emptyEnv);
 
       // When there's no target node in the tree, returns empty array
@@ -245,11 +245,11 @@ describe('targetUtils', () => {
     });
 
     it('should find first target in branching hierarchy', () => {
-      const target1 = createTargetNode(3, 'target-1', NodeType.JVM);
-      const target2 = createTargetNode(4, 'target-2', NodeType.JVM);
-      const branch1 = createEnvironmentNode(5, 'Branch1', NodeType.NODE, [target1]);
-      const branch2 = createEnvironmentNode(6, 'Branch2', NodeType.NODE, [target2]);
-      const root = createEnvironmentNode(1, 'Root', NodeType.REALM, [branch1, branch2]);
+      const target1 = createTargetNode('3', 'target-1', NodeType.JVM);
+      const target2 = createTargetNode('4', 'target-2', NodeType.JVM);
+      const branch1 = createEnvironmentNode('5', 'Branch1', NodeType.NODE, [target1]);
+      const branch2 = createEnvironmentNode('6', 'Branch2', NodeType.NODE, [target2]);
+      const root = createEnvironmentNode('1', 'Root', NodeType.REALM, [branch1, branch2]);
 
       const result = extractLineagePath(root);
 
@@ -259,10 +259,10 @@ describe('targetUtils', () => {
     });
 
     it('should handle very deep hierarchy', () => {
-      let current: EnvironmentNode | TargetNode = createTargetNode(51, 'deep-target', NodeType.JVM);
+      let current: EnvironmentNode | TargetNode = createTargetNode('51', 'deep-target', NodeType.JVM);
 
       for (let i = 50; i > 0; i--) {
-        current = createEnvironmentNode(i, `Level-${i}`, NodeType.NODE, [current]);
+        current = createEnvironmentNode(String(i), `Level-${i}`, NodeType.NODE, [current]);
       }
 
       const result = extractLineagePath(current as EnvironmentNode);
@@ -273,10 +273,10 @@ describe('targetUtils', () => {
     });
 
     it('should respect MAX_DEPTH limit', () => {
-      let current: EnvironmentNode | TargetNode = createTargetNode(151, 'very-deep-target', NodeType.JVM);
+      let current: EnvironmentNode | TargetNode = createTargetNode('151', 'very-deep-target', NodeType.JVM);
 
       for (let i = 150; i > 0; i--) {
-        current = createEnvironmentNode(i, `Level-${i}`, NodeType.NODE, [current]);
+        current = createEnvironmentNode(String(i), `Level-${i}`, NodeType.NODE, [current]);
       }
 
       const result = extractLineagePath(current as EnvironmentNode);
@@ -286,7 +286,7 @@ describe('targetUtils', () => {
   });
 
   describe('extractFilterableLineagePath', () => {
-    const createTargetNode = (id: number, name: string, nodeType: NodeType = NodeType.POD): TargetNode => ({
+    const createTargetNode = (id: string, name: string, nodeType: NodeType = NodeType.POD): TargetNode => ({
       id,
       name,
       nodeType,
@@ -304,7 +304,7 @@ describe('targetUtils', () => {
     });
 
     const createEnvironmentNode = (
-      id: number,
+      id: string,
       name: string,
       nodeType: NodeType,
       children: (EnvironmentNode | TargetNode)[],
@@ -327,9 +327,9 @@ describe('targetUtils', () => {
     });
 
     it('should filter out Universe node', () => {
-      const target = createTargetNode(3, 'target', NodeType.JVM);
-      const realm = createEnvironmentNode(2, 'Realm', NodeType.REALM, [target]);
-      const universe = createEnvironmentNode(1, 'Universe', NodeType.UNIVERSE, [realm]);
+      const target = createTargetNode('3', 'target', NodeType.JVM);
+      const realm = createEnvironmentNode('2', 'Realm', NodeType.REALM, [target]);
+      const universe = createEnvironmentNode('1', 'Universe', NodeType.UNIVERSE, [realm]);
 
       const result = extractFilterableLineagePath(universe);
 
@@ -340,9 +340,9 @@ describe('targetUtils', () => {
     });
 
     it('should filter out Realm node', () => {
-      const target = createTargetNode(3, 'target', NodeType.JVM);
-      const realm = createEnvironmentNode(2, 'Kubernetes', NodeType.REALM, [target]);
-      const universe = createEnvironmentNode(1, 'Universe', NodeType.UNIVERSE, [realm]);
+      const target = createTargetNode('3', 'target', NodeType.JVM);
+      const realm = createEnvironmentNode('2', 'Kubernetes', NodeType.REALM, [target]);
+      const universe = createEnvironmentNode('1', 'Universe', NodeType.UNIVERSE, [realm]);
 
       const result = extractFilterableLineagePath(universe);
 
@@ -353,10 +353,10 @@ describe('targetUtils', () => {
     });
 
     it('should include target node (leaf node)', () => {
-      const target = createTargetNode(4, 'my-pod', NodeType.POD);
-      const namespace = createEnvironmentNode(3, 'my-namespace', NodeType.NAMESPACE, [target]);
-      const realm = createEnvironmentNode(2, 'Kubernetes', NodeType.REALM, [namespace]);
-      const universe = createEnvironmentNode(1, 'Universe', NodeType.UNIVERSE, [realm]);
+      const target = createTargetNode('4', 'my-pod', NodeType.POD);
+      const namespace = createEnvironmentNode('3', 'my-namespace', NodeType.NAMESPACE, [target]);
+      const realm = createEnvironmentNode('2', 'Kubernetes', NodeType.REALM, [namespace]);
+      const universe = createEnvironmentNode('1', 'Universe', NodeType.UNIVERSE, [realm]);
 
       const result = extractFilterableLineagePath(universe);
 
@@ -367,12 +367,12 @@ describe('targetUtils', () => {
     });
 
     it('should return all intermediate nodes plus leaf for Kubernetes hierarchy', () => {
-      const pod = createTargetNode(6, 'my-app-abc-123', NodeType.POD);
-      const replicaset = createEnvironmentNode(5, 'my-app-abc', NodeType.REPLICASET, [pod]);
-      const deployment = createEnvironmentNode(4, 'my-app', NodeType.DEPLOYMENT, [replicaset]);
-      const namespace = createEnvironmentNode(3, 'production', NodeType.NAMESPACE, [deployment]);
-      const realm = createEnvironmentNode(2, 'Kubernetes', NodeType.REALM, [namespace]);
-      const universe = createEnvironmentNode(1, 'Universe', NodeType.UNIVERSE, [realm]);
+      const pod = createTargetNode('6', 'my-app-abc-123', NodeType.POD);
+      const replicaset = createEnvironmentNode('5', 'my-app-abc', NodeType.REPLICASET, [pod]);
+      const deployment = createEnvironmentNode('4', 'my-app', NodeType.DEPLOYMENT, [replicaset]);
+      const namespace = createEnvironmentNode('3', 'production', NodeType.NAMESPACE, [deployment]);
+      const realm = createEnvironmentNode('2', 'Kubernetes', NodeType.REALM, [namespace]);
+      const universe = createEnvironmentNode('1', 'Universe', NodeType.UNIVERSE, [realm]);
 
       const result = extractFilterableLineagePath(universe);
 
@@ -385,9 +385,9 @@ describe('targetUtils', () => {
     });
 
     it('should return only target when only Universe, Realm, and Target exist', () => {
-      const target = createTargetNode(3, 'target', NodeType.JVM);
-      const realm = createEnvironmentNode(2, 'Realm', NodeType.REALM, [target]);
-      const universe = createEnvironmentNode(1, 'Universe', NodeType.UNIVERSE, [realm]);
+      const target = createTargetNode('3', 'target', NodeType.JVM);
+      const realm = createEnvironmentNode('2', 'Realm', NodeType.REALM, [target]);
+      const universe = createEnvironmentNode('1', 'Universe', NodeType.UNIVERSE, [realm]);
 
       const result = extractFilterableLineagePath(universe);
 
@@ -397,11 +397,11 @@ describe('targetUtils', () => {
     });
 
     it('should work with non-Kubernetes hierarchy', () => {
-      const target = createTargetNode(5, 'service-instance', NodeType.JVM);
-      const group = createEnvironmentNode(4, 'ApplicationGroup', NodeType.NODE, [target]);
-      const custom = createEnvironmentNode(3, 'CustomRealm', NodeType.NODE, [group]);
-      const realm = createEnvironmentNode(2, 'CustomTargets', NodeType.REALM, [custom]);
-      const universe = createEnvironmentNode(1, 'Universe', NodeType.UNIVERSE, [realm]);
+      const target = createTargetNode('5', 'service-instance', NodeType.JVM);
+      const group = createEnvironmentNode('4', 'ApplicationGroup', NodeType.NODE, [target]);
+      const custom = createEnvironmentNode('3', 'CustomRealm', NodeType.NODE, [group]);
+      const realm = createEnvironmentNode('2', 'CustomTargets', NodeType.REALM, [custom]);
+      const universe = createEnvironmentNode('1', 'Universe', NodeType.UNIVERSE, [realm]);
 
       const result = extractFilterableLineagePath(universe);
 
@@ -413,11 +413,11 @@ describe('targetUtils', () => {
     });
 
     it('should preserve node order including leaf', () => {
-      const pod = createTargetNode(5, 'pod', NodeType.POD);
-      const deployment = createEnvironmentNode(4, 'deployment', NodeType.DEPLOYMENT, [pod]);
-      const namespace = createEnvironmentNode(3, 'namespace', NodeType.NAMESPACE, [deployment]);
-      const realm = createEnvironmentNode(2, 'Kubernetes', NodeType.REALM, [namespace]);
-      const universe = createEnvironmentNode(1, 'Universe', NodeType.UNIVERSE, [realm]);
+      const pod = createTargetNode('5', 'pod', NodeType.POD);
+      const deployment = createEnvironmentNode('4', 'deployment', NodeType.DEPLOYMENT, [pod]);
+      const namespace = createEnvironmentNode('3', 'namespace', NodeType.NAMESPACE, [deployment]);
+      const realm = createEnvironmentNode('2', 'Kubernetes', NodeType.REALM, [namespace]);
+      const universe = createEnvironmentNode('1', 'Universe', NodeType.UNIVERSE, [realm]);
 
       const result = extractFilterableLineagePath(universe);
 
@@ -429,11 +429,11 @@ describe('targetUtils', () => {
     });
 
     it('should handle StatefulSet hierarchy with leaf', () => {
-      const pod = createTargetNode(5, 'db-0', NodeType.POD);
-      const statefulset = createEnvironmentNode(4, 'db', NodeType.STATEFULSET, [pod]);
-      const namespace = createEnvironmentNode(3, 'database', NodeType.NAMESPACE, [statefulset]);
-      const realm = createEnvironmentNode(2, 'Kubernetes', NodeType.REALM, [namespace]);
-      const universe = createEnvironmentNode(1, 'Universe', NodeType.UNIVERSE, [realm]);
+      const pod = createTargetNode('5', 'db-0', NodeType.POD);
+      const statefulset = createEnvironmentNode('4', 'db', NodeType.STATEFULSET, [pod]);
+      const namespace = createEnvironmentNode('3', 'database', NodeType.NAMESPACE, [statefulset]);
+      const realm = createEnvironmentNode('2', 'Kubernetes', NodeType.REALM, [namespace]);
+      const universe = createEnvironmentNode('1', 'Universe', NodeType.UNIVERSE, [realm]);
 
       const result = extractFilterableLineagePath(universe);
 
@@ -445,11 +445,11 @@ describe('targetUtils', () => {
     });
 
     it('should handle DaemonSet hierarchy with leaf', () => {
-      const pod = createTargetNode(5, 'logger-xyz', NodeType.POD);
-      const daemonset = createEnvironmentNode(4, 'logger', NodeType.DAEMONSET, [pod]);
-      const namespace = createEnvironmentNode(3, 'kube-system', NodeType.NAMESPACE, [daemonset]);
-      const realm = createEnvironmentNode(2, 'Kubernetes', NodeType.REALM, [namespace]);
-      const universe = createEnvironmentNode(1, 'Universe', NodeType.UNIVERSE, [realm]);
+      const pod = createTargetNode('5', 'logger-xyz', NodeType.POD);
+      const daemonset = createEnvironmentNode('4', 'logger', NodeType.DAEMONSET, [pod]);
+      const namespace = createEnvironmentNode('3', 'kube-system', NodeType.NAMESPACE, [daemonset]);
+      const realm = createEnvironmentNode('2', 'Kubernetes', NodeType.REALM, [namespace]);
+      const universe = createEnvironmentNode('1', 'Universe', NodeType.UNIVERSE, [realm]);
 
       const result = extractFilterableLineagePath(universe);
 

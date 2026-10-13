@@ -69,7 +69,7 @@ export const componentFactory: ComponentFactory = (kind: ModelKind, type: string
 
 export const createTargetNode = (target: Target): TargetNode => {
   return {
-    id: hashCode(JSON.stringify(target)),
+    id: String(hashCode(JSON.stringify(target))),
     name: target.connectUrl,
     nodeType: NodeType.TARGET,
     labels: [],

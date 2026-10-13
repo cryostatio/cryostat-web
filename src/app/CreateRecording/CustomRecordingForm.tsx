@@ -289,7 +289,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
       addSubscription(
         forkJoin({
           templates: context.api.getTargetEventTemplates(target),
-          recordingOptions: context.api.doGet<AdvancedRecordingOptions>(`targets/${target.id}/recordingOptions`),
+          recordingOptions: context.api.getTargetRecordingOptions(target),
         }).subscribe({
           next: ({ templates, recordingOptions }) => {
             setErrorMessage('');

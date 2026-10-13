@@ -88,11 +88,11 @@ const createMockResponse = (data: any) => ({
 });
 
 describe('<Queries />', () => {
-  let mockSendRequest: jest.SpyInstance;
+  let mockAnalyzeRecording: jest.SpyInstance;
 
   beforeEach(() => {
-    mockSendRequest = jest
-      .spyOn(defaultServices.api, 'sendRequest')
+    mockAnalyzeRecording = jest
+      .spyOn(defaultServices.api, 'analyzeRecording')
       .mockReturnValue(of(createMockResponse(mockApiResponse) as any));
     jest.spyOn(defaultServices.settings, 'themeSetting').mockReturnValue(of(ThemeSetting.LIGHT));
     jest.spyOn(defaultServices.settings, 'media').mockReturnValue(
@@ -188,10 +188,7 @@ describe('<Queries />', () => {
     await user.click(screen.getByLabelText('Execute query'));
 
     await waitFor(() =>
-      expect(mockSendRequest).toHaveBeenCalledWith('beta', 'recording_analytics/jvm-1/recording1.jfr', {
-        method: 'POST',
-        body: expect.any(FormData),
-      }),
+      expect(mockAnalyzeRecording).toHaveBeenCalledWith('jvm-1', 'recording1.jfr', expect.any(FormData)),
     );
 
     await waitFor(
@@ -206,7 +203,7 @@ describe('<Queries />', () => {
   });
 
   it('displays error message when query execution fails', async () => {
-    mockSendRequest.mockReturnValue(throwError(() => new Error('Query execution failed')));
+    mockAnalyzeRecording.mockReturnValue(throwError(() => new Error('Query execution failed')));
 
     const { user } = renderQueries('jvm-1', 'recording1.jfr');
 
@@ -242,7 +239,7 @@ describe('<Queries />', () => {
 
     await waitFor(
       () => {
-        expect(mockSendRequest).toHaveBeenCalledTimes(2);
+        expect(mockAnalyzeRecording).toHaveBeenCalledTimes(2);
         expect(within(screen.getAllByTestId('code-editor')[1]).getByTestId('code-editor-code').textContent).toContain(
           '"data"',
         );

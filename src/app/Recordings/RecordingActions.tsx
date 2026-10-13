@@ -63,7 +63,7 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
     ) {
       addSubscription(
         context.api
-          .grafanaDatasourceUrl()
+          .grafanaDashboardUrl()
           .pipe(first())
           .subscribe(() => setGrafanaEnabled(true)),
       );

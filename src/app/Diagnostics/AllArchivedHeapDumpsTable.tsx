@@ -126,7 +126,7 @@ export const AllArchivedHeapDumpsTable: React.FC<AllArchivedHeapDumpsTableProps>
   const refreshDirectoriesAndCounts = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.api.doGet<HeapDumpDirectory[]>('diagnostics/fs/heapdumps', 'beta').subscribe({
+      context.api.getArchivedHeapDumpDirectories().subscribe({
         next: handleDirectoriesAndCounts,
         error: handleError,
       }),
