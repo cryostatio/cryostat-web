@@ -45,7 +45,7 @@
     "@graphql-codegen/typescript-operations": "^6.1.7",
     "@graphql-tools/mock": "^9.1.14",
     "@graphql-tools/schema": "^10.1.1",
-    "@msw/source": "^0.6.1",
+    "@msw/source": "^0.7.0",
     "@mswjs/data": "^0.16.2",
     "@testing-library/dom": "10.4.2",
     "@testing-library/jest-dom": "6.9.1",
