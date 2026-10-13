@@ -11,7 +11,7 @@ exports[`<Settings /> renders correctly 1`] = `
       <nav
         aria-label="Breadcrumb"
         class="pf-v6-c-breadcrumb"
-        data-ouia-component-id="OUIA-Generated-Breadcrumb-1"
+        data-ouia-component-id="OUIA-Generated-Breadcrumb-:r0:"
         data-ouia-component-type="PF6/Breadcrumb"
         data-ouia-safe="true"
       >
@@ -38,7 +38,7 @@ exports[`<Settings /> renders correctly 1`] = `
         >
           <div
             class="pf-v6-c-card pf-m-full-height"
-            data-ouia-component-id="OUIA-Generated-Card-1"
+            data-ouia-component-id="OUIA-Generated-Card-:r1:"
             data-ouia-component-type="PF6/Card"
             data-ouia-safe="true"
             id=""
@@ -59,7 +59,7 @@ exports[`<Settings /> renders correctly 1`] = `
                     <div
                       aria-label="Select setting category"
                       class="pf-v6-c-tabs pf-m-animate-current pf-m-vertical pf-m-initializing-accent"
-                      data-ouia-component-id="OUIA-Generated-Tabs-1"
+                      data-ouia-component-id="OUIA-Generated-Tabs-:r3:"
                       data-ouia-component-type="PF6/Tabs"
                       data-ouia-safe="true"
                       style="--pf-v6-c-tabs--link-accent--length: 0px; --pf-v6-c-tabs--link-accent--start: 0px;"
@@ -224,7 +224,7 @@ exports[`<Settings /> renders correctly 1`] = `
                             >
                               <h2
                                 class="pf-v6-c-title pf-m-lg"
-                                data-ouia-component-id="OUIA-Generated-Title-1"
+                                data-ouia-component-id="OUIA-Generated-Title-:r5:"
                                 data-ouia-component-type="PF6/Title"
                                 data-ouia-safe="true"
                               >
@@ -254,7 +254,7 @@ exports[`<Settings /> renders correctly 1`] = `
                           </div>
                           <p
                             class="pf-v6-c-content--p"
-                            data-ouia-component-id="OUIA-Generated-Content-1"
+                            data-ouia-component-id="OUIA-Generated-Content-:r6:"
                             data-ouia-component-type="PF6/Content"
                             data-ouia-safe="true"
                             data-pf-content="true"
@@ -277,7 +277,7 @@ exports[`<Settings /> renders correctly 1`] = `
                             >
                               <h2
                                 class="pf-v6-c-title pf-m-lg"
-                                data-ouia-component-id="OUIA-Generated-Title-2"
+                                data-ouia-component-id="OUIA-Generated-Title-:r8:"
                                 data-ouia-component-type="PF6/Title"
                                 data-ouia-safe="true"
                               >
@@ -309,7 +309,7 @@ exports[`<Settings /> renders correctly 1`] = `
                           </div>
                           <p
                             class="pf-v6-c-content--p"
-                            data-ouia-component-id="OUIA-Generated-Content-2"
+                            data-ouia-component-id="OUIA-Generated-Content-:r9:"
                             data-ouia-component-type="PF6/Content"
                             data-ouia-safe="true"
                             data-pf-content="true"
@@ -332,7 +332,7 @@ exports[`<Settings /> renders correctly 1`] = `
                             >
                               <h2
                                 class="pf-v6-c-title pf-m-lg"
-                                data-ouia-component-id="OUIA-Generated-Title-3"
+                                data-ouia-component-id="OUIA-Generated-Title-:rb:"
                                 data-ouia-component-type="PF6/Title"
                                 data-ouia-safe="true"
                               >
@@ -364,7 +364,7 @@ exports[`<Settings /> renders correctly 1`] = `
                           </div>
                           <p
                             class="pf-v6-c-content--p"
-                            data-ouia-component-id="OUIA-Generated-Content-3"
+                            data-ouia-component-id="OUIA-Generated-Content-:rc:"
                             data-ouia-component-type="PF6/Content"
                             data-ouia-safe="true"
                             data-pf-content="true"
