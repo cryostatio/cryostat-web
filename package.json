@@ -75,7 +75,7 @@
     "imagemin": "9.0.1",
     "jest": "30.5.2",
     "jest-environment-jsdom": "30.5.2",
-    "js-yaml": "5.4.2",
+    "js-yaml": "5.4.3",
     "license-check-and-add": "4.0.5",
     "mini-css-extract-plugin": "2.10.2",
     "miragejs": "0.1.48",
