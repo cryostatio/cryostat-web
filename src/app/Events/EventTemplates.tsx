@@ -209,15 +209,9 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel
-        .messages(NotificationCategory.TemplateDeleted)
-        .subscribe((v) =>
-          setTemplates((old) =>
-            old.filter((o) => o.name != v.message.template.name || o.type != v.message.template.type),
-          ),
-        ),
+      context.notificationChannel.messages(NotificationCategory.TemplateDeleted).subscribe(() => refreshTemplates()),
     );
-  }, [addSubscription, context, context.notificationChannel, setTemplates]);
+  }, [addSubscription, context, context.notificationChannel, refreshTemplates]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -351,8 +345,9 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
     context.target.setAuthRetry();
   }, [context.target]);
 
+  let view: JSX.Element;
   if (errorMessage != '') {
-    return (
+    view = (
       <ErrorView
         title={'Error retrieving Event Templates'}
         message={errorMessage}
@@ -360,9 +355,9 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
       />
     );
   } else if (isLoading) {
-    return <LoadingView />;
+    view = <LoadingView />;
   } else {
-    return (
+    view = (
       <>
         <Toolbar id="event-templates-toolbar">
           <ToolbarContent>
@@ -424,10 +419,17 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
         ) : (
           <EmptyState headingLevel="h4" icon={SearchIcon} titleText="No Event Templates"></EmptyState>
         )}
-        <EventTemplatesUploadModal isOpen={uploadModalOpen} onClose={handleUploadModalClose} />
       </>
     );
   }
+
+  // Keep the upload modal mounted while the list is reloading so it keeps its upload state
+  return (
+    <>
+      {view}
+      <EventTemplatesUploadModal isOpen={uploadModalOpen} onClose={handleUploadModalClose} />
+    </>
+  );
 };
 
 export interface EventTemplatesUploadModalProps {
