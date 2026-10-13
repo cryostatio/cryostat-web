@@ -108,6 +108,11 @@ describe('<EventTemplates />', () => {
   });
 
   it('adds a Recording after receiving a notification', async () => {
+    jest
+      .spyOn(defaultServices.api, 'getTargetEventTemplates')
+      .mockReturnValueOnce(of([mockCustomEventTemplate]))
+      .mockReturnValueOnce(of([mockCustomEventTemplate, mockAnotherTemplate]));
+
     render({
       routerConfigs: {
         routes: [
@@ -402,37 +407,6 @@ describe('<EventTemplates />', () => {
 
     expect(closeButton).toBeInTheDocument();
     expect(closeButton).toBeVisible();
-  });
-
-  it('reloads the list when the upload notification only has a template name', async () => {
-    jest
-      .spyOn(defaultServices.notificationChannel, 'messages')
-      .mockReturnValueOnce(
-        of({
-          ...mockCreateTemplateNotification,
-          message: { template: 'anotherEventTemplate' },
-        } as NotificationMessage),
-      )
-      .mockReturnValueOnce(of());
-    jest
-      .spyOn(defaultServices.api, 'getTargetEventTemplates')
-      .mockReturnValueOnce(of([mockCustomEventTemplate]))
-      .mockReturnValueOnce(of([mockCustomEventTemplate, mockAnotherTemplate]));
-
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/events',
-            element: <EventTemplates />,
-          },
-        ],
-      },
-    });
-
-    expect(screen.queryByText('Error retrieving Event Templates')).not.toBeInTheDocument();
-    expect(screen.getByText('someEventTemplate')).toBeInTheDocument();
-    expect(screen.getByText('anotherEventTemplate')).toBeInTheDocument();
   });
 
   it('ignores a stale response from the initial refresh once an upload-triggered refresh has resolved', async () => {

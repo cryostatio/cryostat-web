@@ -203,19 +203,9 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel
-        .messages(NotificationCategory.TemplateUploaded)
-        .subscribe((v) => {
-          const template = v.message.template;
-          if (template && typeof template === 'object') {
-            setTemplates((old) => old.concat(template));
-          } else {
-            // only the template name was sent, so load the full list again
-            refreshTemplates();
-          }
-        }),
+      context.notificationChannel.messages(NotificationCategory.TemplateUploaded).subscribe(() => refreshTemplates()),
     );
-  }, [addSubscription, context, context.notificationChannel, setTemplates, refreshTemplates]);
+  }, [addSubscription, context, context.notificationChannel, refreshTemplates]);
 
   React.useEffect(() => {
     addSubscription(
