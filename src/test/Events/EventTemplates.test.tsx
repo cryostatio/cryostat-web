@@ -85,9 +85,6 @@ jest
 
   .mockReturnValueOnce(of(mockCreateTemplateNotification)) // adds a template after receiving a notification
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-
-  .mockReturnValueOnce(of(mockDeleteTemplateNotification)) // removes a template after receiving a notification
   .mockReturnValue(of()); // all other tests
 
 describe('<EventTemplates />', () => {
@@ -108,6 +105,11 @@ describe('<EventTemplates />', () => {
   });
 
   it('adds a Recording after receiving a notification', async () => {
+    jest
+      .spyOn(defaultServices.api, 'getTargetEventTemplates')
+      .mockReturnValueOnce(of([mockCustomEventTemplate]))
+      .mockReturnValueOnce(of([mockCustomEventTemplate, mockAnotherTemplate]));
+
     render({
       routerConfigs: {
         routes: [
@@ -124,6 +126,15 @@ describe('<EventTemplates />', () => {
   });
 
   it('removes a Recording after receiving a notification', async () => {
+    const getTemplatesSpy = jest
+      .spyOn(defaultServices.api, 'getTargetEventTemplates')
+      .mockReturnValueOnce(of([mockCustomEventTemplate, mockAnotherTemplate]))
+      .mockReturnValueOnce(of([mockCustomEventTemplate]));
+    jest
+      .spyOn(defaultServices.notificationChannel, 'messages')
+      .mockReturnValueOnce(of()) // TemplateUploaded
+      .mockReturnValueOnce(of(mockDeleteTemplateNotification)); // TemplateDeleted
+
     render({
       routerConfigs: {
         routes: [
@@ -135,6 +146,8 @@ describe('<EventTemplates />', () => {
       },
     });
 
+    expect(getTemplatesSpy).toHaveBeenCalledTimes(2);
+    expect(screen.getByText('someEventTemplate')).toBeInTheDocument();
     expect(screen.queryByText('anotherEventTemplate')).not.toBeInTheDocument();
   });
 
@@ -402,5 +415,104 @@ describe('<EventTemplates />', () => {
 
     expect(closeButton).toBeInTheDocument();
     expect(closeButton).toBeVisible();
+  });
+
+  it('keeps the upload modal and its completed upload state while the templates reload', async () => {
+    const uploadNotification = new Subject<NotificationMessage>();
+    const reloadResponse = new Subject<EventTemplate[]>();
+    jest.spyOn(defaultServices.api, 'addCustomEventTemplate').mockReturnValueOnce(of(true));
+    const getTemplatesSpy = jest
+      .spyOn(defaultServices.api, 'getTargetEventTemplates')
+      .mockReturnValueOnce(of([mockCustomEventTemplate]))
+      .mockReturnValueOnce(reloadResponse);
+    jest
+      .spyOn(defaultServices.notificationChannel, 'messages')
+      .mockReturnValueOnce(uploadNotification) // TemplateUploaded
+      .mockReturnValueOnce(of()); // TemplateDeleted
+
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/events',
+            element: <EventTemplates />,
+          },
+        ],
+      },
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Upload' }));
+    const modal = await screen.findByRole('dialog');
+    const uploadInput = modal.querySelector(
+      "input[accept='application/xml,.xml,.jfc'][type='file']",
+    ) as HTMLInputElement;
+    await user.upload(uploadInput, mockFileUpload);
+    await user.click(within(modal).getByText('Submit'));
+    await within(modal).findByText('Close');
+
+    // the upload notification starts a reload, which is still pending here
+    await act(async () => uploadNotification.next(mockCreateTemplateNotification));
+    expect(getTemplatesSpy).toHaveBeenCalledTimes(2);
+
+    const modalWhileLoading = screen.getByRole('dialog');
+    expect(modalWhileLoading).toBe(modal);
+    expect(within(modalWhileLoading).getByText(mockFileUpload.name)).toBeInTheDocument();
+    expect(within(modalWhileLoading).getByText('Close')).toBeInTheDocument();
+    expect(within(modalWhileLoading).queryByText('Submit')).not.toBeInTheDocument();
+
+    await act(async () => {
+      reloadResponse.next([mockCustomEventTemplate, mockAnotherTemplate]);
+      reloadResponse.complete();
+    });
+
+    const modalAfterReload = screen.getByRole('dialog');
+    expect(modalAfterReload).toBe(modal);
+    expect(within(modalAfterReload).getByText(mockFileUpload.name)).toBeInTheDocument();
+    expect(within(modalAfterReload).getByText('Close')).toBeInTheDocument();
+    expect(screen.getByText('anotherEventTemplate')).toBeInTheDocument();
+  });
+
+  it('ignores a stale response from the initial refresh once an upload-triggered refresh has resolved', async () => {
+    const initialResponse = new Subject<EventTemplate[]>();
+    const uploadResponse = new Subject<EventTemplate[]>();
+    jest
+      .spyOn(defaultServices.api, 'getTargetEventTemplates')
+      .mockReturnValueOnce(initialResponse)
+      .mockReturnValueOnce(uploadResponse);
+    jest
+      .spyOn(defaultServices.notificationChannel, 'messages')
+      .mockReturnValueOnce(
+        of({
+          ...mockCreateTemplateNotification,
+          message: { template: 'anotherEventTemplate' },
+        } as NotificationMessage),
+      )
+      .mockReturnValueOnce(of());
+
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/events',
+            element: <EventTemplates />,
+          },
+        ],
+      },
+    });
+
+    // the later-started, upload-triggered refresh resolves first, with the up-to-date list...
+    await act(async () => {
+      uploadResponse.next([mockCustomEventTemplate, mockAnotherTemplate]);
+      uploadResponse.complete();
+    });
+    // ...then the initial refresh, started earlier, resolves after it with a now-stale list
+    await act(async () => {
+      initialResponse.next([mockCustomEventTemplate]);
+      initialResponse.complete();
+    });
+
+    expect(screen.queryByText('Error retrieving Event Templates')).not.toBeInTheDocument();
+    expect(screen.getByText('someEventTemplate')).toBeInTheDocument();
+    expect(screen.getByText('anotherEventTemplate')).toBeInTheDocument();
   });
 });
