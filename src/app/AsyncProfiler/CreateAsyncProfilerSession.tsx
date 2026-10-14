@@ -17,9 +17,8 @@
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 import { NullableTarget } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { TargetView } from '@app/TargetView/TargetView';
+import { useExitForm } from '@app/utils/hooks/useExitForm';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionGroup,
@@ -47,7 +46,6 @@ import AngleLeftIcon from '@patternfly/react-icons/dist/esm/icons/angle-left-ico
 import AngleRightIcon from '@patternfly/react-icons/dist/esm/icons/angle-right-icon';
 import _ from 'lodash';
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { filter, map } from 'rxjs';
 
 const MILLIS = 1000;
@@ -59,11 +57,14 @@ const getLeafIds = (node: DualListSelectorTreeItemData): string[] => {
   return node.children.flatMap(getLeafIds);
 };
 
-export const CreateAsyncProfilerSession: React.FC = () => {
+export interface CreateAsyncProfilerSessionProps {
+  onClose?: () => void;
+}
+
+export const CreateAsyncProfilerSession: React.FC<CreateAsyncProfilerSessionProps> = ({ onClose }) => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const navigate = useNavigate();
 
   const [target, setTarget] = React.useState<NullableTarget>(undefined);
   const [allEvents, setAllEvents] = React.useState<DualListSelectorTreeItemData[]>([]);
@@ -337,7 +338,7 @@ export const CreateAsyncProfilerSession: React.FC = () => {
     );
   };
 
-  const exitForm = React.useCallback(() => navigate(toPath('/async-profiler')), [navigate]);
+  const exitForm = useExitForm(onClose);
 
   const handleSubmit = React.useCallback(() => {
     if (!target) {
@@ -359,72 +360,70 @@ export const CreateAsyncProfilerSession: React.FC = () => {
   }, [addSubscription, target, context.api, chosenLeafIds, duration, durationUnits, exitForm]);
 
   return (
-    <TargetView pageTitle="Create" breadcrumbs={[{ title: 'async-profiler', path: toPath('/async-profiler') }]}>
-      <Card>
-        <CardBody>
-          {loading ? (
-            <Bullseye>
-              <Spinner />
-            </Bullseye>
-          ) : (
-            <Form isHorizontal>
-              <Content>
-                <Content component={ContentVariants.p}>{t('CreateAsyncProfilerSession.DESCRIPTION')}</Content>
-              </Content>
-              <FormGroup label={t('CreateAsyncProfilerSession.EVENTS')} fieldId="events" isRequired>
-                <DualListSelector isTree>
-                  {buildPane(false)}
-                  <DualListSelectorControlsWrapper>
-                    <DualListSelectorControl
-                      isDisabled={!checkedLeafIds.some((id) => visibleAvailableLeafIds.includes(id))}
-                      onClick={() => moveChecked(true)}
-                      aria-label="Add selected"
-                      icon={<AngleRightIcon />}
-                    />
-                    <DualListSelectorControl
-                      isDisabled={visibleAvailableLeafIds.length === 0}
-                      onClick={() => moveAll(true)}
-                      aria-label="Add all"
-                      icon={<AngleDoubleRightIcon />}
-                    />
-                    <DualListSelectorControl
-                      isDisabled={visibleChosenLeafIds.length === 0}
-                      onClick={() => moveAll(false)}
-                      aria-label="Remove all"
-                      icon={<AngleDoubleLeftIcon />}
-                    />
-                    <DualListSelectorControl
-                      isDisabled={!checkedLeafIds.some((id) => visibleChosenLeafIds.includes(id))}
-                      onClick={() => moveChecked(false)}
-                      aria-label="Remove selected"
-                      icon={<AngleLeftIcon />}
-                    />
-                  </DualListSelectorControlsWrapper>
-                  {buildPane(true)}
-                </DualListSelector>
-              </FormGroup>
-              <FormGroup label={t('CreateAsyncProfilerSession.DURATION')} fieldId="duration" isRequired>
-                <DurationPicker
-                  enabled={true}
-                  onPeriodChange={setDuration}
-                  onUnitScalarChange={setDurationUnits}
-                  period={duration}
-                  unitScalar={durationUnits}
-                />
-              </FormGroup>
-              <ActionGroup>
-                <Button variant="primary" onClick={handleSubmit} isDisabled={!chosenLeafIds.length || duration < 1}>
-                  {t('CREATE')}
-                </Button>
-                <Button variant="secondary" onClick={exitForm}>
-                  {t('CANCEL')}
-                </Button>
-              </ActionGroup>
-            </Form>
-          )}
-        </CardBody>
-      </Card>
-    </TargetView>
+    <Card>
+      <CardBody>
+        {loading ? (
+          <Bullseye>
+            <Spinner />
+          </Bullseye>
+        ) : (
+          <Form isHorizontal>
+            <Content>
+              <Content component={ContentVariants.p}>{t('CreateAsyncProfilerSession.DESCRIPTION')}</Content>
+            </Content>
+            <FormGroup label={t('CreateAsyncProfilerSession.EVENTS')} fieldId="events" isRequired>
+              <DualListSelector isTree>
+                {buildPane(false)}
+                <DualListSelectorControlsWrapper>
+                  <DualListSelectorControl
+                    isDisabled={!checkedLeafIds.some((id) => visibleAvailableLeafIds.includes(id))}
+                    onClick={() => moveChecked(true)}
+                    aria-label="Add selected"
+                    icon={<AngleRightIcon />}
+                  />
+                  <DualListSelectorControl
+                    isDisabled={visibleAvailableLeafIds.length === 0}
+                    onClick={() => moveAll(true)}
+                    aria-label="Add all"
+                    icon={<AngleDoubleRightIcon />}
+                  />
+                  <DualListSelectorControl
+                    isDisabled={visibleChosenLeafIds.length === 0}
+                    onClick={() => moveAll(false)}
+                    aria-label="Remove all"
+                    icon={<AngleDoubleLeftIcon />}
+                  />
+                  <DualListSelectorControl
+                    isDisabled={!checkedLeafIds.some((id) => visibleChosenLeafIds.includes(id))}
+                    onClick={() => moveChecked(false)}
+                    aria-label="Remove selected"
+                    icon={<AngleLeftIcon />}
+                  />
+                </DualListSelectorControlsWrapper>
+                {buildPane(true)}
+              </DualListSelector>
+            </FormGroup>
+            <FormGroup label={t('CreateAsyncProfilerSession.DURATION')} fieldId="duration" isRequired>
+              <DurationPicker
+                enabled={true}
+                onPeriodChange={setDuration}
+                onUnitScalarChange={setDurationUnits}
+                period={duration}
+                unitScalar={durationUnits}
+              />
+            </FormGroup>
+            <ActionGroup>
+              <Button variant="primary" onClick={handleSubmit} isDisabled={!chosenLeafIds.length || duration < 1}>
+                {t('CREATE')}
+              </Button>
+              <Button variant="secondary" onClick={exitForm}>
+                {t('CANCEL')}
+              </Button>
+            </ActionGroup>
+          </Form>
+        )}
+      </CardBody>
+    </Card>
   );
 };
 
