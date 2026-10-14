@@ -100,6 +100,9 @@
   },
   "AsyncProfiler": {
     "AGENT_INTEGRATION_REQUIRED": "async-profiler integration requires cryostat-agent",
+    "ARIA_LABELS": {
+      "TOOLBAR": "async-profiles-toolbar"
+    },
     "NO_PROFILES": "No async-profiler sessions",
     "NOT_DETECTED": "No async-profiler detected"
   },
@@ -238,10 +241,20 @@
     }
   },
   "CreateAsyncProfilerSession": {
+    "ARIA_LABELS": {
+      "ADD_ALL": "Add all",
+      "ADD_SELECTED": "Add selected",
+      "REMOVE_ALL": "Remove all",
+      "REMOVE_SELECTED": "Remove selected",
+      "SEARCH_AVAILABLE_EVENTS": "Search available events",
+      "SEARCH_CHOSEN_EVENTS": "Search chosen events",
+      "SELECT_EVENT": "Select {{name}}"
+    },
     "CHOSEN_EVENTS": "Chosen events",
     "DESCRIPTION": "async-profiler enables precise CPU-time profiling of program execution as well as VM and native memory allocations. Profiling sessions will be dumped to JFR-format binary files. Not all combinations of available events are acceptable.",
     "DURATION": "Duration",
-    "EVENTS": "Available events"
+    "EVENTS": "Available events",
+    "MODAL_TITLE": "Create Async Profiler session"
   },
   "CreateCredentialModal": {
     "ARIA_LABELS": {
