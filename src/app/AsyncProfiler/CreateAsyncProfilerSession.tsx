@@ -18,9 +18,8 @@ import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 import { AsyncProfilerEventTreeSelector } from '@app/Shared/Components/AsyncProfilerEventTreeSelector';
 import { NotificationCategory, NullableTarget } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { TargetView } from '@app/TargetView/TargetView';
+import { useExitForm } from '@app/utils/hooks/useExitForm';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionGroup,
@@ -39,16 +38,18 @@ import {
 } from '@patternfly/react-core';
 import _ from 'lodash';
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { filter, map } from 'rxjs';
 
 const MILLIS = 1000;
 
-export const CreateAsyncProfilerSession: React.FC = () => {
+export interface CreateAsyncProfilerSessionProps {
+  onClose?: () => void;
+}
+
+export const CreateAsyncProfilerSession: React.FC<CreateAsyncProfilerSessionProps> = ({ onClose }) => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const navigate = useNavigate();
 
   const [target, setTarget] = React.useState<NullableTarget>(undefined);
   const [duration, setDuration] = React.useState(0);
@@ -111,7 +112,50 @@ export const CreateAsyncProfilerSession: React.FC = () => {
     return () => subs.forEach((s) => s.unsubscribe());
   }, [addSubscription, target, context.notificationChannel, checkConflictingRecordings]);
 
-  const exitForm = React.useCallback(() => navigate(toPath('/async-profiler')), [navigate]);
+  const checkConflictingRecordings = React.useCallback(() => {
+    if (!target) {
+      setHasConflictingRecordings(false);
+      setCheckingConflicts(false);
+      return;
+    }
+
+    const currentCheckId = ++checkIdRef.current;
+    setCheckingConflicts(true);
+    addSubscription(
+      context.api
+        .getTargetActiveRecordings(target)
+        .pipe(map((rs) => rs.some((r) => r.state !== 'STOPPED')))
+        .subscribe({
+          next: (hasRunningRecordings) => {
+            if (currentCheckId === checkIdRef.current) {
+              setHasConflictingRecordings(hasRunningRecordings);
+              setCheckingConflicts(false);
+            }
+          },
+          error: () => {
+            if (currentCheckId === checkIdRef.current) {
+              setHasConflictingRecordings(true);
+              setCheckingConflicts(false);
+            }
+          },
+        }),
+    );
+  }, [addSubscription, target, context.api]);
+
+  React.useEffect(() => {
+    checkConflictingRecordings();
+  }, [checkConflictingRecordings]);
+
+  React.useEffect(() => {
+    if (!target) return;
+
+    const subs = [NotificationCategory.ActiveRecordingCreated, NotificationCategory.ActiveRecordingStopped].map((cat) =>
+      context.notificationChannel.messages(cat).subscribe(() => checkConflictingRecordings()),
+    );
+    return () => subs.forEach((s) => s.unsubscribe());
+  }, [addSubscription, target, context.notificationChannel, checkConflictingRecordings]);
+
+  const exitForm = useExitForm(onClose);
 
   const handleSubmit = React.useCallback(() => {
     if (!target) {
@@ -133,66 +177,64 @@ export const CreateAsyncProfilerSession: React.FC = () => {
   }, [addSubscription, target, context.api, chosenLeafIds, duration, durationUnits, exitForm]);
 
   return (
-    <TargetView pageTitle="Create" breadcrumbs={[{ title: 'async-profiler', path: toPath('/async-profiler') }]}>
-      <Card>
-        <CardBody>
-          {loading ? (
-            <Bullseye>
-              <Spinner />
-            </Bullseye>
-          ) : (
-            <Form isHorizontal>
-              <Content>
-                <Content component={ContentVariants.p}>{t('CreateAsyncProfilerSession.DESCRIPTION')}</Content>
-              </Content>
-              {hasConflictingRecordings && (
-                <Alert
-                  isInline
-                  variant={AlertVariant.warning}
-                  title={t('CreateAsyncProfilerSession.CONFLICT_WARNING_TITLE')}
-                  actionLinks={
-                    <AlertActionLink onClick={checkConflictingRecordings} isDisabled={checkingConflicts}>
-                      Retry
-                    </AlertActionLink>
-                  }
-                >
-                  {t('CreateAsyncProfilerSession.CONFLICT_WARNING_MESSAGE')}
-                </Alert>
-              )}
-              <FormGroup label={t('CreateAsyncProfilerSession.EVENTS')} fieldId="events" isRequired>
-                <AsyncProfilerEventTreeSelector
-                  target={target}
-                  chosenLeafIds={chosenLeafIds}
-                  onChosenLeafIdsChange={setChosenLeafIds}
-                  isDisabled={hasConflictingRecordings}
-                />
-              </FormGroup>
-              <FormGroup label={t('CreateAsyncProfilerSession.DURATION')} fieldId="duration" isRequired>
-                <DurationPicker
-                  enabled={true}
-                  onPeriodChange={setDuration}
-                  onUnitScalarChange={setDurationUnits}
-                  period={duration}
-                  unitScalar={durationUnits}
-                />
-              </FormGroup>
-              <ActionGroup>
-                <Button
-                  variant="primary"
-                  onClick={handleSubmit}
-                  isDisabled={!chosenLeafIds.length || duration < 1 || hasConflictingRecordings || checkingConflicts}
-                >
-                  {t('CREATE')}
-                </Button>
-                <Button variant="secondary" onClick={exitForm}>
-                  {t('CANCEL')}
-                </Button>
-              </ActionGroup>
-            </Form>
-          )}
-        </CardBody>
-      </Card>
-    </TargetView>
+    <Card>
+      <CardBody>
+        {loading ? (
+          <Bullseye>
+            <Spinner />
+          </Bullseye>
+        ) : (
+          <Form isHorizontal>
+            <Content>
+              <Content component={ContentVariants.p}>{t('CreateAsyncProfilerSession.DESCRIPTION')}</Content>
+            </Content>
+            {hasConflictingRecordings && (
+              <Alert
+                isInline
+                variant={AlertVariant.warning}
+                title={t('CreateAsyncProfilerSession.CONFLICT_WARNING_TITLE')}
+                actionLinks={
+                  <AlertActionLink onClick={checkConflictingRecordings} isDisabled={checkingConflicts}>
+                    Retry
+                  </AlertActionLink>
+                }
+              >
+                {t('CreateAsyncProfilerSession.CONFLICT_WARNING_MESSAGE')}
+              </Alert>
+            )}
+            <FormGroup label={t('CreateAsyncProfilerSession.EVENTS')} fieldId="events" isRequired>
+              <AsyncProfilerEventTreeSelector
+                target={target}
+                chosenLeafIds={chosenLeafIds}
+                onChosenLeafIdsChange={setChosenLeafIds}
+                isDisabled={hasConflictingRecordings}
+              />
+            </FormGroup>
+            <FormGroup label={t('CreateAsyncProfilerSession.DURATION')} fieldId="duration" isRequired>
+              <DurationPicker
+                enabled={true}
+                onPeriodChange={setDuration}
+                onUnitScalarChange={setDurationUnits}
+                period={duration}
+                unitScalar={durationUnits}
+              />
+            </FormGroup>
+            <ActionGroup>
+              <Button
+                variant="primary"
+                onClick={handleSubmit}
+                isDisabled={!chosenLeafIds.length || duration < 1 || hasConflictingRecordings || checkingConflicts}
+              >
+                {t('CREATE')}
+              </Button>
+              <Button variant="secondary" onClick={exitForm}>
+                {t('CANCEL')}
+              </Button>
+            </ActionGroup>
+          </Form>
+        )}
+      </CardBody>
+    </Card>
   );
 };
 
