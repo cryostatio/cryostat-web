@@ -420,7 +420,7 @@ export const AsyncProfiler: React.FC = () => {
         </CardBody>
       </Card>
       <Modal appendTo={portalRoot()} isOpen={createModalOpen} variant="large" onClose={closeCreateModal}>
-        <ModalHeader title="Create Async Profiler session" />
+        <ModalHeader title={t('CreateAsyncProfilerSession.MODAL_TITLE')} />
         <ModalBody>{createModalOpen ? <CreateAsyncProfilerSession onClose={closeCreateModal} /> : null}</ModalBody>
       </Modal>
     </TargetView>
@@ -525,7 +525,7 @@ const AsyncProfilesToolbar: React.FC<AsyncProfilesTableToolbarProps> = (props) =
   ]);
 
   return (
-    <Toolbar id="async-profiles-toolbar" aria-label="async-profiles-toolbar">
+    <Toolbar id="async-profiles-toolbar" aria-label={t('AsyncProfiler.ARIA_LABELS.TOOLBAR')}>
       <ToolbarContent>
         <ToolbarGroup variant="action-group" style={{ alignSelf: 'start' }}>
           <ToolbarItem>
