@@ -14,6 +14,9 @@
     "OPEN_SOURCE_LICENSE": "Open source license",
     "VERSION": "Version"
   },
+  "ActiveRecordingsTable": {
+    "SYNC_TOOLTIP": "Reconcile Cryostat's active recording model with the recordings present on the target."
+  },
   "AgentLiveProbes": {
     "SEARCH_PLACEHOLDER": "Find by name, description, class, or method..."
   },

@@ -74,8 +74,9 @@ import {
   DrawerActions,
   DrawerCloseButton,
   DrawerPanelBody,
+  Tooltip,
 } from '@patternfly/react-core';
-import { EllipsisVIcon, ProcessAutomationIcon } from '@patternfly/react-icons';
+import { EllipsisVIcon, ProcessAutomationIcon, SpinnerIcon } from '@patternfly/react-icons';
 import { SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -239,6 +240,22 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         }),
     );
   }, [addSubscription, context.target, context.api, setIsLoading, handleRecordings, handleError]);
+
+  const handleSync = React.useCallback(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          concatMap((target: Target) => context.api.syncActiveRecordings(target)),
+          first(),
+        )
+        .subscribe({
+          next: refreshRecordingList,
+          error: handleError,
+        }),
+    );
+  }, [addSubscription, context.target, context.api, refreshRecordingList, handleError]);
 
   React.useEffect(() => {
     addSubscription(
@@ -501,6 +518,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         archiveEnabled={props.archiveEnabled}
         handleCreateRecording={handleCreateRecording}
         handleArchiveRecordings={handleArchiveRecordings}
+        handleSync={handleSync}
         handleEditLabels={handleEditLabels}
         handleStopRecordings={handleStopRecordings}
         handleDeleteRecordings={handleDeleteRecordings}
@@ -522,6 +540,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
       handleArchiveRecordings,
       handleEditLabels,
       handleStopRecordings,
+      handleSync,
       handleDeleteRecordings,
       handleShowReport,
       actionLoadings,
@@ -632,6 +651,7 @@ export interface ActiveRecordingsToolbarProps {
   archiveEnabled: boolean;
   handleCreateRecording: () => void;
   handleArchiveRecordings: () => void;
+  handleSync: () => void;
   handleEditLabels: () => void;
   handleStopRecordings: () => void;
   handleDeleteRecordings: () => void;
@@ -803,6 +823,21 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
         ),
         key: 'Analyze',
       },
+      {
+        default: (
+          <Tooltip content={t('ActiveRecordingsTable.SYNC_TOOLTIP')}>
+            <Button icon={<SpinnerIcon />} variant="secondary" onClick={props.handleSync}>
+              {t('SYNC')}
+            </Button>
+          </Tooltip>
+        ),
+        collapsed: (
+          <OverflowMenuDropdownItem key={'Sync'} isShared onClick={props.handleSync}>
+            {t('SYNC')}
+          </OverflowMenuDropdownItem>
+        ),
+        key: 'Sync',
+      },
     ];
     return arr;
   }, [
@@ -814,6 +849,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
     props.handleArchiveRecordings,
     props.handleEditLabels,
     props.handleStopRecordings,
+    props.handleSync,
     props.handleAnalyze,
     props.actionLoadings,
     props.archiveEnabled,
