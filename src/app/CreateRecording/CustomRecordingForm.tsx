@@ -31,8 +31,8 @@ import {
   Target,
   KeyValue,
 } from '@app/Shared/Services/api.types';
-import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useExitForm } from '@app/utils/hooks/useExitForm';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
