@@ -354,7 +354,8 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
       formData.durationValid !== ValidatedOptions.success ||
       !formData.template?.name ||
       !formData.template?.type ||
-      formData.labelsValid !== ValidatedOptions.success
+      formData.labelsValid !== ValidatedOptions.success ||
+      (formData.asprofEnabled && formData.asprofEvents.length === 0)
     );
   }, [formData]);
 

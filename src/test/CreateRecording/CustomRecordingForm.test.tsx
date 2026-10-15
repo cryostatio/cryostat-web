@@ -287,12 +287,11 @@ describe('<CustomRecordingForm />', () => {
     expect(screen.getByText('async-profiler events')).toBeInTheDocument();
   });
 
-  it('should include asprofEvents in the payload when the toggle is enabled', async () => {
+  it('should disable create button when asprofEnabled is true but asprofEvents is empty', async () => {
     jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.BETA));
     jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockAgentTarget));
     jest.spyOn(defaultServices.api, 'isAsyncProfilerSupported').mockReturnValue(of(true));
     jest.spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents').mockReturnValue(of([]));
-    const onSubmitSpy = jest.spyOn(defaultServices.api, 'createRecording').mockReturnValue(of(mockResponse));
 
     const { user } = render({
       routerConfigs: { routes: [{ path: '/recordings', element: <CustomRecordingForm /> }] },
@@ -304,10 +303,9 @@ describe('<CustomRecordingForm />', () => {
     const toggle = screen.getByRole('switch', { name: /enable async-profiler/i });
     await user.click(toggle);
 
-    await user.click(screen.getByRole('button', { name: /^create$/i }));
+    expect(screen.getByText('async-profiler events')).toBeInTheDocument();
 
-    expect(onSubmitSpy).toHaveBeenCalledTimes(1);
-    const call = onSubmitSpy.mock.calls[0][0] as RecordingAttributes;
-    expect(call.asprofEvents).toEqual([]);
+    const createButton = screen.getByRole('button', { name: /^create$/i });
+    expect(createButton).toBeDisabled();
   });
 });
