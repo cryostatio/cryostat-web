@@ -543,8 +543,8 @@ describe('<ActiveRecordingsTable />', () => {
       preloadedState: preloadedState,
     });
 
-    await user.click(screen.getByText('Sync'));
     const syncSpy = jest.spyOn(defaultServices.api, 'syncActiveRecordings');
+    await user.click(screen.getByText('Sync'));
 
     expect(syncSpy).toHaveBeenCalledTimes(1);
     expect(syncSpy).toHaveBeenCalledWith(mockTarget);
