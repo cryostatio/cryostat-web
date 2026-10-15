@@ -17,6 +17,9 @@ import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
+import { AsyncProfilerEventTreeSelector } from '@app/Shared/Components/AsyncProfilerEventTreeSelector';
+import { FeatureFlag } from '@app/Shared/Components/FeatureFlag';
+import { FeatureLevelBadge } from '@app/Shared/Components/FeatureLevelBadge';
 import { SelectTemplateSelectorForm } from '@app/Shared/Components/SelectTemplateSelectorForm';
 import { LoadingProps } from '@app/Shared/Components/types';
 import { store } from '@app/Shared/Redux/ReduxStore';
@@ -24,9 +27,11 @@ import {
   EventTemplate,
   RecordingAttributes,
   AdvancedRecordingOptions,
+  NullableTarget,
   Target,
   KeyValue,
 } from '@app/Shared/Services/api.types';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useExitForm } from '@app/utils/hooks/useExitForm';
@@ -49,6 +54,7 @@ import {
   Label,
   Split,
   SplitItem,
+  Switch,
   Content,
   TextInput,
   ContentVariants,
@@ -89,6 +95,8 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
     maxSize: 50,
     maxSizeUnit: 1024 * 1024,
     toDisk: true,
+    asprofEnabled: false,
+    asprofEvents: [],
     nameValid: ValidatedOptions.default,
     labelsValid: ValidatedOptions.default,
     durationValid: ValidatedOptions.success,
@@ -96,6 +104,8 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
   const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
+  const [target, setTarget] = React.useState<NullableTarget>(undefined);
+  const [asprofSupported, setAsprofSupported] = React.useState(false);
 
   const exitForm = useExitForm(onExit);
 
@@ -236,6 +246,17 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
     [setFormData],
   );
 
+  const handleAsprofEnabledChange = React.useCallback(
+    (_: React.FormEvent<HTMLInputElement>, checked: boolean) =>
+      setFormData((old) => ({ ...old, asprofEnabled: checked, asprofEvents: checked ? old.asprofEvents : [] })),
+    [setFormData],
+  );
+
+  const handleAsprofEventsChange = React.useCallback(
+    (ids: string[]) => setFormData((old) => ({ ...old, asprofEvents: ids })),
+    [setFormData],
+  );
+
   const handleSubmit = React.useCallback(() => {
     const {
       name,
@@ -250,6 +271,8 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
       duration,
       durationUnit,
       archiveOnStop,
+      asprofEnabled,
+      asprofEvents,
     } = formData;
 
     const notificationMessages: string[] = [];
@@ -277,33 +300,46 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
       metadata: {
         labels: [...formData.labels, { key: 'autoanalyze', value: `${autoanalyze}` }],
       },
+      asprofEvents: asprofEnabled ? asprofEvents : undefined,
     };
     handleCreateRecording(recordingAttributes);
   }, [t, eventSpecifierString, formData, autoanalyze, notifications, handleCreateRecording]);
 
   const refreshFormOptions = React.useCallback(
-    (target: Target) => {
-      if (!target) {
+    (t: Target) => {
+      if (!t) {
         return;
       }
+      setTarget(t);
       addSubscription(
         forkJoin({
-          templates: context.api.getTargetEventTemplates(target),
-          recordingOptions: context.api.doGet<AdvancedRecordingOptions>(`targets/${target.id}/recordingOptions`),
+          templates: context.api.getTargetEventTemplates(t),
+          recordingOptions: context.api.doGet<AdvancedRecordingOptions>(`targets/${t.id}/recordingOptions`),
+          asprofSupported: context.api.isAsyncProfilerSupported(t),
         }).subscribe({
-          next: ({ templates, recordingOptions }) => {
+          next: ({ templates, recordingOptions, asprofSupported: supported }) => {
+            const canUseAsprof = t.agent && supported;
             setErrorMessage('');
             setTemplates(templates);
+            setAsprofSupported(supported);
             setFormData((old) => {
-              const matched = templates.find((t) => t.name === old.template?.name && t.type === old.template?.type);
-              return { ...old, template: matched ? { name: matched.name, type: matched.type } : undefined };
+              const matched = templates.find(
+                (tmpl) => tmpl.name === old.template?.name && tmpl.type === old.template?.type,
+              );
+              return {
+                ...old,
+                template: matched ? { name: matched.name, type: matched.type } : undefined,
+                asprofEnabled: canUseAsprof ? old.asprofEnabled : false,
+                asprofEvents: canUseAsprof ? old.asprofEvents : [],
+              };
             });
             setAdvancedRecordingOptions(recordingOptions);
           },
           error: (error) => {
             setErrorMessage(error.message);
             setTemplates([]);
-            setFormData((old) => ({ ...old, template: undefined }));
+            setAsprofSupported(false);
+            setFormData((old) => ({ ...old, template: undefined, asprofEnabled: false, asprofEvents: [] }));
             setAdvancedRecordingOptions({});
           },
         }),
@@ -357,7 +393,8 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
       context.target.authFailure().subscribe(() => {
         setErrorMessage(authFailMessage);
         setTemplates([]);
-        setFormData((old) => ({ ...old, template: undefined }));
+        setAsprofSupported(false);
+        setFormData((old) => ({ ...old, template: undefined, asprofEnabled: false, asprofEvents: [] }));
         setAdvancedRecordingOptions({});
       }),
     );
@@ -533,6 +570,49 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
             </HelperText>
           </FormHelperText>
         </FormGroup>
+        <FeatureFlag level={FeatureLevel.BETA}>
+          <FormGroup
+            label={
+              <>
+                {t('CustomRecordingForm.ASYNC_PROFILER')}
+                <FeatureLevelBadge level={FeatureLevel.BETA} />
+              </>
+            }
+            fieldId="recording-asprof-enabled"
+          >
+            <Switch
+              id="recording-asprof-enabled"
+              aria-label="Enable async-profiler"
+              isChecked={formData.asprofEnabled}
+              isDisabled={loading || !target?.agent || !asprofSupported}
+              onChange={handleAsprofEnabledChange}
+            />
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem>
+                  {!target?.agent
+                    ? t('CustomRecordingForm.ASYNC_PROFILER_REQUIRES_AGENT')
+                    : asprofSupported
+                      ? t('CustomRecordingForm.ASYNC_PROFILER_DESCRIPTION')
+                      : t('CustomRecordingForm.ASYNC_PROFILER_NOT_DETECTED')}
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+            {formData.asprofEnabled && (
+              <FormGroup
+                label={t('CustomRecordingForm.ASYNC_PROFILER_EVENTS')}
+                fieldId="recording-asprof-events"
+                isRequired
+              >
+                <AsyncProfilerEventTreeSelector
+                  target={target}
+                  chosenLeafIds={formData.asprofEvents}
+                  onChosenLeafIdsChange={handleAsprofEventsChange}
+                />
+              </FormGroup>
+            )}
+          </FormGroup>
+        </FeatureFlag>
         <ExpandableSection
           toggleTextExpanded={t('CustomRecordingForm.METADATA_HIDE')}
           toggleTextCollapsed={t('CustomRecordingForm.METADATA_SHOW')}
