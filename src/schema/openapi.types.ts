@@ -6079,6 +6079,7 @@ export interface paths {
         content: {
           'application/x-www-form-urlencoded': {
             archiveOnStop?: boolean | null;
+            asprofEvents?: string[] | null;
             /** Format: int64 */
             duration?: number | null;
             events?: string;
