@@ -224,6 +224,14 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
     [setIsLoading, setErrorMessage, setRecordings],
   );
 
+  const handleSyncError = React.useCallback(
+    (error: { message: React.SetStateAction<string> }) => {
+      setIsLoading(false);
+      setErrorMessage(error.message);
+    },
+    [setIsLoading, setErrorMessage],
+  );
+
   const refreshRecordingList = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
@@ -252,10 +260,10 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         )
         .subscribe({
           next: refreshRecordingList,
-          error: handleError,
+          error: handleSyncError,
         }),
     );
-  }, [addSubscription, context.target, context.api, refreshRecordingList, handleError]);
+  }, [addSubscription, context.target, context.api, refreshRecordingList, handleSyncError]);
 
   React.useEffect(() => {
     addSubscription(
