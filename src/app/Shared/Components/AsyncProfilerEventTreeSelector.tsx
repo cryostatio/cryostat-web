@@ -81,20 +81,35 @@ export const AsyncProfilerEventTreeSelector: React.FC<AsyncProfilerEventTreeSele
   const [checkedLeafIds, setCheckedLeafIds] = React.useState<string[]>([]);
   const [availableFilter, setAvailableFilter] = React.useState('');
   const [chosenFilter, setChosenFilter] = React.useState('');
+  const previousTargetId = React.useRef<string | undefined>(undefined);
 
   React.useEffect(() => {
     if (!target) {
+      setAllEvents([]);
+      setCheckedLeafIds([]);
+      onChosenLeafIdsChange([]);
       return;
     }
-    addSubscription(
-      context.api
-        .getAsyncProfilerAvailableEvents(target)
-        .pipe(map(convertEventsToTree))
-        .subscribe((e) => {
+
+    if (previousTargetId.current !== target.id) {
+      setAllEvents([]);
+      setCheckedLeafIds([]);
+      onChosenLeafIdsChange([]);
+      previousTargetId.current = target.id;
+    }
+
+    const subscription = context.api
+      .getAsyncProfilerAvailableEvents(target)
+      .pipe(map(convertEventsToTree))
+      .subscribe((e) => {
+        if (previousTargetId.current === target.id) {
           setAllEvents(e);
-        }),
-    );
-  }, [addSubscription, target, context.api]);
+        }
+      });
+
+    addSubscription(subscription);
+    return () => subscription.unsubscribe();
+  }, [addSubscription, target, context.api, onChosenLeafIdsChange]);
 
   const allLeafIds = React.useMemo(() => allEvents.flatMap(getLeafIds), [allEvents]);
 
