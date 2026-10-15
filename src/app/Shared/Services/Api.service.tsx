@@ -465,18 +465,6 @@ export class ApiService {
       map((resp) => resp.ok),
       first(),
     );
-    /*return this.target.target().pipe(
-      filter((t) => !!t),
-      concatMap((target) =>
-        this.sendRequest('v4.3', `targets/${target!.id}/recordings_sync`, {
-          method: 'POST',
-        }).pipe(
-          map((resp) => resp.ok),
-          first(),
-        ),
-      ),
-      first(),
-    )*/
   }
 
   stopRecording(remoteId: number): Observable<boolean> {
