@@ -335,6 +335,11 @@
     "TEMPLATE": "Template",
     "TEMPLATE_DESCRIPTION": "The Event Template to be applied in this Recording",
     "TEMPLATE_INVALID": "A Template must be selected.",
+    "ASYNC_PROFILER": "async-profiler",
+    "ASYNC_PROFILER_DESCRIPTION": "Augment this recording with async-profiler stack samples.",
+    "ASYNC_PROFILER_EVENTS": "async-profiler events",
+    "ASYNC_PROFILER_NOT_DETECTED": "async-profiler is not available on this target.",
+    "ASYNC_PROFILER_REQUIRES_AGENT": "async-profiler is only supported for Agent-connected targets.",
     "TO_DISK": "To Disk",
     "TO_DISK_DESCRIPTION": "Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent Recording information",
     "UNBOUNDED": "A value of 0 for maximum size or age means unbounded."

@@ -35,6 +35,8 @@ interface _FormBaseData {
   maxSize: number;
   maxSizeUnit: number;
   toDisk: boolean;
+  asprofEnabled: boolean;
+  asprofEvents: string[];
 }
 
 interface _FormValidationData {
