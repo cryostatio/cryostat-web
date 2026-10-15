@@ -81,7 +81,7 @@ export const AsyncProfilerEventTreeSelector: React.FC<AsyncProfilerEventTreeSele
   const [checkedLeafIds, setCheckedLeafIds] = React.useState<string[]>([]);
   const [availableFilter, setAvailableFilter] = React.useState('');
   const [chosenFilter, setChosenFilter] = React.useState('');
-  const previousTargetId = React.useRef<string | undefined>(undefined);
+  const previousTargetId = React.useRef<number | undefined>(undefined);
 
   React.useEffect(() => {
     if (!target) {
