@@ -1642,17 +1642,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/mock@npm:9.1.16":
-  version: 9.1.16
-  resolution: "@graphql-tools/mock@npm:9.1.16"
+"@graphql-tools/mock@npm:9.1.17":
+  version: 9.1.17
+  resolution: "@graphql-tools/mock@npm:9.1.17"
   dependencies:
-    "@graphql-tools/schema": "npm:^10.1.3"
-    "@graphql-tools/utils": "npm:^12.0.3"
+    "@graphql-tools/schema": "npm:^10.1.4"
+    "@graphql-tools/utils": "npm:^12.0.4"
     fast-json-stable-stringify: "npm:^2.1.0"
     tslib: "npm:^2.4.0"
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 10/b34e4e2d94670746aa7e0bc2f69f363c96f7577bc39f4e755da2a439240662bf310d73d9b78ca02e531c73a4d47f5f51286fd212116bb21b30325d7824bf60dd
+  checksum: 10/36858011f2436dbb525c2b287e869d5079a96ab63b23c167d3c747b0a31aa8c8380e35357bc4fc2a564bef9ed00a0a36a059da71742b58efe8e910fda9531b2f
   languageName: node
   linkType: hard
 
@@ -1680,16 +1680,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/schema@npm:10.1.3":
-  version: 10.1.3
-  resolution: "@graphql-tools/schema@npm:10.1.3"
+"@graphql-tools/schema@npm:10.1.4, @graphql-tools/schema@npm:^10.1.3, @graphql-tools/schema@npm:^10.1.4":
+  version: 10.1.4
+  resolution: "@graphql-tools/schema@npm:10.1.4"
   dependencies:
-    "@graphql-tools/merge": "npm:^9.2.6"
-    "@graphql-tools/utils": "npm:^12.0.3"
+    "@graphql-tools/merge": "npm:^9.2.7"
+    "@graphql-tools/utils": "npm:^12.0.4"
     tslib: "npm:^2.4.0"
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 10/eb1395b1ebb6ee1e7049a03f26db4fc4d7732cd0c87b3898722feab3a47c71920c202b0852612b2e55ba6ed7a4b5cd7dce42b77052b83bc29876252ee05735d2
+  checksum: 10/d75a6b962a5268b3ec3e71dc428eb9ba363bc83ea27bc6234cf370ee9c106d3dc5d4f324e0e401ab902da0357a2280306652df97ec6f53c548120814752a4580
   languageName: node
   linkType: hard
 
@@ -1703,19 +1703,6 @@ __metadata:
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
   checksum: 10/a837fa92bed1e0d6335b0e2068451ef15dce91a73b1c48b45b396b254fddb95f03930dc088f45942942d05adb7946d744deab5649a09b1d964d2abf8bc9929fd
-  languageName: node
-  linkType: hard
-
-"@graphql-tools/schema@npm:^10.1.3, @graphql-tools/schema@npm:^10.1.4":
-  version: 10.1.4
-  resolution: "@graphql-tools/schema@npm:10.1.4"
-  dependencies:
-    "@graphql-tools/merge": "npm:^9.2.7"
-    "@graphql-tools/utils": "npm:^12.0.4"
-    tslib: "npm:^2.4.0"
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 10/d75a6b962a5268b3ec3e71dc428eb9ba363bc83ea27bc6234cf370ee9c106d3dc5d4f324e0e401ab902da0357a2280306652df97ec6f53c548120814752a4580
   languageName: node
   linkType: hard
 
@@ -7195,8 +7182,8 @@ __metadata:
     "@graphql-codegen/cli": "npm:7.4.6"
     "@graphql-codegen/typescript": "npm:6.1.2"
     "@graphql-codegen/typescript-operations": "npm:6.1.10"
-    "@graphql-tools/mock": "npm:9.1.16"
-    "@graphql-tools/schema": "npm:10.1.3"
+    "@graphql-tools/mock": "npm:9.1.17"
+    "@graphql-tools/schema": "npm:10.1.4"
     "@msw/source": "npm:0.6.1"
     "@mswjs/data": "npm:0.16.2"
     "@patternfly/quickstarts": "npm:6.4.0"
