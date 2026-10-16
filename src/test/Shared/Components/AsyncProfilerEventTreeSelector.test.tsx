@@ -123,7 +123,7 @@ describe('<AsyncProfilerEventTreeSelector />', () => {
       },
     });
 
-    const addAll = await screen.findByRole('button', { name: /add all/i });
+    const addAll = await screen.findByRole('button', { name: 'Add all' });
     await user.click(addAll);
 
     expect(onChange).toHaveBeenCalledTimes(1);

@@ -75,10 +75,12 @@ jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.api, 'getTargetEventTemplates').mockReturnValue(of([mockCustomEventTemplate]));
 jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of(mockRecordingOptions));
 jest.spyOn(defaultServices.api, 'isAsyncProfilerSupported').mockReturnValue(of(false));
+jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(of([]));
 jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.PRODUCTION));
 jest.spyOn(defaultServices.settings, 'largeUi').mockReturnValue(of(false));
 
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
+jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of());
 
 describe('<CustomRecordingForm />', () => {
   beforeEach(() => {
@@ -87,9 +89,11 @@ describe('<CustomRecordingForm />', () => {
     jest.spyOn(defaultServices.api, 'getTargetEventTemplates').mockReturnValue(of([mockCustomEventTemplate]));
     jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of(mockRecordingOptions));
     jest.spyOn(defaultServices.api, 'isAsyncProfilerSupported').mockReturnValue(of(false));
+    jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(of([]));
     jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.PRODUCTION));
     jest.spyOn(defaultServices.settings, 'largeUi').mockReturnValue(of(false));
     jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
+    jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of());
   });
 
   afterEach(cleanup);

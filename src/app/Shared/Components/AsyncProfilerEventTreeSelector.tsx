@@ -39,6 +39,7 @@ export interface AsyncProfilerEventTreeSelectorProps {
   target: NullableTarget;
   chosenLeafIds: string[];
   onChosenLeafIdsChange: (ids: string[]) => void;
+  isDisabled?: boolean;
 }
 
 const getLeafIds = (node: DualListSelectorTreeItemData): string[] => {
@@ -72,6 +73,7 @@ export const AsyncProfilerEventTreeSelector: React.FC<AsyncProfilerEventTreeSele
   target,
   chosenLeafIds,
   onChosenLeafIdsChange,
+  isDisabled = false,
 }) => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
@@ -245,7 +247,9 @@ export const AsyncProfilerEventTreeSelector: React.FC<AsyncProfilerEventTreeSele
               id: node.id,
               text: node.text,
               isChecked: checked === true,
-              checkProps: { 'aria-label': `Select ${node.text ?? node.id}` },
+              checkProps: {
+                'aria-label': t('CreateAsyncProfilerSession.ARIA_LABELS.SELECT_EVENT', { name: node.text ?? node.id }),
+              },
               hasBadge: (node.children?.length ?? 0) > 0,
               badgeProps: { isRead: true },
               defaultExpanded: filterVal ? true : node.defaultExpanded,
@@ -270,6 +274,7 @@ export const AsyncProfilerEventTreeSelector: React.FC<AsyncProfilerEventTreeSele
       nodeTexts,
       matchesFilter,
       isNodeChecked,
+      t,
     ],
   );
 
@@ -316,7 +321,11 @@ export const AsyncProfilerEventTreeSelector: React.FC<AsyncProfilerEventTreeSele
             value={filterVal}
             onChange={(_evt, val) => setFilter(val)}
             onClear={() => setFilter('')}
-            aria-label={isChosen ? 'Search chosen events' : 'Search available events'}
+            aria-label={
+              isChosen
+                ? t('CreateAsyncProfilerSession.ARIA_LABELS.SEARCH_CHOSEN_EVENTS')
+                : t('CreateAsyncProfilerSession.ARIA_LABELS.SEARCH_AVAILABLE_EVENTS')
+            }
           />
         }
         isChosen={isChosen}
@@ -338,27 +347,27 @@ export const AsyncProfilerEventTreeSelector: React.FC<AsyncProfilerEventTreeSele
       {buildPane(false)}
       <DualListSelectorControlsWrapper>
         <DualListSelectorControl
-          isDisabled={!checkedLeafIds.some((id) => visibleAvailableLeafIds.includes(id))}
+          isDisabled={isDisabled || !checkedLeafIds.some((id) => visibleAvailableLeafIds.includes(id))}
           onClick={() => moveChecked(true)}
-          aria-label="Add selected"
+          aria-label={t('CreateAsyncProfilerSession.ARIA_LABELS.ADD_SELECTED')}
           icon={<AngleRightIcon />}
         />
         <DualListSelectorControl
-          isDisabled={visibleAvailableLeafIds.length === 0}
+          isDisabled={isDisabled || visibleAvailableLeafIds.length === 0}
           onClick={() => moveAll(true)}
-          aria-label="Add all"
+          aria-label={t('CreateAsyncProfilerSession.ARIA_LABELS.ADD_ALL')}
           icon={<AngleDoubleRightIcon />}
         />
         <DualListSelectorControl
-          isDisabled={visibleChosenLeafIds.length === 0}
+          isDisabled={isDisabled || visibleChosenLeafIds.length === 0}
           onClick={() => moveAll(false)}
-          aria-label="Remove all"
+          aria-label={t('CreateAsyncProfilerSession.ARIA_LABELS.REMOVE_ALL')}
           icon={<AngleDoubleLeftIcon />}
         />
         <DualListSelectorControl
-          isDisabled={!checkedLeafIds.some((id) => visibleChosenLeafIds.includes(id))}
+          isDisabled={isDisabled || !checkedLeafIds.some((id) => visibleChosenLeafIds.includes(id))}
           onClick={() => moveChecked(false)}
-          aria-label="Remove selected"
+          aria-label={t('CreateAsyncProfilerSession.ARIA_LABELS.REMOVE_SELECTED')}
           icon={<AngleLeftIcon />}
         />
       </DualListSelectorControlsWrapper>
