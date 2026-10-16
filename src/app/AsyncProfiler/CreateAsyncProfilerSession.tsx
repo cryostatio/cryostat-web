@@ -25,6 +25,7 @@ import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionGroup,
   Alert,
+  AlertActionLink,
   AlertVariant,
   Bullseye,
   Button,
@@ -80,11 +81,19 @@ export const CreateAsyncProfilerSession: React.FC = () => {
       context.api
         .getTargetActiveRecordings(target)
         .pipe(map((rs) => rs.some((r) => r.state !== RecordingState.STOPPED)))
-        .subscribe((hasRunningRecordings) => {
-          if (currentCheckId === checkIdRef.current) {
-            setHasConflictingRecordings(hasRunningRecordings);
-            setCheckingConflicts(false);
-          }
+        .subscribe({
+          next: (hasRunningRecordings) => {
+            if (currentCheckId === checkIdRef.current) {
+              setHasConflictingRecordings(hasRunningRecordings);
+              setCheckingConflicts(false);
+            }
+          },
+          error: () => {
+            if (currentCheckId === checkIdRef.current) {
+              setHasConflictingRecordings(true);
+              setCheckingConflicts(false);
+            }
+          },
         }),
     );
   }, [addSubscription, target, context.api]);
@@ -140,6 +149,11 @@ export const CreateAsyncProfilerSession: React.FC = () => {
                   isInline
                   variant={AlertVariant.warning}
                   title={t('CreateAsyncProfilerSession.CONFLICT_WARNING_TITLE')}
+                  actionLinks={
+                    <AlertActionLink onClick={checkConflictingRecordings} isDisabled={checkingConflicts}>
+                      Retry
+                    </AlertActionLink>
+                  }
                 >
                   {t('CreateAsyncProfilerSession.CONFLICT_WARNING_MESSAGE')}
                 </Alert>
