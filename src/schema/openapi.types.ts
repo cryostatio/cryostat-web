@@ -2028,6 +2028,7 @@ export interface paths {
     post: {
       parameters: {
         query: {
+          autoanalyze?: boolean;
           fromTimestamp: number;
           tag?: string;
           toTimestamp: number;
@@ -6078,6 +6079,7 @@ export interface paths {
         content: {
           'application/x-www-form-urlencoded': {
             archiveOnStop?: boolean | null;
+            asprofEvents?: string[] | null;
             /** Format: int64 */
             duration?: number | null;
             events?: string;

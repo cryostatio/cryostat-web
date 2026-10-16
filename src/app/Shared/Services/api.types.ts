@@ -255,6 +255,7 @@ export interface RecordingAttributes {
   replace?: RecordingReplace;
   advancedOptions?: AdvancedRecordingOptions;
   metadata?: Metadata;
+  asprofEvents?: string[];
 }
 
 export interface Recording {
