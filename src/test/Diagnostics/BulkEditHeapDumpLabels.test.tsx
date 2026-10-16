@@ -45,7 +45,7 @@ const mockHeapDumpLabels = [
 ];
 
 const mockArchivedHeapDump: HeapDump = {
-  jvmId: mockTarget.jvmId,
+  jvmId: mockTarget.jvmId!,
   heapDumpId: 'someArchivedRecording_some_random',
   downloadUrl: 'http://downloadUrl',
   metadata: { labels: mockHeapDumpLabels },

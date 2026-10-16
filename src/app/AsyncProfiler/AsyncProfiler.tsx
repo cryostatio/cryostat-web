@@ -205,7 +205,7 @@ export const AsyncProfiler: React.FC = () => {
     }
     addSubscription(
       context.api.getAsyncProfilerStatus(target).subscribe((s) => {
-        setProfilerRunning(s.status);
+        setProfilerRunning(s.status === 'RUNNING');
         setCurrentProfile(s.currentProfile);
         refreshProfiles();
       }),
@@ -227,7 +227,7 @@ export const AsyncProfiler: React.FC = () => {
   const handleHeaderCheck = React.useCallback(
     (event, checked) => {
       setHeaderChecked(checked);
-      setCheckedIndices(checked ? allProfiles.map((r) => hashCode(r.id)) : []);
+      setCheckedIndices(checked ? allProfiles.map((r) => hashCode(r.id ?? '')) : []);
     },
     [setHeaderChecked, setCheckedIndices, allProfiles],
   );
@@ -296,7 +296,7 @@ export const AsyncProfiler: React.FC = () => {
 
   React.useEffect(() => {
     setCheckedIndices((ci) => {
-      const filteredIdIdx = new Set(allProfiles.map((profile) => hashCode(profile.id)));
+      const filteredIdIdx = new Set(allProfiles.map((profile) => hashCode(profile.id ?? '')));
       return ci.filter((idx) => filteredIdIdx.has(idx));
     });
   }, [allProfiles, setCheckedIndices]);
@@ -404,7 +404,7 @@ export const AsyncProfiler: React.FC = () => {
               {allProfiles.map((profile) => (
                 <AsyncProfileRow
                   key={profile.id}
-                  index={hashCode(profile.id)}
+                  index={hashCode(profile.id ?? '')}
                   profile={profile}
                   checkedIndices={checkedIndices}
                   handleRowCheck={handleRowCheck}
@@ -712,7 +712,7 @@ export const AsyncProfileRow: React.FC<AsyncProfileRowProps> = ({
           {'size' in profile ? formatBytes(profile.size) : ''}
         </Td>
         <AsyncProfileAction
-          id={profile.id}
+          id={profile.id ?? ''}
           onDownload={'size' in profile ? onDownload : undefined}
           data-quickstart-id="async-profiles-kebab"
         />

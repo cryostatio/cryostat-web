@@ -72,6 +72,7 @@ const mockRecordingDirectories: RecordingDirectory[] = [
     jvmId: 'jvm-1',
     recordings: [
       {
+        jvmId: 'jvm-1',
         name: 'recording1.jfr',
         downloadUrl: 'http://example.com/recording1.jfr',
         reportUrl: '',
@@ -80,6 +81,7 @@ const mockRecordingDirectories: RecordingDirectory[] = [
         metadata: { labels: [] },
       },
       {
+        jvmId: 'jvm-1',
         name: 'recording2.jfr',
         downloadUrl: 'http://example.com/recording2.jfr',
         reportUrl: '',
@@ -94,6 +96,7 @@ const mockRecordingDirectories: RecordingDirectory[] = [
     jvmId: 'jvm-2',
     recordings: [
       {
+        jvmId: 'jvm-2',
         name: 'recording3.jfr',
         downloadUrl: 'http://example.com/recording3.jfr',
         reportUrl: '',

@@ -50,4 +50,4 @@ export const getTargetFromDirectory = (dir: RecordingDirectory | ThreadDumpDirec
 };
 
 export const latestArchivedTime = (recordings: ArchivedRecording[]): number =>
-  recordings.reduce((max, r) => Math.max(max, r.archivedTime ?? 0), 0);
+  recordings.reduce((max, r) => Math.max(max, r.archivedTime), 0);

@@ -96,12 +96,12 @@ export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps>
         if (typeof aValue === 'number' && typeof bValue === 'number') {
           if (sortBy.direction === 'asc') {
             if (aValue === bValue) {
-              return a.name.localeCompare(b.name);
+              return (a.name ?? '').localeCompare(b.name ?? '');
             }
             return aValue - bValue;
           } else {
             if (aValue === bValue) {
-              return b.name.localeCompare(a.name);
+              return (b.name ?? '').localeCompare(a.name ?? '');
             }
             return bValue - aValue;
           }

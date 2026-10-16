@@ -38,14 +38,15 @@ export const transformAADescription = (result: AnalysisResult): JSX.Element => {
     }
     throw `Unrecognized item: ${s}`;
   };
+  const evaluation = result.evaluation ?? {};
   return (
     <div>
-      {Object.entries(result.evaluation || {}).map(([k, v]) =>
+      {Object.entries(evaluation).map(([k, v]) =>
         v && v.length ? (
           <div key={k}>
             <span>
               <Title headingLevel={'h5'}>{_.capitalize(k)}</Title>
-              {format(result.evaluation[k])}
+              {format(evaluation[k])}
             </span>
             <br />
           </div>

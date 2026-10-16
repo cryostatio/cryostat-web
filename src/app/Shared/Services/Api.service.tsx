@@ -44,6 +44,7 @@ import {
   ProbeTemplate,
   EventProbe,
   Recording,
+  RecordingState,
   EventTemplate,
   ArchivedRecording,
   UPLOADS_SUBDIRECTORY,
@@ -60,10 +61,15 @@ import {
   XMLHttpRequestConfig,
   XMLHttpResponse,
   KeyValue,
-  TargetStub,
-  TargetForTest,
+  TargetReference,
+  TargetCreateRequest,
+  MatchExpressionTestRequest,
+  MatchedExpression,
   Metadata,
+  MetadataBody,
+  MetadataRequest,
   TargetMetadata,
+  TargetMetadataRequest,
   isTargetMetadata,
   MBeanMetricsResponse,
   BuildInfo,
@@ -200,7 +206,7 @@ export class ApiService {
   }
 
   createTarget(
-    target: TargetStub,
+    target: TargetCreateRequest,
     credentials?: { username?: string; password?: string },
     storeCredentials = false,
     dryrun = false,
@@ -231,7 +237,7 @@ export class ApiService {
     );
   }
 
-  deleteTarget(target: TargetStub): Observable<boolean> {
+  deleteTarget(target: TargetReference): Observable<boolean> {
     return this.sendRequest('v4', `targets/${target.id}`, {
       method: 'DELETE',
     }).pipe(
@@ -242,21 +248,21 @@ export class ApiService {
   }
 
   getTargetTriggers(
-    target: TargetStub,
+    target: TargetReference,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<SmartTrigger[]> {
     return this.doGet(`targets/${target.id}/smart_triggers`, 'beta', undefined, suppressNotifications, skipStatusCheck);
   }
 
-  deleteTrigger(uuid: string, target: TargetStub): Observable<boolean> {
+  deleteTrigger(uuid: string, target: TargetReference): Observable<boolean> {
     return this.sendRequest('beta', `targets/${target.id}/smart_triggers/${uuid}`, { method: 'DELETE' }).pipe(
       map((resp) => resp.ok),
       first(),
     );
   }
 
-  addTriggers(definition: SmartTriggerRequest, target: TargetStub): Observable<boolean> {
+  addTriggers(definition: SmartTriggerRequest, target: TargetReference): Observable<boolean> {
     const body = new window.FormData();
     body.append('definition', JSON.stringify([definition]));
     return this.sendRequest('beta', `targets/${target.id}/smart_triggers/`, { method: 'POST', body }).pipe(
@@ -271,20 +277,17 @@ export class ApiService {
     abortSignal?: Observable<void>,
   ): Observable<boolean> {
     const body = new window.FormData();
-    Object.entries(rule).forEach((e) => {
-      if (!e || !e[0] || !e[1]) {
-        return;
-      }
-      if (e[0] === 'metadata') {
-        const labels = {};
-        e[1].labels.forEach((kv: KeyValue) => {
-          labels[kv.key] = kv.value;
-        });
-        body.append(e[0], JSON.stringify({ labels }));
-      } else {
-        body.append(e[0], e[1]);
-      }
-    });
+    body.append('name', rule.name);
+    body.append('description', rule.description);
+    body.append('matchExpression', rule.matchExpression);
+    body.append('enabled', String(rule.enabled));
+    body.append('eventSpecifier', rule.eventSpecifier);
+    body.append('archivalPeriodSeconds', String(rule.archivalPeriodSeconds));
+    body.append('initialDelaySeconds', String(rule.initialDelaySeconds));
+    body.append('preservedArchives', String(rule.preservedArchives));
+    body.append('maxAgeSeconds', String(rule.maxAgeSeconds));
+    body.append('maxSizeBytes', String(rule.maxSizeBytes));
+    body.append('metadata', JSON.stringify({ labels: this.transformLabelsToObject(rule.metadata.labels) }));
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
     return this.sendUploadRequest('v4', 'rules', 'Rule Upload Failed', body, onUploadProgress, abortSignal).pipe(
       map((resp) => resp.ok),
@@ -330,7 +333,7 @@ export class ApiService {
               body: JSON.stringify({
                 ...rule,
                 metadata: {
-                  labels: this.transformLabelsToObject(rule?.metadata?.labels ?? []),
+                  labels: this.transformLabelsToObject(rule.metadata.labels),
                 },
               }),
               headers,
@@ -553,12 +556,12 @@ export class ApiService {
     );
   }
 
-  // FIXME remove this, all API endpoints that allow us to send labels in the request body should accept it in as-is JSON form
   stringifyRecordingLabels(labels: KeyValue | KeyValue[]): string {
     return JSON.stringify(labels).replace(/"([^"]+)":/g, '$1:');
   }
 
-  // FIXME remove this, all API endpoints that allow us to send labels in the request body should accept it in as-is JSON form
+  // Request bodies take labels as a flat string-to-string map rather than the KeyValue array form
+  // used in responses
   transformAndStringifyToRawLabels(labels: KeyValue[]): string {
     const rawLabels = {};
     for (const label of labels) {
@@ -567,7 +570,7 @@ export class ApiService {
     return JSON.stringify(rawLabels);
   }
 
-  transformMetadataToObject(metadata: Metadata | TargetMetadata): object {
+  transformMetadataToObject(metadata: Metadata | TargetMetadata): MetadataRequest | TargetMetadataRequest {
     if (isTargetMetadata(metadata)) {
       return {
         labels: this.transformLabelsToObject(metadata.labels),
@@ -583,7 +586,7 @@ export class ApiService {
     }
   }
 
-  transformLabelsToObject(labels: KeyValue[]): object {
+  transformLabelsToObject(labels: KeyValue[]): MetadataBody['labels'] {
     const out = {};
     for (const label of labels) {
       out[label.key] = label.value;
@@ -975,7 +978,7 @@ export class ApiService {
   }
 
   getActiveProbesForTarget(
-    target: TargetStub,
+    target: TargetReference,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<EventProbe[]> {
@@ -1080,7 +1083,7 @@ export class ApiService {
   }
 
   getCurrentReportForTarget(
-    target: TargetStub | TargetStub[],
+    target: TargetReference | TargetReference[],
     aggregateOnly = false,
     reportFilter = {},
   ): Observable<AggregateReport> {
@@ -1229,22 +1232,24 @@ export class ApiService {
 
   downloadTemplate(template: EventTemplate): void {
     let url: Observable<string> | undefined;
-    switch (template.type) {
+    const type = template.type;
+    const name = template.name!;
+    switch (type) {
       case 'TARGET':
         url = this.target.target().pipe(
           filter((t) => !!t),
           first(),
           map(
             (target) =>
-              `/api/v4/targets/${target!.id}/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
+              `/api/v4/targets/${target!.id}/event_templates/${encodeURIComponent(type)}/${encodeURIComponent(name)}`,
           ),
           concatMap((resourceUrl) => this.ctx.url(resourceUrl)),
         );
         break;
       default:
-        url = of(
-          `/api/v4/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
-        ).pipe(concatMap((u) => this.ctx.url(u)));
+        url = of(`/api/v4/event_templates/${encodeURIComponent(type!)}/${encodeURIComponent(name)}`).pipe(
+          concatMap((u) => this.ctx.url(u)),
+        );
         break;
     }
     if (!url) {
@@ -1701,12 +1706,13 @@ export class ApiService {
     });
   }
 
-  // Filter targets that the expression matches
+  // Filter targets that the expression matches.
   matchTargetsWithExpr(matchExpression: string, targets: Target[]): Observable<Target[]> {
-    const body = JSON.stringify({
+    const requestData: MatchExpressionTestRequest = {
       matchExpression,
-      targets: targets.map((t) => this.transformTarget(t)),
-    });
+      targetIds: targets.map((t) => t.id!),
+    };
+    const body = JSON.stringify(requestData);
     return this.ctx
       .headers({
         'Content-Type': 'application/json',
@@ -1728,7 +1734,7 @@ export class ApiService {
         ),
         first(),
         concatMap((resp: Response) => resp.json()),
-        map((r) => r.targets),
+        map((r: MatchedExpression) => r.targets),
       );
   }
 
@@ -1776,7 +1782,7 @@ export class ApiService {
     );
   }
 
-  targetRecordingRemoteIdByOrigin(target: TargetStub, origin: string): Observable<number | undefined> {
+  targetRecordingRemoteIdByOrigin(target: TargetReference, origin: string): Observable<number | undefined> {
     return this.graphql<any>(
       `
         query ActiveRecordingIdForRecordingByOriginLabel($id: BigInteger!) {
@@ -1809,7 +1815,10 @@ export class ApiService {
     );
   }
 
-  targetHasJFRMetricsRecording(target: TargetStub, filter: ActiveRecordingsFilterInput = {}): Observable<boolean> {
+  targetHasJFRMetricsRecording(
+    target: TargetReference,
+    filter: { state?: RecordingState; labels?: string[] } = {},
+  ): Observable<boolean> {
     return this.graphql<RecordingCountResponse>(
       `
         query ActiveRecordingsForJFRMetrics($id: BigInteger!, $recordingFilter: ActiveRecordingsFilterInput) {
@@ -1825,7 +1834,7 @@ export class ApiService {
         }`,
       {
         id: target.id!,
-        recordingFilter: filter,
+        recordingFilter: filter as ActiveRecordingsFilterInput,
       },
       true,
       true,
@@ -1843,7 +1852,7 @@ export class ApiService {
   }
 
   checkCredentialForTarget(
-    target: TargetStub,
+    target: TargetReference,
     credentials: { username: string; password: string },
   ): Observable<
     | {
@@ -1896,7 +1905,7 @@ export class ApiService {
     );
   }
 
-  getTargetMBeanMetrics(target: TargetStub, queries: string[]): Observable<MBeanMetrics> {
+  getTargetMBeanMetrics(target: TargetReference, queries: string[]): Observable<MBeanMetrics> {
     return this.graphql<MBeanMetricsResponse>(
       `
         query MBeanMXMetricsForTarget($id: BigInteger!) {
@@ -1921,7 +1930,7 @@ export class ApiService {
     );
   }
 
-  getTargetArchivedRecordings(target: TargetStub): Observable<ArchivedRecording[]> {
+  getTargetArchivedRecordings(target: TargetReference): Observable<ArchivedRecording[]> {
     return this.graphql<any>(
       `
         query ArchivedRecordingsForTarget($id: BigInteger!) {
@@ -1951,7 +1960,7 @@ export class ApiService {
     ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []));
   }
 
-  getTargetThreadDumps(target: TargetStub): Observable<ThreadDump[]> {
+  getTargetThreadDumps(target: TargetReference): Observable<ThreadDump[]> {
     return this.graphql<any>(
       `
         query ThreadDumpsForTarget($id: BigInteger!) {
@@ -1984,7 +1993,7 @@ export class ApiService {
     ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.threadDumps?.data as ThreadDump[]) ?? []));
   }
 
-  getTargetHeapDumps(target: TargetStub): Observable<HeapDump[]> {
+  getTargetHeapDumps(target: TargetReference): Observable<HeapDump[]> {
     return this.graphql<any>(
       `
         query HeapDumpsForTarget($id: BigInteger!) {
@@ -2018,7 +2027,7 @@ export class ApiService {
   }
 
   getTargetActiveRecordings(
-    target: TargetStub,
+    target: TargetReference,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<ActiveRecording[]> {
@@ -2055,7 +2064,7 @@ export class ApiService {
   }
 
   getTargetEventTemplates(
-    target: TargetStub,
+    target: TargetReference,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<EventTemplate[]> {
@@ -2069,7 +2078,7 @@ export class ApiService {
   }
 
   getTargetEventTypes(
-    target: TargetStub,
+    target: TargetReference,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<EventType[]> {
@@ -2083,17 +2092,11 @@ export class ApiService {
   }
 
   getAsyncProfilerStatus(target: Target, suppressNotifications = false): Observable<AsyncProfilerStatus> {
-    return this.doGet<{
-      currentProfile: {
-        id: string;
-        events: string[];
-        startTime: number;
-        duration: number;
-      };
-      status: string;
-      availableEvents: string[];
-    }>(`targets/${target.id}/async-profiler/status`, 'beta', undefined, suppressNotifications).pipe(
-      map((s) => ({ ...s, status: s['status'] === 'RUNNING' })),
+    return this.doGet<AsyncProfilerStatus>(
+      `targets/${target.id}/async-profiler/status`,
+      'beta',
+      undefined,
+      suppressNotifications,
     );
   }
 
@@ -2105,10 +2108,8 @@ export class ApiService {
     );
   }
 
-  getAsyncProfilerAvailableEvents(target: Target): Observable<string[]> {
-    return this.doGet<string[]>(`targets/${target.id}/async-profiler/status`, 'beta').pipe(
-      map((s) => s['availableEvents']),
-    );
+  getAsyncProfilerAvailableEvents(target: Target): Observable<Record<string, string[]>> {
+    return this.getAsyncProfilerStatus(target).pipe(map((s) => s.availableEvents));
   }
 
   startAsyncProfile(target: Target, events: string[], duration: number) {
@@ -2223,11 +2224,10 @@ export class ApiService {
   }
 
   downloadUnifiedLog(target: Target, log: UnifiedLog): void {
+    const logId = log.logId!;
     this.ctx
-      .url(log.downloadUrl ?? `/api/beta/diagnostics/targets/${target.id}/unified-logs/${log.logId}`)
-      .subscribe((resourceUrl) =>
-        this.downloadFile(resourceUrl, new URLSearchParams({ filename: log.logId }), log.logId),
-      );
+      .url(log.downloadUrl ?? `/api/beta/diagnostics/targets/${target.id}/unified-logs/${logId}`)
+      .subscribe((resourceUrl) => this.downloadFile(resourceUrl, new URLSearchParams({ filename: logId }), logId));
   }
 
   deleteUnifiedLog(target: Target, logId: string): Observable<boolean> {
@@ -2338,24 +2338,6 @@ export class ApiService {
       anchor.click();
       anchor.remove();
     });
-  }
-
-  private transformTarget(target: Target): TargetForTest {
-    const out: TargetForTest = {
-      alias: target.alias,
-      connectUrl: target.connectUrl,
-      labels: {},
-      annotations: { cryostat: {}, platform: {} },
-    };
-    for (const l of target.labels) {
-      out.labels[l.key] = l.value;
-    }
-    for (const s of ['cryostat', 'platform']) {
-      for (const [key, value] of Object.entries(out.annotations[s])) {
-        target.annotations[s][key] = value;
-      }
-    }
-    return out;
   }
 
   sendRequest(
