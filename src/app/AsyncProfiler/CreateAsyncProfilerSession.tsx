@@ -16,7 +16,7 @@
 
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 import { AsyncProfilerEventTreeSelector } from '@app/Shared/Components/AsyncProfilerEventTreeSelector';
-import { NullableTarget } from '@app/Shared/Services/api.types';
+import { NotificationCategory, NullableTarget, RecordingState } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -24,6 +24,8 @@ import { toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionGroup,
+  Alert,
+  AlertVariant,
   Bullseye,
   Button,
   Card,
@@ -37,7 +39,7 @@ import {
 import _ from 'lodash';
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { filter } from 'rxjs';
+import { filter, map } from 'rxjs';
 
 const MILLIS = 1000;
 
@@ -52,6 +54,7 @@ export const CreateAsyncProfilerSession: React.FC = () => {
   const [durationUnits, setDurationUnits] = React.useState(MILLIS);
   const [loading, setLoading] = React.useState(true);
   const [chosenLeafIds, setChosenLeafIds] = React.useState<string[]>([]);
+  const [hasConflictingRecordings, setHasConflictingRecordings] = React.useState(false);
 
   React.useEffect(() => {
     addSubscription(
@@ -61,6 +64,32 @@ export const CreateAsyncProfilerSession: React.FC = () => {
       }),
     );
   }, [addSubscription, context, context.target, setTarget]);
+
+  const checkConflictingRecordings = React.useCallback(() => {
+    if (!target) {
+      setHasConflictingRecordings(false);
+      return;
+    }
+
+    addSubscription(
+      context.api
+        .getTargetActiveRecordings(target)
+        .pipe(map((rs) => rs.some((r) => r.state !== RecordingState.STOPPED)))
+        .subscribe((hasRunningRecordings) => setHasConflictingRecordings(hasRunningRecordings)),
+    );
+  }, [addSubscription, target, context.api]);
+
+  React.useEffect(() => {
+    checkConflictingRecordings();
+  }, [checkConflictingRecordings]);
+
+  React.useEffect(() => {
+    if (!target) return;
+
+    [NotificationCategory.ActiveRecordingCreated, NotificationCategory.ActiveRecordingStopped].forEach((cat) => {
+      addSubscription(context.notificationChannel.messages(cat).subscribe(() => checkConflictingRecordings()));
+    });
+  }, [addSubscription, target, context.notificationChannel, checkConflictingRecordings]);
 
   const exitForm = React.useCallback(() => navigate(toPath('/async-profiler')), [navigate]);
 
@@ -96,11 +125,21 @@ export const CreateAsyncProfilerSession: React.FC = () => {
               <Content>
                 <Content component={ContentVariants.p}>{t('CreateAsyncProfilerSession.DESCRIPTION')}</Content>
               </Content>
+              {hasConflictingRecordings && (
+                <Alert
+                  isInline
+                  variant={AlertVariant.warning}
+                  title={t('CreateAsyncProfilerSession.CONFLICT_WARNING_TITLE')}
+                >
+                  {t('CreateAsyncProfilerSession.CONFLICT_WARNING_MESSAGE')}
+                </Alert>
+              )}
               <FormGroup label={t('CreateAsyncProfilerSession.EVENTS')} fieldId="events" isRequired>
                 <AsyncProfilerEventTreeSelector
                   target={target}
                   chosenLeafIds={chosenLeafIds}
                   onChosenLeafIdsChange={setChosenLeafIds}
+                  isDisabled={hasConflictingRecordings}
                 />
               </FormGroup>
               <FormGroup label={t('CreateAsyncProfilerSession.DURATION')} fieldId="duration" isRequired>
@@ -113,7 +152,11 @@ export const CreateAsyncProfilerSession: React.FC = () => {
                 />
               </FormGroup>
               <ActionGroup>
-                <Button variant="primary" onClick={handleSubmit} isDisabled={!chosenLeafIds.length || duration < 1}>
+                <Button
+                  variant="primary"
+                  onClick={handleSubmit}
+                  isDisabled={!chosenLeafIds.length || duration < 1 || hasConflictingRecordings}
+                >
                   {t('CREATE')}
                 </Button>
                 <Button variant="secondary" onClick={exitForm}>
