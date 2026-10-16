@@ -110,7 +110,9 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
   const [asprofSupported, setAsprofSupported] = React.useState(false);
   const [asprofConflictingRecordings, setAsprofConflictingRecordings] = React.useState(false);
   const [checkingAsprofConflicts, setCheckingAsprofConflicts] = React.useState(false);
+  const [optionsLoading, setOptionsLoading] = React.useState(false);
   const asprofCheckIdRef = React.useRef(0);
+  const optionsRequestIdRef = React.useRef(0);
 
   const exitForm = useExitForm(onExit);
 
@@ -327,6 +329,8 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
         return;
       }
       setTarget(t);
+      const currentRequestId = ++optionsRequestIdRef.current;
+      setOptionsLoading(true);
       addSubscription(
         forkJoin({
           templates: context.api.getTargetEventTemplates(t),
@@ -334,6 +338,10 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
           asprofSupported: context.api.isAsyncProfilerSupported(t),
         }).subscribe({
           next: ({ templates, recordingOptions, asprofSupported: supported }) => {
+            if (currentRequestId !== optionsRequestIdRef.current) {
+              return;
+            }
+            setOptionsLoading(false);
             const canUseAsprof = t.agent && supported;
             setErrorMessage('');
             setTemplates(templates);
@@ -352,6 +360,10 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
             setAdvancedRecordingOptions(recordingOptions);
           },
           error: (error) => {
+            if (currentRequestId !== optionsRequestIdRef.current) {
+              return;
+            }
+            setOptionsLoading(false);
             setErrorMessage(error.message);
             setTemplates([]);
             setAsprofSupported(false);
@@ -371,9 +383,11 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
       !formData.template?.name ||
       !formData.template?.type ||
       formData.labelsValid !== ValidatedOptions.success ||
-      (formData.asprofEnabled && formData.asprofEvents.length === 0)
+      (formData.asprofEnabled && formData.asprofEvents.length === 0) ||
+      (formData.asprofEnabled && checkingAsprofConflicts) ||
+      optionsLoading
     );
-  }, [formData]);
+  }, [formData, checkingAsprofConflicts, optionsLoading]);
 
   const hasReservedLabels = React.useMemo(
     () =>
@@ -408,6 +422,8 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
   React.useEffect(() => {
     addSubscription(
       context.target.authFailure().subscribe(() => {
+        optionsRequestIdRef.current++;
+        setOptionsLoading(false);
         setErrorMessage(authFailMessage);
         setTemplates([]);
         setAsprofSupported(false);
