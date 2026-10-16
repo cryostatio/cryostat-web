@@ -109,6 +109,8 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
   const [target, setTarget] = React.useState<NullableTarget>(undefined);
   const [asprofSupported, setAsprofSupported] = React.useState(false);
   const [asprofConflictingRecordings, setAsprofConflictingRecordings] = React.useState(false);
+  const [checkingAsprofConflicts, setCheckingAsprofConflicts] = React.useState(false);
+  const asprofCheckIdRef = React.useRef(0);
 
   const exitForm = useExitForm(onExit);
 
@@ -282,6 +284,9 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
     if (nameValid !== ValidatedOptions.success) {
       notificationMessages.push(t('CustomRecordingForm.RECORDING_NAME_INVALID', { name }));
     }
+    if (asprofEnabled && asprofConflictingRecordings) {
+      notificationMessages.push(t('CustomRecordingForm.ASYNC_PROFILER_CONFLICTING_RECORDINGS'));
+    }
 
     if (notificationMessages.length > 0) {
       const message = notificationMessages.join('. ').trim() + '.';
@@ -306,7 +311,15 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
       asprofEvents: asprofEnabled ? asprofEvents : undefined,
     };
     handleCreateRecording(recordingAttributes);
-  }, [t, eventSpecifierString, formData, autoanalyze, notifications, handleCreateRecording]);
+  }, [
+    t,
+    eventSpecifierString,
+    formData,
+    autoanalyze,
+    notifications,
+    handleCreateRecording,
+    asprofConflictingRecordings,
+  ]);
 
   const refreshFormOptions = React.useCallback(
     (t: Target) => {
@@ -459,14 +472,22 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
   const checkAsprofConflictingRecordings = React.useCallback(() => {
     if (!target) {
       setAsprofConflictingRecordings(false);
+      setCheckingAsprofConflicts(false);
       return;
     }
 
+    const currentCheckId = ++asprofCheckIdRef.current;
+    setCheckingAsprofConflicts(true);
     addSubscription(
       context.api
         .getTargetActiveRecordings(target)
         .pipe(map((rs) => rs.some((r) => r.state !== RecordingState.STOPPED)))
-        .subscribe((hasRunningRecordings) => setAsprofConflictingRecordings(hasRunningRecordings)),
+        .subscribe((hasRunningRecordings) => {
+          if (currentCheckId === asprofCheckIdRef.current) {
+            setAsprofConflictingRecordings(hasRunningRecordings);
+            setCheckingAsprofConflicts(false);
+          }
+        }),
     );
   }, [addSubscription, target, context.api]);
 
@@ -614,7 +635,9 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
               id="recording-asprof-enabled"
               aria-label="Enable async-profiler"
               isChecked={formData.asprofEnabled}
-              isDisabled={loading || !target?.agent || !asprofSupported || asprofConflictingRecordings}
+              isDisabled={
+                loading || !target?.agent || !asprofSupported || asprofConflictingRecordings || checkingAsprofConflicts
+              }
               onChange={handleAsprofEnabledChange}
             />
             <FormHelperText>

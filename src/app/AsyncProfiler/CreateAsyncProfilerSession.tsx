@@ -55,6 +55,8 @@ export const CreateAsyncProfilerSession: React.FC = () => {
   const [loading, setLoading] = React.useState(true);
   const [chosenLeafIds, setChosenLeafIds] = React.useState<string[]>([]);
   const [hasConflictingRecordings, setHasConflictingRecordings] = React.useState(false);
+  const [checkingConflicts, setCheckingConflicts] = React.useState(false);
+  const checkIdRef = React.useRef(0);
 
   React.useEffect(() => {
     addSubscription(
@@ -68,14 +70,22 @@ export const CreateAsyncProfilerSession: React.FC = () => {
   const checkConflictingRecordings = React.useCallback(() => {
     if (!target) {
       setHasConflictingRecordings(false);
+      setCheckingConflicts(false);
       return;
     }
 
+    const currentCheckId = ++checkIdRef.current;
+    setCheckingConflicts(true);
     addSubscription(
       context.api
         .getTargetActiveRecordings(target)
         .pipe(map((rs) => rs.some((r) => r.state !== RecordingState.STOPPED)))
-        .subscribe((hasRunningRecordings) => setHasConflictingRecordings(hasRunningRecordings)),
+        .subscribe((hasRunningRecordings) => {
+          if (currentCheckId === checkIdRef.current) {
+            setHasConflictingRecordings(hasRunningRecordings);
+            setCheckingConflicts(false);
+          }
+        }),
     );
   }, [addSubscription, target, context.api]);
 
@@ -155,7 +165,7 @@ export const CreateAsyncProfilerSession: React.FC = () => {
                 <Button
                   variant="primary"
                   onClick={handleSubmit}
-                  isDisabled={!chosenLeafIds.length || duration < 1 || hasConflictingRecordings}
+                  isDisabled={!chosenLeafIds.length || duration < 1 || hasConflictingRecordings || checkingConflicts}
                 >
                   {t('CREATE')}
                 </Button>
