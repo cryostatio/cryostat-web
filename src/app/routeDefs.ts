@@ -116,12 +116,6 @@ export const flightRecorderRouteDefs: IRouteMeta[] = [
     navGroup: FLIGHT_RECORDER,
     navSubgroup: CAPTURE,
     featureLevel: FeatureLevel.BETA,
-    children: [
-      {
-        path: toPath('/async-profiler/create'),
-        title: 'Create Async Profiler session',
-      },
-    ],
   },
   {
     label: 'Archives',
