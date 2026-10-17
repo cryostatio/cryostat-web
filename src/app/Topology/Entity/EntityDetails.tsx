@@ -280,7 +280,7 @@ export const TargetDetails: React.FC<{
 
 const MBeanDetails: React.FC<{
   isExpanded: boolean;
-  targetId: number;
+  targetId: string;
   columnModifier?: React.ComponentProps<typeof DescriptionList>['columnModifier'];
 }> = ({ isExpanded, targetId, columnModifier }) => {
   const context = React.useContext(ServiceContext);
@@ -294,7 +294,7 @@ const MBeanDetails: React.FC<{
         context.api
           .graphql<MBeanMetricsResponse>(
             `
-            query MBeanMXMetricsForTarget($id: BigInteger!) {
+            query MBeanMXMetricsForTarget($id: String!) {
               targetNodes(filter: { targetIds: [$id] }) {
                 target {
                   mbeanMetrics {

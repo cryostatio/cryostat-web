@@ -42,7 +42,7 @@ export type ActiveRecording = {
   /** URL for GET request to retrieve the JFR binary file content of this recording */
   downloadUrl?: Maybe<Scalars['String']['output']>;
   duration: Scalars['BigInteger']['output'];
-  id?: Maybe<Scalars['BigInteger']['output']>;
+  id: Scalars['String']['output'];
   maxAge: Scalars['BigInteger']['output'];
   maxSize: Scalars['BigInteger']['output'];
   metadata: Metadata;
@@ -171,7 +171,7 @@ export type DiscoveryNode = {
   children?: Maybe<Array<Maybe<DiscoveryNode>>>;
   /** Get target nodes that are descendants of this node. That is, get the set of leaf nodes from anywhere below this node's subtree. */
   descendantTargets?: Maybe<Array<Maybe<DiscoveryNode>>>;
-  id?: Maybe<Scalars['BigInteger']['output']>;
+  id: Scalars['String']['output'];
   labels: Array<Maybe<Entry_String_String>>;
   name: Scalars['String']['output'];
   nodeType: Scalars['String']['output'];
@@ -190,16 +190,16 @@ export type DiscoveryNodeFilterInput = {
   alias?: InputMaybe<Scalars['String']['input']>;
   aliases?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   annotations?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  id?: InputMaybe<Scalars['BigInteger']['input']>;
-  ids?: InputMaybe<Array<InputMaybe<Scalars['BigInteger']['input']>>>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  ids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   jvmId?: InputMaybe<Scalars['String']['input']>;
   jvmIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   labels?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   name?: InputMaybe<Scalars['String']['input']>;
   names?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   nodeTypes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  targetId?: InputMaybe<Scalars['BigInteger']['input']>;
-  targetIds?: InputMaybe<Array<InputMaybe<Scalars['BigInteger']['input']>>>;
+  targetId?: InputMaybe<Scalars['String']['input']>;
+  targetIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 export type Entry_String_AnalysisResult = {
@@ -599,7 +599,7 @@ export type Target = {
   doStartRecording?: Maybe<ActiveRecording>;
   /** Retrieve a list of heap dumps belonging to the target */
   heapDumps?: Maybe<HeapDumps>;
-  id?: Maybe<Scalars['BigInteger']['output']>;
+  id: Scalars['String']['output'];
   jvmId?: Maybe<Scalars['String']['output']>;
   labels: Array<Maybe<Entry_String_String>>;
   /** Get live MBean metrics snapshot from the specified Target */

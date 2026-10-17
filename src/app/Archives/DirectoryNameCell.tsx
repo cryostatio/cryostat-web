@@ -16,8 +16,9 @@
 
 import { LineageLabelChain } from '@app/Archives/LineageLabelChain';
 import { EnvironmentNode, TargetNode } from '@app/Shared/Services/api.types';
-import { useTargetLineage } from '@app/utils/hooks/useTargetLineage';
-import { extractFilterableLineagePath } from '@app/utils/targetUtils';
+import { getTargetRepresentation } from '@app/Shared/Services/api.utils';
+import { formatFallbackDisplayName, useTargetLineage } from '@app/utils/hooks/useTargetLineage';
+import { extractFilterableLineagePath, findInnermostTargetNode } from '@app/utils/targetUtils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Button, Content, Skeleton, Split, SplitItem, Stack, StackItem } from '@patternfly/react-core';
 import { InfoCircleIcon } from '@patternfly/react-icons';
@@ -40,17 +41,28 @@ export const DirectoryNameCell: React.FC<DirectoryNameCellProps> = ({
   onInfoClick,
   showInfoButton = true,
 }) => {
-  // Only fetch lineage if not provided (optimization)
-  const shouldFetchLineage = !preFetchedTargetNode && jvmId && jvmId !== 'uploads';
+  const hasPreFetchedTargetNode = preFetchedTargetNode !== undefined;
+  const shouldFetchLineage = !hasPreFetchedTargetNode && jvmId && jvmId !== 'uploads';
   const {
-    displayName,
-    isLoading,
+    displayName: fetchedDisplayName,
+    isLoading: isFetching,
     targetNode: fetchedTargetNode,
   } = useTargetLineage(shouldFetchLineage ? jvmId : '', connectUrl, alias);
   const { t } = useCryostatTranslation();
 
   // Use pre-fetched lineage root if available, otherwise use fetched lineage
-  const lineageRoot = preFetchedTargetNode || fetchedTargetNode;
+  const lineageRoot = hasPreFetchedTargetNode ? preFetchedTargetNode : fetchedTargetNode;
+  const isLoading = hasPreFetchedTargetNode ? false : isFetching;
+
+  const displayName = React.useMemo(() => {
+    if (!hasPreFetchedTargetNode) {
+      return fetchedDisplayName;
+    }
+    const target = preFetchedTargetNode ? findInnermostTargetNode(preFetchedTargetNode) : undefined;
+    return target?.target
+      ? getTargetRepresentation(target.target)
+      : formatFallbackDisplayName(connectUrl, jvmId, alias);
+  }, [hasPreFetchedTargetNode, preFetchedTargetNode, fetchedDisplayName, alias, connectUrl, jvmId]);
 
   // Extract lineage path from lineage root if available
   const lineagePath = React.useMemo(() => {

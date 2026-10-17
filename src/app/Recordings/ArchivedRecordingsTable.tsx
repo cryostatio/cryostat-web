@@ -496,7 +496,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
           filteredRecordings.forEach((r: ArchivedRecording) => {
             if (checkedIndices.includes(hashCode(r.name))) {
               context.reports.delete(r);
-              tasks.push(context.api.deleteArchivedRecording(t.connectUrl, r.name).pipe(first()));
+              tasks.push(context.api.deleteArchivedRecording(t.jvmId!, r.name).pipe(first()));
             }
           });
           addSubscription(

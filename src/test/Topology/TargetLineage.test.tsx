@@ -25,18 +25,18 @@ import { render } from '../utils';
 const mockJvmId = 'test-jvm-id';
 
 const mockLineageData: EnvironmentNode = {
-  id: 0,
+  id: '0',
   name: 'JDP',
   nodeType: NodeType.REALM,
   labels: [],
   children: [
     {
-      id: 1,
+      id: '1',
       name: 'test-target',
       nodeType: NodeType.JVM,
       labels: [],
       target: {
-        id: 1,
+        id: '1',
         connectUrl: 'service:jmx:rmi:///jndi/rmi://test:9091/jmxrmi',
         alias: 'test-target',
         jvmId: mockJvmId,

@@ -87,11 +87,7 @@ export const Views: React.FC<ViewsProps> = ({ jvmId, filename }) => {
       setSelectedView('recording');
       return;
     }
-    addSubscription(
-      context.api
-        .doGet<ViewList>(`targets/${jvmId}/recordings/${filename}/views`, 'beta')
-        .subscribe((v) => setViewList(v)),
-    );
+    addSubscription(context.api.getRecordingViews(jvmId, filename).subscribe((v) => setViewList(v)));
   }, [jvmId, filename, setResult, setViewList, setSelectedView, addSubscription, context.api]);
 
   const handleExecute = React.useCallback(() => {
@@ -110,7 +106,7 @@ export const Views: React.FC<ViewsProps> = ({ jvmId, filename }) => {
     }
     addSubscription(
       context.api
-        .sendRequest('beta', `targets/${jvmId}/recordings/${filename}/view`, { method: 'GET' }, params)
+        .getRecordingView(jvmId, filename, params)
         .pipe(concatMap((r) => r.text()))
         .subscribe({
           next: (v) => {

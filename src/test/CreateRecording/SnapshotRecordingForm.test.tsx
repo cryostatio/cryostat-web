@@ -33,7 +33,7 @@ const mockTarget = {
   annotations: { cryostat: [], platform: [] },
 };
 const mockRecording: ActiveRecording = {
-  id: 100,
+  id: '100',
   state: RecordingState.RUNNING,
   duration: 1010,
   startTime: 9999,
