@@ -1642,17 +1642,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/mock@npm:9.1.17":
-  version: 9.1.17
-  resolution: "@graphql-tools/mock@npm:9.1.17"
+"@graphql-tools/merge@npm:^9.2.8":
+  version: 9.2.8
+  resolution: "@graphql-tools/merge@npm:9.2.8"
   dependencies:
-    "@graphql-tools/schema": "npm:^10.1.4"
-    "@graphql-tools/utils": "npm:^12.0.4"
+    "@graphql-tools/utils": "npm:^12.1.0"
+    tslib: "npm:^2.4.0"
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: 10/f5f45f7c432b7e019c4d4fdf042da790f8833afbae7be17ea25d57de270d257453558b352e25d31916bff5bfd0e4d33f9608af8ad55433edf3c0e8039b3c5f5f
+  languageName: node
+  linkType: hard
+
+"@graphql-tools/mock@npm:9.1.18":
+  version: 9.1.18
+  resolution: "@graphql-tools/mock@npm:9.1.18"
+  dependencies:
+    "@graphql-tools/schema": "npm:^10.1.5"
+    "@graphql-tools/utils": "npm:^12.1.0"
     fast-json-stable-stringify: "npm:^2.1.0"
     tslib: "npm:^2.4.0"
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 10/36858011f2436dbb525c2b287e869d5079a96ab63b23c167d3c747b0a31aa8c8380e35357bc4fc2a564bef9ed00a0a36a059da71742b58efe8e910fda9531b2f
+  checksum: 10/fdca3f19d1fa717d198452b17efc6584f7e83436bf29d116c105424595bcd1f486969959d53e00fa27c691e3301cb0d9c557c8ce32cabb764b36e74137d831cd
   languageName: node
   linkType: hard
 
@@ -1680,16 +1692,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/schema@npm:10.1.4, @graphql-tools/schema@npm:^10.1.3, @graphql-tools/schema@npm:^10.1.4":
-  version: 10.1.4
-  resolution: "@graphql-tools/schema@npm:10.1.4"
+"@graphql-tools/schema@npm:10.1.5, @graphql-tools/schema@npm:^10.1.5":
+  version: 10.1.5
+  resolution: "@graphql-tools/schema@npm:10.1.5"
   dependencies:
-    "@graphql-tools/merge": "npm:^9.2.7"
-    "@graphql-tools/utils": "npm:^12.0.4"
+    "@graphql-tools/merge": "npm:^9.2.8"
+    "@graphql-tools/utils": "npm:^12.1.0"
     tslib: "npm:^2.4.0"
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 10/d75a6b962a5268b3ec3e71dc428eb9ba363bc83ea27bc6234cf370ee9c106d3dc5d4f324e0e401ab902da0357a2280306652df97ec6f53c548120814752a4580
+  checksum: 10/e1186178bfcc585a44d31e0293d58bbea8e3a1f4699f29a7d66bc554432d00f6fbc06be9f63496e9b42f31e2344176a8ff8135cd55405093cf0a58cc80985cd3
   languageName: node
   linkType: hard
 
@@ -1703,6 +1715,19 @@ __metadata:
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
   checksum: 10/a837fa92bed1e0d6335b0e2068451ef15dce91a73b1c48b45b396b254fddb95f03930dc088f45942942d05adb7946d744deab5649a09b1d964d2abf8bc9929fd
+  languageName: node
+  linkType: hard
+
+"@graphql-tools/schema@npm:^10.1.3, @graphql-tools/schema@npm:^10.1.4":
+  version: 10.1.4
+  resolution: "@graphql-tools/schema@npm:10.1.4"
+  dependencies:
+    "@graphql-tools/merge": "npm:^9.2.7"
+    "@graphql-tools/utils": "npm:^12.0.4"
+    tslib: "npm:^2.4.0"
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: 10/d75a6b962a5268b3ec3e71dc428eb9ba363bc83ea27bc6234cf370ee9c106d3dc5d4f324e0e401ab902da0357a2280306652df97ec6f53c548120814752a4580
   languageName: node
   linkType: hard
 
@@ -1767,6 +1792,20 @@ __metadata:
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
   checksum: 10/bee513126376c0b59123c5aef60da6cf5ed67c44d4640b3b406e4122bf55d672250b510a3a82ddc62041a0626a51cdf4c022252b4131a6b2b9e295ce660e4898
+  languageName: node
+  linkType: hard
+
+"@graphql-tools/utils@npm:^12.1.0":
+  version: 12.1.0
+  resolution: "@graphql-tools/utils@npm:12.1.0"
+  dependencies:
+    "@graphql-typed-document-node/core": "npm:^3.1.1"
+    "@whatwg-node/promise-helpers": "npm:^2.0.0"
+    cross-inspect: "npm:1.0.1"
+    tslib: "npm:^2.4.0"
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: 10/337225844f139312e364cef441372503ba0b6240d1a266873852daed83b11d721a809f0ac3b221e645ae67e22e9a8fdbec43a4b02aa8c141608770ba65913c82
   languageName: node
   linkType: hard
 
@@ -7173,8 +7212,8 @@ __metadata:
     "@graphql-codegen/cli": "npm:7.4.6"
     "@graphql-codegen/typescript": "npm:6.1.2"
     "@graphql-codegen/typescript-operations": "npm:6.1.10"
-    "@graphql-tools/mock": "npm:9.1.17"
-    "@graphql-tools/schema": "npm:10.1.4"
+    "@graphql-tools/mock": "npm:9.1.18"
+    "@graphql-tools/schema": "npm:10.1.5"
     "@msw/source": "npm:0.6.1"
     "@mswjs/data": "npm:0.16.2"
     "@patternfly/quickstarts": "npm:6.4.0"
