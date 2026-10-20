@@ -33,12 +33,19 @@ jest.mock('rxjs/webSocket', () => ({
   webSocket: (config: any) => {
     capturedCloseObserver = config.closeObserver;
     const sub = new Subject<any>();
-    // Save the original complete before overriding to avoid infinite recursion.
+    // Save the original complete and unsubscribe before overriding to avoid infinite recursion.
     const originalComplete = sub.complete.bind(sub);
+    const originalUnsubscribe = sub.unsubscribe.bind(sub);
     sub.complete = () => {
       originalComplete();
       // Simulate the browser firing a close event synchronously when the
       // subject is completed, mirroring RxJS WebSocketSubject behaviour.
+      capturedCloseObserver?.next({ code: 4999 } as unknown as CloseEvent);
+    };
+    sub.unsubscribe = () => {
+      originalUnsubscribe();
+      // Simulate the browser firing a close event when unsubscribing,
+      // mirroring RxJS WebSocketSubject behaviour.
       capturedCloseObserver?.next({ code: 4999 } as unknown as CloseEvent);
     };
     return Object.assign(sub, { subscribe: jest.fn() });
