@@ -227,7 +227,10 @@ export class NotificationChannel {
               error: (err: Error) => this.logError('WebSocket error', err),
             });
           },
-          error: (err: Error) => this.logError('Notifications URL configuration', err),
+          error: (err: Error) => {
+            this._connected = false;
+            this.logError('Notifications URL configuration', err);
+          },
         }),
     );
   }
