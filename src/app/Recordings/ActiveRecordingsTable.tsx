@@ -76,7 +76,7 @@ import {
   DrawerPanelBody,
   Tooltip,
 } from '@patternfly/react-core';
-import { EllipsisVIcon, ProcessAutomationIcon, SpinnerIcon } from '@patternfly/react-icons';
+import { EllipsisVIcon, ProcessAutomationIcon } from '@patternfly/react-icons';
 import { SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -733,6 +733,22 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
         ),
         key: 'Create',
       },
+      {
+        default: (
+          <Tooltip content={t('ActiveRecordingsTable.SYNC_TOOLTIP')}>
+            <Button aria-label="sync" onClick={props.handleSync} variant="plain" icon={<ProcessAutomationIcon />} />
+          </Tooltip>
+        ),
+        collapsed: (
+          <OverflowMenuDropdownItem key={'Sync'} isShared onClick={props.handleSync}>
+            {t('SYNC')}
+          </OverflowMenuDropdownItem>
+        ),
+        key: 'Sync',
+      },
+      {
+        isSeparator: true,
+      },
     ];
     if (props.archiveEnabled) {
       arr.push({
@@ -831,21 +847,6 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
         ),
         key: 'Analyze',
       },
-      {
-        default: (
-          <Tooltip content={t('ActiveRecordingsTable.SYNC_TOOLTIP')}>
-            <Button icon={<SpinnerIcon />} variant="secondary" onClick={props.handleSync}>
-              {t('SYNC')}
-            </Button>
-          </Tooltip>
-        ),
-        collapsed: (
-          <OverflowMenuDropdownItem key={'Sync'} isShared onClick={props.handleSync}>
-            {t('SYNC')}
-          </OverflowMenuDropdownItem>
-        ),
-        key: 'Sync',
-      },
     ];
     return arr;
   }, [
@@ -902,9 +903,13 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
             >
               <OverflowMenuContent>
                 <OverflowMenuGroup groupType="button">
-                  {buttons.map((b) => (
-                    <OverflowMenuItem key={b.key}>{b.default}</OverflowMenuItem>
-                  ))}
+                  {buttons.map((b) =>
+                    b.isSeparator ? (
+                      <ToolbarItem variant="separator" className="recording-toolbar-separator" />
+                    ) : (
+                      <OverflowMenuItem key={b.key}>{b.default}</OverflowMenuItem>
+                    ),
+                  )}
                 </OverflowMenuGroup>
               </OverflowMenuContent>
               <OverflowMenuControl>
