@@ -158,6 +158,11 @@ export class NotificationChannel {
               return;
             }
 
+            if (!url) {
+              this.logError('WebSocket URL', new Error('Notification URL is empty or falsey'));
+              return;
+            }
+
             if (this.ws) {
               this.ws.complete();
             }
