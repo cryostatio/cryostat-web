@@ -226,6 +226,7 @@ describe('NotificationChannel.connect — idempotency guard', () => {
     jest.advanceTimersByTime(0);
 
     channel.disconnect();
+    capturedCloseObserver = undefined;
 
     channel.connect();
     jest.advanceTimersByTime(0);
@@ -235,7 +236,6 @@ describe('NotificationChannel.connect — idempotency guard', () => {
 
   it('does not add a connect() pipeline after destroy()', () => {
     channel.destroy();
-    const subscriptionsBefore = (channel as any)._subscriptions;
 
     channel.connect();
     jest.advanceTimersByTime(0);
