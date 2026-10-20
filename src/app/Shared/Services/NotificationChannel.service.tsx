@@ -243,6 +243,7 @@ export class NotificationChannel {
     this.ws?.unsubscribe();
     this.ws = null;
     this._subscriptions.unsubscribe();
+    this.login.setSessionState(SessionState.CREATING_USER_SESSION);
     this._messages.complete();
     this._replayableMessages.complete();
     this._ready.complete();
