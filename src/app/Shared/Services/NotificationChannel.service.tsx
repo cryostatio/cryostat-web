@@ -99,6 +99,9 @@ export class NotificationChannel {
         this.ctx.url('/api/notifications').pipe(
           first(),
           map((u) => {
+            if (!u) {
+              return u;
+            }
             let wsUrl: URL;
             try {
               wsUrl = new URL(u);
