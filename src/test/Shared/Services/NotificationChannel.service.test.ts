@@ -155,16 +155,19 @@ describe('NotificationChannel.destroy', () => {
       expect(capturedCloseObserver).toBeDefined();
     });
 
-    it('should not invoke setSessionState when destroy() closes the WebSocket', () => {
+    it('should invoke setSessionState when destroy() closes the WebSocket', () => {
       const setSessionStateSpy = login.setSessionState as jest.Mock;
       setSessionStateSpy.mockClear();
 
       channel.destroy();
 
-      // destroy() sets _destroyed = true before ws.complete(), which synchronously fires
-      // closeObserver.next via the mock. The guard in closeObserver must prevent
-      // setSessionState from being called for this intentional close.
-      expect(setSessionStateSpy).not.toHaveBeenCalled();
+      // destroy() calls setSessionState directly to reset the session state when a new
+      // channel replaces the old one, ensuring the injected LoginService instance does
+      // not receive stale state from a previous channel.
+      expect(setSessionStateSpy).toHaveBeenCalledWith(SessionState.CREATING_USER_SESSION);
+      // The guard in closeObserver prevents setSessionState from being called again when
+      // the WebSocket close event fires.
+      expect(setSessionStateSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should invoke setSessionState when an unintentional close fires before destroy()', () => {
