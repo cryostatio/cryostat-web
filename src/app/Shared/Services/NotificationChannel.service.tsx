@@ -240,7 +240,7 @@ export class NotificationChannel {
    */
   destroy(): void {
     this._destroyed = true;
-    this.ws?.complete();
+    this.ws?.unsubscribe();
     this.ws = null;
     this._subscriptions.unsubscribe();
     this._messages.complete();
