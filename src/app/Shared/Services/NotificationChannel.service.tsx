@@ -15,7 +15,7 @@
  */
 import { AlertVariant } from '@patternfly/react-core';
 import _ from 'lodash';
-import { BehaviorSubject, combineLatest, Observable, ReplaySubject, Subject, timer } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, ReplaySubject, Subject, Subscription, timer } from 'rxjs';
 import { concatMap, distinctUntilChanged, filter, first, map } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { NotificationMessage, ReadyState, CloseStatus, NotificationCategory } from './api.types';
@@ -30,6 +30,7 @@ export class NotificationChannel {
   private readonly _messages = new Subject<NotificationMessage>();
   private readonly _replayableMessages = new ReplaySubject<NotificationMessage>(undefined, 30_000);
   private readonly _ready = new BehaviorSubject<ReadyState>({ ready: false });
+  private readonly _subscriptions = new Subscription();
 
   constructor(
     private readonly ctx: CryostatContext,
@@ -40,40 +41,46 @@ export class NotificationChannel {
       if (!value || !value.body || !value.variant) {
         return;
       }
-      this.messages(key).subscribe((msg: NotificationMessage) => {
-        if (!value || !value.body || !value.variant) {
-          return;
-        }
-        const message = value.body(msg);
-        this.notifications.notify({
-          title: value.title,
-          message,
-          category: key,
-          variant: value.variant,
-          hidden: value.hidden,
-        });
-      });
+      this._subscriptions.add(
+        this.messages(key).subscribe((msg: NotificationMessage) => {
+          if (!value || !value.body || !value.variant) {
+            return;
+          }
+          const message = value.body(msg);
+          this.notifications.notify({
+            title: value.title,
+            message,
+            category: key,
+            variant: value.variant,
+            hidden: value.hidden,
+          });
+        }),
+      );
     });
 
     // fallback handler for unknown categories of message
-    this._messages
-      .pipe(filter((msg) => !messageKeys.has(msg.meta.category as NotificationCategory)))
-      .subscribe((msg) => {
-        const category = NotificationCategory[msg.meta.category as keyof typeof NotificationCategory];
-        this.notifications.notify({
-          title: msg.meta.category,
-          message: msg.message,
-          category,
-          variant: AlertVariant.success,
-        });
-      });
+    this._subscriptions.add(
+      this._messages
+        .pipe(filter((msg) => !messageKeys.has(msg.meta.category as NotificationCategory)))
+        .subscribe((msg) => {
+          const category = NotificationCategory[msg.meta.category as keyof typeof NotificationCategory];
+          this.notifications.notify({
+            title: msg.meta.category,
+            message: msg.message,
+            category,
+            variant: AlertVariant.success,
+          });
+        }),
+    );
 
-    this.login.loggedOut().subscribe({
-      next: () => {
-        this.ws?.complete();
-      },
-      error: (err: Error) => this.logError('Notifications URL configuration', err),
-    });
+    this._subscriptions.add(
+      this.login.loggedOut().subscribe({
+        next: () => {
+          this.ws?.complete();
+        },
+        error: (err: Error) => this.logError('Notifications URL configuration', err),
+      }),
+    );
   }
 
   connect(): void {
@@ -214,6 +221,21 @@ export class NotificationChannel {
       this.ws.complete();
     }
     this.login.setSessionState(SessionState.CREATING_USER_SESSION);
+  }
+
+  /**
+   * Permanently tears down this channel instance. Unsubscribes all internal subscriptions,
+   * closes the WebSocket connection, and completes the internal message subjects. Call this
+   * when discarding a NotificationChannel instance (e.g. when the owning service context is
+   * replaced) to prevent subscriber accumulation on shared NotificationService singletons.
+   */
+  destroy(): void {
+    this.ws?.complete();
+    this.ws = null;
+    this._subscriptions.unsubscribe();
+    this._messages.complete();
+    this._replayableMessages.complete();
+    this._ready.complete();
   }
 
   isReady(): Observable<ReadyState> {
