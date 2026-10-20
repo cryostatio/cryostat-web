@@ -18,11 +18,32 @@ import { NotificationCategory, NotificationMessage } from '@app/Shared/Services/
 import { LoginService } from '@app/Shared/Services/Login.service';
 import { NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
 import { NotificationService } from '@app/Shared/Services/Notifications.service';
+import { SessionState } from '@app/Shared/Services/service.types';
 import { CryostatContext } from '@app/Shared/Services/Services';
 import { of, Subject } from 'rxjs';
 
 jest.unmock('@app/Shared/Services/NotificationChannel.service');
 jest.mock('@app/Shared/Services/Login.service');
+
+// Mutable state shared between the file-scope mock factory and the tests.
+// Declared at module scope so the hoisted jest.mock() factory can close over it.
+let capturedCloseObserver: { next: (evt: CloseEvent) => void } | undefined;
+
+jest.mock('rxjs/webSocket', () => ({
+  webSocket: (config: any) => {
+    capturedCloseObserver = config.closeObserver;
+    const sub = new Subject<any>();
+    // Save the original complete before overriding to avoid infinite recursion.
+    const originalComplete = sub.complete.bind(sub);
+    sub.complete = () => {
+      originalComplete();
+      // Simulate the browser firing a close event synchronously when the
+      // subject is completed, mirroring RxJS WebSocketSubject behaviour.
+      capturedCloseObserver?.next({ code: 4999 } as unknown as CloseEvent);
+    };
+    return Object.assign(sub, { subscribe: jest.fn() });
+  },
+}));
 
 const mockContext: CryostatContext = {
   url: (path?: string) => of(`./${path ?? ''}`),
@@ -36,6 +57,7 @@ describe('NotificationChannel.destroy', () => {
   let channel: NotificationChannel;
 
   beforeEach(() => {
+    capturedCloseObserver = undefined;
     loggedOut$ = new Subject<void>();
     notifications = new NotificationService();
     login = {
@@ -48,9 +70,10 @@ describe('NotificationChannel.destroy', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+    jest.useRealTimers();
   });
 
-  it('should stop forwarding WebSocket messages to the NotificationService after destroy', () => {
+  it('should stop forwarding known-category WebSocket messages to the NotificationService after destroy', () => {
     const notifySpy = jest.spyOn(notifications, 'notify');
 
     // Use TargetJvmDiscovery, which has a body mapper, with a well-formed message payload.
@@ -69,11 +92,11 @@ describe('NotificationChannel.destroy', () => {
     expect(notifySpy).toHaveBeenCalledTimes(1);
 
     channel.destroy();
-    notifySpy.mockClear();
 
-    // After destroy, the internal subjects are completed and subscriptions are unsubscribed,
-    // so no further notify() calls can be made.
-    expect(notifySpy).not.toHaveBeenCalled();
+    // After destroy, subjects are completed. Pushing to a completed Subject is a no-op,
+    // so no additional notify() calls can happen.
+    (channel as any)._messages.next(testMsg);
+    expect(notifySpy).toHaveBeenCalledTimes(1);
   });
 
   it('should stop forwarding unknown-category messages after destroy', () => {
@@ -88,17 +111,15 @@ describe('NotificationChannel.destroy', () => {
     expect(notifySpy).toHaveBeenCalledTimes(1);
 
     channel.destroy();
-    notifySpy.mockClear();
 
-    expect(notifySpy).not.toHaveBeenCalled();
+    (channel as any)._messages.next(unknownMsg);
+    expect(notifySpy).toHaveBeenCalledTimes(1);
   });
 
   it('should unsubscribe from the loggedOut observable after destroy', () => {
-    // The internal loggedOut subscription should not react after destroy().
     channel.destroy();
 
-    // Completing the ws before destroy already happened; completing loggedOut$ after destroy
-    // should not throw or invoke any channel behaviour.
+    // Emitting on loggedOut$ after destroy should not throw or invoke any channel behaviour.
     expect(() => loggedOut$.next()).not.toThrow();
   });
 
@@ -114,5 +135,46 @@ describe('NotificationChannel.destroy', () => {
       channel.destroy();
       channel.destroy();
     }).not.toThrow();
+  });
+
+  describe('with an active connection', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+
+      // Make getSessionState emit CREATING_USER_SESSION synchronously so the combineLatest
+      // inside connect() can fire once the timer ticks.
+      (login.getSessionState as jest.Mock).mockReturnValue(of(SessionState.CREATING_USER_SESSION));
+      channel = new NotificationChannel(mockContext, notifications, login);
+      channel.connect();
+
+      // Advance the clock past the initial delay (timer(0, 5000)) to make combineLatest
+      // emit its first value and create the WebSocket. advanceTimersByTime(0) ticks past
+      // the zero-delay without draining the repeating 5 s interval.
+      jest.advanceTimersByTime(0);
+
+      expect(capturedCloseObserver).toBeDefined();
+    });
+
+    it('should not invoke setSessionState when destroy() closes the WebSocket', () => {
+      const setSessionStateSpy = login.setSessionState as jest.Mock;
+      setSessionStateSpy.mockClear();
+
+      channel.destroy();
+
+      // destroy() sets _destroyed = true before ws.complete(), which synchronously fires
+      // closeObserver.next via the mock. The guard in closeObserver must prevent
+      // setSessionState from being called for this intentional close.
+      expect(setSessionStateSpy).not.toHaveBeenCalled();
+    });
+
+    it('should invoke setSessionState when an unintentional close fires before destroy()', () => {
+      const setSessionStateSpy = login.setSessionState as jest.Mock;
+      setSessionStateSpy.mockClear();
+
+      // Simulate an external close (code 4999 falls into the default branch → CREATING_USER_SESSION).
+      capturedCloseObserver!.next({ code: 4999 } as unknown as CloseEvent);
+
+      expect(setSessionStateSpy).toHaveBeenCalledWith(SessionState.CREATING_USER_SESSION);
+    });
   });
 });

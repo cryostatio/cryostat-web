@@ -31,6 +31,7 @@ export class NotificationChannel {
   private readonly _replayableMessages = new ReplaySubject<NotificationMessage>(undefined, 30_000);
   private readonly _ready = new BehaviorSubject<ReadyState>({ ready: false });
   private readonly _subscriptions = new Subscription();
+  private _destroyed = false;
 
   constructor(
     private readonly ctx: CryostatContext,
@@ -84,136 +85,143 @@ export class NotificationChannel {
   }
 
   connect(): void {
-    combineLatest([
-      this.login.getSessionState(),
-      this.ctx.url('/api/notifications').pipe(
-        first(),
-        map((u) => {
-          let wsUrl: URL;
-          try {
-            wsUrl = new URL(u);
-          } catch (_) {
-            // wasn't a URL - assume it was a relative path alone, which is OK
-            wsUrl = new URL(window.location.href);
-            wsUrl.pathname = u;
-          }
-          // set the proper protocol for WebSocket connection upgrade
-          wsUrl.protocol = wsUrl.protocol.replace('http', 'ws');
-          return wsUrl.toString();
-        }),
-        concatMap((url) => {
-          // set the instance namespace and name headers as query parameters instead.
-          // This is not used by normal Cryostat Web operation, where the instance is
-          // always the server that is hosting the web instance itself. In the console
-          // plugin case, the <namespace, name> instance selector is normally sent to
-          // the plugin backend by custom HTTP request headers so that the plugin backend
-          // can proxy to the correct Cryostat server instance. We cannot set custom
-          // request headers in the WebSocket connection request, so we set them as query
-          // parameters instead so that the plugin backend can fall back to finding those.
-          return this.ctx.headers().pipe(
-            map((headers) => {
-              const u = URL.parse(url);
-              if (!u) {
-                return url;
-              }
-              const searchParams = new URLSearchParams();
-              if (headers.has('CRYOSTAT-SVC-NS')) {
-                searchParams.append('ns', headers.get('CRYOSTAT-SVC-NS')!);
-              }
-              if (headers.has('CRYOSTAT-SVC-NAME')) {
-                searchParams.append('name', headers.get('CRYOSTAT-SVC-NAME')!);
-              }
-              if (searchParams.size > 0) {
-                if (!u.search) {
-                  u.search = '?';
-                } else {
-                  u.search += '&';
+    this._subscriptions.add(
+      combineLatest([
+        this.login.getSessionState(),
+        this.ctx.url('/api/notifications').pipe(
+          first(),
+          map((u) => {
+            let wsUrl: URL;
+            try {
+              wsUrl = new URL(u);
+            } catch (_) {
+              // wasn't a URL - assume it was a relative path alone, which is OK
+              wsUrl = new URL(window.location.href);
+              wsUrl.pathname = u;
+            }
+            // set the proper protocol for WebSocket connection upgrade
+            wsUrl.protocol = wsUrl.protocol.replace('http', 'ws');
+            return wsUrl.toString();
+          }),
+          concatMap((url) => {
+            // set the instance namespace and name headers as query parameters instead.
+            // This is not used by normal Cryostat Web operation, where the instance is
+            // always the server that is hosting the web instance itself. In the console
+            // plugin case, the <namespace, name> instance selector is normally sent to
+            // the plugin backend by custom HTTP request headers so that the plugin backend
+            // can proxy to the correct Cryostat server instance. We cannot set custom
+            // request headers in the WebSocket connection request, so we set them as query
+            // parameter instead so that the plugin backend can fall back to finding those.
+            return this.ctx.headers().pipe(
+              map((headers) => {
+                const u = URL.parse(url);
+                if (!u) {
+                  return url;
                 }
-                u.search += searchParams.toString();
-              }
-              return u.toString();
-            }),
-          );
-        }),
-      ),
-      timer(0, 5000),
-    ])
-      .pipe(distinctUntilChanged(_.isEqual))
-      .subscribe({
-        next: (parts: string[]) => {
-          const sessionState = parseInt(parts[0]);
-          const url = parts[1];
-
-          if (sessionState !== SessionState.CREATING_USER_SESSION) {
-            return;
-          }
-
-          if (this.ws) {
-            this.ws.complete();
-          }
-
-          this.ws = webSocket({
-            url,
-            protocol: '',
-            openObserver: {
-              next: () => {
-                this._ready.next({ ready: true });
-                this.login.setSessionState(SessionState.USER_SESSION);
-              },
-            },
-            closeObserver: {
-              next: (evt) => {
-                let code: CloseStatus;
-                let msg: string | undefined = undefined;
-                let fn: typeof this.notifications.info;
-                let sessionState: SessionState;
-                switch (evt.code) {
-                  case CloseStatus.LOGGED_OUT:
-                    code = CloseStatus.LOGGED_OUT;
-                    msg = 'Logout success';
-                    fn = this.notifications.info;
-                    sessionState = SessionState.NO_USER_SESSION;
-                    break;
-                  case CloseStatus.PROTOCOL_FAILURE:
-                    code = CloseStatus.PROTOCOL_FAILURE;
-                    msg = 'Authentication failed';
-                    fn = this.notifications.danger;
-                    sessionState = SessionState.NO_USER_SESSION;
-                    break;
-                  case CloseStatus.INTERNAL_ERROR:
-                    code = CloseStatus.INTERNAL_ERROR;
-                    msg = 'Internal server error';
-                    fn = this.notifications.danger;
-                    sessionState = SessionState.CREATING_USER_SESSION;
-                    break;
-                  default:
-                    code = CloseStatus.UNKNOWN;
-                    fn = this.notifications.info;
-                    sessionState = SessionState.CREATING_USER_SESSION;
-                    break;
+                const searchParams = new URLSearchParams();
+                if (headers.has('CRYOSTAT-SVC-NS')) {
+                  searchParams.append('ns', headers.get('CRYOSTAT-SVC-NS')!);
                 }
-                this._ready.next({ ready: false, code });
-                this.login.setSessionState(sessionState);
-                fn.apply(this.notifications, [
-                  'WebSocket connection lost',
-                  msg,
-                  NotificationCategory.WsClientActivity,
-                  fn === this.notifications.info,
-                ]);
-              },
-            },
-          });
+                if (headers.has('CRYOSTAT-SVC-NAME')) {
+                  searchParams.append('name', headers.get('CRYOSTAT-SVC-NAME')!);
+                }
+                if (searchParams.size > 0) {
+                  if (!u.search) {
+                    u.search = '?';
+                  } else {
+                    u.search += '&';
+                  }
+                  u.search += searchParams.toString();
+                }
+                return u.toString();
+              }),
+            );
+          }),
+        ),
+        timer(0, 5000),
+      ])
+        .pipe(distinctUntilChanged(_.isEqual))
+        .subscribe({
+          next: (parts: string[]) => {
+            const sessionState = parseInt(parts[0]);
+            const url = parts[1];
 
-          this.ws.subscribe({
-            next: (v) => {
-              this._messages.next(v);
-              this._replayableMessages.next(v);
-            },
-            error: (err: Error) => this.logError('WebSocket error', err),
-          });
-        },
-        error: (err: Error) => this.logError('Notifications URL configuration', err),
-      });
+            if (sessionState !== SessionState.CREATING_USER_SESSION) {
+              return;
+            }
+
+            if (this.ws) {
+              this.ws.complete();
+            }
+
+            this.ws = webSocket({
+              url,
+              protocol: '',
+              openObserver: {
+                next: () => {
+                  this._ready.next({ ready: true });
+                  this.login.setSessionState(SessionState.USER_SESSION);
+                },
+              },
+              closeObserver: {
+                next: (evt) => {
+                  // Ignore closes that were initiated by destroy() — the channel is being
+                  // discarded and no reconnection or notification should be triggered.
+                  if (this._destroyed) {
+                    return;
+                  }
+                  let code: CloseStatus;
+                  let msg: string | undefined = undefined;
+                  let fn: typeof this.notifications.info;
+                  let sessionState: SessionState;
+                  switch (evt.code) {
+                    case CloseStatus.LOGGED_OUT:
+                      code = CloseStatus.LOGGED_OUT;
+                      msg = 'Logout success';
+                      fn = this.notifications.info;
+                      sessionState = SessionState.NO_USER_SESSION;
+                      break;
+                    case CloseStatus.PROTOCOL_FAILURE:
+                      code = CloseStatus.PROTOCOL_FAILURE;
+                      msg = 'Authentication failed';
+                      fn = this.notifications.danger;
+                      sessionState = SessionState.NO_USER_SESSION;
+                      break;
+                    case CloseStatus.INTERNAL_ERROR:
+                      code = CloseStatus.INTERNAL_ERROR;
+                      msg = 'Internal server error';
+                      fn = this.notifications.danger;
+                      sessionState = SessionState.CREATING_USER_SESSION;
+                      break;
+                    default:
+                      code = CloseStatus.UNKNOWN;
+                      fn = this.notifications.info;
+                      sessionState = SessionState.CREATING_USER_SESSION;
+                      break;
+                  }
+                  this._ready.next({ ready: false, code });
+                  this.login.setSessionState(sessionState);
+                  fn.apply(this.notifications, [
+                    'WebSocket connection lost',
+                    msg,
+                    NotificationCategory.WsClientActivity,
+                    fn === this.notifications.info,
+                  ]);
+                },
+              },
+            });
+
+            this.ws.subscribe({
+              next: (v) => {
+                this._messages.next(v);
+                this._replayableMessages.next(v);
+              },
+              error: (err: Error) => this.logError('WebSocket error', err),
+            });
+          },
+          error: (err: Error) => this.logError('Notifications URL configuration', err),
+        }),
+    );
   }
 
   disconnect(): void {
@@ -224,12 +232,14 @@ export class NotificationChannel {
   }
 
   /**
-   * Permanently tears down this channel instance. Unsubscribes all internal subscriptions,
-   * closes the WebSocket connection, and completes the internal message subjects. Call this
-   * when discarding a NotificationChannel instance (e.g. when the owning service context is
-   * replaced) to prevent subscriber accumulation on shared NotificationService singletons.
+   * Permanently tears down this channel instance. Unsubscribes all internal subscriptions
+   * (including the connect() pipeline), closes the WebSocket connection, and completes the
+   * internal message subjects. Call this when discarding a NotificationChannel instance
+   * (e.g. when the owning service context is replaced) to prevent subscriber accumulation
+   * on shared NotificationService singletons.
    */
   destroy(): void {
+    this._destroyed = true;
     this.ws?.complete();
     this.ws = null;
     this._subscriptions.unsubscribe();
