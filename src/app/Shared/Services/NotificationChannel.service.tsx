@@ -31,6 +31,7 @@ export class NotificationChannel {
   private readonly _replayableMessages = new ReplaySubject<NotificationMessage>(undefined, 30_000);
   private readonly _ready = new BehaviorSubject<ReadyState>({ ready: false });
   private readonly _subscriptions = new Subscription();
+  private _connectSubscription: Subscription | null = null;
   private _destroyed = false;
   private _connected = false;
 
@@ -90,7 +91,9 @@ export class NotificationChannel {
       return;
     }
     this._connected = true;
-    this._subscriptions.add(
+    this._connectSubscription = new Subscription();
+    this._subscriptions.add(this._connectSubscription);
+    this._connectSubscription.add(
       combineLatest([
         this.login.getSessionState(),
         this.ctx.url('/api/notifications').pipe(
@@ -231,6 +234,10 @@ export class NotificationChannel {
 
   disconnect(): void {
     this._connected = false;
+    if (this._connectSubscription) {
+      this._connectSubscription.unsubscribe();
+      this._connectSubscription = null;
+    }
     if (this.ws) {
       this.ws.complete();
     }
