@@ -32,6 +32,7 @@ export class NotificationChannel {
   private readonly _ready = new BehaviorSubject<ReadyState>({ ready: false });
   private readonly _subscriptions = new Subscription();
   private _destroyed = false;
+  private _connected = false;
 
   constructor(
     private readonly ctx: CryostatContext,
@@ -85,6 +86,10 @@ export class NotificationChannel {
   }
 
   connect(): void {
+    if (this._destroyed || this._connected) {
+      return;
+    }
+    this._connected = true;
     this._subscriptions.add(
       combineLatest([
         this.login.getSessionState(),
@@ -225,6 +230,7 @@ export class NotificationChannel {
   }
 
   disconnect(): void {
+    this._connected = false;
     if (this.ws) {
       this.ws.complete();
     }

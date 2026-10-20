@@ -188,3 +188,58 @@ describe('NotificationChannel.destroy', () => {
     });
   });
 });
+
+describe('NotificationChannel.connect — idempotency guard', () => {
+  let login: LoginService;
+  let channel: NotificationChannel;
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    capturedCloseObserver = undefined;
+    login = {
+      loggedOut: () => new Subject<void>().asObservable(),
+      getSessionState: jest.fn().mockReturnValue(of(SessionState.CREATING_USER_SESSION)),
+      setSessionState: jest.fn(),
+    } as unknown as LoginService;
+    channel = new NotificationChannel(mockContext, new NotificationService(), login);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.useRealTimers();
+  });
+
+  it('does not open a second subscription pipeline when connect() is called twice', () => {
+    channel.connect();
+    jest.advanceTimersByTime(0);
+    const firstWs = (channel as any).ws;
+
+    channel.connect();
+    jest.advanceTimersByTime(0);
+    const secondWs = (channel as any).ws;
+
+    expect(firstWs).toBe(secondWs);
+  });
+
+  it('is callable again after disconnect() resets the connected flag', () => {
+    channel.connect();
+    jest.advanceTimersByTime(0);
+
+    channel.disconnect();
+
+    channel.connect();
+    jest.advanceTimersByTime(0);
+
+    expect(capturedCloseObserver).toBeDefined();
+  });
+
+  it('does not add a connect() pipeline after destroy()', () => {
+    channel.destroy();
+    const subscriptionsBefore = (channel as any)._subscriptions;
+
+    channel.connect();
+    jest.advanceTimersByTime(0);
+
+    expect((channel as any).ws).toBeNull();
+  });
+});
