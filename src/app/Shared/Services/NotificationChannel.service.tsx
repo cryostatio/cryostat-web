@@ -234,8 +234,7 @@ export class NotificationChannel {
               },
               error: (err: Error) => {
                 this._connected = false;
-                this._connectSubscription?.unsubscribe();
-                this._connectSubscription = null;
+                this.login.setSessionState(SessionState.CREATING_USER_SESSION);
                 this.logError('WebSocket error', err);
               },
             });
