@@ -232,7 +232,12 @@ export class NotificationChannel {
                 this._messages.next(v);
                 this._replayableMessages.next(v);
               },
-              error: (err: Error) => this.logError('WebSocket error', err),
+              error: (err: Error) => {
+                this._connected = false;
+                this._connectSubscription?.unsubscribe();
+                this._connectSubscription = null;
+                this.logError('WebSocket error', err);
+              },
             });
           },
           error: (err: Error) => {
