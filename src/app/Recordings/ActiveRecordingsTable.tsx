@@ -722,9 +722,11 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
     let arr = [
       {
         default: (
-          <Button variant="primary" onClick={props.handleCreateRecording} data-quickstart-id="recordings-create-btn">
-            {t('CREATE')}
-          </Button>
+          <Tooltip content={t('ActiveRecordingsTable.CREATE_TOOLTIP')}>
+            <Button variant="primary" onClick={props.handleCreateRecording} data-quickstart-id="recordings-create-btn">
+              {t('CREATE')}
+            </Button>
+          </Tooltip>
         ),
         collapsed: (
           <OverflowMenuDropdownItem key={'Create'} isShared onClick={props.handleCreateRecording}>
@@ -736,7 +738,9 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
       {
         default: (
           <Tooltip content={t('ActiveRecordingsTable.SYNC_TOOLTIP')}>
-            <Button aria-label="sync" onClick={props.handleSync} variant="plain" icon={<ProcessAutomationIcon />} />
+            <Button aria-label="sync" onClick={props.handleSync}>
+              <ProcessAutomationIcon />
+            </Button>
           </Tooltip>
         ),
         collapsed: (
@@ -753,15 +757,17 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
     if (props.archiveEnabled) {
       arr.push({
         default: (
-          <Button
-            variant="secondary"
-            onClick={props.handleArchiveRecordings}
-            isDisabled={!props.checkedIndices.length || props.actionLoadings['ARCHIVE']}
-            data-quickstart-id="recordings-archive-btn"
-            {...actionLoadingProps['ARCHIVE']}
-          >
-            {props.actionLoadings['ARCHIVE'] ? t('ARCHIVING') : t('ARCHIVE')}
-          </Button>
+          <Tooltip content={t('ActiveRecordingsTable.ARCHIVE_TOOLTIP')}>
+            <Button
+              variant="secondary"
+              onClick={props.handleArchiveRecordings}
+              isDisabled={!props.checkedIndices.length || props.actionLoadings['ARCHIVE']}
+              data-quickstart-id="recordings-archive-btn"
+              {...actionLoadingProps['ARCHIVE']}
+            >
+              {props.actionLoadings['ARCHIVE'] ? t('ARCHIVING') : t('ARCHIVE')}
+            </Button>
+          </Tooltip>
         ),
         collapsed: (
           <OverflowMenuDropdownItem key={'Archive'} isShared onClick={props.handleArchiveRecordings}>
@@ -775,14 +781,16 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
       ...arr,
       {
         default: (
-          <Button
-            variant="secondary"
-            onClick={props.handleEditLabels}
-            isDisabled={!props.checkedIndices.length}
-            data-quickstart-id="recordings-labels-btn"
-          >
-            {t('EDIT_LABELS')}
-          </Button>
+          <Tooltip content={t('ActiveRecordingsTable.LABEL_TOOLTIP')}>
+            <Button
+              variant="secondary"
+              onClick={props.handleEditLabels}
+              isDisabled={!props.checkedIndices.length}
+              data-quickstart-id="recordings-labels-btn"
+            >
+              {t('EDIT_LABELS')}
+            </Button>
+          </Tooltip>
         ),
         collapsed: (
           <OverflowMenuDropdownItem key={'Edit Labels'} isShared onClick={props.handleEditLabels}>
@@ -793,15 +801,17 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
       },
       {
         default: (
-          <Button
-            variant="tertiary"
-            onClick={props.handleStopRecordings}
-            isDisabled={isStopDisabled}
-            data-quickstart-id="recordings-stop-btn"
-            {...actionLoadingProps['STOP']}
-          >
-            {props.actionLoadings['STOP'] ? t('STOPPING') : t('STOP')}
-          </Button>
+          <Tooltip content={t('ActiveRecordingsTable.STOP_TOOLTIP')}>
+            <Button
+              variant="tertiary"
+              onClick={props.handleStopRecordings}
+              isDisabled={isStopDisabled}
+              data-quickstart-id="recordings-stop-btn"
+              {...actionLoadingProps['STOP']}
+            >
+              {props.actionLoadings['STOP'] ? t('STOPPING') : t('STOP')}
+            </Button>
+          </Tooltip>
         ),
         collapsed: (
           <OverflowMenuDropdownItem
@@ -817,15 +827,17 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
       },
       {
         default: (
-          <Button
-            variant="danger"
-            onClick={handleDeleteButton}
-            isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE']}
-            data-quickstart-id="recordings-delete-btn"
-            {...actionLoadingProps['DELETE']}
-          >
-            {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
-          </Button>
+          <Tooltip content={t('ActiveRecordingsTable.DELETE_TOOLTIP')}>
+            <Button
+              variant="danger"
+              onClick={handleDeleteButton}
+              isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE']}
+              data-quickstart-id="recordings-delete-btn"
+              {...actionLoadingProps['DELETE']}
+            >
+              {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
+            </Button>
+          </Tooltip>
         ),
         collapsed: (
           <OverflowMenuDropdownItem key={'Delete'} isShared onClick={handleDeleteButton}>
@@ -836,9 +848,11 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
       },
       {
         default: (
-          <Button variant="secondary" onClick={props.handleAnalyze} data-quickstart-id="recordings-analyze-btn">
-            {t('ANALYZE')}
-          </Button>
+          <Tooltip content={t('ActiveRecordingsTable.REPORT_TOOLTIP')}>
+            <Button variant="secondary" onClick={props.handleAnalyze} data-quickstart-id="recordings-analyze-btn">
+              {t('ANALYZE')}
+            </Button>
+          </Tooltip>
         ),
         collapsed: (
           <OverflowMenuDropdownItem key={'Analyze'} isShared onClick={props.handleAnalyze}>

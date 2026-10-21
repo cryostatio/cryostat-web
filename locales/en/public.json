@@ -15,6 +15,12 @@
     "VERSION": "Version"
   },
   "ActiveRecordingsTable": {
+    "CREATE_TOOLTIP": "Start a Flight Recording for this target.",
+    "ARCHIVE_TOOLTIP": "Archive selected Flight Recordings.",
+    "LABEL_TOOLTIP": "Add/Remove labels for selected Flight Recordings.",
+    "STOP_TOOLTIP": "Stop selected Flight Recordings.",
+    "DELETE_TOOLTIP": "Delete selected Flight Recordings",
+    "REPORT_TOOLTIP": "Generate an automated analysis report for this target.",
     "SYNC_TOOLTIP": "Reconcile Cryostat's active recording model with the recordings present on the target."
   },
   "AgentLiveProbes": {
