@@ -92,6 +92,7 @@ export class NotificationChannel {
       return;
     }
     this._connected = true;
+    this._connectSubscription?.unsubscribe();
     this._connectSubscription = new Subscription();
     this._subscriptions.add(this._connectSubscription);
     this._connectSubscription.add(
