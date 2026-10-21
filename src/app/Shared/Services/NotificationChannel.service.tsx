@@ -34,6 +34,7 @@ export class NotificationChannel {
   private _connectSubscription: Subscription | null = null;
   private _destroyed = false;
   private _connected = false;
+  private _lastCloseCode: number | null = null;
 
   constructor(
     private readonly ctx: CryostatContext,
@@ -186,6 +187,7 @@ export class NotificationChannel {
                   if (this._destroyed) {
                     return;
                   }
+                  this._lastCloseCode = evt.code;
                   let code: CloseStatus;
                   let msg: string | undefined = undefined;
                   let fn: typeof this.notifications.info;
@@ -234,7 +236,12 @@ export class NotificationChannel {
               },
               error: (err: Error) => {
                 this._connected = false;
-                this.login.setSessionState(SessionState.CREATING_USER_SESSION);
+                if (
+                  this._lastCloseCode !== CloseStatus.LOGGED_OUT &&
+                  this._lastCloseCode !== CloseStatus.PROTOCOL_FAILURE
+                ) {
+                  this.login.setSessionState(SessionState.CREATING_USER_SESSION);
+                }
                 this.logError('WebSocket error', err);
               },
             });
