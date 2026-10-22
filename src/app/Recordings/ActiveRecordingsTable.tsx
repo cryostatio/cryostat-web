@@ -917,9 +917,13 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
             >
               <OverflowMenuContent>
                 <OverflowMenuGroup groupType="button">
-                  {buttons.map((b) =>
+                  {buttons.map((b, index) =>
                     b.isSeparator ? (
-                      <ToolbarItem variant="separator" className="recording-toolbar-separator" />
+                      <ToolbarItem
+                        key={`recordings-actions-separator-${index}`}
+                        variant="separator"
+                        className={`recording-toolbar-separator-${index}`}
+                      />
                     ) : (
                       <OverflowMenuItem key={b.key}>{b.default}</OverflowMenuItem>
                     ),
