@@ -334,6 +334,7 @@ describe('<ActiveRecordingsTable />', () => {
     });
 
     expect(screen.getByText('Create')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'sync' })).toBeInTheDocument();
     expect(screen.getByText('Archive')).toBeInTheDocument();
     expect(screen.getByText('Edit Labels')).toBeInTheDocument();
     expect(screen.getByText('Stop')).toBeInTheDocument();
@@ -527,6 +528,26 @@ describe('<ActiveRecordingsTable />', () => {
 
     expect(grafanaUploadSpy).toHaveBeenCalledTimes(1);
     expect(grafanaUploadSpy).toHaveBeenCalledWith(mockRecording.remoteId);
+  });
+
+  it('syncs Recordings when Sync is clicked', async () => {
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+          },
+        ],
+      },
+      preloadedState: preloadedState,
+    });
+
+    const syncSpy = jest.spyOn(defaultServices.api, 'syncActiveRecordings');
+    await user.click(screen.getByRole('button', { name: 'sync' }));
+
+    expect(syncSpy).toHaveBeenCalledTimes(1);
+    expect(syncSpy).toHaveBeenCalledWith(mockTarget);
   });
 
   it('should show error view if failing to retrieve Recordings', async () => {

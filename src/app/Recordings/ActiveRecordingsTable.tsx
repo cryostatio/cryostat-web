@@ -74,6 +74,7 @@ import {
   DrawerActions,
   DrawerCloseButton,
   DrawerPanelBody,
+  Tooltip,
 } from '@patternfly/react-core';
 import { EllipsisVIcon, ProcessAutomationIcon } from '@patternfly/react-icons';
 import { SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
@@ -81,7 +82,7 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { combineLatest, forkJoin, Observable, of, Subject } from 'rxjs';
-import { concatMap, filter, first } from 'rxjs/operators';
+import { concatMap, filter, finalize, first } from 'rxjs/operators';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
@@ -143,6 +144,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   const location = useLocation();
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
+  const syncInFlight = React.useRef(false);
 
   const [target, setTarget] = React.useState(undefined as NullableTarget);
   const [recordings, setRecordings] = React.useState([] as ActiveRecording[]);
@@ -223,22 +225,64 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
     [setIsLoading, setErrorMessage, setRecordings],
   );
 
-  const refreshRecordingList = React.useCallback(() => {
-    setIsLoading(true);
+  const handleSyncError = React.useCallback(
+    (error: { message: React.SetStateAction<string> }) => {
+      setIsLoading(false);
+      setErrorMessage(error.message);
+    },
+    [setIsLoading, setErrorMessage],
+  );
+
+  const refreshRecordingList = React.useCallback(
+    (onComplete?: () => void) => {
+      setIsLoading(true);
+      addSubscription(
+        context.target
+          .target()
+          .pipe(
+            filter((target) => !!target),
+            concatMap((target: Target) => context.api.getTargetActiveRecordings(target)),
+            first(),
+            finalize(() => onComplete?.()),
+          )
+          .subscribe({
+            next: handleRecordings,
+            error: handleError,
+          }),
+      );
+    },
+    [addSubscription, context.target, context.api, setIsLoading, handleRecordings, handleError],
+  );
+
+  const handleSync = React.useCallback(() => {
+    if (syncInFlight.current) return;
+    syncInFlight.current = true;
+    let refreshStarted = false;
     addSubscription(
       context.target
         .target()
         .pipe(
           filter((target) => !!target),
-          concatMap((target: Target) => context.api.getTargetActiveRecordings(target)),
+          concatMap((target: Target) => context.api.syncActiveRecordings(target)),
           first(),
+          finalize(() => {
+            if (!refreshStarted) syncInFlight.current = false;
+          }),
         )
         .subscribe({
-          next: handleRecordings,
-          error: handleError,
+          next: () => {
+            refreshStarted = true;
+            refreshRecordingList(() => {
+              syncInFlight.current = false;
+            });
+          },
+          error: (error) => {
+            syncInFlight.current = false;
+            handleSyncError(error);
+          },
         }),
     );
-  }, [addSubscription, context.target, context.api, setIsLoading, handleRecordings, handleError]);
+  }, [addSubscription, context.target, context.api, refreshRecordingList, handleSyncError]);
 
   React.useEffect(() => {
     addSubscription(
@@ -501,6 +545,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         archiveEnabled={props.archiveEnabled}
         handleCreateRecording={handleCreateRecording}
         handleArchiveRecordings={handleArchiveRecordings}
+        handleSync={handleSync}
         handleEditLabels={handleEditLabels}
         handleStopRecordings={handleStopRecordings}
         handleDeleteRecordings={handleDeleteRecordings}
@@ -522,6 +567,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
       handleArchiveRecordings,
       handleEditLabels,
       handleStopRecordings,
+      handleSync,
       handleDeleteRecordings,
       handleShowReport,
       actionLoadings,
@@ -632,6 +678,7 @@ export interface ActiveRecordingsToolbarProps {
   archiveEnabled: boolean;
   handleCreateRecording: () => void;
   handleArchiveRecordings: () => void;
+  handleSync: () => void;
   handleEditLabels: () => void;
   handleStopRecordings: () => void;
   handleDeleteRecordings: () => void;
@@ -694,9 +741,11 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
     let arr = [
       {
         default: (
-          <Button variant="primary" onClick={props.handleCreateRecording} data-quickstart-id="recordings-create-btn">
-            {t('CREATE')}
-          </Button>
+          <Tooltip content={t('ActiveRecordingsTable.CREATE_TOOLTIP')}>
+            <Button variant="primary" onClick={props.handleCreateRecording} data-quickstart-id="recordings-create-btn">
+              {t('CREATE')}
+            </Button>
+          </Tooltip>
         ),
         collapsed: (
           <OverflowMenuDropdownItem key={'Create'} isShared onClick={props.handleCreateRecording}>
@@ -705,19 +754,39 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
         ),
         key: 'Create',
       },
+      {
+        default: (
+          <Tooltip content={t('ActiveRecordingsTable.SYNC_TOOLTIP')}>
+            <Button aria-label="sync" onClick={props.handleSync}>
+              <ProcessAutomationIcon />
+            </Button>
+          </Tooltip>
+        ),
+        collapsed: (
+          <OverflowMenuDropdownItem key={'Sync'} isShared onClick={props.handleSync}>
+            {t('SYNC')}
+          </OverflowMenuDropdownItem>
+        ),
+        key: 'Sync',
+      },
+      {
+        isSeparator: true,
+      },
     ];
     if (props.archiveEnabled) {
       arr.push({
         default: (
-          <Button
-            variant="secondary"
-            onClick={props.handleArchiveRecordings}
-            isDisabled={!props.checkedIndices.length || props.actionLoadings['ARCHIVE']}
-            data-quickstart-id="recordings-archive-btn"
-            {...actionLoadingProps['ARCHIVE']}
-          >
-            {props.actionLoadings['ARCHIVE'] ? t('ARCHIVING') : t('ARCHIVE')}
-          </Button>
+          <Tooltip content={t('ActiveRecordingsTable.ARCHIVE_TOOLTIP')}>
+            <Button
+              variant="secondary"
+              onClick={props.handleArchiveRecordings}
+              isDisabled={!props.checkedIndices.length || props.actionLoadings['ARCHIVE']}
+              data-quickstart-id="recordings-archive-btn"
+              {...actionLoadingProps['ARCHIVE']}
+            >
+              {props.actionLoadings['ARCHIVE'] ? t('ARCHIVING') : t('ARCHIVE')}
+            </Button>
+          </Tooltip>
         ),
         collapsed: (
           <OverflowMenuDropdownItem key={'Archive'} isShared onClick={props.handleArchiveRecordings}>
@@ -731,14 +800,16 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
       ...arr,
       {
         default: (
-          <Button
-            variant="secondary"
-            onClick={props.handleEditLabels}
-            isDisabled={!props.checkedIndices.length}
-            data-quickstart-id="recordings-labels-btn"
-          >
-            {t('EDIT_LABELS')}
-          </Button>
+          <Tooltip content={t('ActiveRecordingsTable.LABEL_TOOLTIP')}>
+            <Button
+              variant="secondary"
+              onClick={props.handleEditLabels}
+              isDisabled={!props.checkedIndices.length}
+              data-quickstart-id="recordings-labels-btn"
+            >
+              {t('EDIT_LABELS')}
+            </Button>
+          </Tooltip>
         ),
         collapsed: (
           <OverflowMenuDropdownItem key={'Edit Labels'} isShared onClick={props.handleEditLabels}>
@@ -749,15 +820,17 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
       },
       {
         default: (
-          <Button
-            variant="tertiary"
-            onClick={props.handleStopRecordings}
-            isDisabled={isStopDisabled}
-            data-quickstart-id="recordings-stop-btn"
-            {...actionLoadingProps['STOP']}
-          >
-            {props.actionLoadings['STOP'] ? t('STOPPING') : t('STOP')}
-          </Button>
+          <Tooltip content={t('ActiveRecordingsTable.STOP_TOOLTIP')}>
+            <Button
+              variant="tertiary"
+              onClick={props.handleStopRecordings}
+              isDisabled={isStopDisabled}
+              data-quickstart-id="recordings-stop-btn"
+              {...actionLoadingProps['STOP']}
+            >
+              {props.actionLoadings['STOP'] ? t('STOPPING') : t('STOP')}
+            </Button>
+          </Tooltip>
         ),
         collapsed: (
           <OverflowMenuDropdownItem
@@ -773,15 +846,17 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
       },
       {
         default: (
-          <Button
-            variant="danger"
-            onClick={handleDeleteButton}
-            isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE']}
-            data-quickstart-id="recordings-delete-btn"
-            {...actionLoadingProps['DELETE']}
-          >
-            {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
-          </Button>
+          <Tooltip content={t('ActiveRecordingsTable.DELETE_TOOLTIP')}>
+            <Button
+              variant="danger"
+              onClick={handleDeleteButton}
+              isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE']}
+              data-quickstart-id="recordings-delete-btn"
+              {...actionLoadingProps['DELETE']}
+            >
+              {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
+            </Button>
+          </Tooltip>
         ),
         collapsed: (
           <OverflowMenuDropdownItem key={'Delete'} isShared onClick={handleDeleteButton}>
@@ -792,9 +867,11 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
       },
       {
         default: (
-          <Button variant="secondary" onClick={props.handleAnalyze} data-quickstart-id="recordings-analyze-btn">
-            {t('ANALYZE')}
-          </Button>
+          <Tooltip content={t('ActiveRecordingsTable.REPORT_TOOLTIP')}>
+            <Button variant="secondary" onClick={props.handleAnalyze} data-quickstart-id="recordings-analyze-btn">
+              {t('ANALYZE')}
+            </Button>
+          </Tooltip>
         ),
         collapsed: (
           <OverflowMenuDropdownItem key={'Analyze'} isShared onClick={props.handleAnalyze}>
@@ -814,6 +891,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
     props.handleArchiveRecordings,
     props.handleEditLabels,
     props.handleStopRecordings,
+    props.handleSync,
     props.handleAnalyze,
     props.actionLoadings,
     props.archiveEnabled,
@@ -858,9 +936,17 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
             >
               <OverflowMenuContent>
                 <OverflowMenuGroup groupType="button">
-                  {buttons.map((b) => (
-                    <OverflowMenuItem key={b.key}>{b.default}</OverflowMenuItem>
-                  ))}
+                  {buttons.map((b, index) =>
+                    b.isSeparator ? (
+                      <ToolbarItem
+                        key={`recordings-actions-separator-${index}`}
+                        variant="separator"
+                        className={`recording-toolbar-separator-${index}`}
+                      />
+                    ) : (
+                      <OverflowMenuItem key={b.key}>{b.default}</OverflowMenuItem>
+                    ),
+                  )}
                 </OverflowMenuGroup>
               </OverflowMenuContent>
               <OverflowMenuControl>
