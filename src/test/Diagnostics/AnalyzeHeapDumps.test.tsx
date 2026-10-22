@@ -418,7 +418,7 @@ describe('<HeapDumpAnalysis />', () => {
     });
   });
 
-  it('should render the page correctly', async () => {
+  const setupWithSelectedHeapDump = async () => {
     jest.spyOn(defaultServices.heapDumpReports, 'reportJson').mockReturnValue(of(mockHeapDumpAnalysis));
     const { user } = render({
       routerConfigs: {
@@ -433,136 +433,199 @@ describe('<HeapDumpAnalysis />', () => {
     });
 
     const dropDownArrow = screen.getByRole('button', { name: 'heap dump selector toggle' });
-    expect(dropDownArrow).toBeInTheDocument();
-    expect(dropDownArrow).toBeVisible();
-
     await act(async () => {
       await user.click(dropDownArrow);
     });
 
     const selectMenu = await screen.findByRole('menu');
-    expect(selectMenu).toBeInTheDocument();
-    expect(selectMenu).toBeVisible();
-
     const option = within(selectMenu).getByText(mockHeapDump.heapDumpId);
-    expect(option).toBeInTheDocument();
-    expect(option).toBeVisible();
-
     await act(async () => {
-      await user.click(screen.getByText(mockHeapDump.heapDumpId));
+      await user.click(option);
     });
 
-    // Tab 1 - Statistics
-    expect(screen.getByText('Fundamental Stats')).toBeInTheDocument();
-    expect(screen.getByText('Duplicate String Stats')).toBeInTheDocument();
-    expect(screen.getByText('Object Histogram Stats')).toBeInTheDocument();
-    expect(screen.getByText('Compressible String Stats')).toBeInTheDocument();
-    expect(screen.getByText('Class Loader Instances')).toBeInTheDocument();
-    expect(screen.getByText('Class Loader Classes')).toBeInTheDocument();
+    return { user };
+  };
 
-    // Change Tabs
-    const fieldsTab = screen.getByRole('tab', { name: 'Null Problem Fields' });
-    expect(fieldsTab).toBeInTheDocument();
-    expect(fieldsTab).toBeVisible();
-    await act(async () => {
-      await user.click(fieldsTab);
-    });
-    // Problem Fields
-    ['Class', 'Instances', 'Overhead', 'Problem Type'].map((text) => {
-      const header = screen.getByRole('columnheader', { name: text });
-      expect(header).toBeInTheDocument();
-      expect(header).toBeVisible();
-    });
+  describe('should render the page correctly', () => {
+    it('should render heap dump selector and allow selection', async () => {
+      jest.spyOn(defaultServices.heapDumpReports, 'reportJson').mockReturnValue(of(mockHeapDumpAnalysis));
+      const { user } = render({
+        routerConfigs: {
+          routes: [
+            {
+              path: '/analyze-heap-dumps',
+              element: <HeapDumpAnalysis />,
+            },
+          ],
+        },
+        preloadedState: preloadedState,
+      });
 
-    // Change Tabs
-    const histogramTab = screen.getByRole('tab', { name: 'Object Histogram' });
-    expect(histogramTab).toBeInTheDocument();
-    expect(histogramTab).toBeVisible();
-    await act(async () => {
-      await user.click(histogramTab);
-    });
-    // Object Histogram
-    ['Class', 'Instances', 'Shallow Size', 'Inclusive Size'].map((text) => {
-      const header = screen.getByRole('columnheader', { name: text });
-      expect(header).toBeInTheDocument();
-      expect(header).toBeVisible();
-    });
+      const dropDownArrow = screen.getByRole('button', { name: 'heap dump selector toggle' });
+      expect(dropDownArrow).toBeInTheDocument();
+      expect(dropDownArrow).toBeVisible();
 
-    // Change Tabs
-    const collectionsTab = screen.getByRole('tab', { name: 'Collections' });
-    expect(collectionsTab).toBeInTheDocument();
-    expect(collectionsTab).toBeVisible();
-    await act(async () => {
-      await user.click(collectionsTab);
-    });
-    // Collections
-    ['Class', 'Defining Class', 'Overhead', 'Bad Objects', 'Good Collections'].map((text) => {
-      const header = screen.getByRole('columnheader', { name: text });
-      expect(header).toBeInTheDocument();
-      expect(header).toBeVisible();
+      await act(async () => {
+        await user.click(dropDownArrow);
+      });
+
+      const selectMenu = await screen.findByRole('menu');
+      expect(selectMenu).toBeInTheDocument();
+      expect(selectMenu).toBeVisible();
+
+      const option = within(selectMenu).getByText(mockHeapDump.heapDumpId);
+      expect(option).toBeInTheDocument();
+      expect(option).toBeVisible();
+
+      await act(async () => {
+        await user.click(option);
+      });
+
+      expect(screen.getByText('Fundamental Stats')).toBeInTheDocument();
     });
 
-    // Change Tabs
-    const arraysTab = screen.getByRole('tab', { name: 'Duplicate Arrays' });
-    expect(arraysTab).toBeInTheDocument();
-    expect(arraysTab).toBeVisible();
-    await act(async () => {
-      await user.click(arraysTab);
-    });
-    // Duplicate Arrays
-    ['Class and Field', 'Defining Class', 'Overhead', 'Bad Objects', 'Non Duplicate Arrays'].map((text) => {
-      const header = screen.getByRole('columnheader', { name: text });
-      expect(header).toBeInTheDocument();
-      expect(header).toBeVisible();
+    it('should display statistics tab correctly', async () => {
+      await setupWithSelectedHeapDump();
+
+      expect(screen.getByText('Fundamental Stats')).toBeInTheDocument();
+      expect(screen.getByText('Duplicate String Stats')).toBeInTheDocument();
+      expect(screen.getByText('Object Histogram Stats')).toBeInTheDocument();
+      expect(screen.getByText('Compressible String Stats')).toBeInTheDocument();
+      expect(screen.getByText('Class Loader Instances')).toBeInTheDocument();
+      expect(screen.getByText('Class Loader Classes')).toBeInTheDocument();
     });
 
-    // Change Tabs
-    const objectsTab = screen.getByRole('tab', { name: 'High Size Objects' });
-    expect(objectsTab).toBeInTheDocument();
-    expect(objectsTab).toBeVisible();
-    await act(async () => {
-      await user.click(objectsTab);
-    });
-    // High Size Objects
-    ['Class and Field', 'Defining Class', 'Overhead', 'Bad Objects'].map((text) => {
-      const header = screen.getByRole('columnheader', { name: text });
-      expect(header).toBeInTheDocument();
-      expect(header).toBeVisible();
+    it('should display null problem fields tab correctly', async () => {
+      const { user } = await setupWithSelectedHeapDump();
+
+      const fieldsTab = screen.getByRole('tab', { name: 'Null Problem Fields' });
+      expect(fieldsTab).toBeInTheDocument();
+      expect(fieldsTab).toBeVisible();
+
+      await act(async () => {
+        await user.click(fieldsTab);
+      });
+
+      ['Class', 'Instances', 'Overhead', 'Problem Type'].forEach((text) => {
+        const header = screen.getByRole('columnheader', { name: text });
+        expect(header).toBeInTheDocument();
+        expect(header).toBeVisible();
+      });
     });
 
-    // Change Tabs
-    const stringsTab = screen.getByRole('tab', { name: 'Duplicate Strings' });
-    expect(stringsTab).toBeInTheDocument();
-    expect(stringsTab).toBeVisible();
-    await act(async () => {
-      await user.click(stringsTab);
-    });
-    // Duplicate Strings
-    [
-      'Class and Field',
-      'Defining Class',
-      'Overhead',
-      'Bad Objects',
-      'Backing Char Array Memory',
-      'Non Duplicate Strings',
-    ].map((text) => {
-      const header = screen.getByRole('columnheader', { name: text });
-      expect(header).toBeInTheDocument();
-      expect(header).toBeVisible();
+    it('should display object histogram tab correctly', async () => {
+      const { user } = await setupWithSelectedHeapDump();
+
+      const histogramTab = screen.getByRole('tab', { name: 'Object Histogram' });
+      expect(histogramTab).toBeInTheDocument();
+      expect(histogramTab).toBeVisible();
+
+      await act(async () => {
+        await user.click(histogramTab);
+      });
+
+      ['Class', 'Instances', 'Shallow Size', 'Inclusive Size'].forEach((text) => {
+        const header = screen.getByRole('columnheader', { name: text });
+        expect(header).toBeInTheDocument();
+        expect(header).toBeVisible();
+      });
     });
 
-    // Change Tabs
-    const weakHashMapsTab = screen.getByRole('tab', { name: 'Weak HashMaps' });
-    expect(weakHashMapsTab).toBeInTheDocument();
-    expect(weakHashMapsTab).toBeVisible();
-    await act(async () => {
-      await user.click(weakHashMapsTab);
+    it('should display collections tab correctly', async () => {
+      const { user } = await setupWithSelectedHeapDump();
+
+      const collectionsTab = screen.getByRole('tab', { name: 'Collections' });
+      expect(collectionsTab).toBeInTheDocument();
+      expect(collectionsTab).toBeVisible();
+
+      await act(async () => {
+        await user.click(collectionsTab);
+      });
+
+      ['Class', 'Defining Class', 'Overhead', 'Bad Objects', 'Good Collections'].forEach((text) => {
+        const header = screen.getByRole('columnheader', { name: text });
+        expect(header).toBeInTheDocument();
+        expect(header).toBeVisible();
+      });
     });
-    // Weak HashMaps
-    ['Class and Field', 'Defining Class', 'Overhead', 'Bad Objects'].map((text) => {
-      const header = screen.getByRole('columnheader', { name: text });
-      expect(header).toBeInTheDocument();
-      expect(header).toBeVisible();
+
+    it('should display duplicate arrays tab correctly', async () => {
+      const { user } = await setupWithSelectedHeapDump();
+
+      const arraysTab = screen.getByRole('tab', { name: 'Duplicate Arrays' });
+      expect(arraysTab).toBeInTheDocument();
+      expect(arraysTab).toBeVisible();
+
+      await act(async () => {
+        await user.click(arraysTab);
+      });
+
+      ['Class and Field', 'Defining Class', 'Overhead', 'Bad Objects', 'Non Duplicate Arrays'].forEach((text) => {
+        const header = screen.getByRole('columnheader', { name: text });
+        expect(header).toBeInTheDocument();
+        expect(header).toBeVisible();
+      });
+    });
+
+    it('should display high size objects tab correctly', async () => {
+      const { user } = await setupWithSelectedHeapDump();
+
+      const objectsTab = screen.getByRole('tab', { name: 'High Size Objects' });
+      expect(objectsTab).toBeInTheDocument();
+      expect(objectsTab).toBeVisible();
+
+      await act(async () => {
+        await user.click(objectsTab);
+      });
+
+      ['Class and Field', 'Defining Class', 'Overhead', 'Bad Objects'].forEach((text) => {
+        const header = screen.getByRole('columnheader', { name: text });
+        expect(header).toBeInTheDocument();
+        expect(header).toBeVisible();
+      });
+    });
+
+    it('should display duplicate strings tab correctly', async () => {
+      const { user } = await setupWithSelectedHeapDump();
+
+      const stringsTab = screen.getByRole('tab', { name: 'Duplicate Strings' });
+      expect(stringsTab).toBeInTheDocument();
+      expect(stringsTab).toBeVisible();
+
+      await act(async () => {
+        await user.click(stringsTab);
+      });
+
+      [
+        'Class and Field',
+        'Defining Class',
+        'Overhead',
+        'Bad Objects',
+        'Backing Char Array Memory',
+        'Non Duplicate Strings',
+      ].forEach((text) => {
+        const header = screen.getByRole('columnheader', { name: text });
+        expect(header).toBeInTheDocument();
+        expect(header).toBeVisible();
+      });
+    });
+
+    it('should display weak hash maps tab correctly', async () => {
+      const { user } = await setupWithSelectedHeapDump();
+
+      const weakHashMapsTab = screen.getByRole('tab', { name: 'Weak HashMaps' });
+      expect(weakHashMapsTab).toBeInTheDocument();
+      expect(weakHashMapsTab).toBeVisible();
+
+      await act(async () => {
+        await user.click(weakHashMapsTab);
+      });
+
+      ['Class and Field', 'Defining Class', 'Overhead', 'Bad Objects'].forEach((text) => {
+        const header = screen.getByRole('columnheader', { name: text });
+        expect(header).toBeInTheDocument();
+        expect(header).toBeVisible();
+      });
     });
   });
 });
