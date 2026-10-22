@@ -82,7 +82,7 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { combineLatest, forkJoin, Observable, of, Subject } from 'rxjs';
-import { concatMap, filter, first } from 'rxjs/operators';
+import { concatMap, filter, finalize, first } from 'rxjs/operators';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
@@ -144,6 +144,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   const location = useLocation();
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
+  const syncInFlight = React.useRef(false);
 
   const [target, setTarget] = React.useState(undefined as NullableTarget);
   const [recordings, setRecordings] = React.useState([] as ActiveRecording[]);
@@ -232,24 +233,31 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
     [setIsLoading, setErrorMessage],
   );
 
-  const refreshRecordingList = React.useCallback(() => {
-    setIsLoading(true);
-    addSubscription(
-      context.target
-        .target()
-        .pipe(
-          filter((target) => !!target),
-          concatMap((target: Target) => context.api.getTargetActiveRecordings(target)),
-          first(),
-        )
-        .subscribe({
-          next: handleRecordings,
-          error: handleError,
-        }),
-    );
-  }, [addSubscription, context.target, context.api, setIsLoading, handleRecordings, handleError]);
+  const refreshRecordingList = React.useCallback(
+    (onComplete?: () => void) => {
+      setIsLoading(true);
+      addSubscription(
+        context.target
+          .target()
+          .pipe(
+            filter((target) => !!target),
+            concatMap((target: Target) => context.api.getTargetActiveRecordings(target)),
+            first(),
+            finalize(() => onComplete?.()),
+          )
+          .subscribe({
+            next: handleRecordings,
+            error: handleError,
+          }),
+      );
+    },
+    [addSubscription, context.target, context.api, setIsLoading, handleRecordings, handleError],
+  );
 
   const handleSync = React.useCallback(() => {
+    if (syncInFlight.current) return;
+    syncInFlight.current = true;
+    let refreshStarted = false;
     addSubscription(
       context.target
         .target()
@@ -257,10 +265,21 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
           filter((target) => !!target),
           concatMap((target: Target) => context.api.syncActiveRecordings(target)),
           first(),
+          finalize(() => {
+            if (!refreshStarted) syncInFlight.current = false;
+          }),
         )
         .subscribe({
-          next: refreshRecordingList,
-          error: handleSyncError,
+          next: () => {
+            refreshStarted = true;
+            refreshRecordingList(() => {
+              syncInFlight.current = false;
+            });
+          },
+          error: (error) => {
+            syncInFlight.current = false;
+            handleSyncError(error);
+          },
         }),
     );
   }, [addSubscription, context.target, context.api, refreshRecordingList, handleSyncError]);
