@@ -655,10 +655,10 @@ export const HeapDumpRow: React.FC<HeapDumpRowProps> = ({
             className="thread-dump-table__timestamp"
             tooltip={{
               variant: TimestampTooltipVariant.custom,
-              content: dayjs((heapDump.lastModified ?? 0) * 1000).toISOString(),
+              content: dayjs(heapDump.lastModified * 1000).toISOString(),
             }}
           >
-            {dayjs((heapDump.lastModified ?? 0) * 1000)
+            {dayjs(heapDump.lastModified * 1000)
               .tz(datetimeContext.timeZone.full)
               .format('L LTS z')}
           </Timestamp>
@@ -670,11 +670,11 @@ export const HeapDumpRow: React.FC<HeapDumpRowProps> = ({
               updateFilters: updateFilters,
               labelFilters: labelFilters,
             }}
-            labels={heapDump.metadata?.labels ?? []}
+            labels={heapDump.metadata.labels}
           />
         </Td>
         <Td key={`heap-dump-table-row-${index}_4`} dataLabel={tableColumns[3].title}>
-          {formatBytes(heapDump.size ?? 0)}
+          {formatBytes(heapDump.size)}
         </Td>
         {
           <HeapDumpAction

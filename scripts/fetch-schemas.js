@@ -62,8 +62,8 @@ async function syncSchemas() {
 
   const localCandidates = [
     process.env.CRYOSTAT_SCHEMA_DIR,
-    path.resolve(__dirname, '..', '..', 'cryostat', 'schema'),
-    path.resolve(__dirname, '..', 'schema'),
+    path.resolve(__dirname, '..', 'cryostat', 'schema'), // sibling repo
+    path.resolve(__dirname, '..', '..', '..', 'schema'), // cryostat-web as a submodule in src/main/webui
   ].filter(Boolean);
 
   let localSourceDir = null;

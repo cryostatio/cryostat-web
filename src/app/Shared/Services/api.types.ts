@@ -18,6 +18,14 @@ import { HeapDumpAnalysisResult } from '@app/Diagnostics/Analysis/HeapDumps/type
 import { AlertVariant } from '@patternfly/react-core';
 import _ from 'lodash';
 import { Observable } from 'rxjs';
+import {
+  ActiveRecordingsFilterInput as GqlActiveRecordingsFilterInput,
+  AnalysisResult as GqlAnalysisResult,
+  Evaluation as GqlEvaluation,
+  Report as GqlReport,
+  Suggestion as GqlSuggestion,
+} from 'src/schema/graphql.types';
+import { components, paths } from 'src/schema/openapi.types';
 
 export type ApiVersion = 'unversioned' | 'v4' | 'v4.1' | 'beta';
 
@@ -25,16 +33,9 @@ export type ApiVersion = 'unversioned' | 'v4' | 'v4.1' | 'beta';
 // Common Resources
 // ======================================
 
-export interface BuildInfo {
-  git: {
-    hash: string;
-  };
-}
+export type BuildInfo = components['schemas']['BuildInfo'];
 
-export interface KeyValue {
-  key: string;
-  value: string;
-}
+export type KeyValue = components['schemas']['KeyValue'];
 
 export const isKeyValue = (o: any): o is KeyValue => {
   return typeof o === 'object' && _.isEqual(new Set(['key', 'value']), new Set(Object.getOwnPropertyNames(o)));
@@ -44,20 +45,27 @@ export const keyValueToString = (kv: KeyValue): string => {
   return `${kv.key}=${kv.value}`;
 };
 
-export interface Metadata {
-  labels: KeyValue[];
-}
+export type Metadata = components['schemas']['Metadata'];
 
 export type TargetMetadata = Metadata & {
-  annotations: {
-    cryostat: KeyValue[];
-    platform: KeyValue[];
-  };
+  annotations: components['schemas']['Annotations'];
 };
 
 export function isTargetMetadata(metadata: Metadata | TargetMetadata): metadata is TargetMetadata {
   return (metadata as TargetMetadata).annotations !== undefined;
 }
+
+// Cryostat emits labels and annotations as KeyValue arrays in responses, but accepts them in request
+// bodies as plain string-to-string maps.
+export type MetadataBody = components['schemas']['MetadataBody'];
+
+export type MetadataRequest = components['schemas']['MetadataRequest'];
+
+export type AnnotationsRequest = components['schemas']['AnnotationsRequest'];
+
+export type TargetMetadataRequest = MetadataRequest & {
+  annotations: AnnotationsRequest;
+};
 
 export type SimpleResponse = Pick<Response, 'ok' | 'status'>;
 
@@ -101,34 +109,24 @@ export class XMLHttpError extends Error {
   }
 }
 
-export type TargetStub = Omit<Target, 'agent' | 'jvmId' | 'labels' | 'annotations'>;
+export type TargetReference = Omit<Target, 'agent' | 'jvmId' | 'labels' | 'annotations'>;
 
-export type TargetForTest = Pick<Target, 'alias' | 'connectUrl'> & {
-  labels: object;
-  annotations: { cryostat: object; platform: object };
-};
+// The non-credential subset of the schema's target-creation request body
+// (components['schemas']['TargetStub']); credentials are submitted separately by ApiService#createTarget.
+export type TargetCreateRequest = Pick<components['schemas']['TargetStub'], 'alias' | 'connectUrl'>;
+
+export type MatchExpressionTestRequest = components['schemas']['RequestData'];
+
+export type MatchedExpression = components['schemas']['MatchedExpression'];
 
 // ======================================
 // Health Resources
 // ======================================
-export interface GrafanaDashboardUrlGetResponse {
-  grafanaDashboardUrl: string;
-}
+export type GrafanaDashboardUrlGetResponse = components['schemas']['DashboardUrl'];
 
-export interface GrafanaDatasourceUrlGetResponse {
-  grafanaDatasourceUrl: string;
-}
+export type GrafanaDatasourceUrlGetResponse = components['schemas']['DatasourceUrl'];
 
-export interface HealthGetResponse {
-  cryostatVersion: string;
-  build: BuildInfo;
-  datasourceConfigured: boolean;
-  datasourceAvailable: boolean;
-  dashboardConfigured: boolean;
-  dashboardAvailable: boolean;
-  reportsConfigured: boolean;
-  reportsAvailable: boolean;
-}
+export type HealthGetResponse = components['schemas']['ApplicationHealth'];
 
 // ======================================
 // Auth Resources
@@ -228,163 +226,70 @@ export interface HeapDumpsResponse {
 // ======================================
 // Recording resources
 // ======================================
-export interface RecordingDirectory {
-  connectUrl: string;
-  jvmId: string;
-  recordings: ArchivedRecording[];
-}
+export type RecordingDirectory = components['schemas']['ArchivedRecordingDirectory'];
 
-export enum RecordingState {
-  STOPPED = 'STOPPED',
-  STARTING = 'STARTING',
-  RUNNING = 'RUNNING',
-  STOPPING = 'STOPPING',
-}
+export type RecordingState = components['schemas']['RecordingState'];
 
-export interface AdvancedRecordingOptions {
-  toDisk?: boolean;
-  maxSize?: number;
-  maxAge?: number;
-}
+// A Record (rather than a bare array) so that adding, removing, or renaming a state in the schema
+// causes a compile error here via excess/missing-property checking, instead of silently drifting.
+const RECORDING_STATE_MEMBERS: Record<RecordingState, true> = {
+  NEW: true,
+  DELAYED: true,
+  RUNNING: true,
+  STOPPED: true,
+  CLOSED: true,
+};
+export const RECORDING_STATES = Object.keys(RECORDING_STATE_MEMBERS) as RecordingState[];
+
+// The recording-creation request body, as declared inline on the POST
+// /api/v4/targets/{targetId}/recordings path (not under components['schemas'], so it's referenced
+// via `paths` instead).
+type RecordingCreateForm =
+  paths['/api/v4/targets/{targetId}/recordings']['post']['requestBody']['content']['application/x-www-form-urlencoded'];
+
+export type AdvancedRecordingOptions = Pick<RecordingCreateForm, 'toDisk' | 'maxSize' | 'maxAge'>;
 
 export interface RecordingAttributes {
   name: string;
-  events: string;
-  duration?: number;
-  archiveOnStop?: boolean;
+  events: NonNullable<RecordingCreateForm['events']>;
+  duration?: RecordingCreateForm['duration'];
+  archiveOnStop?: RecordingCreateForm['archiveOnStop'];
   replace?: RecordingReplace;
   advancedOptions?: AdvancedRecordingOptions;
   metadata?: Metadata;
 }
 
-export interface Recording {
-  name: string;
-  downloadUrl: string;
-  reportUrl: string;
-  metadata: Metadata;
-}
+export type Recording = Pick<ActiveRecording, 'name' | 'downloadUrl' | 'reportUrl' | 'metadata'>;
 
-export interface ThreadDumpDirectory {
-  jvmId: string;
-  threadDumps: ThreadDump[];
-}
+export type ThreadDumpDirectory = components['schemas']['ArchivedThreadDumpDirectory'];
 
-export interface ThreadDump {
-  downloadUrl: string;
-  threadDumpId: string;
-  jvmId?: string;
-  lastModified?: number;
-  size: number;
-  metadata?: Metadata;
-}
+export type ThreadDump = components['schemas']['ThreadDump'];
 
-export interface StackFrame {
-  className: string;
-  methodName: string;
-  fileName: string;
-  lineNumber: number;
-  nativeMethod: boolean;
-}
+export type StackFrame = components['schemas']['StackFrame'];
 
-export interface LockInfo {
-  lockId?: string;
-  className?: string;
-  operation?: string;
-  ownerThreadId?: string;
-}
+export type LockInfo = components['schemas']['LockInfo'];
 
-export interface DeadlockInfo {
-  threadName: string;
-  waitingForMonitor: string;
-  waitingForObject: string;
-  waitingForObjectType: string;
-  heldBy: string;
-  stackTrace: StackFrame[];
-  locks: LockInfo[];
-}
+// A single deadlocked thread's participation in a deadlock cycle.
+export type DeadlockedThread = components['schemas']['DeadlockedThread'];
 
-export interface ThreadInfo {
-  name: string;
-  threadId?: number;
-  nativeId?: number;
-  priority?: number;
-  daemon?: boolean;
-  state?: string;
-  cpuTimeSec: number;
-  elapsedTimeSec: number;
-  stackTrace?: StackFrame[];
-  locks?: LockInfo[];
-  additionalInfo?: string;
-  carryingVirtualThreadId?: number;
-}
+// A detected deadlock cycle; the threads participating in it are in `threads`.
+export type DeadlockInfo = components['schemas']['DeadlockInfo'];
 
-export interface AnalysisFinding {
-  resultName: string;
-  explanation: string;
-  score: number;
-}
+export type ThreadInfo = components['schemas']['ThreadInfo'];
 
-export interface ThreadDumpAnalysisResult {
-  aggregateThreadStates: { data: string; count: number }[];
-  aggregateLockInfo: { data: string; count: number }[];
-  aggregateStackTraces: { data: StackFrame[]; count: number }[];
-  runningMethods: { data: string; count: number }[];
-  deadlockInfos: DeadlockInfo[];
-  threads: ThreadInfo[];
-  specificFindings: AnalysisFinding[];
-  jniInfo: {
-    globalRefs?: number;
-    weakRefs?: number;
-    globalRefsMemory?: number;
-    weakRefsMemory?: number;
-  };
-  jvmInfo: string;
-}
+export type AnalysisFinding = components['schemas']['ThreadDumpAnalysisResult'];
 
-export interface ArchivedRecording extends Recording {
-  jvmId?: string;
-  archivedTime: number;
-  size: number;
-}
+export type ThreadDumpAnalysisResult = components['schemas']['ThreadDumpAnalysis'];
 
-export interface ActiveRecording extends Recording {
-  id: number;
-  state: RecordingState;
-  duration: number; // In miliseconds
-  startTime: number;
-  archiveOnStop: boolean;
-  continuous: boolean;
-  toDisk: boolean;
-  maxSize: number;
-  maxAge: number;
-  remoteId: number;
-}
+export type ArchivedRecording = components['schemas']['ArchivedRecording'];
 
-export interface HeapDumpDirectory {
-  jvmId: string;
-  heapDumps: HeapDump[];
-}
+export type ActiveRecording = components['schemas']['LinkedRecordingDescriptor'];
 
-export interface HeapDump {
-  downloadUrl: string;
-  heapDumpId: string;
-  jvmId?: string;
-  lastModified?: number;
-  size: number;
-  metadata?: Metadata;
-}
+export type HeapDumpDirectory = components['schemas']['ArchivedHeapDumpDirectory'];
 
-export interface ActiveRecordingsFilterInput {
-  name?: string;
-  state?: string;
-  continuous?: boolean;
-  toDisk?: boolean;
-  durationMsGreaterThanEqual?: number;
-  durationMsLessThanEqual?: number;
-  startTimeMsBeforeEqual?: number;
-  startTimeMsAfterEqual?: number;
-  labels?: string[] | string;
-}
+export type HeapDump = components['schemas']['HeapDump'];
+
+export type ActiveRecordingsFilterInput = GqlActiveRecordingsFilterInput;
 
 /**
  * New target specific archived recording apis now enforce a non-empty target field
@@ -392,17 +297,7 @@ export interface ActiveRecordingsFilterInput {
  */
 export const UPLOADS_SUBDIRECTORY = 'uploads';
 
-export interface AggregateReport {
-  aggregate?: {
-    count: number;
-    max: number;
-  };
-  data?: {
-    key: string;
-    value: AnalysisResult;
-  }[];
-  lastUpdated?: number;
-}
+export type AggregateReport = GqlReport;
 
 export interface RecordingCountResponse {
   data: {
@@ -449,19 +344,12 @@ export interface HeapDumpCountResponse {
 // ======================================
 // Credential resources
 // ======================================
-export interface MatchedCredential {
-  id: number;
-  matchExpression: string;
-  targets: Target[];
-}
+export type MatchedCredential = components['schemas']['CredentialMatchResult'];
 
 // ======================================
 // Agent-related resources
 // ======================================
-export interface ProbeTemplate {
-  name: string;
-  xml: string;
-}
+export type ProbeTemplate = components['schemas']['ProbeTemplateResponse'];
 
 export interface EventProbe {
   id: string;
@@ -482,20 +370,7 @@ export interface EventProbe {
 // ======================================
 // Rule resources
 // ======================================
-export interface Rule {
-  id?: number;
-  name: string;
-  description: string;
-  matchExpression: string;
-  enabled: boolean;
-  eventSpecifier: string;
-  archivalPeriodSeconds: number;
-  initialDelaySeconds: number;
-  preservedArchives: number;
-  maxAgeSeconds: number;
-  maxSizeBytes: number;
-  metadata: Metadata;
-}
+export type Rule = components['schemas']['Rule'];
 
 // ======================================
 // Smart Triggers Resources
@@ -519,28 +394,13 @@ export interface SmartTriggerRequest {
 // ======================================
 // Template resources
 // ======================================
-export interface OptionDescriptor {
-  name: string;
-  description: string;
-  defaultValue: string;
-}
+export type OptionDescriptor = components['schemas']['SerializableOptionDescriptor'];
 
-export interface EventType {
-  name: string;
-  typeId: string;
-  description: string;
-  category: string[];
-  options: { [key: string]: OptionDescriptor }[];
-}
+export type EventType = components['schemas']['SerializableEventTypeInfo'];
 
-export type TemplateType = 'TARGET' | 'CUSTOM' | 'PRESET';
+export type TemplateType = components['schemas']['TemplateType'];
 
-export interface EventTemplate {
-  name: string;
-  description: string;
-  provider: string;
-  type: TemplateType;
-}
+export type EventTemplate = components['schemas']['Template'];
 
 // ======================================
 // Report resources
@@ -565,25 +425,15 @@ export type GenerationError = Error & {
   messageDetail: Observable<string>;
 };
 
-export interface AnalysisResult {
-  name: string;
-  topic: string;
-  score: number;
-  evaluation: Evaluation;
-}
+// Sourced from the GraphQL schema, not openapi: these are only ever fetched via the
+// AggregateReportsForAllTargets/AggregateReportForTarget GraphQL queries. Only `score` reflects a
+// primitive `double` field on the server (io.cryostat.core.reports.InterruptibleReportGenerator);
+// every other field is a plain object/String with no non-null guarantee.
+export type AnalysisResult = GqlAnalysisResult;
 
-export interface Evaluation {
-  summary: string;
-  explanation: string;
-  solution: string;
-  suggestions: Suggestion[];
-}
+export type Evaluation = GqlEvaluation;
 
-export interface Suggestion {
-  setting: string;
-  name: string;
-  value: string;
-}
+export type Suggestion = GqlSuggestion;
 
 export enum AutomatedAnalysisScore {
   NA_SCORE = -1,
@@ -594,18 +444,7 @@ export enum AutomatedAnalysisScore {
 // ======================================
 // Discovery/Target resources
 // ======================================
-export interface Target {
-  id?: number; // present in responses but we must not include it in requests to create targets
-  jvmId?: string; // present in responses, but we do not need to provide it in requests
-  agent: boolean;
-  connectUrl: string;
-  alias: string;
-  labels: KeyValue[];
-  annotations: {
-    cryostat: KeyValue[];
-    platform: KeyValue[];
-  };
-}
+export type Target = components['schemas']['Target'];
 
 export type NullableTarget = Target | undefined;
 
@@ -636,14 +475,20 @@ export enum NodeType {
   NODE = 'Node', // Default/fallback for unknown
 }
 
+// The schema's DiscoveryNode models a single flexible type (optional `children` and `target` on the
+// same object); the app instead encodes "environment node xor target node" as a discriminated
+// union. `children`/`target` are therefore hand-written below, but `name`/`labels` are picked from
+// the schema so they can't silently drift from the real wire shape.
+type DiscoveryNodeFields = Pick<components['schemas']['DiscoveryNode'], 'name' | 'labels'>;
+
 export interface LineageNode {
-  readonly name: string;
+  readonly name: DiscoveryNodeFields['name'];
   readonly nodeType: NodeType;
 }
 
 interface _AbstractNode extends LineageNode {
   readonly id: number;
-  readonly labels: KeyValue[];
+  readonly labels: DiscoveryNodeFields['labels'];
 }
 
 export interface EnvironmentNode extends _AbstractNode {
@@ -658,50 +503,25 @@ export interface TargetNode extends _AbstractNode {
 // async-profiler resources
 // ======================================
 
-export interface AsyncProfile {
-  id: string;
-  startTime: number;
-  duration: number;
-  size: number;
-}
+export type AsyncProfile = components['schemas']['AsyncProfile'];
 
-export interface AsyncProfilerSession {
-  id: string;
-  events: string[];
-  startTime: number;
-  duration: number;
-}
+export type AsyncProfilerSession = components['schemas']['StartProfileRequest'];
 
-export interface AsyncProfilerStatus {
-  status: boolean;
-  availableEvents: string[];
-  currentProfile?: AsyncProfilerSession;
-}
+export type ProfilerStatus = components['schemas']['ProfilerStatus'];
+
+export type AsyncProfilerStatus = components['schemas']['AsyncProfilerStatus'];
 
 // ======================================
 // Unified Logging resources
 // ======================================
 
-export interface UnifiedLoggingStatus {
-  enabled: boolean;
-  logFilePath?: string;
-  what?: string;
-  decorators?: string;
-}
+export type UnifiedLoggingStatus = components['schemas']['UnifiedLogStatus'];
 
-export interface UnifiedLog {
-  logId: string;
-  jvmId: string;
-  size: number;
-  lastModified?: number;
-  downloadUrl?: string;
-  metadata?: Metadata;
-}
+// `downloadUrl` and `logId` are null for a live logging session with no archived artifact yet;
+// they are only populated when listing or pulling archived logs.
+export type UnifiedLog = components['schemas']['UnifiedLog'];
 
-export interface UnifiedLogDirectory {
-  jvmId: string;
-  logs: UnifiedLog[];
-}
+export type UnifiedLogDirectory = components['schemas']['ArchivedUnifiedLogDirectory'];
 
 // ======================================
 // Notification resources
@@ -820,14 +640,7 @@ export interface NotificationMessageMapper {
 /**
  * Revision information from REVINFO table
  */
-export interface AuditRevision {
-  /** Revision number (primary key) */
-  rev: number;
-  /** Revision timestamp in milliseconds since epoch */
-  revtstmp: number;
-  /** Username of the user who made the change (optional) */
-  username?: string;
-}
+export type AuditRevision = components['schemas']['RevisionSummary'];
 
 /**
  * Revision type enum matching Hibernate Envers values
@@ -873,16 +686,13 @@ export interface AuditRevisionDetail extends AuditRevision {
 /**
  * Query parameters for audit log search
  */
-export interface AuditQueryParams {
-  /** Start of time range (timestamp in milliseconds) */
-  startTime: number;
-  /** End of time range (timestamp in milliseconds) */
-  endTime: number;
-  /** Page number for pagination (optional, 0-based) */
-  page?: number;
-  /** Number of results per page (optional, default 50) */
-  pageSize?: number;
-}
+// The audit revisions query parameters, as declared inline on the GET /api/beta/audit/revisions
+// path (not under components['schemas'], so it's referenced via `paths` instead). The schema marks
+// startTime/endTime optional since they're plain query params, but this app always supplies them.
+type AuditRevisionsQuery = NonNullable<paths['/api/beta/audit/revisions']['get']['parameters']['query']>;
+
+export type AuditQueryParams = Required<Pick<AuditRevisionsQuery, 'startTime' | 'endTime'>> &
+  Pick<AuditRevisionsQuery, 'page' | 'pageSize'>;
 
 /**
  * Response from audit revisions query

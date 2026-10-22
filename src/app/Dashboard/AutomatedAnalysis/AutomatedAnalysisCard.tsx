@@ -136,7 +136,9 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
           }),
           tap(() => setIsLoading(false)),
         )
-        .subscribe((ar: AggregateReport) => setResults(ar?.aggregate?.count ? ar.data!.map((k) => k.value) : [])),
+        .subscribe((ar: AggregateReport) =>
+          setResults(ar?.aggregate?.count ? ar.data.flatMap((k) => (k?.value ? [k.value] : [])) : []),
+        ),
     );
   }, [addSubscription, target, setIsLoading, setHasReport, context.api]);
 

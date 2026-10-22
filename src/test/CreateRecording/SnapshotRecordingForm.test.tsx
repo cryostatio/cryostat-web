@@ -16,7 +16,7 @@
 
 import { SnapshotRecordingForm } from '@app/CreateRecording/SnapshotRecordingForm';
 import { authFailMessage } from '@app/ErrorView/types';
-import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
+import { ActiveRecording } from '@app/Shared/Services/api.types';
 import { ServiceContext, Services, defaultServices } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { screen, cleanup, act as doAct } from '@testing-library/react';
@@ -34,7 +34,7 @@ const mockTarget = {
 };
 const mockRecording: ActiveRecording = {
   id: 100,
-  state: RecordingState.RUNNING,
+  state: 'RUNNING',
   duration: 1010,
   startTime: 9999,
   continuous: false,
