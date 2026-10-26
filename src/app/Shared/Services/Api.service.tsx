@@ -461,7 +461,7 @@ export class ApiService {
     );
   }
 
-  syncActiveRecordings(target: TargetStub): Observable<boolean> {
+  syncActiveRecordings(target: Target): Observable<boolean> {
     return this.sendRequest('v4.3', `targets/${target!.id}/recordings_sync`, {
       method: 'POST',
     }).pipe(

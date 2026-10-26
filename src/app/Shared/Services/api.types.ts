@@ -115,6 +115,8 @@ export type TargetReference = Omit<Target, 'agent' | 'jvmId' | 'labels' | 'annot
 // (components['schemas']['TargetStub']); credentials are submitted separately by ApiService#createTarget.
 export type TargetCreateRequest = Pick<components['schemas']['TargetStub'], 'alias' | 'connectUrl'>;
 
+export type TargetStub = components['schemas']['TargetStub'];
+
 export type MatchExpressionTestRequest = components['schemas']['RequestData'];
 
 export type MatchedExpression = components['schemas']['MatchedExpression'];
