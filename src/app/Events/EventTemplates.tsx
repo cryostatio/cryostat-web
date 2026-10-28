@@ -159,7 +159,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
           }
         },
         error: (err) => {
-          setErrorMessage(err);
+          setErrorMessage(err instanceof Error ? err.message : String(err));
         },
       }),
     );

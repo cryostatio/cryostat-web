@@ -883,13 +883,13 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
       {
         default: (
           <Tooltip content={t('ActiveRecordingsTable.SYNC_TOOLTIP')}>
-            <Button aria-label="sync" onClick={props.handleSync}>
+            <Button aria-label="sync" onClick={props.handleSync} isDisabled={!props.writeEnabled}>
               <ProcessAutomationIcon />
             </Button>
           </Tooltip>
         ),
         collapsed: (
-          <OverflowMenuDropdownItem key={'Sync'} isShared onClick={props.handleSync}>
+          <OverflowMenuDropdownItem key={'Sync'} isShared onClick={props.handleSync} isDisabled={!props.writeEnabled}>
             {t('SYNC')}
           </OverflowMenuDropdownItem>
         ),

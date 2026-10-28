@@ -367,6 +367,7 @@ export const Reports: React.FC = () => {
                       page={page}
                       onSetPage={onSetPage}
                       onPerPageSelect={onSetPerPage}
+                      isDisabled={!controlEnabled}
                       perPageOptions={[
                         {
                           title: '1',

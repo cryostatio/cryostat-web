@@ -106,41 +106,58 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
 
   React.useEffect(() => {
     addSubscription(
-      context.api.checkPermission('automatedrules:write').subscribe((v) => {
+      context.api.checkPermission('automatedrules:write').subscribe({
+        next: (v) => {
         if (!v.authorized) {
           setControlEnabled(false);
         }
-      }),
+      },
+        error: () => {
+          setControlEnabled(false);
+        }}),
     );
   }, [addSubscription, context.api, setControlEnabled]);
 
   React.useEffect(() => {
     addSubscription(
-      context.api.checkPermission('matchexpressions:write').subscribe((v) => {
+      context.api.checkPermission('matchexpressions:write').subscribe({
+        next: (v) => {
         if (!v.authorized) {
           setControlEnabled(false);
         }
-      }),
+      },
+        error: () => {
+          setControlEnabled(false)
+        }}),
     );
   }, [addSubscription, context.api, setControlEnabled]);
 
   React.useEffect(() => {
     addSubscription(
-      context.api.checkPermission('matchexpressions:delete').subscribe((v) => {
+      context.api.checkPermission('matchexpressions:delete').subscribe({
+        next: (v) => {
         if (!v.authorized) {
           setDeleteEnabled(false);
         }
-      }),
+      },
+      error: () => {
+        setDeleteEnabled(false);
+      }
+    }),
     );
   }, [addSubscription, context.api, setDeleteEnabled]);
 
   React.useEffect(() => {
     addSubscription(
-      context.api.checkPermission('automatedrules:delete').subscribe((v) => {
+      context.api.checkPermission('automatedrules:delete').subscribe({
+        next: (v) => {
         if (!v.authorized) {
           setDeleteEnabled(false);
         }
-      }),
+      },
+      error: () => {
+        setDeleteEnabled(false);
+      }}),
     );
   }, [addSubscription, context.api, setDeleteEnabled]);
 
@@ -358,10 +375,12 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         {
           title: t('EDIT'),
           onClick: () => handleEditButton(rule),
+          isDisabled: !controlEnabled
         },
         {
           title: t('COPY'),
           onClick: () => handleCopyButton(rule),
+          isDisabled: !controlEnabled
         },
         {
           title: t('DOWNLOAD'),
@@ -378,7 +397,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         },
       ];
     },
-    [context.api, deleteEnabled, handleEditButton, handleDeleteButton, handleCopyButton, t],
+    [context.api, deleteEnabled, controlEnabled, handleEditButton, handleDeleteButton, handleCopyButton, t],
   );
 
   const handleUploadModalClose = React.useCallback(() => {
@@ -451,6 +470,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
               aria-label={`${r.name} is enabled`}
               className={'switch-toggle-' + String(r.enabled)}
               isChecked={r.enabled}
+              isDisabled={!controlEnabled}
               onChange={(_event, state) => handleToggle(r, state)}
             />
           </Td>
