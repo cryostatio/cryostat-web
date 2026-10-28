@@ -360,6 +360,15 @@ export interface ActiveRecording extends Recording {
   remoteId: number;
 }
 
+export interface PermissionResponse {
+  authorized: boolean;
+}
+
+export interface Permission {
+  resource: string;
+  action: string;
+}
+
 export interface HeapDumpDirectory {
   jvmId: string;
   heapDumps: HeapDump[];

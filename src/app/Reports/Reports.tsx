@@ -73,6 +73,17 @@ export const Reports: React.FC = () => {
   const [sortBy, setSortBy] = React.useState({ index: 0, direction: 'desc', defaultDirection: 'desc' } as ISortBy);
   const [page, setPage] = React.useState(1);
   const [perPage, setPerPage] = React.useState(4);
+  const [controlEnabled, setControlEnabled] = React.useState(false);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.api.checkPermission('rules:read').subscribe((v) => {
+        if (!v.authorized) {
+          setControlEnabled(false);
+        }
+      }),
+    );
+  }, [addSubscription, context.api, setControlEnabled]);
 
   const sortedState = React.useMemo(() => {
     const comparator =
@@ -267,7 +278,7 @@ export const Reports: React.FC = () => {
                   <ToolbarGroup>
                     <ToolbarItem>
                       <Tooltip content={t('Reports.Tooltips.ALL_TARGETS')}>
-                        <Button isDisabled={minScore < 0} onClick={handleScore(-1)}>
+                        <Button isDisabled={minScore < 0 || !controlEnabled} onClick={handleScore(-1)}>
                           {t('Reports.Score.ALL_TARGETS')}
                         </Button>
                       </Tooltip>
@@ -279,6 +290,7 @@ export const Reports: React.FC = () => {
                             text={t('Reports.Score.AVAILABLE_ONLY')}
                             isSelected={minScore === 0}
                             onChange={handleScore(0)}
+                            isDisabled={!controlEnabled}
                           />
                         </Tooltip>
                         <Tooltip content={t('Reports.Tooltips.WARNING_ONLY')}>
@@ -286,6 +298,7 @@ export const Reports: React.FC = () => {
                             text={t('Reports.Score.WARNING_ONLY')}
                             isSelected={minScore === 25}
                             onChange={handleScore(25)}
+                            isDisabled={!controlEnabled}
                           />
                         </Tooltip>
                         <Tooltip content={t('Reports.Tooltips.CRITICAL_ONLY')}>
@@ -293,6 +306,7 @@ export const Reports: React.FC = () => {
                             text={t('Reports.Score.CRITICAL_ONLY')}
                             isSelected={minScore === 75}
                             onChange={handleScore(75)}
+                            isDisabled={!controlEnabled}
                           />
                         </Tooltip>
                       </ToggleGroup>
@@ -311,6 +325,7 @@ export const Reports: React.FC = () => {
                             }
                             isSelected={sortBy.index === 0}
                             onChange={onSetSort(0)}
+                            isDisabled={!controlEnabled}
                           />
                         </Tooltip>
                         <Tooltip content={t('Reports.Tooltips.REPORT_SCORE')}>
@@ -322,6 +337,7 @@ export const Reports: React.FC = () => {
                             }
                             isSelected={sortBy.index === 1}
                             onChange={onSetSort(1)}
+                            isDisabled={!controlEnabled}
                           />
                         </Tooltip>
                       </ToggleGroup>
@@ -330,7 +346,12 @@ export const Reports: React.FC = () => {
                   <ToolbarItem variant="separator" />
                   <ToolbarItem>
                     <Tooltip content={t('Reports.Tooltips.REFRESH')}>
-                      <Button icon={<ProcessAutomationIcon />} variant="plain" onClick={() => doRefresh()} />
+                      <Button
+                        icon={<ProcessAutomationIcon />}
+                        variant="plain"
+                        onClick={() => doRefresh()}
+                        isDisabled={!controlEnabled}
+                      />
                     </Tooltip>
                   </ToolbarItem>
                   <ToolbarItem variant="separator" />
@@ -423,7 +444,11 @@ export const Reports: React.FC = () => {
                             <EmptyStateBody>{t('Reports.NoResults.DESCRIPTION')}</EmptyStateBody>
                             <EmptyStateFooter>
                               <EmptyStateActions>
-                                <Button variant="primary" onClick={handleNavigate(s.target)}>
+                                <Button
+                                  variant="primary"
+                                  onClick={handleNavigate(s.target)}
+                                  isDisabled={!controlEnabled}
+                                >
                                   {t('Reports.NoResults.ACTION_BUTTON_CONTENT')}
                                 </Button>
                               </EmptyStateActions>

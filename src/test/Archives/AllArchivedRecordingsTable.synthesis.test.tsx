@@ -73,6 +73,7 @@ jest
   .spyOn(defaultServices.api, 'getTargetLineage')
   .mockImplementation(() => new Observable((s) => s.error(new Error('unavailable'))));
 
+jest.spyOn(defaultServices.api, 'checkPermission').mockReturnValue(of({ authorized: true }));
 jest.spyOn(defaultServices.targetAlias, 'aliasMap').mockReturnValue(of(new Map()));
 jest.spyOn(defaultServices.targetAlias, 'fetchAliases').mockImplementation(() => undefined);
 

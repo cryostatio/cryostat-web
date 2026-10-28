@@ -30,6 +30,8 @@ jest.mock('@app/Dashboard/Charts/mbean/MBeanMetricsChartCard', () => ({
   MBeanMetricsChartCard: jest.fn(() => <>MBean Metrics Chart</>),
 }));
 
+jest.spyOn(defaultServices.api, 'checkPermission').mockReturnValue(of({ authorized: true }));
+
 describe('<CaptureDiagnostics />', () => {
   const target = {
     agent: true,

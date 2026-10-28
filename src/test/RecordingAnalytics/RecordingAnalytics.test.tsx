@@ -23,6 +23,8 @@ import '@testing-library/jest-dom';
 import { of, Subject } from 'rxjs';
 import { basePreloadedState, render } from '../utils';
 
+jest.spyOn(defaultServices.api, 'checkPermission').mockReturnValue(of({ authorized: true }));
+
 // Stub the inner tab components — their behaviour is tested in Queries.test.tsx / Views.test.tsx.
 jest.mock('@app/RecordingAnalytics/queries/Queries', () => ({
   Queries: jest.fn(({ jvmId, filename }) => (

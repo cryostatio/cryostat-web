@@ -191,6 +191,8 @@ const mockThreadDumpAnalysis: ThreadDumpAnalysisResult = {
   jvmInfo: 'someJvmInfo',
 };
 
+jest.spyOn(defaultServices.api, 'checkPermission').mockReturnValue(of({ authorized: true }));
+
 jest.spyOn(defaultServices.api, 'getTargetThreadDumps').mockReturnValue(of([mockThreadDump]));
 
 jest.spyOn(defaultServices.api, 'getThreadDumps').mockReturnValue(of([mockThreadDump]));

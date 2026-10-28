@@ -100,6 +100,7 @@ jest.mock('@app/Recordings/RecordingFilters', () => {
   };
 });
 
+jest.spyOn(defaultServices.api, 'checkPermission').mockReturnValue(of({ authorized: true }));
 jest.spyOn(defaultServices.api, 'archiveRecording').mockReturnValue(of(''));
 jest.spyOn(defaultServices.api, 'deleteRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(of([mockRecording]));

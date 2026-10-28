@@ -63,7 +63,7 @@ import {
 } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
-import { Observable, of } from 'rxjs';
+import { concatMap, filter, first, Observable, of } from 'rxjs';
 import { HeapDumpsTable } from './HeapDumpsTable';
 
 const tableColumns: TableColumn[] = [
@@ -147,6 +147,26 @@ export const AllArchivedHeapDumpsTable: React.FC<AllArchivedHeapDumpsTableProps>
   React.useEffect(() => {
     refreshDirectoriesAndCounts();
   }, [refreshDirectoriesAndCounts]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('heapdumps:read')),
+        )
+        .subscribe({
+          next: (resp) => {
+            if (!resp.authorized) {
+              setErrorMessage('User is not authorized to read heap dumps');
+            }
+          },
+          error: (resp) => setErrorMessage(resp.error),
+        }),
+    );
+  }, [addSubscription, context.api, context.target, setErrorMessage]);
 
   const searchedDirectories = React.useMemo(() => {
     // Start with lineage-filtered directories from the hook

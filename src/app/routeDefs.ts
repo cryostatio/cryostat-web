@@ -223,6 +223,13 @@ export const securityRouteDefs: IRouteMeta[] = [
     description: 'View audit log of changes to Cryostat entities.',
     navGroup: SECURITY,
   },
+  {
+    label: 'Permissions',
+    path: toPath('/permissions'),
+    title: 'Permissions',
+    description: 'View current user permissions.',
+    navGroup: SECURITY,
+  },
 ];
 
 export const consoleRouteDefs: IRouteMeta[] = [

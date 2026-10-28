@@ -82,6 +82,8 @@ import {
   AuditRevisionDetail,
   FetchFn,
   SmartTriggerRequest,
+  PermissionResponse,
+  Permission,
 } from './api.types';
 import {
   isHttpError,
@@ -418,6 +420,27 @@ export class ApiService {
           first(),
         ),
       ),
+      first(),
+    );
+  }
+
+  checkPermission(permission: string): Observable<PermissionResponse> {
+    const body = new window.FormData();
+    body.append('permission', permission);
+    return this.sendRequest('beta', `auth/check`, {
+      method: 'POST',
+      body,
+    }).pipe(
+      concatMap((resp) => resp.json()),
+      first(),
+    );
+  }
+
+  getPermissions(): Observable<Permission[]> {
+    return this.sendRequest('beta', `auth/permissions`, {
+      method: 'GET',
+    }).pipe(
+      concatMap((resp) => resp.json()),
       first(),
     );
   }

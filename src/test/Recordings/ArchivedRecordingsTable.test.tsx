@@ -160,6 +160,7 @@ jest.mock('@app/Recordings/RecordingFilters', () => {
   };
 });
 
+jest.spyOn(defaultServices.api, 'checkPermission').mockReturnValue(of({ authorized: true }));
 jest.spyOn(defaultServices.api, 'deleteArchivedRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'downloadRecording').mockReturnValue();
 jest.spyOn(defaultServices.api, 'grafanaDatasourceUrl').mockReturnValue(of('/datasource'));

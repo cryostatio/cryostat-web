@@ -119,7 +119,7 @@ import dayjs from 'dayjs';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, forkJoin, merge, combineLatest, of } from 'rxjs';
-import { concatMap, first } from 'rxjs/operators';
+import { concatMap, filter, first } from 'rxjs/operators';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
 import { RecordingFiltersCategories, filterRecordings, RecordingFilters } from './RecordingFilters';
@@ -191,6 +191,8 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   const [errorMessage, setErrorMessage] = React.useState('');
   const [actionLoadings, setActionLoadings] = React.useState<Record<ArchiveActions, boolean>>({ DELETE: false });
   const [sortBy, getSortParams, setSortBy] = useSort();
+  const [writeEnabled, setWriteEnabled] = React.useState(true);
+  const [deleteEnabled, setDeleteEnabled] = React.useState(true);
 
   const targetRecordingFilters = useSelector((state: RootState) => {
     const filters = state.recordingFilters.list.filter(
@@ -198,6 +200,36 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
     );
     return filters.length > 0 ? filters[0].archived.filters : emptyArchivedRecordingFilters;
   }) as RecordingFiltersCategories;
+
+  React.useEffect(() => {
+    addSubscription(
+      context.api.checkPermission('archivedrecordings:read').subscribe((v) => {
+        if (!v.authorized) {
+          setErrorMessage('User is not authorized to read archived recordings');
+        }
+      }),
+    );
+  }, [addSubscription, context.api, setErrorMessage]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.api.checkPermission('archivedrecordings:write').subscribe((v) => {
+        if (!v.authorized) {
+          setWriteEnabled(false);
+        }
+      }),
+    );
+  }, [addSubscription, context.api, setErrorMessage]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.api.checkPermission('archivedrecordings:delete').subscribe((v) => {
+        if (!v.authorized) {
+          setDeleteEnabled(false);
+        }
+      }),
+    );
+  }, [addSubscription, context.api, setErrorMessage]);
 
   const handleHeaderCheck = React.useCallback(
     (event, checked) => {
@@ -550,6 +582,8 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         isUploadsTable={isUploadsTable}
         actionLoadings={actionLoadings}
         toolbarBreakReference={toolbarBreakReference}
+        writeEnabled={writeEnabled}
+        deleteEnabled={deleteEnabled}
       />
     ),
     [
@@ -735,6 +769,8 @@ export interface ArchivedRecordingsToolbarProps {
   isUploadsTable: boolean;
   actionLoadings: Record<ArchiveActions, boolean>;
   toolbarBreakReference?: HTMLElement | (() => HTMLElement);
+  writeEnabled: boolean;
+  deleteEnabled: boolean;
 }
 
 const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (props) => {
@@ -789,7 +825,7 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
                 <Button
                   variant={props.isSynthesisPanelActive ? 'primary' : 'secondary'}
                   onClick={props.handleShowSynthesis}
-                  isDisabled={props.recordings.length === 0}
+                  isDisabled={props.recordings.length === 0 || !props.writeEnabled}
                 >
                   {t('SYNTHESIZE')}
                 </Button>
@@ -799,7 +835,7 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
                   key={'Synthesize'}
                   isShared
                   onClick={props.handleShowSynthesis}
-                  isDisabled={props.recordings.length === 0}
+                  isDisabled={props.recordings.length === 0 || !props.writeEnabled}
                 >
                   {t('SYNTHESIZE')}
                 </OverflowMenuDropdownItem>
@@ -825,14 +861,19 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
           <Button
             variant="danger"
             onClick={handleDeleteButton}
-            isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE']}
+            isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE'] || !props.deleteEnabled}
             {...actionLoadingProps['DELETE']}
           >
             {props.actionLoadings['DELETE'] ? t('DELETING') : t('DELETE')}
           </Button>
         ),
         collapsed: (
-          <OverflowMenuDropdownItem key={'Delete'} isShared onClick={handleDeleteButton}>
+          <OverflowMenuDropdownItem
+            key={'Delete'}
+            isShared
+            onClick={handleDeleteButton}
+            isDisabled={!props.deleteEnabled}
+          >
             {props.actionLoadings['DELETE'] ? t('DELETING') : t('DELETE')}
           </OverflowMenuDropdownItem>
         ),
@@ -915,6 +956,7 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
                 variant="secondary"
                 aria-label="upload-recording"
                 onClick={props.handleShowUploadModal}
+                isDisabled={!props.writeEnabled}
               ></Button>
             </ToolbarItem>
           </ToolbarGroup>

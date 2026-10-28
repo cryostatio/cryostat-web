@@ -84,6 +84,54 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = ({ headerD
         .pipe(
           filter((target) => !!target),
           first(),
+          concatMap(() => serviceContext.api.checkPermission('heapdumps:write')),
+        )
+        .subscribe({
+          next: (resp) => setControlEnabled(resp.authorized),
+          error: () => setControlEnabled(false),
+        }),
+    );
+  }, [addSubscription, serviceContext.api, serviceContext.target, setControlEnabled]);
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => serviceContext.api.checkPermission('targets:read')),
+        )
+        .subscribe({
+          next: (resp) => setControlEnabled(resp.authorized),
+          error: () => setControlEnabled(false),
+        }),
+    );
+  }, [addSubscription, serviceContext.api, serviceContext.target, setControlEnabled]);
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => serviceContext.api.checkPermission('threaddumps:write')),
+        )
+        .subscribe({
+          next: (resp) => setControlEnabled(resp.authorized),
+          error: () => setControlEnabled(false),
+        }),
+    );
+  }, [addSubscription, serviceContext.api, serviceContext.target, setControlEnabled]);
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
           concatMap(() => serviceContext.api.getThreadDumps()),
         )
         .subscribe({

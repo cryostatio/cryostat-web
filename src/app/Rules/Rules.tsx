@@ -74,7 +74,7 @@ import {
 import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { first } from 'rxjs/operators';
+import { concatMap, filter, first } from 'rxjs/operators';
 import { AUTOANALYZE_KEY, CreateRule } from './CreateRule';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 import { RuleUploadModal } from './RulesUploadModal';
@@ -97,10 +97,52 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
   const [cleanRuleEnabled, setCleanRuleEnabled] = React.useState(true);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [createRuleModalOpen, setCreateRuleModalOpen, handleCreateRuleModalClose] = useModalFromLocationState();
+  const [controlEnabled, setControlEnabled] = React.useState(true);
+  const [deleteEnabled, setDeleteEnabled] = React.useState(true);
   const isEditMode = React.useMemo(
     () => createRuleModalOpen && store.getState().modalPrefill.data?.edit,
     [createRuleModalOpen],
   );
+
+  React.useEffect(() => {
+    addSubscription(
+      context.api.checkPermission('automatedrules:write').subscribe((v) => {
+        if (!v.authorized) {
+          setControlEnabled(false);
+        }
+      }),
+    );
+  }, [addSubscription, context.api, setControlEnabled]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.api.checkPermission('matchexpressions:write').subscribe((v) => {
+        if (!v.authorized) {
+          setControlEnabled(false);
+        }
+      }),
+    );
+  }, [addSubscription, context.api, setControlEnabled]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.api.checkPermission('matchexpressions:delete').subscribe((v) => {
+        if (!v.authorized) {
+          setDeleteEnabled(false);
+        }
+      }),
+    );
+  }, [addSubscription, context.api, setDeleteEnabled]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.api.checkPermission('automatedrules:delete').subscribe((v) => {
+        if (!v.authorized) {
+          setDeleteEnabled(false);
+        }
+      }),
+    );
+  }, [addSubscription, context.api, setDeleteEnabled]);
 
   const tableColumns: TableColumn[] = React.useMemo(
     () => [
@@ -332,6 +374,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
           title: t('DELETE'),
           onClick: () => handleDeleteButton(rule),
           isDanger: true,
+          isDisabled: !deleteEnabled,
         },
       ];
     },
@@ -463,13 +506,24 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
           </ToolbarItem>
           <ToolbarItem variant="separator" />
           <ToolbarItem key="create" gap={{ default: 'gapSm' }}>
-            <Button variant="primary" onClick={handleCreateRule} data-quickstart-id="create-rule-btn">
+            <Button
+              variant="primary"
+              onClick={handleCreateRule}
+              data-quickstart-id="create-rule-btn"
+              isDisabled={!controlEnabled}
+            >
               {t('CREATE')}
             </Button>
           </ToolbarItem>
           {capabilities.fileUploads ? (
             <ToolbarItem key="upload">
-              <Button icon={<UploadIcon />} variant="secondary" aria-label="Upload" onClick={handleUploadRule}></Button>
+              <Button
+                icon={<UploadIcon />}
+                variant="secondary"
+                aria-label="Upload"
+                onClick={handleUploadRule}
+                isDisabled={!controlEnabled}
+              ></Button>
             </ToolbarItem>
           ) : (
             <></>

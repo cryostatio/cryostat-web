@@ -63,7 +63,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { forkJoin, Observable, of } from 'rxjs';
-import { catchError, concatMap, defaultIfEmpty, first, tap } from 'rxjs/operators';
+import { catchError, concatMap, defaultIfEmpty, filter, first, tap } from 'rxjs/operators';
 
 const tableColumns: TableColumn[] = [
   {
@@ -104,6 +104,8 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
   const [sortBy, setSortBy] = React.useState<ISortBy>({});
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
+  const [uploadEnabled, setUploadEnabled] = React.useState(true);
+  const [deleteEnabled, setDeleteEnabled] = React.useState(true);
   const [templateToDelete, setTemplateToDelete] = React.useState<EventTemplate | undefined>(undefined);
   const addSubscription = useSubscriptions();
   // refreshTemplates can be called more than once in quick succession (on mount, on an
@@ -147,6 +149,66 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
       ),
     );
   }, [filterText, templates, sortBy]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('eventtemplates:read')),
+        )
+        .subscribe({
+          next: (resp) => {
+            if (!resp.authorized) {
+              setErrorMessage('User is not authorized to read event templates');
+            }
+          },
+          error: (resp) => setErrorMessage(resp.error),
+        }),
+    );
+  }, [addSubscription, context.api, context.target, setErrorMessage]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('eventtemplates:write')),
+        )
+        .subscribe({
+          next: (resp) => {
+            if (!resp.authorized) {
+              setUploadEnabled(false);
+            }
+          },
+          error: (resp) => setUploadEnabled(false),
+        }),
+    );
+  }, [addSubscription, context.api, context.target, setUploadEnabled]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('eventtemplates:delete')),
+        )
+        .subscribe({
+          next: (resp) => {
+            if (!resp.authorized) {
+              setDeleteEnabled(false);
+            }
+          },
+          error: (resp) => setDeleteEnabled(false),
+        }),
+    );
+  }, [addSubscription, context.api, context.target, setDeleteEnabled]);
 
   const handleTemplates = React.useCallback(
     (templates) => {
@@ -289,6 +351,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
             title: 'Delete',
             onClick: () => handleDeleteButton(t),
             isDanger: true,
+            isDisabled: !deleteEnabled,
           },
         ]);
       }
@@ -387,7 +450,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
                       aria-label="Upload"
                       variant="secondary"
                       onClick={handleUploadModalOpen}
-                      isDisabled={errorMessage != ''}
+                      isDisabled={errorMessage != '' || !uploadEnabled}
                     ></Button>
                   </ToolbarItem>
                 </ToolbarGroup>

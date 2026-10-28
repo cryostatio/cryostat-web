@@ -209,6 +209,8 @@ const mockHeapDumpAnalysis: HeapDumpAnalysisResult = {
   },
 };
 
+jest.spyOn(defaultServices.api, 'checkPermission').mockReturnValue(of({ authorized: true }));
+
 jest.spyOn(defaultServices.api, 'getTargetHeapDumps').mockReturnValue(of([mockHeapDump]));
 
 jest.spyOn(defaultServices.api, 'getHeapDumps').mockReturnValue(of([mockHeapDump]));

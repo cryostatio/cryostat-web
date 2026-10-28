@@ -111,6 +111,8 @@ jest.mock('@app/Shared/Services/Target.service', () => ({
   ...jest.requireActual('@app/Shared/Services/Target.service'), // Require actual implementation of utility functions for target
 }));
 
+jest.spyOn(defaultServices.api, 'checkPermission').mockReturnValue(of({ authorized: true }));
+
 jest
   .spyOn(defaultServices.api, 'doGet')
   .mockReturnValueOnce(of([])) // renders correctly

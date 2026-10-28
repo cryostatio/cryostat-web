@@ -41,6 +41,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Queries } from './queries/Queries';
 import { Views } from './views/Views';
+import { concatMap, filter, first } from 'rxjs/operators';
 
 enum RecordingAnalyticsTab {
   QUERIES = 'queries',
@@ -61,6 +62,17 @@ export const RecordingAnalytics: React.FC = () => {
   const [jvmId, setJvmId] = React.useState('');
   const [recordingDirectories, setRecordingDirectories] = React.useState([] as RecordingDirectory[]);
   const [filename, setFilename] = React.useState('');
+  const [controlEnabled, setControlEnabled] = React.useState(true);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.api.checkPermission('archivedrecordings:read').subscribe((v) => {
+        if (!v.authorized) {
+          setControlEnabled(false);
+        }
+      }),
+    );
+  }, [addSubscription, context.api, setControlEnabled]);
 
   const refreshRecordingDirectories = React.useCallback(() => {
     addSubscription(
@@ -207,12 +219,16 @@ export const RecordingAnalytics: React.FC = () => {
             <ToolbarContent>
               <ToolbarGroup>
                 <ToolbarItem>
-                  <SimpleDropdown toggleContent={jvmId || 'JVM ID'} initialItems={jvmIdItems} />
+                  <SimpleDropdown
+                    toggleContent={jvmId || 'JVM ID'}
+                    initialItems={jvmIdItems}
+                    isDisabled={!controlEnabled}
+                  />
                 </ToolbarItem>
                 <ToolbarItem>
                   <SimpleDropdown
                     toggleContent={filename || 'Filename'}
-                    isDisabled={!jvmId}
+                    isDisabled={!jvmId || !controlEnabled}
                     initialItems={filenameItems}
                   />
                 </ToolbarItem>
@@ -223,6 +239,7 @@ export const RecordingAnalytics: React.FC = () => {
             <Tab
               eventKey={RecordingAnalyticsTab.QUERIES}
               title={<TabTitleText>{t('RecordingAnalytics.QUERIES_TAB_TITLE')}</TabTitleText>}
+              isDisabled={!controlEnabled}
             >
               <Queries jvmId={jvmId} filename={filename} />
             </Tab>
@@ -236,6 +253,7 @@ export const RecordingAnalytics: React.FC = () => {
                     </Trans>
                   </TabTitleText>
                 }
+                isDisabled={!controlEnabled}
               >
                 <Views jvmId={jvmId} filename={filename} />
               </Tab>

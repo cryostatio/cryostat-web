@@ -63,6 +63,8 @@ const mockDeleteTemplateNotification = {
   },
 } as NotificationMessage;
 
+jest.spyOn(defaultServices.api, 'checkPermission').mockReturnValue(of({ authorized: true }));
+
 jest
   .spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
   .mockReturnValueOnce(false) // should delete a probe template when Delete is clicked

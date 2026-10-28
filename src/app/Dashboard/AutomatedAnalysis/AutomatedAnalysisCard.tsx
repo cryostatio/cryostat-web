@@ -50,7 +50,7 @@ import {
 import _ from 'lodash';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { catchError, map, of, Subject, tap } from 'rxjs';
+import { catchError, concatMap, filter, first, map, of, Subject, tap } from 'rxjs';
 import { DashboardCard } from '../DashboardCard';
 import { DashboardCardDescriptor, DashboardCardFC, DashboardCardSizes, DashboardCardTypeProps } from '../types';
 
@@ -100,6 +100,46 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
   React.useEffect(() => {
     addSubscription(context.target.target().subscribe((t) => setTarget(t)));
   }, [addSubscription, context.target]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('activerecordings:read')),
+        )
+        .subscribe({
+          next: (resp) => {
+            if (!resp.authorized) {
+              setErrorMessage('User is not authorized to read active recordings');
+            }
+          },
+          error: (resp) => setErrorMessage(resp.error),
+        }),
+    );
+  }, [addSubscription, context.api, context.target, setErrorMessage]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('reports:read')),
+        )
+        .subscribe({
+          next: (resp) => {
+            if (!resp.authorized) {
+              setErrorMessage('User is not authorized to read reports');
+            }
+          },
+          error: (resp) => setErrorMessage(resp.error),
+        }),
+    );
+  }, [addSubscription, context.api, context.target, setErrorMessage]);
 
   React.useEffect(() => {
     if (!target) {

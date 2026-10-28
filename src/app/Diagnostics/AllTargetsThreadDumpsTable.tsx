@@ -53,7 +53,7 @@ import { TFunction } from 'i18next';
 import _ from 'lodash';
 import * as React from 'react';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { concatMap, filter, first, map } from 'rxjs/operators';
 import { ThreadDumpsTable } from './ThreadDumpsTable';
 
 const tableColumns: TableColumn[] = [
@@ -135,6 +135,26 @@ export const AllTargetsThreadDumpsTable: React.FC<AllTargetsThreadDumpsTableProp
     },
     [setIsLoading, setErrorMessage],
   );
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('threaddumps:read')),
+        )
+        .subscribe({
+          next: (resp) => {
+            if (!resp.authorized) {
+              setErrorMessage('User is not authorized to read thread dumps');
+            }
+          },
+          error: (resp) => setErrorMessage(resp.error),
+        }),
+    );
+  }, [addSubscription, context.api, context.target, setErrorMessage]);
 
   const handleArchivesForTargets = React.useCallback(
     (targetNodes: any[]) => {

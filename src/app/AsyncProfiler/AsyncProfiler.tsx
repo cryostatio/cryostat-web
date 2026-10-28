@@ -63,7 +63,7 @@ import { EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
 import { InnerScrollContainer, OuterScrollContainer, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { first, forkJoin, merge, Observable, tap } from 'rxjs';
+import { concatMap, filter, first, forkJoin, merge, Observable, tap } from 'rxjs';
 
 const tableColumns: TableColumn[] = [
   {
@@ -111,6 +111,8 @@ export const AsyncProfiler: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [actionLoadings, setActionLoadings] = React.useState<Record<ProfileActions, boolean>>({ DELETE: false });
+  const [deleteEnabled, setDeleteEnabled] = React.useState(true);
+  const [createEnabled, setCreateEnabled] = React.useState(true);
 
   React.useEffect(() => {
     addSubscription(
@@ -143,6 +145,66 @@ export const AsyncProfiler: React.FC = () => {
     setHeaderChecked,
     setErrorMessage,
   ]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('asyncprofiler:read')),
+        )
+        .subscribe({
+          next: (resp) => {
+            if (!resp.authorized) {
+              setErrorMessage('User is not authorized to read async profiles');
+            }
+          },
+          error: (resp) => setErrorMessage(resp.error),
+        }),
+    );
+  }, [addSubscription, context.api, context.target, setErrorMessage]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('asyncprofiler:delete')),
+        )
+        .subscribe({
+          next: (resp) => {
+            if (!resp.authorized) {
+              setDeleteEnabled(false);
+            }
+          },
+          error: () => setDeleteEnabled(false),
+        }),
+    );
+  }, [addSubscription, context.api, context.target, setErrorMessage]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('asyncprofiler:write')),
+        )
+        .subscribe({
+          next: (resp) => {
+            if (!resp.authorized) {
+              setCreateEnabled(false);
+            }
+          },
+          error: () => setCreateEnabled(false),
+        }),
+    );
+  }, [addSubscription, context.api, context.target, setErrorMessage]);
 
   React.useEffect(() => {
     if (!target) {
@@ -361,6 +423,8 @@ export const AsyncProfiler: React.FC = () => {
         profilerRunning={isProfilerRunning}
         handleCreate={handleCreate}
         handleDelete={handleDeleteProfiles}
+        deleteEnabled={deleteEnabled}
+        createEnabled={createEnabled}
         actionLoadings={actionLoadings}
       />
     ),
@@ -426,6 +490,8 @@ export interface AsyncProfilesTableToolbarProps {
   profilerRunning: boolean;
   handleCreate: () => void;
   handleDelete: () => void;
+  deleteEnabled: boolean;
+  createEnabled: boolean;
   actionLoadings: Record<ProfileActions, boolean>;
 }
 
@@ -475,7 +541,11 @@ const AsyncProfilesToolbar: React.FC<AsyncProfilesTableToolbarProps> = (props) =
     return [
       {
         default: (
-          <Button variant="primary" onClick={props.handleCreate} isDisabled={props.profilerRunning}>
+          <Button
+            variant="primary"
+            onClick={props.handleCreate}
+            isDisabled={props.profilerRunning || props.createEnabled}
+          >
             {t('CREATE')}
           </Button>
         ),
@@ -492,7 +562,7 @@ const AsyncProfilesToolbar: React.FC<AsyncProfilesTableToolbarProps> = (props) =
           <Button
             variant="danger"
             onClick={handleDeleteButton}
-            isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE']}
+            isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE'] || props.deleteEnabled}
             {...actionLoadingProps['DELETE']}
           >
             {props.actionLoadings['DELETE'] ? t('DELETING') : t('DELETE')}

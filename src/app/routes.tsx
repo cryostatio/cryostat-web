@@ -47,6 +47,7 @@ import {
 import RulesTable from './Rules/Rules';
 import AuditLog from './Security/AuditLog';
 import { Certificates } from './Security/Certificates';
+import { Permissions } from './Security/Permissions';
 import { StoredCredentialsView } from './Security/Credentials/StoredCredentials';
 import Settings from './Settings/Settings';
 import { DefaultFallBack, ErrorBoundary } from './Shared/Components/ErrorBoundary';
@@ -117,6 +118,7 @@ const securityComponents: Record<string, React.ComponentType> = {
   [securityRouteDefs[0].path]: Certificates,
   [securityRouteDefs[1].path]: StoredCredentialsView,
   [securityRouteDefs[2].path]: AuditLog,
+  [securityRouteDefs[3].path]: Permissions,
 };
 
 const consoleComponents: Record<string, React.ComponentType> = {

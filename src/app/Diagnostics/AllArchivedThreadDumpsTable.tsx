@@ -63,7 +63,7 @@ import {
 } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
-import { Observable, of } from 'rxjs';
+import { concatMap, filter, first, Observable, of } from 'rxjs';
 import { ThreadDumpsTable } from './ThreadDumpsTable';
 
 const tableColumns: TableColumn[] = [
@@ -148,6 +148,26 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
   React.useEffect(() => {
     refreshDirectoriesAndCounts();
   }, [refreshDirectoriesAndCounts]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('threaddumps:read')),
+        )
+        .subscribe({
+          next: (resp) => {
+            if (!resp.authorized) {
+              setErrorMessage('User is not authorized to read thread dumps');
+            }
+          },
+          error: (resp) => setErrorMessage(resp.error),
+        }),
+    );
+  }, [addSubscription, context.api, context.target, setErrorMessage]);
 
   const searchedDirectories = React.useMemo(() => {
     // Start with lineage-filtered directories from the hook

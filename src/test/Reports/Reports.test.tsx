@@ -35,6 +35,7 @@ const mockFooTarget: Target = {
   },
 };
 
+jest.spyOn(defaultServices.api, 'checkPermission').mockReturnValue(of({ authorized: true }));
 jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockFooTarget]));
 
 jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of());

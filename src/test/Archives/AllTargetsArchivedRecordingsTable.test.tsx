@@ -198,6 +198,8 @@ const mockNewTargetCountResponse = {
   },
 };
 
+jest.spyOn(defaultServices.api, 'checkPermission').mockReturnValue(of({ authorized: true }));
+
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
     ArchivedRecordingsTable: jest.fn((_) => {

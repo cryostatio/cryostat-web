@@ -64,6 +64,8 @@ const mockDeleteTemplateNotification = {
 const mockEventTemplateContent = '<some><other><xml></xml></dummy></some>';
 const mockFileUpload = new File([mockEventTemplateContent], 'mockEventTemplate.xml', { type: 'xml' });
 
+jest.spyOn(defaultServices.api, 'checkPermission').mockReturnValue(of({ authorized: true }));
+
 jest
   .spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
   .mockReturnValueOnce(true) // show deletion warning
