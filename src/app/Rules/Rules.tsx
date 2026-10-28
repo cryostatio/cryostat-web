@@ -74,7 +74,7 @@ import {
 import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { concatMap, filter, first } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { AUTOANALYZE_KEY, CreateRule } from './CreateRule';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 import { RuleUploadModal } from './RulesUploadModal';
@@ -378,7 +378,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         },
       ];
     },
-    [context.api, handleEditButton, handleDeleteButton, handleCopyButton, t],
+    [context.api, deleteEnabled, handleEditButton, handleDeleteButton, handleCopyButton, t],
   );
 
   const handleUploadModalClose = React.useCallback(() => {
@@ -548,6 +548,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
     ),
     [
       t,
+      controlEnabled,
       searchTerm,
       setSearchTerm,
       handleCreateRule,

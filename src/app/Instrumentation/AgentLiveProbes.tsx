@@ -48,7 +48,7 @@ import {
 } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
-import { combineLatest, concatMap, filter, first } from 'rxjs';
+import { combineLatest } from 'rxjs';
 
 export type LiveProbeActions = 'REMOVE';
 

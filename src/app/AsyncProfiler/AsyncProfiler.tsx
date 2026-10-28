@@ -428,7 +428,17 @@ export const AsyncProfiler: React.FC = () => {
         actionLoadings={actionLoadings}
       />
     ),
-    [target, checkedIndices, currentProfile, isProfilerRunning, handleCreate, handleDeleteProfiles, actionLoadings],
+    [
+      target,
+      createEnabled,
+      deleteEnabled,
+      checkedIndices,
+      currentProfile,
+      isProfilerRunning,
+      handleCreate,
+      handleDeleteProfiles,
+      actionLoadings,
+    ],
   );
 
   const columnConfig: ColumnConfig = React.useMemo(
@@ -544,7 +554,7 @@ const AsyncProfilesToolbar: React.FC<AsyncProfilesTableToolbarProps> = (props) =
           <Button
             variant="primary"
             onClick={props.handleCreate}
-            isDisabled={props.profilerRunning || props.createEnabled}
+            isDisabled={props.profilerRunning || !props.createEnabled}
           >
             {t('CREATE')}
           </Button>
@@ -562,7 +572,7 @@ const AsyncProfilesToolbar: React.FC<AsyncProfilesTableToolbarProps> = (props) =
           <Button
             variant="danger"
             onClick={handleDeleteButton}
-            isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE'] || props.deleteEnabled}
+            isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE'] || !props.deleteEnabled}
             {...actionLoadingProps['DELETE']}
           >
             {props.actionLoadings['DELETE'] ? t('DELETING') : t('DELETE')}
@@ -577,6 +587,8 @@ const AsyncProfilesToolbar: React.FC<AsyncProfilesTableToolbarProps> = (props) =
       },
     ];
   }, [
+    props.createEnabled,
+    props.deleteEnabled,
     t,
     handleDeleteButton,
     props.checkedIndices.length,

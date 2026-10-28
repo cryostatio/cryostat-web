@@ -63,7 +63,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { forkJoin, Observable, of } from 'rxjs';
-import { catchError, concatMap, defaultIfEmpty, filter, first, tap } from 'rxjs/operators';
+import { catchError, concatMap, defaultIfEmpty, first, tap } from 'rxjs/operators';
 
 const tableColumns: TableColumn[] = [
   {
@@ -152,63 +152,48 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
 
   React.useEffect(() => {
     addSubscription(
-      context.target
-        .target()
-        .pipe(
-          filter((target) => !!target),
-          first(),
-          concatMap(() => context.api.checkPermission('eventtemplates:read')),
-        )
-        .subscribe({
-          next: (resp) => {
-            if (!resp.authorized) {
-              setErrorMessage('User is not authorized to read event templates');
-            }
-          },
-          error: (resp) => setErrorMessage(resp.error),
-        }),
+      context.api.checkPermission('eventtemplates:read').subscribe({
+        next: (v) => {
+          if (!v.authorized) {
+            setErrorMessage('User is not authorized to read event templates');
+          }
+        },
+        error: (err) => {
+          setErrorMessage(err);
+        },
+      }),
     );
-  }, [addSubscription, context.api, context.target, setErrorMessage]);
+  }, [addSubscription, context.api, setErrorMessage]);
 
   React.useEffect(() => {
     addSubscription(
-      context.target
-        .target()
-        .pipe(
-          filter((target) => !!target),
-          first(),
-          concatMap(() => context.api.checkPermission('eventtemplates:write')),
-        )
-        .subscribe({
-          next: (resp) => {
-            if (!resp.authorized) {
-              setUploadEnabled(false);
-            }
-          },
-          error: (resp) => setUploadEnabled(false),
-        }),
+      context.api.checkPermission('eventtemplates:write').subscribe({
+        next: (v) => {
+          if (!v.authorized) {
+            setUploadEnabled(false);
+          }
+        },
+        error: () => {
+          setUploadEnabled(false);
+        },
+      }),
     );
-  }, [addSubscription, context.api, context.target, setUploadEnabled]);
+  }, [addSubscription, context.api, setUploadEnabled]);
 
   React.useEffect(() => {
     addSubscription(
-      context.target
-        .target()
-        .pipe(
-          filter((target) => !!target),
-          first(),
-          concatMap(() => context.api.checkPermission('eventtemplates:delete')),
-        )
-        .subscribe({
-          next: (resp) => {
-            if (!resp.authorized) {
-              setDeleteEnabled(false);
-            }
-          },
-          error: (resp) => setDeleteEnabled(false),
-        }),
+      context.api.checkPermission('eventtemplates:delete').subscribe({
+        next: (v) => {
+          if (!v.authorized) {
+            setDeleteEnabled(false);
+          }
+        },
+        error: () => {
+          setDeleteEnabled(false);
+        },
+      }),
     );
-  }, [addSubscription, context.api, context.target, setDeleteEnabled]);
+  }, [addSubscription, context.api, setDeleteEnabled]);
 
   const handleTemplates = React.useCallback(
     (templates) => {
@@ -357,7 +342,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
       }
       return actions;
     },
-    [context.api, navigate, handleDeleteButton],
+    [deleteEnabled, context.api, navigate, handleDeleteButton],
   );
 
   const handleUploadModalClose = React.useCallback(() => {

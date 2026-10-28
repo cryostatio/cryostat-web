@@ -116,7 +116,8 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
               setErrorMessage('User is not authorized to read active recordings');
             }
           },
-          error: (resp) => setErrorMessage(resp.error),
+          error: (resp) =>
+            setErrorMessage(resp instanceof Error && resp.message ? resp.message : 'Unable to check permission'),
         }),
     );
   }, [addSubscription, context.api, context.target, setErrorMessage]);

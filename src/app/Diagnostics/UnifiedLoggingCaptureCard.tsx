@@ -91,7 +91,7 @@ export const UnifiedLoggingCaptureCard: React.FC<UnifiedLoggingCaptureCardProps>
               setCaptureEnabled(false);
             }
           },
-          error: (resp) => setCaptureEnabled(false),
+          error: () => setCaptureEnabled(false),
         }),
     );
   }, [addSubscription, serviceContext.api, serviceContext.target, setCaptureEnabled]);

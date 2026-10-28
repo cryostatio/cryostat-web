@@ -16,10 +16,8 @@
 
 import { Permission } from '@app/Shared/Services/api.types';
 import { useSort } from '@app/utils/hooks/useSort';
-import { formatBytes, hashCode, sortResources, TableColumn } from '@app/utils/utils';
+import { sortResources, TableColumn } from '@app/utils/utils';
 import {
-  Card,
-  CardTitle,
   EmptyState,
   Pagination,
   SearchInput,
@@ -29,17 +27,7 @@ import {
   ToolbarItemVariant,
 } from '@patternfly/react-core';
 import { TopologyIcon } from '@patternfly/react-icons';
-import {
-  ExpandableRowContent,
-  SortByDirection,
-  Table,
-  TableVariant,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-} from '@patternfly/react-table';
+import { SortByDirection, Table, TableVariant, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { t } from 'i18next';
 import _ from 'lodash';
 import React from 'react';
@@ -137,38 +125,38 @@ export const PermissionsTable: React.FC<PermissionsTableProps> = (props: Permiss
       });
     }
     return rows;
-  }, [currentPage, perPage, filterStringsByText, sortBy]);
+  }, [props.permissions, currentPage, perPage, filterStringsByText, sortBy]);
 
   const permissionsTable = React.useMemo(() => {
-    if (displayedPermissionsRowData.length) {
-      return (
-        <>
-          <Toolbar id="permissions-toolbar">
-            <ToolbarContent>
-              <ToolbarItem>
-                <SearchInput
-                  style={{ minWidth: '38ch' }}
-                  name="permissionFilter"
-                  id="permissionFilter"
-                  type="search"
-                  placeholder={t('PermissionsTable.SEARCH_PLACEHOLDER')}
-                  aria-label={t('PermissionsTable.ARIA_LABELS.SEARCH_INPUT')}
-                  onChange={onFilterTextChange}
-                  value={filterText}
-                />
-              </ToolbarItem>
-              <ToolbarItem variant={ToolbarItemVariant.pagination}>
-                <Pagination
-                  itemCount={filterStringsByText.length}
-                  page={currentPage}
-                  perPage={perPage}
-                  onSetPage={onCurrentPage}
-                  widgetId="permissions-pagination"
-                  onPerPageSelect={onPerPage}
-                />
-              </ToolbarItem>
-            </ToolbarContent>
-          </Toolbar>
+    return (
+      <>
+        <Toolbar id="permissions-toolbar">
+          <ToolbarContent>
+            <ToolbarItem>
+              <SearchInput
+                style={{ minWidth: '38ch' }}
+                name="permissionFilter"
+                id="permissionFilter"
+                type="search"
+                placeholder={t('PermissionsTable.SEARCH_PLACEHOLDER')}
+                aria-label={t('PermissionsTable.ARIA_LABELS.SEARCH_INPUT')}
+                onChange={onFilterTextChange}
+                value={filterText}
+              />
+            </ToolbarItem>
+            <ToolbarItem variant={ToolbarItemVariant.pagination}>
+              <Pagination
+                itemCount={filterStringsByText.length}
+                page={currentPage}
+                perPage={perPage}
+                onSetPage={onCurrentPage}
+                widgetId="permissions-pagination"
+                onPerPageSelect={onPerPage}
+              />
+            </ToolbarItem>
+          </ToolbarContent>
+        </Toolbar>
+        {displayedPermissionsRowData.length ? (
           <Table aria-label="User Permissions" variant={TableVariant.compact}>
             <Thead>
               <Tr>
@@ -193,11 +181,11 @@ export const PermissionsTable: React.FC<PermissionsTableProps> = (props: Permiss
               </Tbody>
             ))}
           </Table>
-        </>
-      );
-    } else {
-      return emptyTableState('No User Permissions Found');
-    }
+        ) : (
+          emptyTableState('No User Permissions Found')
+        )}
+      </>
+    );
   }, [
     currentPage,
     filterStringsByText.length,

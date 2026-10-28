@@ -47,8 +47,8 @@ import {
 import RulesTable from './Rules/Rules';
 import AuditLog from './Security/AuditLog';
 import { Certificates } from './Security/Certificates';
-import { Permissions } from './Security/Permissions';
 import { StoredCredentialsView } from './Security/Credentials/StoredCredentials';
+import { Permissions } from './Security/Permissions';
 import Settings from './Settings/Settings';
 import { DefaultFallBack, ErrorBoundary } from './Shared/Components/ErrorBoundary';
 import Topology from './Topology/Topology';

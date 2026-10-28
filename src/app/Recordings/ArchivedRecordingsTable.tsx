@@ -119,7 +119,7 @@ import dayjs from 'dayjs';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, forkJoin, merge, combineLatest, of } from 'rxjs';
-import { concatMap, filter, first } from 'rxjs/operators';
+import { concatMap, first } from 'rxjs/operators';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
 import { RecordingFiltersCategories, filterRecordings, RecordingFilters } from './RecordingFilters';
@@ -203,33 +203,48 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
 
   React.useEffect(() => {
     addSubscription(
-      context.api.checkPermission('archivedrecordings:read').subscribe((v) => {
-        if (!v.authorized) {
-          setErrorMessage('User is not authorized to read archived recordings');
-        }
+      context.api.checkPermission('archivedrecordings:read').subscribe({
+        next: (v) => {
+          if (!v.authorized) {
+            setErrorMessage('User is not authorized to read archived recordings');
+          }
+        },
+        error: (error) => {
+          setErrorMessage(error);
+        },
       }),
     );
   }, [addSubscription, context.api, setErrorMessage]);
 
   React.useEffect(() => {
     addSubscription(
-      context.api.checkPermission('archivedrecordings:write').subscribe((v) => {
-        if (!v.authorized) {
+      context.api.checkPermission('archivedrecordings:write').subscribe({
+        next: (v) => {
+          if (!v.authorized) {
+            setWriteEnabled(false);
+          }
+        },
+        error: () => {
           setWriteEnabled(false);
-        }
+        },
       }),
     );
-  }, [addSubscription, context.api, setErrorMessage]);
+  }, [addSubscription, context.api, setWriteEnabled]);
 
   React.useEffect(() => {
     addSubscription(
-      context.api.checkPermission('archivedrecordings:delete').subscribe((v) => {
-        if (!v.authorized) {
+      context.api.checkPermission('archivedrecordings:delete').subscribe({
+        next: (v) => {
+          if (!v.authorized) {
+            setDeleteEnabled(false);
+          }
+        },
+        error: () => {
           setDeleteEnabled(false);
-        }
+        },
       }),
     );
-  }, [addSubscription, context.api, setErrorMessage]);
+  }, [addSubscription, context.api, setDeleteEnabled]);
 
   const handleHeaderCheck = React.useCallback(
     (event, checked) => {
@@ -587,6 +602,8 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
       />
     ),
     [
+      deleteEnabled,
+      writeEnabled,
       targetConnectURL,
       checkedIndices,
       targetRecordingFilters,
@@ -882,6 +899,8 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
     ];
   }, [
     t,
+    props.deleteEnabled,
+    props.writeEnabled,
     props.handleEditLabels,
     props.handleShowSynthesis,
     props.isSynthesisPanelActive,

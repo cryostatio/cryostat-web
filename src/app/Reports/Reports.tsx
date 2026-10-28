@@ -73,14 +73,19 @@ export const Reports: React.FC = () => {
   const [sortBy, setSortBy] = React.useState({ index: 0, direction: 'desc', defaultDirection: 'desc' } as ISortBy);
   const [page, setPage] = React.useState(1);
   const [perPage, setPerPage] = React.useState(4);
-  const [controlEnabled, setControlEnabled] = React.useState(false);
+  const [controlEnabled, setControlEnabled] = React.useState(true);
 
   React.useEffect(() => {
     addSubscription(
-      context.api.checkPermission('rules:read').subscribe((v) => {
-        if (!v.authorized) {
+      context.api.checkPermission('rules:read').subscribe({
+        next: (v) => {
+          if (!v.authorized) {
+            setControlEnabled(false);
+          }
+        },
+        error: () => {
           setControlEnabled(false);
-        }
+        },
       }),
     );
   }, [addSubscription, context.api, setControlEnabled]);

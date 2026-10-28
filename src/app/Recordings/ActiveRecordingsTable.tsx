@@ -663,6 +663,10 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
       />
     ),
     [
+      archiveAllowed,
+      deleteEnabled,
+      reportEnabled,
+      writeEnabled,
       target,
       checkedIndices,
       targetRecordingFilters,
@@ -1026,6 +1030,10 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
     return arr;
   }, [
     t,
+    props.archiveAllowed,
+    props.deleteEnabled,
+    props.reportEnabled,
+    props.writeEnabled,
     handleDeleteButton,
     isStopDisabled,
     actionLoadingProps,

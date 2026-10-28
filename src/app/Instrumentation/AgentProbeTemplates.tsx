@@ -65,7 +65,7 @@ import {
 import _ from 'lodash';
 import * as React from 'react';
 import { forkJoin, Observable, of } from 'rxjs';
-import { catchError, concatMap, defaultIfEmpty, filter, first, tap } from 'rxjs/operators';
+import { catchError, defaultIfEmpty, first, tap } from 'rxjs/operators';
 
 const tableColumns: TableColumn[] = [
   {
@@ -307,7 +307,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
           </Tr>
         );
       }),
-    [filteredTemplates, agentDetected, handleInsertAction, handleDownloadAction, handleDeleteAction],
+    [writeEnabled, filteredTemplates, agentDetected, handleInsertAction, handleDownloadAction, handleDeleteAction],
   );
 
   if (errorMessage != '') {

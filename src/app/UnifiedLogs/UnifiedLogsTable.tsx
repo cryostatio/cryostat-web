@@ -154,7 +154,7 @@ export const UnifiedLogsTable: React.FC<UnifiedLogsTableProps> = ({
           error: (resp) => setErrorMessage(resp.error),
         }),
     );
-  }, [addSubscription, context.api, context.target, setErrorMessage]);
+  }, [addSubscription, propsTarget, context.api, setErrorMessage]);
 
   React.useEffect(() => {
     addSubscription(
@@ -173,7 +173,7 @@ export const UnifiedLogsTable: React.FC<UnifiedLogsTableProps> = ({
           error: () => setWriteEnabled(false),
         }),
     );
-  }, [addSubscription, context.api, context.target, setWriteEnabled]);
+  }, [addSubscription, propsTarget, context.api, context.target, setWriteEnabled]);
 
   React.useEffect(() => {
     addSubscription(
@@ -192,7 +192,7 @@ export const UnifiedLogsTable: React.FC<UnifiedLogsTableProps> = ({
           error: () => setDeleteEnabled(false),
         }),
     );
-  }, [addSubscription, context.api, context.target, setWriteEnabled]);
+  }, [addSubscription, propsTarget, context.api, context.target, setWriteEnabled]);
 
   const targetUnifiedLogFilters = useSelector((state: RootState) => {
     const filters = state.unifiedLogFilters.list.filter(
@@ -476,6 +476,8 @@ export const UnifiedLogsTable: React.FC<UnifiedLogsTableProps> = ({
       handleClearFilters,
       handleEditLabels,
       actionLoadings,
+      deleteEnabled,
+      writeEnabled,
       handleDeleteSelected,
       handlePull,
       isNestedTable,
@@ -616,7 +618,7 @@ const UnifiedLogsToolbar: React.FC<UnifiedLogsToolbarProps> = ({
       ),
       key: 'pull-log',
     };
-  }, [handlePull, actionLoadings, loggingEnabled, logFilePath, t]);
+  }, [handlePull, actionLoadings, writeEnabled, loggingEnabled, logFilePath, t]);
 
   const editLabelsButton = React.useMemo(
     () => ({
@@ -660,7 +662,7 @@ const UnifiedLogsToolbar: React.FC<UnifiedLogsToolbarProps> = ({
       ),
       key: 'delete',
     }),
-    [checkedIndices.length, actionLoadings, handleDeleteButton, t],
+    [checkedIndices.length, actionLoadings, deleteEnabled, handleDeleteButton, t],
   );
 
   const buttons = React.useMemo(

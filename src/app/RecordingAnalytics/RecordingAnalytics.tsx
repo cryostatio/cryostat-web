@@ -41,7 +41,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Queries } from './queries/Queries';
 import { Views } from './views/Views';
-import { concatMap, filter, first } from 'rxjs/operators';
 
 enum RecordingAnalyticsTab {
   QUERIES = 'queries',
@@ -66,10 +65,15 @@ export const RecordingAnalytics: React.FC = () => {
 
   React.useEffect(() => {
     addSubscription(
-      context.api.checkPermission('archivedrecordings:read').subscribe((v) => {
-        if (!v.authorized) {
+      context.api.checkPermission('archivedrecordings:read').subscribe({
+        next: (v) => {
+          if (!v.authorized) {
+            setControlEnabled(false);
+          }
+        },
+        error: () => {
           setControlEnabled(false);
-        }
+        },
       }),
     );
   }, [addSubscription, context.api, setControlEnabled]);

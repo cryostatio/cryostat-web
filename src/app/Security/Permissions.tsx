@@ -15,26 +15,15 @@
  */
 
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { ErrorView } from '@app/ErrorView/ErrorView';
 import { Permission } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
-import {
-  Card,
-  CardBody,
-  CardTitle,
-  Content,
-  ContentVariants,
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateVariant,
-  Panel,
-  PanelMain,
-  PanelMainBody,
-  Spinner,
-} from '@patternfly/react-core';
+import { Card, CardBody, CardTitle, Content, ContentVariants, Spinner } from '@patternfly/react-core';
 import * as React from 'react';
-import { map, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { PermissionsTable } from './PermissionsTable';
 
 export const Permissions: React.FC = () => {
@@ -43,6 +32,7 @@ export const Permissions: React.FC = () => {
   const addSubscription = useSubscriptions();
   const [loading, setLoading] = React.useState(true);
   const [permissions, setPermissions] = React.useState<Permission[]>([]);
+  const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
 
   React.useEffect(() => {
     setLoading(true);
@@ -51,13 +41,19 @@ export const Permissions: React.FC = () => {
         .getPermissions()
         .pipe(
           tap((_) => setLoading(false)),
+          catchError((err) => {
+            setErrorMessage(err);
+            return of([]);
+          }),
           map((a: Permission[]) => a.sort()),
         )
         .subscribe(setPermissions),
     );
   }, [setLoading, addSubscription, context.api, setPermissions]);
 
-  return (
+  return errorMessage ? (
+    <ErrorView title={t('Permissions.ERROR_TEXT')} message={errorMessage} />
+  ) : (
     <BreadcrumbPage pageTitle="User Permissions">
       <Card>
         <CardTitle>
@@ -66,27 +62,7 @@ export const Permissions: React.FC = () => {
             <Content component={ContentVariants.small}>{t('Permissions.CARD_DESCRIPTION')}</Content>
           </Content>
         </CardTitle>
-        <CardBody isFilled>
-          <Panel isScrollable>
-            <PanelMain>
-              <PanelMainBody>
-                {loading ? (
-                  <Spinner />
-                ) : permissions.length ? (
-                  <PermissionsTable permissions={permissions} />
-                ) : (
-                  <EmptyState
-                    variant={EmptyStateVariant.xs}
-                    headingLevel="h4"
-                    titleText={t('Permissions.NO_CONTENT_TITLE')}
-                  >
-                    <EmptyStateBody>{t('Permissions.NO_CONTENT_BODY')}</EmptyStateBody>
-                  </EmptyState>
-                )}
-              </PanelMainBody>
-            </PanelMain>
-          </Panel>
-        </CardBody>
+        <CardBody isFilled>{loading ? <Spinner /> : <PermissionsTable permissions={permissions} />}</CardBody>
       </Card>
     </BreadcrumbPage>
   );

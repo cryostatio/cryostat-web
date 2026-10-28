@@ -647,8 +647,7 @@
   "Permissions": {
     "CARD_TITLE": "User Permissions",
     "CARD_DESCRIPTION": "The current user has the following permissions",
-    "NO_CONTENT_TITLE": "No User Permissions Found",
-    "NO_CONTENT_BODY": "The current user does not have any permissions"
+    "ERROR_TEXT": "Error fetching user permissions"
   },
   "PermissionsTable": {
     "SEARCH_PLACEHOLDER": "Search by resource, action",

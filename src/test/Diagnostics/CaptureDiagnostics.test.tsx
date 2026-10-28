@@ -30,8 +30,6 @@ jest.mock('@app/Dashboard/Charts/mbean/MBeanMetricsChartCard', () => ({
   MBeanMetricsChartCard: jest.fn(() => <>MBean Metrics Chart</>),
 }));
 
-jest.spyOn(defaultServices.api, 'checkPermission').mockReturnValue(of({ authorized: true }));
-
 describe('<CaptureDiagnostics />', () => {
   const target = {
     agent: true,
@@ -42,6 +40,7 @@ describe('<CaptureDiagnostics />', () => {
   };
 
   beforeEach(() => {
+    jest.spyOn(defaultServices.api, 'checkPermission').mockReturnValue(of({ authorized: true }));
     jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(target));
     jest
       .spyOn(defaultServices.api, 'getUnifiedLoggingStatus')
