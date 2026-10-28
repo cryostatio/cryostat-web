@@ -33,7 +33,7 @@ import {
   Tooltip,
 } from '@patternfly/react-core';
 import { ListIcon, PlayIcon } from '@patternfly/react-icons';
-import * as monaco from 'monaco-editor';
+import * as monaco from 'monaco-editor/editor/editor.api';
 import * as React from 'react';
 import { concatMap } from 'rxjs';
 
