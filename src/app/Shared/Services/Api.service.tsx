@@ -287,7 +287,7 @@ export class ApiService {
     body.append('preservedArchives', String(rule.preservedArchives));
     body.append('maxAgeSeconds', String(rule.maxAgeSeconds));
     body.append('maxSizeBytes', String(rule.maxSizeBytes));
-    body.append('metadata', JSON.stringify({ labels: this.transformLabelsToObject(rule.metadata.labels) }));
+    body.append('metadata', JSON.stringify({ labels: this.transformLabelsToObject(rule.metadata?.labels ?? []) }));
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
     return this.sendUploadRequest('v4', 'rules', 'Rule Upload Failed', body, onUploadProgress, abortSignal).pipe(
       map((resp) => resp.ok),
