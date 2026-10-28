@@ -77,7 +77,7 @@ export const Reports: React.FC = () => {
 
   React.useEffect(() => {
     addSubscription(
-      context.api.checkPermission('rules:read').subscribe({
+      context.api.checkPermission('reports:read').subscribe({
         next: (v) => {
           if (!v.authorized) {
             setControlEnabled(false);

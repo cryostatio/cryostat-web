@@ -42,7 +42,7 @@ export const Permissions: React.FC = () => {
         .pipe(
           tap((_) => setLoading(false)),
           catchError((err) => {
-            setErrorMessage(err);
+            setErrorMessage(err.message);
             return of([]);
           }),
           map((a: Permission[]) => a.sort()),
