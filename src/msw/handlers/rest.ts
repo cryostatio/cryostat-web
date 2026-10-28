@@ -15,6 +15,7 @@
  */
 
 import build from '@app/build.json';
+import { Permission, PermissionResponse } from '@app/Shared/Services/api.types';
 import { http, HttpResponse, ws } from 'msw';
 import { components } from '../../schema/openapi.types';
 import { db } from '../db';
@@ -55,6 +56,28 @@ export const restHandlers = [
       reportsConfigured: false,
     };
     return HttpResponse.json(health);
+  }),
+
+  http.post('*/api/beta/auth/check', () => {
+    const resp: PermissionResponse = { authorized: true };
+    return HttpResponse.json(resp);
+  }),
+  http.get('*/api/beta/auth/permissions', () => {
+    const resp: Permission[] = [
+      {
+        resource: 'targets',
+        action: 'read',
+      },
+      {
+        resource: 'archivedrecordings',
+        action: 'write',
+      },
+      {
+        resource: 'archivedrecordings',
+        action: 'read',
+      },
+    ];
+    return HttpResponse.json(resp);
   }),
 
   // Grafana endpoints

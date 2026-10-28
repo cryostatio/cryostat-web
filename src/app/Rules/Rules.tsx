@@ -108,13 +108,14 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
     addSubscription(
       context.api.checkPermission('automatedrules:write').subscribe({
         next: (v) => {
-        if (!v.authorized) {
-          setControlEnabled(false);
-        }
-      },
+          if (!v.authorized) {
+            setControlEnabled(false);
+          }
+        },
         error: () => {
           setControlEnabled(false);
-        }}),
+        },
+      }),
     );
   }, [addSubscription, context.api, setControlEnabled]);
 
@@ -122,13 +123,14 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
     addSubscription(
       context.api.checkPermission('matchexpressions:write').subscribe({
         next: (v) => {
-        if (!v.authorized) {
-          setControlEnabled(false);
-        }
-      },
+          if (!v.authorized) {
+            setControlEnabled(false);
+          }
+        },
         error: () => {
-          setControlEnabled(false)
-        }}),
+          setControlEnabled(false);
+        },
+      }),
     );
   }, [addSubscription, context.api, setControlEnabled]);
 
@@ -136,14 +138,14 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
     addSubscription(
       context.api.checkPermission('matchexpressions:delete').subscribe({
         next: (v) => {
-        if (!v.authorized) {
+          if (!v.authorized) {
+            setDeleteEnabled(false);
+          }
+        },
+        error: () => {
           setDeleteEnabled(false);
-        }
-      },
-      error: () => {
-        setDeleteEnabled(false);
-      }
-    }),
+        },
+      }),
     );
   }, [addSubscription, context.api, setDeleteEnabled]);
 
@@ -151,13 +153,14 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
     addSubscription(
       context.api.checkPermission('automatedrules:delete').subscribe({
         next: (v) => {
-        if (!v.authorized) {
+          if (!v.authorized) {
+            setDeleteEnabled(false);
+          }
+        },
+        error: () => {
           setDeleteEnabled(false);
-        }
-      },
-      error: () => {
-        setDeleteEnabled(false);
-      }}),
+        },
+      }),
     );
   }, [addSubscription, context.api, setDeleteEnabled]);
 
@@ -375,12 +378,12 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         {
           title: t('EDIT'),
           onClick: () => handleEditButton(rule),
-          isDisabled: !controlEnabled
+          isDisabled: !controlEnabled,
         },
         {
           title: t('COPY'),
           onClick: () => handleCopyButton(rule),
-          isDisabled: !controlEnabled
+          isDisabled: !controlEnabled,
         },
         {
           title: t('DOWNLOAD'),
@@ -510,7 +513,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
           </Td>
         </Tr>
       ));
-  }, [rules, ruleOptions, sortBy, handleToggle, actionResolver, t, tableColumns, searchTerm]);
+  }, [rules, controlEnabled, ruleOptions, sortBy, handleToggle, actionResolver, t, tableColumns, searchTerm]);
 
   const toolbar = React.useMemo(
     () => (
