@@ -16,7 +16,7 @@
 
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ErrorView } from '@app/ErrorView/ErrorView';
-import { Permission } from '@app/Shared/Services/api.types';
+import { Mapping } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
@@ -31,7 +31,7 @@ export const Permissions: React.FC = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [loading, setLoading] = React.useState(true);
-  const [permissions, setPermissions] = React.useState<Permission[]>([]);
+  const [permissions, setPermissions] = React.useState<Mapping[]>([]);
   const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
 
   React.useEffect(() => {
@@ -45,7 +45,7 @@ export const Permissions: React.FC = () => {
             setErrorMessage(err.message);
             return of([]);
           }),
-          map((a: Permission[]) => a.sort()),
+          map((a: Mapping[]) => a.sort()),
         )
         .subscribe(setPermissions),
     );

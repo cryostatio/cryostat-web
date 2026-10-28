@@ -83,7 +83,7 @@ import {
   FetchFn,
   SmartTriggerRequest,
   PermissionResponse,
-  Permission,
+  Mapping,
 } from './api.types';
 import {
   isHttpError,
@@ -436,9 +436,9 @@ export class ApiService {
     );
   }
 
-  getPermissions(): Observable<Permission[]> {
-    return this.sendRequest('beta', `auth/permissions`, {
-      method: 'GET',
+  getPermissions(): Observable<Mapping[]> {
+    return this.sendRequest('beta', `auth/mapping`, {
+      method: 'POST',
     }).pipe(
       concatMap((resp) => resp.json()),
       first(),

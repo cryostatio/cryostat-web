@@ -15,7 +15,7 @@
  */
 
 import build from '@app/build.json';
-import { Permission, PermissionResponse } from '@app/Shared/Services/api.types';
+import { Mapping, PermissionResponse } from '@app/Shared/Services/api.types';
 import { http, HttpResponse, ws } from 'msw';
 import { components } from '../../schema/openapi.types';
 import { db } from '../db';
@@ -62,19 +62,34 @@ export const restHandlers = [
     const resp: PermissionResponse = { authorized: true };
     return HttpResponse.json(resp);
   }),
-  http.get('*/api/beta/auth/permissions', () => {
-    const resp: Permission[] = [
+  http.post('*/api/beta/auth/mapping', () => {
+    const resp: Mapping[] = [
       {
-        resource: 'targets',
-        action: 'read',
+        permission: {
+          resource: 'targets',
+          action: 'read',
+        },
+        response: {
+          authorized: true,
+        },
       },
       {
-        resource: 'archivedrecordings',
-        action: 'write',
+        permission: {
+          resource: 'archivedrecordings',
+          action: 'write',
+        },
+        response: {
+          authorized: true,
+        },
       },
       {
-        resource: 'archivedrecordings',
-        action: 'read',
+        permission: {
+          resource: 'archivedrecordings',
+          action: 'read',
+        },
+        response: {
+          authorized: true,
+        },
       },
     ];
     return HttpResponse.json(resp);

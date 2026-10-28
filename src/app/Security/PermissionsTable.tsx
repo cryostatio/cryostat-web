@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Permission } from '@app/Shared/Services/api.types';
+import { Mapping } from '@app/Shared/Services/api.types';
 import { useSort } from '@app/utils/hooks/useSort';
 import { sortResources, TableColumn } from '@app/utils/utils';
 import {
@@ -33,7 +33,7 @@ import _ from 'lodash';
 import React from 'react';
 
 interface PermissionRowData {
-  permission: Permission;
+  permission: Mapping;
   cellContents: React.ReactNode[];
 }
 
@@ -48,10 +48,15 @@ const permissionsColumns: TableColumn[] = [
     keyPaths: ['action'],
     sortable: true,
   },
+  {
+    title: 'Authorized',
+    keyPaths: ['authorized'],
+    sortable: true,
+  },
 ];
 
 export interface PermissionsTableProps {
-  permissions: Permission[];
+  permissions: Mapping[];
 }
 
 export const PermissionsTable: React.FC<PermissionsTableProps> = (props: PermissionsTableProps) => {
@@ -92,7 +97,11 @@ export const PermissionsTable: React.FC<PermissionsTableProps> = (props: Permiss
 
   const filterStringsByText = React.useMemo(() => {
     const reg = new RegExp(_.escapeRegExp(filterText), 'i');
-    const withFilters = (t: Permission) => filterText === '' || reg.test(t.action) || reg.test(t.resource);
+    const withFilters = (t: Mapping) =>
+      filterText === '' ||
+      reg.test(t.permission.action) ||
+      reg.test(t.permission.resource) ||
+      reg.test(String(t.response.authorized));
     return sortResources(
       {
         index: sortBy.index ?? 0,
@@ -117,10 +126,10 @@ export const PermissionsTable: React.FC<PermissionsTableProps> = (props: Permiss
       permissionsColumns,
     );
     if (props.permissions) {
-      sorted.forEach((d: Permission) => {
+      sorted.forEach((d: Mapping) => {
         rows.push({
           permission: d,
-          cellContents: [d.resource, d.action],
+          cellContents: [d.permission.resource, d.permission.action, d.response.authorized],
         });
       });
     }
@@ -160,7 +169,6 @@ export const PermissionsTable: React.FC<PermissionsTableProps> = (props: Permiss
           <Table aria-label="User Permissions" variant={TableVariant.compact}>
             <Thead>
               <Tr>
-                <Th key="table-header-expand" />
                 {permissionsColumns.map(({ title, sortable }, index) => (
                   <Th key={`permissions-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
                     {title}
@@ -172,10 +180,13 @@ export const PermissionsTable: React.FC<PermissionsTableProps> = (props: Permiss
               <Tbody key={`permissions-row-pair-${index}`}>
                 <Tr key={`permissions-row-${index}`}>
                   <Td key={`permissions-resource-${index}`} colSpan={1} dataLabel={permissionsColumns[0].title}>
-                    {c.permission.resource}
+                    {c.permission.permission.resource}
                   </Td>
                   <Td key={`permissions-resource-${index}`} colSpan={1} dataLabel={permissionsColumns[1].title}>
-                    {c.permission.action}
+                    {c.permission.permission.action}
+                  </Td>
+                  <Td key={`permissions-resource-${index}`} colSpan={1} dataLabel={permissionsColumns[2].title}>
+                    {c.permission.response.authorized ? 'true' : 'false'}
                   </Td>
                 </Tr>
               </Tbody>

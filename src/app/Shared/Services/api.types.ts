@@ -369,6 +369,11 @@ export interface Permission {
   action: string;
 }
 
+export interface Mapping {
+  permission: Permission;
+  response: PermissionResponse;
+}
+
 export interface HeapDumpDirectory {
   jvmId: string;
   heapDumps: HeapDump[];
