@@ -41,17 +41,13 @@ const mockResponse: Response = {
 } as Response;
 
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
-jest
-  .spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents')
-  .mockReturnValue(of(mockAvailableEvents as unknown as string[]));
+jest.spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents').mockReturnValue(of(mockAvailableEvents));
 
 describe('<CreateAsyncProfilerSession />', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
-    jest
-      .spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents')
-      .mockReturnValue(of(mockAvailableEvents as unknown as string[]));
+    jest.spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents').mockReturnValue(of(mockAvailableEvents));
   });
 
   afterEach(cleanup);

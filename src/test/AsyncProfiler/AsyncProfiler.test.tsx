@@ -52,8 +52,8 @@ const mockTarget: Target = {
 };
 
 const mockStatus: AsyncProfilerStatus = {
-  status: false,
-  availableEvents: [],
+  status: 'STOPPED',
+  availableEvents: {},
   currentProfile: undefined,
 };
 
