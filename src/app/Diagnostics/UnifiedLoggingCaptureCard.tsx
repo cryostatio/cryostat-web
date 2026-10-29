@@ -54,7 +54,7 @@ export const UnifiedLoggingCaptureCard: React.FC<UnifiedLoggingCaptureCardProps>
   const [isLoadingStatus, setIsLoadingStatus] = React.useState(true);
   const [runningGc, setRunningGc] = React.useState(false);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [captureEnabled, setCaptureEnabled] = React.useState(true);
+  const [captureEnabled, setCaptureEnabled] = React.useState(false);
 
   React.useEffect(() => {
     addSubscription(serviceContext.target.target().subscribe(setTarget));
@@ -87,9 +87,7 @@ export const UnifiedLoggingCaptureCard: React.FC<UnifiedLoggingCaptureCardProps>
         )
         .subscribe({
           next: (resp) => {
-            if (!resp.authorized) {
-              setCaptureEnabled(false);
-            }
+            setCaptureEnabled(resp.authorized);
           },
           error: () => setCaptureEnabled(false),
         }),

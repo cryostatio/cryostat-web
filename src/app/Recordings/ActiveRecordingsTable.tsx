@@ -162,10 +162,10 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
     DELETE: false,
     STOP: false,
   });
-  const [writeEnabled, setWriteEnabled] = React.useState(true);
-  const [archiveAllowed, setArchiveAllowed] = React.useState(true);
-  const [reportEnabled, setReportEnabled] = React.useState(true);
-  const [deleteEnabled, setDeleteEnabled] = React.useState(true);
+  const [writeEnabled, setWriteEnabled] = React.useState(false);
+  const [archiveAllowed, setArchiveAllowed] = React.useState(false);
+  const [reportEnabled, setReportEnabled] = React.useState(false);
+  const [deleteEnabled, setDeleteEnabled] = React.useState(false);
   const [sortBy, getSortParams] = useSort();
   const [reportRefresh] = React.useState(new Subject<void>());
   const handleReportRefresh = React.useCallback(() => reportRefresh.next(), [reportRefresh]);
@@ -208,9 +208,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         )
         .subscribe({
           next: (resp) => {
-            if (!resp.authorized) {
-              setWriteEnabled(false);
-            }
+            setWriteEnabled(resp.authorized);
           },
           error: () => setWriteEnabled(false),
         }),
@@ -228,9 +226,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         )
         .subscribe({
           next: (resp) => {
-            if (!resp.authorized) {
-              setArchiveAllowed(false);
-            }
+            setArchiveAllowed(resp.authorized);
           },
           error: () => setArchiveAllowed(false),
         }),
@@ -248,9 +244,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         )
         .subscribe({
           next: (resp) => {
-            if (!resp.authorized) {
-              setReportEnabled(false);
-            }
+            setReportEnabled(resp.authorized);
           },
           error: () => setReportEnabled(false),
         }),
@@ -268,9 +262,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         )
         .subscribe({
           next: (resp) => {
-            if (!resp.authorized) {
-              setDeleteEnabled(false);
-            }
+            setDeleteEnabled(resp.authorized);
           },
           error: () => setDeleteEnabled(false),
         }),
@@ -1008,7 +1000,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
               variant="secondary"
               onClick={props.handleAnalyze}
               data-quickstart-id="recordings-analyze-btn"
-              isDisabled={!props.writeEnabled && !props.archiveAllowed && !props.reportEnabled}
+              isDisabled={!props.reportEnabled}
             >
               {t('ANALYZE')}
             </Button>
@@ -1019,7 +1011,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
             key={'Analyze'}
             isShared
             onClick={props.handleAnalyze}
-            isDisabled={!props.writeEnabled && !props.archiveAllowed && !props.reportEnabled}
+            isDisabled={!props.reportEnabled}
           >
             {t('ANALYZE')}
           </OverflowMenuDropdownItem>
@@ -1053,11 +1045,13 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
       <DeleteWarningModal
         warningType={DeleteOrDisableWarningType.DeleteActiveRecordings}
         visible={warningModalOpen}
-        onAccept={props.handleDeleteRecordings}
+        onAccept={() => {
+          if (props.deleteEnabled) props.handleDeleteRecordings();
+        }}
         onClose={handleWarningModalClose}
       />
     );
-  }, [warningModalOpen, props.handleDeleteRecordings, handleWarningModalClose]);
+  }, [warningModalOpen, props, handleWarningModalClose]);
 
   return (
     <Toolbar

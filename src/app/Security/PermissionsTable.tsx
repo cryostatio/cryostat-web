@@ -40,17 +40,17 @@ interface PermissionRowData {
 const permissionsColumns: TableColumn[] = [
   {
     title: 'Resource',
-    keyPaths: ['resource'],
+    keyPaths: ['permission', 'resource'],
     sortable: true,
   },
   {
     title: 'Action',
-    keyPaths: ['action'],
+    keyPaths: ['permission', 'action'],
     sortable: true,
   },
   {
     title: 'Authorized',
-    keyPaths: ['authorized'],
+    keyPaths: ['response', 'authorized'],
     sortable: true,
   },
 ];
