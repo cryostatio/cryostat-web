@@ -105,9 +105,10 @@ export const CreateAsyncProfilerSession: React.FC = () => {
   React.useEffect(() => {
     if (!target) return;
 
-    [NotificationCategory.ActiveRecordingCreated, NotificationCategory.ActiveRecordingStopped].forEach((cat) => {
-      addSubscription(context.notificationChannel.messages(cat).subscribe(() => checkConflictingRecordings()));
-    });
+    const subs = [NotificationCategory.ActiveRecordingCreated, NotificationCategory.ActiveRecordingStopped].map((cat) =>
+      context.notificationChannel.messages(cat).subscribe(() => checkConflictingRecordings()),
+    );
+    return () => subs.forEach((s) => s.unsubscribe());
   }, [addSubscription, target, context.notificationChannel, checkConflictingRecordings]);
 
   const exitForm = React.useCallback(() => navigate(toPath('/async-profiler')), [navigate]);
