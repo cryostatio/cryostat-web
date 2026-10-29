@@ -497,7 +497,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
     addSubscription(
       context.api
         .getTargetActiveRecordings(target)
-        .pipe(map((rs) => rs.some((r) => r.state !== RecordingState.STOPPED)))
+        .pipe(map((rs) => rs.some((r) => r.state !== 'STOPPED')))
         .subscribe((hasRunningRecordings) => {
           if (currentCheckId === asprofCheckIdRef.current) {
             setAsprofConflictingRecordings(hasRunningRecordings);
