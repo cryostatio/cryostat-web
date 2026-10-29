@@ -512,7 +512,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.7.6":
+"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.7.6":
   version: 7.27.0
   resolution: "@babel/runtime@npm:7.27.0"
   dependencies:
@@ -7257,7 +7257,7 @@ __metadata:
     html-webpack-plugin: "npm:5.6.8"
     humanize-duration: "npm:3.35.0"
     i18next: "npm:25.10.10"
-    i18next-browser-languagedetector: "npm:8.2.1"
+    i18next-browser-languagedetector: "npm:8.2.3"
     i18next-parser: "npm:9.4.0"
     imagemin: "npm:9.0.1"
     jest: "npm:30.5.2"
@@ -11134,12 +11134,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next-browser-languagedetector@npm:8.2.1":
-  version: 8.2.1
-  resolution: "i18next-browser-languagedetector@npm:8.2.1"
+"i18next-browser-languagedetector@npm:8.2.3":
+  version: 8.2.3
+  resolution: "i18next-browser-languagedetector@npm:8.2.3"
   dependencies:
-    "@babel/runtime": "npm:^7.23.2"
-  checksum: 10/3410c839285f70f04546b6d5960e3fe263cbefb3098afa17e4254677af8e2149f287968d4e4fb3bcbf76a0e2300761e56e0315e41f1b5ed5c1c78a2d037cc64f
+    "@babel/runtime": "npm:^7.29.2"
+  checksum: 10/02cb7f3a1d075230d9fd8403cea7d3c7a3c2918128355d18104a083bbde0734d1b340be44d0e81e74f1cf6e7e89e8a051137aba590c534555985593d9079d37f
   languageName: node
   linkType: hard
 
