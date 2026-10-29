@@ -17,7 +17,7 @@ import '@testing-library/jest-dom';
 
 import { TargetAnalysis } from '@app/Recordings/TargetAnalysis';
 import { Palette } from '@app/Settings/types';
-import { ActiveRecording, RecordingState, AggregateReport } from '@app/Shared/Services/api.types';
+import { ActiveRecording, AggregateReport } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
 import { cleanup, screen } from '@testing-library/react';
@@ -47,7 +47,7 @@ const mockRecording: ActiveRecording = {
   reportUrl: 'http://reportUrl',
   metadata: { labels: mockRecordingLabels },
   startTime: 1234567890,
-  state: RecordingState.RUNNING,
+  state: 'RUNNING',
   duration: 1000, // 1000ms
   continuous: false,
   toDisk: false,

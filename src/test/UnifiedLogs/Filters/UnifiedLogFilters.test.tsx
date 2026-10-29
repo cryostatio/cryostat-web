@@ -48,7 +48,9 @@ const mockLog3: UnifiedLog = {
   metadata: { labels: [] },
 };
 
-const mockLogNoMetadata: UnifiedLog = {
+// Intentionally untyped: exercises filterUnifiedLogs' defensive handling of a malformed/legacy
+// record missing metadata, which the UnifiedLog type (sourced from the schema) no longer permits.
+const mockLogNoMetadata = {
   logId: 'log-4.log',
   jvmId: 'jvm-3',
   size: 256,

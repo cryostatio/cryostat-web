@@ -36,6 +36,7 @@ const mockTarget: Target = {
 const NOW_MS = 1_700_000_000_000; // arbitrary fixed "now"
 
 const makeRecording = (startMs: number, durationMs: number, name: string): ArchivedRecording => ({
+  jvmId: mockJvmId,
   name,
   downloadUrl: '',
   reportUrl: '',

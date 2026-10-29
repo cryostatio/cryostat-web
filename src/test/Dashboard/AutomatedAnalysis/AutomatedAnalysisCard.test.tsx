@@ -15,7 +15,7 @@
  */
 import { AutomatedAnalysisCard } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCard';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { AggregateReport, HttpError, RecordingState } from '@app/Shared/Services/api.types';
+import { AggregateReport, HttpError } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
@@ -76,7 +76,7 @@ jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(
     {
       id: 1,
       remoteId: 1,
-      state: RecordingState.RUNNING,
+      state: 'RUNNING',
       duration: 0,
       name: 'recording',
       startTime: mockReport!.lastUpdated! - 5000,

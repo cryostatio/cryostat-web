@@ -53,7 +53,8 @@ const mockOtherTarget: Target = {
 const mockHeapDump: HeapDump = {
   downloadUrl: 'someDownloadUrl',
   heapDumpId: 'someUuid',
-  jvmId: mockTarget.jvmId,
+  jvmId: mockTarget.jvmId!,
+  lastModified: 1700000000,
   size: 1,
   metadata: { labels: [{ key: 'someLabel', value: 'someUpdatedValue' }] },
 };
@@ -61,7 +62,8 @@ const mockHeapDump: HeapDump = {
 const mockOtherHeapDump: HeapDump = {
   downloadUrl: 'someOtherDownloadUrl',
   heapDumpId: 'someOtherUuid',
-  jvmId: mockOtherTarget.jvmId,
+  jvmId: mockOtherTarget.jvmId!,
+  lastModified: 1700000000,
   size: 1,
   metadata: { labels: [{ key: 'someLabel', value: 'someOtherValue' }] },
 };

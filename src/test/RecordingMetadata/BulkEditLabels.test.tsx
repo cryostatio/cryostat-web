@@ -17,7 +17,6 @@ import { BulkEditLabels } from '@app/RecordingMetadata/BulkEditLabels';
 import {
   ArchivedRecording,
   ActiveRecording,
-  RecordingState,
   NotificationMessage,
   Target,
   keyValueToString,
@@ -52,6 +51,7 @@ const mockRecordingLabels = [
 ];
 
 const mockArchivedRecording: ArchivedRecording = {
+  jvmId: mockJvmId,
   name: 'someArchivedRecording_some_random',
   downloadUrl: 'http://downloadUrl',
   reportUrl: 'http://reportUrl',
@@ -67,7 +67,7 @@ const mockActiveRecording: ActiveRecording = {
   metadata: { labels: mockRecordingLabels },
   startTime: 1234567890,
   id: 0,
-  state: RecordingState.RUNNING,
+  state: 'RUNNING',
   duration: 0,
   continuous: false,
   toDisk: false,

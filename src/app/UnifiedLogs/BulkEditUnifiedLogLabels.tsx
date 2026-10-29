@@ -71,15 +71,16 @@ export const BulkEditUnifiedLogLabels: React.FC<BulkEditUnifiedLogLabelsProps> =
     addSubscription(
       propsTarget.pipe(filter((t) => !!t)).subscribe((t) => {
         unifiedLogs.forEach((r: UnifiedLog) => {
-          const idx = hashCode(r.logId);
+          const idx = hashCode(r.logId ?? '');
           if (checkedIndices.includes(idx)) {
-            const updatedLabels = [...(r.metadata?.labels ?? []), ...commonLabels].filter(
+            const updatedLabels = [...r.metadata.labels, ...commonLabels].filter(
               (label) => !includesLabel(toDelete, label),
             );
+            const logId = r.logId!;
             if (jvmId) {
-              tasks.push(context.api.postUnifiedLogMetadataForJvmId(jvmId, r.logId, updatedLabels).pipe(first()));
+              tasks.push(context.api.postUnifiedLogMetadataForJvmId(jvmId, logId, updatedLabels).pipe(first()));
             } else {
-              tasks.push(context.api.postUnifiedLogMetadata(t as Target, r.logId, updatedLabels).pipe(first()));
+              tasks.push(context.api.postUnifiedLogMetadata(t as Target, logId, updatedLabels).pipe(first()));
             }
           }
         });
@@ -113,9 +114,9 @@ export const BulkEditUnifiedLogLabels: React.FC<BulkEditUnifiedLogLabelsProps> =
       const allUnifiedLogLabels: KeyValue[][] = [];
 
       unifiedLogs.forEach((r: UnifiedLog) => {
-        const idx = hashCode(r.logId);
+        const idx = hashCode(r.logId ?? '');
         if (checkedIndices.includes(idx)) {
-          allUnifiedLogLabels.push(r.metadata?.labels ?? []);
+          allUnifiedLogLabels.push(r.metadata.labels);
         }
       });
 

@@ -85,7 +85,8 @@ const mockTarget3: Target = {
 const mockHeapDump: HeapDump = {
   downloadUrl: 'someDownloadUrl',
   heapDumpId: 'someUuid',
-  jvmId: mockTarget1.jvmId,
+  jvmId: mockTarget1.jvmId!,
+  lastModified: 1700000000,
   metadata: { labels: [{ key: 'someLabel', value: 'someUpdatedValue' }] },
   size: 1,
 };

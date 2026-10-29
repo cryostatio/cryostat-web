@@ -134,7 +134,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
     } else {
       const reg = new RegExp(_.escapeRegExp(filterText), 'i');
       filtered = templates.filter(
-        (t: EventTemplate) => reg.test(t.name) || reg.test(t.description) || reg.test(t.provider),
+        (t: EventTemplate) => reg.test(t.name ?? '') || reg.test(t.description ?? '') || reg.test(t.provider ?? ''),
       );
     }
 
@@ -283,7 +283,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
     (t: EventTemplate) => {
       addSubscription(
         context.api
-          .deleteCustomEventTemplate(t.name)
+          .deleteCustomEventTemplate(t.name!)
           .pipe(first())
           .subscribe(() => undefined /* do nothing - notification will handle updating state */),
       );
@@ -367,7 +367,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
             {t.provider}
           </Td>
           <Td key={`event-template-type-${index}`} dataLabel={tableColumns[3].title}>
-            {t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase()}
+            {t.type ? t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase() : ''}
           </Td>
           <Td key={`event-template-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
             <ActionsColumn items={actionsResolver(t)} />

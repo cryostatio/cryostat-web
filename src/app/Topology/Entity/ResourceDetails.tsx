@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { EmptyText } from '@app/Shared/Components/EmptyText';
-import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
+import { ActiveRecording } from '@app/Shared/Services/api.types';
 import {
   DescriptionList,
   DescriptionListGroup,
@@ -37,13 +37,13 @@ export const ActiveRecDetail: React.FC<{ resources: ActiveRecording[] }> = ({ re
         groupLabel: 'Running',
         color: 'green',
         icon: <RunningIcon color="green" />,
-        items: resources.filter((rec) => rec.state === RecordingState.RUNNING),
+        items: resources.filter((rec) => rec.state === 'RUNNING'),
       },
       {
         groupLabel: 'Stopped',
         color: 'orange',
         icon: <BanIcon color="orange" />,
-        items: resources.filter((rec) => rec.state === RecordingState.STOPPED),
+        items: resources.filter((rec) => rec.state === 'STOPPED'),
       },
     ],
     [resources],
