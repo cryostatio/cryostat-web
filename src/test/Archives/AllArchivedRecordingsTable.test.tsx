@@ -55,6 +55,7 @@ const mockRecordingDeletedNotification = {
 } as NotificationMessage;
 
 const mockRecording: ArchivedRecording = {
+  jvmId: mockJvmId1,
   name: 'someRecording',
   downloadUrl: 'http://downloadUrl',
   reportUrl: 'http://reportUrl',

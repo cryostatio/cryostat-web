@@ -29,7 +29,7 @@ export const AboutDescription: React.FC = () => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
   const [cryostatVersion, setCryostatVersion] = React.useState(undefined as string | undefined);
-  const [buildInfo, setBuildInfo] = React.useState<BuildInfo>({ git: { hash: '' } });
+  const [buildInfo, setBuildInfo] = React.useState<BuildInfo>({});
   const { t } = useCryostatTranslation();
   const addSubscription = useSubscriptions();
 
@@ -79,14 +79,16 @@ export const AboutDescription: React.FC = () => {
         <Content
           component={ContentVariants.a}
           target="_blank"
-          href={build.commitUrl.replace('__REPLACE_HASH__', buildInfo.git.hash)}
+          href={build.commitUrl.replace('__REPLACE_HASH__', buildInfo.git?.hash ?? '')}
         >
-          {t('AboutDescription.COMMIT', { hash: buildInfo.git.hash })}
+          {t('AboutDescription.COMMIT', { hash: buildInfo.git?.hash ?? '' })}
         </Content>
       );
     } else {
       return (
-        <Content component={ContentVariants.p}>{t('AboutDescription.COMMIT', { hash: buildInfo.git.hash })}</Content>
+        <Content component={ContentVariants.p}>
+          {t('AboutDescription.COMMIT', { hash: buildInfo.git?.hash ?? '' })}
+        </Content>
       );
     }
   }, [t, buildInfo]);

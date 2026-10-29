@@ -242,15 +242,16 @@ export const Reports: React.FC = () => {
 
   const categorizedEvaluations = (report: AggregateReport) => {
     const map = new Map<string, AnalysisResult[]>();
-    report!
-      .data!.map((e) => e.value)
+    report!.data
+      .flatMap((e) => (e?.value ? [e.value] : []))
       .forEach((evaluation) => {
-        const topicValue = map.get(evaluation.topic);
+        const topic = evaluation.topic ?? '';
+        const topicValue = map.get(topic);
         if (topicValue === undefined) {
-          map.set(evaluation.topic, [evaluation]);
+          map.set(topic, [evaluation]);
         } else {
           topicValue.push(evaluation);
-          topicValue.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+          topicValue.sort((a, b) => b.score - a.score || (a.name ?? '').localeCompare(b.name ?? ''));
         }
       });
     return (Array.from(map) as CategorizedRuleEvaluations[]).sort();

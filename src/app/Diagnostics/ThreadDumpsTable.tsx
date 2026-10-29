@@ -654,10 +654,10 @@ export const ThreadDumpRow: React.FC<ThreadDumpRowProps> = ({
             className="thread-dump-table__timestamp"
             tooltip={{
               variant: TimestampTooltipVariant.custom,
-              content: dayjs((threadDump.lastModified ?? 0) * 1000).toISOString(),
+              content: dayjs(threadDump.lastModified * 1000).toISOString(),
             }}
           >
-            {dayjs((threadDump.lastModified ?? 0) * 1000)
+            {dayjs(threadDump.lastModified * 1000)
               .tz(datetimeContext.timeZone.full)
               .format('L LTS z')}
           </Timestamp>
@@ -669,11 +669,11 @@ export const ThreadDumpRow: React.FC<ThreadDumpRowProps> = ({
               updateFilters: updateFilters,
               labelFilters: labelFilters,
             }}
-            labels={threadDump.metadata?.labels ?? []}
+            labels={threadDump.metadata.labels}
           />
         </Td>
         <Td key={`thread-dump-table-row-${index}_4`} dataLabel={tableColumns[3].title}>
-          {formatBytes(threadDump.size ?? 0)}
+          {formatBytes(threadDump.size)}
         </Td>
         {<ThreadDumpAction threadDump={threadDump} onDownload={onDownload} data-quickstart-id="thread-dumps-kebab" />}
       </Tr>
