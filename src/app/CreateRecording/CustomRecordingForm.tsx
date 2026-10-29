@@ -109,6 +109,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
   const [asprofSupported, setAsprofSupported] = React.useState(false);
   const [asprofConflictingRecordings, setAsprofConflictingRecordings] = React.useState(false);
   const [checkingAsprofConflicts, setCheckingAsprofConflicts] = React.useState(false);
+  const [asprofConflictCheckFailed, setAsprofConflictCheckFailed] = React.useState(false);
   const [optionsLoading, setOptionsLoading] = React.useState(false);
   const asprofCheckIdRef = React.useRef(0);
   const optionsRequestIdRef = React.useRef(0);
@@ -288,6 +289,9 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
     if (asprofEnabled && asprofConflictingRecordings) {
       notificationMessages.push(t('CustomRecordingForm.ASYNC_PROFILER_CONFLICTING_RECORDINGS'));
     }
+    if (asprofEnabled && asprofConflictCheckFailed) {
+      notificationMessages.push(t('CustomRecordingForm.ASYNC_PROFILER_CONFLICT_CHECK_FAILED'));
+    }
 
     if (notificationMessages.length > 0) {
       const message = notificationMessages.join('. ').trim() + '.';
@@ -320,6 +324,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
     notifications,
     handleCreateRecording,
     asprofConflictingRecordings,
+    asprofConflictCheckFailed,
   ]);
 
   const refreshFormOptions = React.useCallback(
@@ -384,9 +389,10 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
       formData.labelsValid !== ValidatedOptions.success ||
       (formData.asprofEnabled && formData.asprofEvents.length === 0) ||
       (formData.asprofEnabled && checkingAsprofConflicts) ||
+      (formData.asprofEnabled && asprofConflictCheckFailed) ||
       optionsLoading
     );
-  }, [formData, checkingAsprofConflicts, optionsLoading]);
+  }, [formData, checkingAsprofConflicts, asprofConflictCheckFailed, optionsLoading]);
 
   const hasReservedLabels = React.useMemo(
     () =>
@@ -486,22 +492,34 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
 
   const checkAsprofConflictingRecordings = React.useCallback(() => {
     if (!target) {
+      asprofCheckIdRef.current++;
       setAsprofConflictingRecordings(false);
       setCheckingAsprofConflicts(false);
+      setAsprofConflictCheckFailed(false);
       return;
     }
 
     const currentCheckId = ++asprofCheckIdRef.current;
     setCheckingAsprofConflicts(true);
+    setAsprofConflictCheckFailed(false);
     addSubscription(
       context.api
         .getTargetActiveRecordings(target)
         .pipe(map((rs) => rs.some((r) => r.state !== 'STOPPED')))
-        .subscribe((hasRunningRecordings) => {
-          if (currentCheckId === asprofCheckIdRef.current) {
-            setAsprofConflictingRecordings(hasRunningRecordings);
-            setCheckingAsprofConflicts(false);
-          }
+        .subscribe({
+          next: (hasRunningRecordings) => {
+            if (currentCheckId === asprofCheckIdRef.current) {
+              setAsprofConflictingRecordings(hasRunningRecordings);
+              setCheckingAsprofConflicts(false);
+              setAsprofConflictCheckFailed(false);
+            }
+          },
+          error: () => {
+            if (currentCheckId === asprofCheckIdRef.current) {
+              setCheckingAsprofConflicts(false);
+              setAsprofConflictCheckFailed(true);
+            }
+          },
         }),
     );
   }, [addSubscription, target, context.api]);
@@ -651,22 +669,36 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
               aria-label="Enable async-profiler"
               isChecked={formData.asprofEnabled}
               isDisabled={
-                loading || !target?.agent || !asprofSupported || asprofConflictingRecordings || checkingAsprofConflicts
+                loading ||
+                !target?.agent ||
+                !asprofSupported ||
+                asprofConflictingRecordings ||
+                checkingAsprofConflicts ||
+                asprofConflictCheckFailed
               }
               onChange={handleAsprofEnabledChange}
             />
             <FormHelperText>
               <HelperText>
-                <HelperTextItem variant={asprofConflictingRecordings ? 'warning' : 'default'}>
-                  {asprofConflictingRecordings
-                    ? t('CustomRecordingForm.ASYNC_PROFILER_CONFLICTING_RECORDINGS')
-                    : !target?.agent
-                      ? t('CustomRecordingForm.ASYNC_PROFILER_REQUIRES_AGENT')
-                      : asprofSupported
-                        ? t('CustomRecordingForm.ASYNC_PROFILER_DESCRIPTION')
-                        : t('CustomRecordingForm.ASYNC_PROFILER_NOT_DETECTED')}
+                <HelperTextItem
+                  variant={asprofConflictingRecordings || asprofConflictCheckFailed ? 'warning' : 'default'}
+                >
+                  {asprofConflictCheckFailed
+                    ? t('CustomRecordingForm.ASYNC_PROFILER_CONFLICT_CHECK_FAILED')
+                    : asprofConflictingRecordings
+                      ? t('CustomRecordingForm.ASYNC_PROFILER_CONFLICTING_RECORDINGS')
+                      : !target?.agent
+                        ? t('CustomRecordingForm.ASYNC_PROFILER_REQUIRES_AGENT')
+                        : asprofSupported
+                          ? t('CustomRecordingForm.ASYNC_PROFILER_DESCRIPTION')
+                          : t('CustomRecordingForm.ASYNC_PROFILER_NOT_DETECTED')}
                 </HelperTextItem>
               </HelperText>
+              {asprofConflictCheckFailed && (
+                <Button variant="link" isInline onClick={checkAsprofConflictingRecordings}>
+                  {t('RETRY')}
+                </Button>
+              )}
             </FormHelperText>
             {formData.asprofEnabled && (
               <FormGroup

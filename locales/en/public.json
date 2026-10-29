@@ -262,7 +262,8 @@
     "CONFLICT_WARNING_TITLE": "Conflicting Active Recordings",
     "DESCRIPTION": "async-profiler enables precise CPU-time profiling of program execution as well as VM and native memory allocations. Profiling sessions will be dumped to JFR-format binary files. Not all combinations of available events are acceptable.",
     "DURATION": "Duration",
-    "EVENTS": "Available events"
+    "EVENTS": "Available events",
+    "EVENTS_LOAD_ERROR": "Failed to load available async-profiler events."
   },
   "CreateCredentialModal": {
     "ARIA_LABELS": {
@@ -349,6 +350,7 @@
     "TEMPLATE_INVALID": "A Template must be selected.",
     "ASYNC_PROFILER": "async-profiler",
     "ASYNC_PROFILER_CONFLICTING_RECORDINGS": "Cannot enable async-profiler while other flight recordings are running. Stop the conflicting recordings first.",
+    "ASYNC_PROFILER_CONFLICT_CHECK_FAILED": "Unable to verify whether other flight recordings are running. async-profiler cannot be enabled until this check succeeds.",
     "ASYNC_PROFILER_DESCRIPTION": "Augment this recording with async-profiler stack samples.",
     "ASYNC_PROFILER_EVENTS": "async-profiler events",
     "ASYNC_PROFILER_NOT_DETECTED": "async-profiler is not available on this target.",

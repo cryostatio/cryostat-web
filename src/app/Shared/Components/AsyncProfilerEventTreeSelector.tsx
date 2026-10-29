@@ -19,6 +19,8 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
+  Alert,
+  Button,
   DualListSelector,
   DualListSelectorControl,
   DualListSelectorControlsWrapper,
@@ -83,9 +85,15 @@ export const AsyncProfilerEventTreeSelector: React.FC<AsyncProfilerEventTreeSele
   const [checkedLeafIds, setCheckedLeafIds] = React.useState<string[]>([]);
   const [availableFilter, setAvailableFilter] = React.useState('');
   const [chosenFilter, setChosenFilter] = React.useState('');
+  const [loadError, setLoadError] = React.useState(false);
+  const [retryCount, setRetryCount] = React.useState(0);
   const previousTargetId = React.useRef<number | undefined>(undefined);
+  const chosenLeafIdsRef = React.useRef<string[]>(chosenLeafIds);
+  chosenLeafIdsRef.current = chosenLeafIds;
 
   React.useEffect(() => {
+    setLoadError(false);
+
     if (!target) {
       setAllEvents([]);
       setCheckedLeafIds([]);
@@ -103,15 +111,32 @@ export const AsyncProfilerEventTreeSelector: React.FC<AsyncProfilerEventTreeSele
     const subscription = context.api
       .getAsyncProfilerAvailableEvents(target)
       .pipe(map(convertEventsToTree))
-      .subscribe((e) => {
-        if (previousTargetId.current === target.id) {
-          setAllEvents(e);
-        }
+      .subscribe({
+        next: (e) => {
+          if (previousTargetId.current === target.id) {
+            const available = new Set(e.flatMap(getLeafIds));
+            const current = chosenLeafIdsRef.current;
+            const reconciled = current.filter((id) => available.has(id));
+            if (reconciled.length !== current.length) {
+              onChosenLeafIdsChange(reconciled);
+            }
+            setCheckedLeafIds((prev) => prev.filter((id) => available.has(id)));
+            setAllEvents(e);
+            setLoadError(false);
+          }
+        },
+        error: () => {
+          if (previousTargetId.current === target.id) {
+            setLoadError(true);
+          }
+        },
       });
 
     addSubscription(subscription);
     return () => subscription.unsubscribe();
-  }, [addSubscription, target, context.api, onChosenLeafIdsChange]);
+  }, [addSubscription, target, context.api, onChosenLeafIdsChange, retryCount]);
+
+  const handleRetry = React.useCallback(() => setRetryCount((c) => c + 1), []);
 
   const allLeafIds = React.useMemo(() => allEvents.flatMap(getLeafIds), [allEvents]);
 
@@ -343,35 +368,49 @@ export const AsyncProfilerEventTreeSelector: React.FC<AsyncProfilerEventTreeSele
   };
 
   return (
-    <DualListSelector isTree>
-      {buildPane(false)}
-      <DualListSelectorControlsWrapper>
-        <DualListSelectorControl
-          isDisabled={isDisabled || !checkedLeafIds.some((id) => visibleAvailableLeafIds.includes(id))}
-          onClick={() => moveChecked(true)}
-          aria-label={t('CreateAsyncProfilerSession.ARIA_LABELS.ADD_SELECTED')}
-          icon={<AngleRightIcon />}
+    <>
+      {loadError && (
+        <Alert
+          variant="danger"
+          isInline
+          title={t('CreateAsyncProfilerSession.EVENTS_LOAD_ERROR')}
+          actionLinks={
+            <Button variant="link" isInline onClick={handleRetry}>
+              {t('RETRY')}
+            </Button>
+          }
         />
-        <DualListSelectorControl
-          isDisabled={isDisabled || visibleAvailableLeafIds.length === 0}
-          onClick={() => moveAll(true)}
-          aria-label={t('CreateAsyncProfilerSession.ARIA_LABELS.ADD_ALL')}
-          icon={<AngleDoubleRightIcon />}
-        />
-        <DualListSelectorControl
-          isDisabled={isDisabled || visibleChosenLeafIds.length === 0}
-          onClick={() => moveAll(false)}
-          aria-label={t('CreateAsyncProfilerSession.ARIA_LABELS.REMOVE_ALL')}
-          icon={<AngleDoubleLeftIcon />}
-        />
-        <DualListSelectorControl
-          isDisabled={isDisabled || !checkedLeafIds.some((id) => visibleChosenLeafIds.includes(id))}
-          onClick={() => moveChecked(false)}
-          aria-label={t('CreateAsyncProfilerSession.ARIA_LABELS.REMOVE_SELECTED')}
-          icon={<AngleLeftIcon />}
-        />
-      </DualListSelectorControlsWrapper>
-      {buildPane(true)}
-    </DualListSelector>
+      )}
+      <DualListSelector isTree>
+        {buildPane(false)}
+        <DualListSelectorControlsWrapper>
+          <DualListSelectorControl
+            isDisabled={isDisabled || !checkedLeafIds.some((id) => visibleAvailableLeafIds.includes(id))}
+            onClick={() => moveChecked(true)}
+            aria-label={t('CreateAsyncProfilerSession.ARIA_LABELS.ADD_SELECTED')}
+            icon={<AngleRightIcon />}
+          />
+          <DualListSelectorControl
+            isDisabled={isDisabled || visibleAvailableLeafIds.length === 0}
+            onClick={() => moveAll(true)}
+            aria-label={t('CreateAsyncProfilerSession.ARIA_LABELS.ADD_ALL')}
+            icon={<AngleDoubleRightIcon />}
+          />
+          <DualListSelectorControl
+            isDisabled={isDisabled || visibleChosenLeafIds.length === 0}
+            onClick={() => moveAll(false)}
+            aria-label={t('CreateAsyncProfilerSession.ARIA_LABELS.REMOVE_ALL')}
+            icon={<AngleDoubleLeftIcon />}
+          />
+          <DualListSelectorControl
+            isDisabled={isDisabled || !checkedLeafIds.some((id) => visibleChosenLeafIds.includes(id))}
+            onClick={() => moveChecked(false)}
+            aria-label={t('CreateAsyncProfilerSession.ARIA_LABELS.REMOVE_SELECTED')}
+            icon={<AngleLeftIcon />}
+          />
+        </DualListSelectorControlsWrapper>
+        {buildPane(true)}
+      </DualListSelector>
+    </>
   );
 };

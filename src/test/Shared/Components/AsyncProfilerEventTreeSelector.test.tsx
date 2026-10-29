@@ -125,7 +125,6 @@ describe('<AsyncProfilerEventTreeSelector />', () => {
     await user.click(addAll);
 
     expect(onChange).toHaveBeenCalledTimes(1);
-    const args: string[] = onChange.mock.calls[0][0];
-    expect(args.length).toBeGreaterThan(0);
+    expect(onChange).toHaveBeenCalledWith(['cpu:Execution', 'cpu:Allocation', 'lock:Monitor']);
   });
 });
