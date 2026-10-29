@@ -16,7 +16,7 @@
 
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 import { AsyncProfilerEventTreeSelector } from '@app/Shared/Components/AsyncProfilerEventTreeSelector';
-import { NotificationCategory, NullableTarget, RecordingState } from '@app/Shared/Services/api.types';
+import { NotificationCategory, NullableTarget } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -80,7 +80,7 @@ export const CreateAsyncProfilerSession: React.FC = () => {
     addSubscription(
       context.api
         .getTargetActiveRecordings(target)
-        .pipe(map((rs) => rs.some((r) => r.state !== RecordingState.STOPPED)))
+        .pipe(map((rs) => rs.some((r) => r.state !== 'STOPPED')))
         .subscribe({
           next: (hasRunningRecordings) => {
             if (currentCheckId === checkIdRef.current) {
