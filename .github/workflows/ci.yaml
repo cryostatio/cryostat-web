@@ -15,6 +15,9 @@ on:
       - v[0-9]+.[0-9]+
       - cryostat-v[0-9]+.[0-9]+
 
+env:
+  CRYOSTAT_BACKEND_REF: 2a8222d8e663717794565a838e1495b8fa3e0270
+
 jobs:
   prettier-check:
     runs-on: ubuntu-latest
@@ -43,7 +46,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'yarn'
     - uses: bahmutov/npm-install@20216767ca67f0f7b4d095dc5859c5700a6581cb # v1.12.1
-    - run: yarn schema:sync
+    - run: CRYOSTAT_BACKEND_REF=${{ env.CRYOSTAT_BACKEND_REF }} yarn schema:sync
     - run: yarn eslint:check --max-warnings 0
   type-check:
     runs-on: ubuntu-latest
@@ -58,7 +61,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
       - uses: bahmutov/npm-install@20216767ca67f0f7b4d095dc5859c5700a6581cb # v1.12.1
-      - run: yarn schema:sync
+      - run: CRYOSTAT_BACKEND_REF=${{ env.CRYOSTAT_BACKEND_REF }} yarn schema:sync
       - run: yarn type-check
   test:
     runs-on: ubuntu-latest

@@ -14,6 +14,19 @@
     ":pinVersions"
   ],
   "reviewersFromCodeOwners": true,
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/workflows/ci\\.yaml$/"],
+      "matchStrings": [
+        "CRYOSTAT_BACKEND_REF: (?<currentDigest>[a-f0-9]{40})\\n"
+      ],
+      "datasourceTemplate": "git-refs",
+      "packageNameTemplate": "https://github.com/cryostatio/cryostat",
+      "depNameTemplate": "cryostatio/cryostat",
+      "currentValueTemplate": "main"
+    }
+  ],
   "labels": ["dependencies", "chore", "safe-to-test"],
   "semanticCommits": "enabled",
   "major": {
