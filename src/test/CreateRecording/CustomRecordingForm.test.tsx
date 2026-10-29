@@ -257,7 +257,7 @@ describe('<CustomRecordingForm />', () => {
     jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.BETA));
     jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockAgentTarget));
     jest.spyOn(defaultServices.api, 'isAsyncProfilerSupported').mockReturnValue(of(true));
-    jest.spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents').mockReturnValue(of([]));
+    jest.spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents').mockReturnValue(of({}));
 
     render({
       routerConfigs: { routes: [{ path: '/recordings', element: <CustomRecordingForm /> }] },
@@ -275,7 +275,7 @@ describe('<CustomRecordingForm />', () => {
     jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.BETA));
     jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockAgentTarget));
     jest.spyOn(defaultServices.api, 'isAsyncProfilerSupported').mockReturnValue(of(true));
-    jest.spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents').mockReturnValue(of([]));
+    jest.spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents').mockReturnValue(of({}));
 
     const { user } = render({
       routerConfigs: { routes: [{ path: '/recordings', element: <CustomRecordingForm /> }] },
@@ -295,7 +295,7 @@ describe('<CustomRecordingForm />', () => {
     jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.BETA));
     jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockAgentTarget));
     jest.spyOn(defaultServices.api, 'isAsyncProfilerSupported').mockReturnValue(of(true));
-    jest.spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents').mockReturnValue(of([]));
+    jest.spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents').mockReturnValue(of({}));
 
     const { user } = render({
       routerConfigs: { routes: [{ path: '/recordings', element: <CustomRecordingForm /> }] },

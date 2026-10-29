@@ -39,7 +39,7 @@ describe('<AsyncProfilerEventTreeSelector />', () => {
     jest.clearAllMocks();
     jest
       .spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents')
-      .mockReturnValue(of(mockAvailableEvents as unknown as string[]));
+      .mockReturnValue(of(mockAvailableEvents));
   });
 
   afterEach(cleanup);

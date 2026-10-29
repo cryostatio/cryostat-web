@@ -49,7 +49,7 @@ const getLeafIds = (node: DualListSelectorTreeItemData): string[] => {
   return node.children.flatMap(getLeafIds);
 };
 
-const convertEventsToTree = (rawEvents: string[]): DualListSelectorTreeItemData[] => {
+const convertEventsToTree = (rawEvents: Record<string, string[]>): DualListSelectorTreeItemData[] => {
   const out: DualListSelectorTreeItemData[] = [];
   Object.keys(rawEvents).forEach((k) => {
     const category: DualListSelectorTreeItemData = {
