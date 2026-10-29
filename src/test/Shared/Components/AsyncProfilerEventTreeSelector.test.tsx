@@ -37,9 +37,7 @@ const mockAvailableEvents = {
 describe('<AsyncProfilerEventTreeSelector />', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest
-      .spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents')
-      .mockReturnValue(of(mockAvailableEvents));
+    jest.spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents').mockReturnValue(of(mockAvailableEvents));
   });
 
   afterEach(cleanup);

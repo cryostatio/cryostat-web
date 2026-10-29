@@ -29,7 +29,6 @@ import {
   AdvancedRecordingOptions,
   NullableTarget,
   NotificationCategory,
-  RecordingState,
   Target,
   KeyValue,
 } from '@app/Shared/Services/api.types';
