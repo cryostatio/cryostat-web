@@ -22,7 +22,7 @@ import '@testing-library/jest-dom';
 import { of, throwError } from 'rxjs';
 import { render } from '../utils';
 
-jest.mock('monaco-editor', () => ({
+jest.mock('monaco-editor/editor/editor.api', () => ({
   editor: {
     getModels: jest.fn(() => [{ updateOptions: jest.fn() }]),
   },

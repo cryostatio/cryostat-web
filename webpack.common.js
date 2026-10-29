@@ -16,7 +16,7 @@ module.exports = (env) => {
         template: path.resolve(__dirname, 'src', 'index.html'),
         favicon: './src/app/assets/favicon.ico',
       }),
-      new MonacoWebpackPlugin()
+      new MonacoWebpackPlugin({ languages: ['sql', 'json'] })
     ],
     // https://medium.com/hackernoon/the-100-correct-way-to-split-your-chunks-with-webpack-f8a9df5b7758
     optimization: {
