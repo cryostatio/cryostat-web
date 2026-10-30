@@ -7352,7 +7352,7 @@ __metadata:
     victory-group: "npm:37.4.1"
     victory-legend: "npm:37.4.1"
     victory-line: "npm:37.4.1"
-    victory-pie: "npm:37.3.6"
+    victory-pie: "npm:37.4.1"
     victory-scatter: "npm:37.3.6"
     victory-stack: "npm:37.3.6"
     victory-tooltip: "npm:37.3.6"
@@ -19021,16 +19021,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"victory-pie@npm:37.3.6":
-  version: 37.3.6
-  resolution: "victory-pie@npm:37.3.6"
+"victory-pie@npm:37.4.1":
+  version: 37.4.1
+  resolution: "victory-pie@npm:37.4.1"
   dependencies:
     lodash: "npm:^4.17.19"
-    victory-core: "npm:37.3.6"
-    victory-vendor: "npm:37.3.6"
+    victory-core: "npm:37.4.1"
+    victory-vendor: "npm:37.4.1"
   peerDependencies:
     react: ">=16.6.0"
-  checksum: 10/ce53349a0fec5e4b81e317cd3e1c89f72f3e5be2cad69285eb31dc9685d4a8b46c73772d1d3a007709dd06d63cbf2d3e44111febd55a42fe40b192a138fa4fd4
+  checksum: 10/368993c4fff7ba1f95735609dac0bb7f69e67b2b2c56ef7a31f39b3e99931760c231d16f2cfa5a495c6661d31d01e66269d889016d39dab171058520c39b44b4
   languageName: node
   linkType: hard
 
