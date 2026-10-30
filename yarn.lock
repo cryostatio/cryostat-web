@@ -7354,7 +7354,7 @@ __metadata:
     victory-line: "npm:37.4.1"
     victory-pie: "npm:37.4.1"
     victory-scatter: "npm:37.4.1"
-    victory-stack: "npm:37.3.6"
+    victory-stack: "npm:37.4.1"
     victory-tooltip: "npm:37.3.6"
     victory-voronoi-container: "npm:37.3.6"
     victory-zoom-container: "npm:37.3.6"
@@ -19070,20 +19070,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"victory-shared-events@npm:37.3.6":
-  version: 37.3.6
-  resolution: "victory-shared-events@npm:37.3.6"
-  dependencies:
-    json-stringify-safe: "npm:^5.0.1"
-    lodash: "npm:^4.17.19"
-    react-fast-compare: "npm:^3.2.0"
-    victory-core: "npm:37.3.6"
-  peerDependencies:
-    react: ">=16.6.0"
-  checksum: 10/1d18284e8ce0f0724a0c4b0b5c3cb2f3a937b6a06587f3e140426c0690a25414666d7e160b3cadea808d26f4e2d099d62ada24eafa81f2fb6db38e495d82ef56
-  languageName: node
-  linkType: hard
-
 "victory-shared-events@npm:37.4.1":
   version: 37.4.1
   resolution: "victory-shared-events@npm:37.4.1"
@@ -19098,17 +19084,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"victory-stack@npm:37.3.6":
-  version: 37.3.6
-  resolution: "victory-stack@npm:37.3.6"
+"victory-stack@npm:37.4.1":
+  version: 37.4.1
+  resolution: "victory-stack@npm:37.4.1"
   dependencies:
     lodash: "npm:^4.17.19"
     react-fast-compare: "npm:^3.2.0"
-    victory-core: "npm:37.3.6"
-    victory-shared-events: "npm:37.3.6"
+    victory-core: "npm:37.4.1"
+    victory-shared-events: "npm:37.4.1"
   peerDependencies:
     react: ">=16.6.0"
-  checksum: 10/1e6920a99965b7c8ee17113c3292318c2d68468cff69b2f5b89ddde48d2a9c0de08659934324b857721290a5bcfe115016aab8dd053b25d4bc004270c9b3b695
+  checksum: 10/be890c25e885d1b4ed0fa4f5016a8a9390686ac3f40d0ce0502c458d7f9685a10e0378925eeb2f71e26304fefd3977e36576a11cdb724d72cb39ec5036746fa6
   languageName: node
   linkType: hard
 
