@@ -100,6 +100,8 @@ export interface ColumnConfig {
 
 export type ProfileActions = 'DELETE';
 
+const CREATE_SESSION_MODAL_LABEL_ID = 'async-profiler-create-session-modal-title';
+
 export const AsyncProfiler: React.FC = () => {
   const context = React.useContext(ServiceContext);
   const { t } = useCryostatTranslation();
@@ -419,8 +421,14 @@ export const AsyncProfiler: React.FC = () => {
           )}
         </CardBody>
       </Card>
-      <Modal appendTo={portalRoot()} isOpen={createModalOpen} variant="large" onClose={closeCreateModal}>
-        <ModalHeader title={t('CreateAsyncProfilerSession.MODAL_TITLE')} />
+      <Modal
+        appendTo={portalRoot()}
+        isOpen={createModalOpen}
+        variant="large"
+        onClose={closeCreateModal}
+        aria-labelledby={CREATE_SESSION_MODAL_LABEL_ID}
+      >
+        <ModalHeader labelId={CREATE_SESSION_MODAL_LABEL_ID} title={t('CreateAsyncProfilerSession.MODAL_TITLE')} />
         <ModalBody>{createModalOpen ? <CreateAsyncProfilerSession onClose={closeCreateModal} /> : null}</ModalBody>
       </Modal>
     </TargetView>
