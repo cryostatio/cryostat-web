@@ -85,7 +85,7 @@ describe('<PermissionsTable />', () => {
   });
 
   it('should display the toolbar', async () => {
-    const { user, container } = render({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
