@@ -112,36 +112,6 @@ export const CreateAsyncProfilerSession: React.FC<CreateAsyncProfilerSessionProp
     return () => subs.forEach((s) => s.unsubscribe());
   }, [addSubscription, target, context.notificationChannel, checkConflictingRecordings]);
 
-  const checkConflictingRecordings = React.useCallback(() => {
-    if (!target) {
-      setHasConflictingRecordings(false);
-      setCheckingConflicts(false);
-      return;
-    }
-
-    const currentCheckId = ++checkIdRef.current;
-    setCheckingConflicts(true);
-    addSubscription(
-      context.api
-        .getTargetActiveRecordings(target)
-        .pipe(map((rs) => rs.some((r) => r.state !== 'STOPPED')))
-        .subscribe({
-          next: (hasRunningRecordings) => {
-            if (currentCheckId === checkIdRef.current) {
-              setHasConflictingRecordings(hasRunningRecordings);
-              setCheckingConflicts(false);
-            }
-          },
-          error: () => {
-            if (currentCheckId === checkIdRef.current) {
-              setHasConflictingRecordings(true);
-              setCheckingConflicts(false);
-            }
-          },
-        }),
-    );
-  }, [addSubscription, target, context.api]);
-
   React.useEffect(() => {
     checkConflictingRecordings();
   }, [checkConflictingRecordings]);
