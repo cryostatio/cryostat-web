@@ -25,11 +25,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - id: read-config
+      run: echo "backendSchemaRef=$(jq -r .backendSchemaRef package.json)" >> $GITHUB_OUTPUT
     - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
       with:
         node-version: 'lts/*'
     - uses: bahmutov/npm-install@20216767ca67f0f7b4d095dc5859c5700a6581cb # v1.12.1
-    - run: yarn schema:sync
+    - run: CRYOSTAT_BACKEND_REF=${{ steps.read-config.outputs.backendSchemaRef }} SKIP_LOCAL_SCHEMAS=true yarn schema:sync
     - name: Build assets
       run: yarn build:preview:notests
     - name: Publish to surge

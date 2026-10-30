@@ -17,9 +17,9 @@
   "customManagers": [
     {
       "customType": "regex",
-      "managerFilePatterns": ["/^\\.github/workflows/ci\\.yaml$/"],
+      "managerFilePatterns": ["^package\\.json$"],
       "matchStrings": [
-        "CRYOSTAT_BACKEND_REF: (?<currentDigest>[a-f0-9]{40})\\n"
+        "\"backendSchemaRef\": \"(?<currentDigest>[a-f0-9]{40})\""
       ],
       "datasourceTemplate": "git-refs",
       "packageNameTemplate": "https://github.com/cryostatio/cryostat",
