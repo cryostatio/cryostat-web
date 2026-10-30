@@ -221,6 +221,24 @@ describe('<PermissionsTable />', () => {
     expect(screen.queryByText('targets')).not.toBeInTheDocument();
   });
 
+  it('should not match unauthorized rows when searching for authorized', () => {
+    render({
+      routerConfigs: {
+        routes: [{ path: '/triggers', element: <PermissionsTable permissions={mockMapping} /> }],
+      },
+    });
+
+    const filter = screen.getByPlaceholderText('Search by resource, action');
+
+    fireEvent.change(filter, { target: { value: 'authorized' } });
+    expect(screen.getByText('targets')).toBeInTheDocument();
+    expect(screen.queryByText('audit')).not.toBeInTheDocument();
+
+    fireEvent.change(filter, { target: { value: 'unauthorized' } });
+    expect(screen.getByText('audit')).toBeInTheDocument();
+    expect(screen.queryByText('targets')).not.toBeInTheDocument();
+  });
+
   it('should display an empty state when no permissions are found', async () => {
     render({
       routerConfigs: {

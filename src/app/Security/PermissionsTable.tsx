@@ -19,6 +19,8 @@ import { useSort } from '@app/utils/hooks/useSort';
 import { sortResources, TableColumn } from '@app/utils/utils';
 import {
   EmptyState,
+  Flex,
+  FlexItem,
   Icon,
   Pagination,
   SearchInput,
@@ -137,11 +139,12 @@ export const PermissionsTable: React.FC<PermissionsTableProps> = (props: Permiss
 
   const filterStringsByText = React.useMemo(() => {
     const reg = new RegExp(_.escapeRegExp(filterText), 'i');
+    const lowerFilterText = filterText.toLowerCase();
     const withFilters = (t: Mapping) =>
       filterText === '' ||
       reg.test(localizeAction(t.permission.action)) ||
       reg.test(t.permission.resource) ||
-      reg.test(localizeAuthorized(t.response.authorized));
+      localizeAuthorized(t.response.authorized).toLowerCase().startsWith(lowerFilterText);
     const filtered = props.permissions ? props.permissions.filter(withFilters) : [];
     if (sortBy.index === undefined) {
       return [...filtered].sort(compareByResourceThenAction);
@@ -232,15 +235,20 @@ export const PermissionsTable: React.FC<PermissionsTableProps> = (props: Permiss
                     {localizeAction(c.permission.permission.action)}
                   </Td>
                   <Td key={`permissions-authorized-${index}`} colSpan={1} dataLabel={permissionsColumns[2].title}>
-                    {c.permission.response.authorized ? (
-                      <Icon status="success">
-                        <CheckCircleIcon title={localizeAuthorized(true)} />
-                      </Icon>
-                    ) : (
-                      <Icon status="danger">
-                        <TimesCircleIcon title={localizeAuthorized(false)} />
-                      </Icon>
-                    )}
+                    <Flex gap={{ default: 'gapSm' }} flexWrap={{ default: 'nowrap' }}>
+                      <FlexItem>
+                        {c.permission.response.authorized ? (
+                          <Icon status="success">
+                            <CheckCircleIcon />
+                          </Icon>
+                        ) : (
+                          <Icon status="danger">
+                            <TimesCircleIcon />
+                          </Icon>
+                        )}
+                      </FlexItem>
+                      <FlexItem>{localizeAuthorized(c.permission.response.authorized)}</FlexItem>
+                    </Flex>
                   </Td>
                 </Tr>
               </Tbody>

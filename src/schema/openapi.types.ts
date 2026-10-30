@@ -283,127 +283,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/beta/auth/check': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Check if the caller is authorized for the given permission. */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/x-www-form-urlencoded': {
-            permission?: string;
-          };
-        };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['PermissionResponse'];
-          };
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/auth/mapping': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Return the permission mappings for the current user */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['MappingResponse'][];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/beta/auth/permissions': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Return an exhaustive list of permissions known to Cryostat */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['Permission'][];
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   '/api/beta/diagnostics/fs/heapdumps': {
     parameters: {
       query?: never;
@@ -6989,10 +6868,6 @@ export interface components {
     };
     /** @enum {string} */
     LockOperation: 'LOCKED' | 'WAITING_TO_LOCK' | 'WAITING_ON' | 'PARKING' | 'ELIMINATED';
-    MappingResponse: {
-      permission: components['schemas']['Permission'];
-      response: components['schemas']['PermissionResponse'];
-    };
     /**
      * @description A Common Expression Language snippet evaluated against a target JVM's properties.
      * @example true
@@ -7036,13 +6911,6 @@ export interface components {
       event?: components['schemas']['Event'];
       name?: string;
       relationKey?: string;
-    };
-    Permission: {
-      action: string;
-      resource: string;
-    };
-    PermissionResponse: {
-      authorized: boolean;
     };
     PluginRegistration: {
       env: components['schemas']['KeyValue'][];
