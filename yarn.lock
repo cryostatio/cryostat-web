@@ -7353,7 +7353,7 @@ __metadata:
     victory-legend: "npm:37.4.1"
     victory-line: "npm:37.4.1"
     victory-pie: "npm:37.4.1"
-    victory-scatter: "npm:37.3.6"
+    victory-scatter: "npm:37.4.1"
     victory-stack: "npm:37.3.6"
     victory-tooltip: "npm:37.3.6"
     victory-voronoi-container: "npm:37.3.6"
@@ -19046,15 +19046,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"victory-scatter@npm:37.3.6":
-  version: 37.3.6
-  resolution: "victory-scatter@npm:37.3.6"
+"victory-scatter@npm:37.4.1":
+  version: 37.4.1
+  resolution: "victory-scatter@npm:37.4.1"
   dependencies:
     lodash: "npm:^4.17.19"
-    victory-core: "npm:37.3.6"
+    victory-core: "npm:37.4.1"
   peerDependencies:
     react: ">=16.6.0"
-  checksum: 10/318813992841fa56506ce826871e59afb2a47c5214253c41ff8ef263ab9e1aefee9fd4c1871b8d1ab60add769f94baab65c7cde0591f27c27c22e231b914619b
+  checksum: 10/dbad9cb9054cb3f70a36b65c0857c05cbcb5edf83479c57597717c01a604be12645efee2493ea803d946dda8b796b53459313e619e81bdc4a9fb4c745b680812
   languageName: node
   linkType: hard
 
