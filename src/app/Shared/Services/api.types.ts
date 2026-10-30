@@ -294,6 +294,20 @@ export type HeapDump = components['schemas']['HeapDump'];
 
 export type ActiveRecordingsFilterInput = GqlActiveRecordingsFilterInput;
 
+export interface PermissionResponse {
+  authorized: boolean;
+}
+
+export interface Permission {
+  resource: string;
+  action: string;
+}
+
+export interface Mapping {
+  permission: Permission;
+  response: PermissionResponse;
+}
+
 /**
  * New target specific archived recording apis now enforce a non-empty target field
  * The placeholder targetId for uploaded (non-target) recordings is "uploads"
