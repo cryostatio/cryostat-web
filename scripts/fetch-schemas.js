@@ -21,7 +21,7 @@ const https = require('https');
 const TARGET_DIR = path.resolve(__dirname, '..', '.schemas');
 const SCHEMA_FILES = ['openapi.yaml', 'schema.graphql'];
 const DEFAULT_GITHUB_REPO = 'cryostatio/cryostat';
-const DEFAULT_REF = process.env.CRYOSTAT_BACKEND_REF || 'main';
+const DEFAULT_REF = process.env.CRYOSTAT_BACKEND_REF || require('../package.json').backendSchemaRef || 'main';
 
 const FETCH_TIMEOUT_MS = 30000;
 const MAX_REDIRECTS = 5;
@@ -67,13 +67,15 @@ async function syncSchemas() {
   ].filter(Boolean);
 
   let localSourceDir = null;
-  for (const candidate of localCandidates) {
-    if (
-      fs.existsSync(candidate) &&
-      SCHEMA_FILES.every((file) => fs.existsSync(path.join(candidate, file)))
-    ) {
-      localSourceDir = candidate;
-      break;
+  if (!process.env.SKIP_LOCAL_SCHEMAS) {
+    for (const candidate of localCandidates) {
+      if (
+        fs.existsSync(candidate) &&
+        SCHEMA_FILES.every((file) => fs.existsSync(path.join(candidate, file)))
+      ) {
+        localSourceDir = candidate;
+        break;
+      }
     }
   }
 

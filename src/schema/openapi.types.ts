@@ -4049,7 +4049,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            'application/json': components['schemas']['Template'][];
+            'application/json': components['schemas']['TemplateDTO'][];
           };
         };
         /** @description Not Authorized */
@@ -4095,7 +4095,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            'application/json': components['schemas']['Template'];
+            'application/json': components['schemas']['TemplateDTO'];
           };
         };
         /** @description Bad Request */
@@ -4206,7 +4206,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            'application/json': components['schemas']['Template'][];
+            'application/json': components['schemas']['TemplateDTO'][];
           };
         };
         /** @description Not Authorized */
@@ -7140,6 +7140,25 @@ export interface components {
       name?: string;
       provider?: string;
       type?: components['schemas']['TemplateType'];
+    };
+    TemplateDTO: {
+      /**
+       * @description The template description
+       * @example A sample template
+       */
+      description: string;
+      /**
+       * @description The template name
+       * @example My_Template
+       */
+      name: string;
+      /**
+       * @description The template provider
+       * @example MyOrg
+       */
+      provider: string;
+      /** @description The template type */
+      type: components['schemas']['TemplateType'];
     };
     /** @enum {string} */
     TemplateType: 'TARGET' | 'CUSTOM' | 'PRESET';
