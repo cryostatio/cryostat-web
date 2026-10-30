@@ -7343,7 +7343,7 @@ __metadata:
     url-loader: "npm:4.1.1"
     victory-area: "npm:37.4.1"
     victory-axis: "npm:37.4.1"
-    victory-bar: "npm:37.3.6"
+    victory-bar: "npm:37.4.1"
     victory-box-plot: "npm:37.3.6"
     victory-chart: "npm:37.3.6"
     victory-core: "npm:37.3.6"
@@ -18884,16 +18884,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"victory-bar@npm:37.3.6":
-  version: 37.3.6
-  resolution: "victory-bar@npm:37.3.6"
+"victory-bar@npm:37.4.1":
+  version: 37.4.1
+  resolution: "victory-bar@npm:37.4.1"
   dependencies:
     lodash: "npm:^4.17.19"
-    victory-core: "npm:37.3.6"
-    victory-vendor: "npm:37.3.6"
+    victory-core: "npm:37.4.1"
+    victory-vendor: "npm:37.4.1"
   peerDependencies:
     react: ">=16.6.0"
-  checksum: 10/c90098465d8ff24d0c27b2454b016233a85ffbd8f5725e9a1c38659a0b32a22e4e49ccf95953dd2065c8f4ecd914c5a547b5013dea3b87ec9fd9b2bea671f329
+  checksum: 10/06f1a21948945c22114ca8321dd407e22bd9c093a44c54b0014e258321e1c7735ee51e27a753d23bde21e275cd474619024267c48ff636e67396f0cae9d7bd11
   languageName: node
   linkType: hard
 
