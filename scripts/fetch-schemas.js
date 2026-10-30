@@ -67,13 +67,15 @@ async function syncSchemas() {
   ].filter(Boolean);
 
   let localSourceDir = null;
-  for (const candidate of localCandidates) {
-    if (
-      fs.existsSync(candidate) &&
-      SCHEMA_FILES.every((file) => fs.existsSync(path.join(candidate, file)))
-    ) {
-      localSourceDir = candidate;
-      break;
+  if (!process.env.SKIP_LOCAL_SCHEMAS) {
+    for (const candidate of localCandidates) {
+      if (
+        fs.existsSync(candidate) &&
+        SCHEMA_FILES.every((file) => fs.existsSync(path.join(candidate, file)))
+      ) {
+        localSourceDir = candidate;
+        break;
+      }
     }
   }
 
