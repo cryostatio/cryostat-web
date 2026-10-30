@@ -7351,7 +7351,7 @@ __metadata:
     victory-cursor-container: "npm:37.4.1"
     victory-group: "npm:37.4.1"
     victory-legend: "npm:37.4.1"
-    victory-line: "npm:37.3.6"
+    victory-line: "npm:37.4.1"
     victory-pie: "npm:37.3.6"
     victory-scatter: "npm:37.3.6"
     victory-stack: "npm:37.3.6"
@@ -19008,16 +19008,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"victory-line@npm:37.3.6":
-  version: 37.3.6
-  resolution: "victory-line@npm:37.3.6"
+"victory-line@npm:37.4.1":
+  version: 37.4.1
+  resolution: "victory-line@npm:37.4.1"
   dependencies:
     lodash: "npm:^4.17.19"
-    victory-core: "npm:37.3.6"
-    victory-vendor: "npm:37.3.6"
+    victory-core: "npm:37.4.1"
+    victory-vendor: "npm:37.4.1"
   peerDependencies:
     react: ">=16.6.0"
-  checksum: 10/e4905bfddf31b6c30b439de67dfb716806986017445632e4be0e6bd5a5ac2b6dab15defe4a876b407b10be022e58a7cc8cc542e36f61f60dba818cab68dc1303
+  checksum: 10/d8ae12752305d718238f2345f74c6dc61937489537e263be5d6ee52eefb326acf4198e5f5a4dfe3f3857f88daad92cb3abcb7e8d7691c2251a78565aa1c171e7
   languageName: node
   linkType: hard
 
