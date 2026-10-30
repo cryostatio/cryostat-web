@@ -7355,7 +7355,7 @@ __metadata:
     victory-pie: "npm:37.4.1"
     victory-scatter: "npm:37.4.1"
     victory-stack: "npm:37.4.1"
-    victory-tooltip: "npm:37.3.6"
+    victory-tooltip: "npm:37.4.1"
     victory-voronoi-container: "npm:37.3.6"
     victory-zoom-container: "npm:37.3.6"
     wait-on: "npm:9.5.1"
