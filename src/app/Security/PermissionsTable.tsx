@@ -117,16 +117,8 @@ export const PermissionsTable: React.FC<PermissionsTableProps> = (props: Permiss
     const visibleTypes = filterStringsByText.slice(offset, offset + perPage);
 
     const rows: PermissionRowData[] = [];
-    const sorted = sortResources(
-      {
-        index: sortBy.index ?? 1,
-        direction: sortBy.direction ?? SortByDirection.asc,
-      },
-      visibleTypes,
-      permissionsColumns,
-    );
     if (props.permissions) {
-      sorted.forEach((d: Mapping) => {
+      visibleTypes.forEach((d: Mapping) => {
         rows.push({
           permission: d,
           cellContents: [d.permission.resource, d.permission.action, d.response.authorized],
