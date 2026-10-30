@@ -16,7 +16,7 @@ on:
       - cryostat-v[0-9]+.[0-9]+
 
 env:
-  CRYOSTAT_BACKEND_REF: 2a8222d8e663717794565a838e1495b8fa3e0270
+  CRYOSTAT_BACKEND_REF: 7e1020f1b38c71cb5243564832b6d07fd2a606b8
 
 jobs:
   prettier-check:
