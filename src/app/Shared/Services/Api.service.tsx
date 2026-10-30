@@ -371,6 +371,7 @@ export class ApiService {
     archiveOnStop,
     metadata,
     advancedOptions,
+    asprofEvents,
   }: RecordingAttributes): Observable<SimpleResponse | undefined> {
     const form = new window.FormData();
     form.append('recordingName', name);
@@ -397,6 +398,9 @@ export class ApiService {
       if (advancedOptions.maxSize && advancedOptions.maxSize >= 0) {
         form.append('maxSize', String(advancedOptions.maxSize));
       }
+    }
+    if (asprofEvents && asprofEvents.length > 0) {
+      asprofEvents.forEach((e) => form.append('asprofEvents', e));
     }
 
     return this.target.target().pipe(

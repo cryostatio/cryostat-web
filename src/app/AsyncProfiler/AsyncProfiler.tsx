@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { CreateAsyncProfilerSession } from '@app/AsyncProfiler/CreateAsyncProfilerSession';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { isAuthFail } from '@app/ErrorView/types';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
@@ -30,8 +31,9 @@ import {
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import useDayjs from '@app/utils/hooks/useDayjs';
+import { useModalFromLocationState } from '@app/utils/hooks/useModalFromLocationState';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { formatBytes, formatDuration, hashCode, portalRoot, TableColumn, toPath } from '@app/utils/utils';
+import { formatBytes, formatDuration, hashCode, portalRoot, TableColumn } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Bullseye,
@@ -46,6 +48,9 @@ import {
   EmptyState,
   MenuToggle,
   MenuToggleElement,
+  Modal,
+  ModalBody,
+  ModalHeader,
   OverflowMenu,
   OverflowMenuContent,
   OverflowMenuControl,
@@ -62,7 +67,6 @@ import {
 import { EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
 import { InnerScrollContainer, OuterScrollContainer, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { concatMap, filter, first, forkJoin, merge, Observable, tap } from 'rxjs';
 
 const tableColumns: TableColumn[] = [
@@ -100,7 +104,7 @@ export const AsyncProfiler: React.FC = () => {
   const context = React.useContext(ServiceContext);
   const { t } = useCryostatTranslation();
   const addSubscription = useSubscriptions();
-  const navigate = useNavigate();
+  const [createModalOpen, setCreateModalOpen, closeCreateModal] = useModalFromLocationState();
   const [target, setTarget] = React.useState<NullableTarget>(undefined);
   const [isProfilerDetected, setProfilerDetected] = React.useState(false);
   const [isProfilerRunning, setProfilerRunning] = React.useState(false);
@@ -306,8 +310,8 @@ export const AsyncProfiler: React.FC = () => {
   );
 
   const handleCreate = React.useCallback(() => {
-    navigate(toPath('/async-profiler/create'), { relative: 'path' });
-  }, [navigate]);
+    setCreateModalOpen(true);
+  }, [setCreateModalOpen]);
 
   const handleDeleteProfiles = React.useCallback(() => {
     if (!isProfilerDetected || !target) {
@@ -489,6 +493,10 @@ export const AsyncProfiler: React.FC = () => {
           )}
         </CardBody>
       </Card>
+      <Modal appendTo={portalRoot()} isOpen={createModalOpen} variant="large" onClose={closeCreateModal}>
+        <ModalHeader title={t('CreateAsyncProfilerSession.MODAL_TITLE')} />
+        <ModalBody>{createModalOpen ? <CreateAsyncProfilerSession onClose={closeCreateModal} /> : null}</ModalBody>
+      </Modal>
     </TargetView>
   );
 };
@@ -599,7 +607,7 @@ const AsyncProfilesToolbar: React.FC<AsyncProfilesTableToolbarProps> = (props) =
   ]);
 
   return (
-    <Toolbar id="async-profiles-toolbar" aria-label="async-profiles-toolbar">
+    <Toolbar id="async-profiles-toolbar" aria-label={t('AsyncProfiler.ARIA_LABELS.TOOLBAR')}>
       <ToolbarContent>
         <ToolbarGroup variant="action-group" style={{ alignSelf: 'start' }}>
           <ToolbarItem>

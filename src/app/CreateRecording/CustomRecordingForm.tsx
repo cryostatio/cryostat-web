@@ -17,6 +17,9 @@ import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
+import { AsyncProfilerEventTreeSelector } from '@app/Shared/Components/AsyncProfilerEventTreeSelector';
+import { FeatureFlag } from '@app/Shared/Components/FeatureFlag';
+import { FeatureLevelBadge } from '@app/Shared/Components/FeatureLevelBadge';
 import { SelectTemplateSelectorForm } from '@app/Shared/Components/SelectTemplateSelectorForm';
 import { LoadingProps } from '@app/Shared/Components/types';
 import { store } from '@app/Shared/Redux/ReduxStore';
@@ -24,10 +27,13 @@ import {
   EventTemplate,
   RecordingAttributes,
   AdvancedRecordingOptions,
+  NullableTarget,
+  NotificationCategory,
   Target,
   KeyValue,
 } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useExitForm } from '@app/utils/hooks/useExitForm';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -49,6 +55,7 @@ import {
   Label,
   Split,
   SplitItem,
+  Switch,
   Content,
   TextInput,
   ContentVariants,
@@ -60,7 +67,7 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { forkJoin } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 import { EventTemplateIdentifier, CustomRecordingFormData } from './types';
 import { isDurationValid, isRecordingNameValid } from './utils';
 
@@ -89,6 +96,8 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
     maxSize: 50,
     maxSizeUnit: 1024 * 1024,
     toDisk: true,
+    asprofEnabled: false,
+    asprofEvents: [],
     nameValid: ValidatedOptions.default,
     labelsValid: ValidatedOptions.default,
     durationValid: ValidatedOptions.success,
@@ -96,6 +105,14 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
   const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
+  const [target, setTarget] = React.useState<NullableTarget>(undefined);
+  const [asprofSupported, setAsprofSupported] = React.useState(false);
+  const [asprofConflictingRecordings, setAsprofConflictingRecordings] = React.useState(false);
+  const [checkingAsprofConflicts, setCheckingAsprofConflicts] = React.useState(false);
+  const [asprofConflictCheckFailed, setAsprofConflictCheckFailed] = React.useState(false);
+  const [optionsLoading, setOptionsLoading] = React.useState(false);
+  const asprofCheckIdRef = React.useRef(0);
+  const optionsRequestIdRef = React.useRef(0);
 
   const exitForm = useExitForm(onExit);
 
@@ -236,6 +253,17 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
     [setFormData],
   );
 
+  const handleAsprofEnabledChange = React.useCallback(
+    (_: React.FormEvent<HTMLInputElement>, checked: boolean) =>
+      setFormData((old) => ({ ...old, asprofEnabled: checked, asprofEvents: checked ? old.asprofEvents : [] })),
+    [setFormData],
+  );
+
+  const handleAsprofEventsChange = React.useCallback(
+    (ids: string[]) => setFormData((old) => ({ ...old, asprofEvents: ids })),
+    [setFormData],
+  );
+
   const handleSubmit = React.useCallback(() => {
     const {
       name,
@@ -250,11 +278,19 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
       duration,
       durationUnit,
       archiveOnStop,
+      asprofEnabled,
+      asprofEvents,
     } = formData;
 
     const notificationMessages: string[] = [];
     if (nameValid !== ValidatedOptions.success) {
       notificationMessages.push(t('CustomRecordingForm.RECORDING_NAME_INVALID', { name }));
+    }
+    if (asprofEnabled && asprofConflictingRecordings) {
+      notificationMessages.push(t('CustomRecordingForm.ASYNC_PROFILER_CONFLICTING_RECORDINGS'));
+    }
+    if (asprofEnabled && asprofConflictCheckFailed) {
+      notificationMessages.push(t('CustomRecordingForm.ASYNC_PROFILER_CONFLICT_CHECK_FAILED'));
     }
 
     if (notificationMessages.length > 0) {
@@ -277,33 +313,65 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
       metadata: {
         labels: [...formData.labels, { key: 'autoanalyze', value: `${autoanalyze}` }],
       },
+      asprofEvents: asprofEnabled ? asprofEvents : undefined,
     };
     handleCreateRecording(recordingAttributes);
-  }, [t, eventSpecifierString, formData, autoanalyze, notifications, handleCreateRecording]);
+  }, [
+    t,
+    eventSpecifierString,
+    formData,
+    autoanalyze,
+    notifications,
+    handleCreateRecording,
+    asprofConflictingRecordings,
+    asprofConflictCheckFailed,
+  ]);
 
   const refreshFormOptions = React.useCallback(
-    (target: Target) => {
-      if (!target) {
+    (t: Target) => {
+      if (!t) {
         return;
       }
+      setTarget(t);
+      const currentRequestId = ++optionsRequestIdRef.current;
+      setOptionsLoading(true);
       addSubscription(
         forkJoin({
-          templates: context.api.getTargetEventTemplates(target),
-          recordingOptions: context.api.doGet<AdvancedRecordingOptions>(`targets/${target.id}/recordingOptions`),
+          templates: context.api.getTargetEventTemplates(t),
+          recordingOptions: context.api.doGet<AdvancedRecordingOptions>(`targets/${t.id}/recordingOptions`),
+          asprofSupported: context.api.isAsyncProfilerSupported(t),
         }).subscribe({
-          next: ({ templates, recordingOptions }) => {
+          next: ({ templates, recordingOptions, asprofSupported: supported }) => {
+            if (currentRequestId !== optionsRequestIdRef.current) {
+              return;
+            }
+            setOptionsLoading(false);
+            const canUseAsprof = t.agent && supported;
             setErrorMessage('');
             setTemplates(templates);
+            setAsprofSupported(supported);
             setFormData((old) => {
-              const matched = templates.find((t) => t.name === old.template?.name && t.type === old.template?.type);
-              return { ...old, template: matched ? { name: matched.name, type: matched.type } : undefined };
+              const matched = templates.find(
+                (tmpl) => tmpl.name === old.template?.name && tmpl.type === old.template?.type,
+              );
+              return {
+                ...old,
+                template: matched ? { name: matched.name, type: matched.type } : undefined,
+                asprofEnabled: canUseAsprof ? old.asprofEnabled : false,
+                asprofEvents: canUseAsprof ? old.asprofEvents : [],
+              };
             });
             setAdvancedRecordingOptions(recordingOptions);
           },
           error: (error) => {
+            if (currentRequestId !== optionsRequestIdRef.current) {
+              return;
+            }
+            setOptionsLoading(false);
             setErrorMessage(error.message);
             setTemplates([]);
-            setFormData((old) => ({ ...old, template: undefined }));
+            setAsprofSupported(false);
+            setFormData((old) => ({ ...old, template: undefined, asprofEnabled: false, asprofEvents: [] }));
             setAdvancedRecordingOptions({});
           },
         }),
@@ -318,9 +386,13 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
       formData.durationValid !== ValidatedOptions.success ||
       !formData.template?.name ||
       !formData.template?.type ||
-      formData.labelsValid !== ValidatedOptions.success
+      formData.labelsValid !== ValidatedOptions.success ||
+      (formData.asprofEnabled && formData.asprofEvents.length === 0) ||
+      (formData.asprofEnabled && checkingAsprofConflicts) ||
+      (formData.asprofEnabled && asprofConflictCheckFailed) ||
+      optionsLoading
     );
-  }, [formData]);
+  }, [formData, checkingAsprofConflicts, asprofConflictCheckFailed, optionsLoading]);
 
   const hasReservedLabels = React.useMemo(
     () =>
@@ -355,9 +427,12 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
   React.useEffect(() => {
     addSubscription(
       context.target.authFailure().subscribe(() => {
+        optionsRequestIdRef.current++;
+        setOptionsLoading(false);
         setErrorMessage(authFailMessage);
         setTemplates([]);
-        setFormData((old) => ({ ...old, template: undefined }));
+        setAsprofSupported(false);
+        setFormData((old) => ({ ...old, template: undefined, asprofEnabled: false, asprofEvents: [] }));
         setAdvancedRecordingOptions({});
       }),
     );
@@ -414,6 +489,52 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
       maxSizeUnit: maxSizeUnit ?? 1024 * 1024,
     }));
   }, [location, setFormData]);
+
+  const checkAsprofConflictingRecordings = React.useCallback(() => {
+    if (!target) {
+      asprofCheckIdRef.current++;
+      setAsprofConflictingRecordings(false);
+      setCheckingAsprofConflicts(false);
+      setAsprofConflictCheckFailed(false);
+      return;
+    }
+
+    const currentCheckId = ++asprofCheckIdRef.current;
+    setCheckingAsprofConflicts(true);
+    setAsprofConflictCheckFailed(false);
+    addSubscription(
+      context.api
+        .getTargetActiveRecordings(target)
+        .pipe(map((rs) => rs.some((r) => r.state !== 'STOPPED')))
+        .subscribe({
+          next: (hasRunningRecordings) => {
+            if (currentCheckId === asprofCheckIdRef.current) {
+              setAsprofConflictingRecordings(hasRunningRecordings);
+              setCheckingAsprofConflicts(false);
+              setAsprofConflictCheckFailed(false);
+            }
+          },
+          error: () => {
+            if (currentCheckId === asprofCheckIdRef.current) {
+              setCheckingAsprofConflicts(false);
+              setAsprofConflictCheckFailed(true);
+            }
+          },
+        }),
+    );
+  }, [addSubscription, target, context.api]);
+
+  React.useEffect(() => {
+    checkAsprofConflictingRecordings();
+  }, [checkAsprofConflictingRecordings]);
+
+  React.useEffect(() => {
+    if (!target) return;
+
+    [NotificationCategory.ActiveRecordingCreated, NotificationCategory.ActiveRecordingStopped].forEach((cat) => {
+      addSubscription(context.notificationChannel.messages(cat).subscribe(() => checkAsprofConflictingRecordings()));
+    });
+  }, [addSubscription, target, context.notificationChannel, checkAsprofConflictingRecordings]);
 
   if (errorMessage != '') {
     return (
@@ -533,6 +654,67 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
             </HelperText>
           </FormHelperText>
         </FormGroup>
+        <FeatureFlag level={FeatureLevel.BETA}>
+          <FormGroup
+            label={
+              <>
+                {t('CustomRecordingForm.ASYNC_PROFILER')}
+                <FeatureLevelBadge level={FeatureLevel.BETA} />
+              </>
+            }
+            fieldId="recording-asprof-enabled"
+          >
+            <Switch
+              id="recording-asprof-enabled"
+              aria-label="Enable async-profiler"
+              isChecked={formData.asprofEnabled}
+              isDisabled={
+                loading ||
+                !target?.agent ||
+                !asprofSupported ||
+                asprofConflictingRecordings ||
+                checkingAsprofConflicts ||
+                asprofConflictCheckFailed
+              }
+              onChange={handleAsprofEnabledChange}
+            />
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem
+                  variant={asprofConflictingRecordings || asprofConflictCheckFailed ? 'warning' : 'default'}
+                >
+                  {asprofConflictCheckFailed
+                    ? t('CustomRecordingForm.ASYNC_PROFILER_CONFLICT_CHECK_FAILED')
+                    : asprofConflictingRecordings
+                      ? t('CustomRecordingForm.ASYNC_PROFILER_CONFLICTING_RECORDINGS')
+                      : !target?.agent
+                        ? t('CustomRecordingForm.ASYNC_PROFILER_REQUIRES_AGENT')
+                        : asprofSupported
+                          ? t('CustomRecordingForm.ASYNC_PROFILER_DESCRIPTION')
+                          : t('CustomRecordingForm.ASYNC_PROFILER_NOT_DETECTED')}
+                </HelperTextItem>
+              </HelperText>
+              {asprofConflictCheckFailed && (
+                <Button variant="link" isInline onClick={checkAsprofConflictingRecordings}>
+                  {t('RETRY')}
+                </Button>
+              )}
+            </FormHelperText>
+            {formData.asprofEnabled && (
+              <FormGroup
+                label={t('CustomRecordingForm.ASYNC_PROFILER_EVENTS')}
+                fieldId="recording-asprof-events"
+                isRequired
+              >
+                <AsyncProfilerEventTreeSelector
+                  target={target}
+                  chosenLeafIds={formData.asprofEvents}
+                  onChosenLeafIdsChange={handleAsprofEventsChange}
+                />
+              </FormGroup>
+            )}
+          </FormGroup>
+        </FeatureFlag>
         <ExpandableSection
           toggleTextExpanded={t('CustomRecordingForm.METADATA_HIDE')}
           toggleTextCollapsed={t('CustomRecordingForm.METADATA_SHOW')}

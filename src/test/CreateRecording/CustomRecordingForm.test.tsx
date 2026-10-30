@@ -16,6 +16,7 @@
 import { CustomRecordingForm } from '@app/CreateRecording/CustomRecordingForm';
 import { authFailMessage } from '@app/ErrorView/types';
 import { EventTemplate, AdvancedRecordingOptions, RecordingAttributes, Target } from '@app/Shared/Services/api.types';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext, Services, defaultServices } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { screen, cleanup, act as doAct } from '@testing-library/react';
@@ -36,11 +37,20 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
-const mockTarget = {
+const mockTarget: Target = {
   agent: false,
   connectUrl: mockConnectUrl,
   alias: 'fooTarget',
   jvmId: 'foo',
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
+};
+
+const mockAgentTarget: Target = {
+  agent: true,
+  connectUrl: 'http://agent-target:9977/api/v1',
+  alias: 'agentTarget',
+  jvmId: 'bar',
   labels: [],
   annotations: { cryostat: [], platform: [] },
 };
@@ -64,12 +74,26 @@ const mockResponse: Response = {
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.api, 'getTargetEventTemplates').mockReturnValue(of([mockCustomEventTemplate]));
 jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of(mockRecordingOptions));
+jest.spyOn(defaultServices.api, 'isAsyncProfilerSupported').mockReturnValue(of(false));
+jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(of([]));
+jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.PRODUCTION));
+jest.spyOn(defaultServices.settings, 'largeUi').mockReturnValue(of(false));
 
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
+jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of());
 
 describe('<CustomRecordingForm />', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
+    jest.spyOn(defaultServices.api, 'getTargetEventTemplates').mockReturnValue(of([mockCustomEventTemplate]));
+    jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of(mockRecordingOptions));
+    jest.spyOn(defaultServices.api, 'isAsyncProfilerSupported').mockReturnValue(of(false));
+    jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(of([]));
+    jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.PRODUCTION));
+    jest.spyOn(defaultServices.settings, 'largeUi').mockReturnValue(of(false));
+    jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
+    jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of());
   });
 
   afterEach(cleanup);
@@ -125,6 +149,7 @@ describe('<CustomRecordingForm />', () => {
           },
         ],
       },
+      asprofEvents: undefined,
     } as RecordingAttributes);
     expect(mockNavigate).toHaveBeenCalledWith('..', { relative: 'path' });
   });
@@ -187,5 +212,104 @@ describe('<CustomRecordingForm />', () => {
     const retryButton = screen.getByText('Retry');
     expect(retryButton).toBeInTheDocument();
     expect(retryButton).toBeVisible();
+  });
+
+  it('should not show the async-profiler section at production feature level', async () => {
+    render({
+      routerConfigs: { routes: [{ path: '/recordings', element: <CustomRecordingForm /> }] },
+    });
+
+    expect(screen.queryByRole('switch', { name: /enable async-profiler/i })).not.toBeInTheDocument();
+  });
+
+  it('should disable the async-profiler toggle for a non-agent (JMX) target', async () => {
+    jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.BETA));
+    render({
+      routerConfigs: { routes: [{ path: '/recordings', element: <CustomRecordingForm /> }] },
+    });
+
+    const toggle = screen.getByRole('switch', { name: /enable async-profiler/i });
+    expect(toggle).toBeInTheDocument();
+    expect(toggle).toBeDisabled();
+
+    const helperText = screen.getByText('async-profiler is only supported for Agent-connected targets.');
+    expect(helperText).toBeInTheDocument();
+  });
+
+  it('should disable the async-profiler toggle for an agent target where asprof is not detected', async () => {
+    jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.BETA));
+    jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockAgentTarget));
+    jest.spyOn(defaultServices.api, 'isAsyncProfilerSupported').mockReturnValue(of(false));
+
+    render({
+      routerConfigs: { routes: [{ path: '/recordings', element: <CustomRecordingForm /> }] },
+    });
+
+    const toggle = screen.getByRole('switch', { name: /enable async-profiler/i });
+    expect(toggle).toBeInTheDocument();
+    expect(toggle).toBeDisabled();
+
+    const helperText = screen.getByText('async-profiler is not available on this target.');
+    expect(helperText).toBeInTheDocument();
+  });
+
+  it('should enable the async-profiler toggle for an agent target with asprof detected', async () => {
+    jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.BETA));
+    jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockAgentTarget));
+    jest.spyOn(defaultServices.api, 'isAsyncProfilerSupported').mockReturnValue(of(true));
+    jest.spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents').mockReturnValue(of({}));
+
+    render({
+      routerConfigs: { routes: [{ path: '/recordings', element: <CustomRecordingForm /> }] },
+    });
+
+    const toggle = screen.getByRole('switch', { name: /enable async-profiler/i });
+    expect(toggle).toBeInTheDocument();
+    expect(toggle).not.toBeDisabled();
+
+    const helperText = screen.getByText('Augment this recording with async-profiler stack samples.');
+    expect(helperText).toBeInTheDocument();
+  });
+
+  it('should show the event selector when the async-profiler toggle is enabled', async () => {
+    jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.BETA));
+    jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockAgentTarget));
+    jest.spyOn(defaultServices.api, 'isAsyncProfilerSupported').mockReturnValue(of(true));
+    jest.spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents').mockReturnValue(of({}));
+
+    const { user } = render({
+      routerConfigs: { routes: [{ path: '/recordings', element: <CustomRecordingForm /> }] },
+    });
+
+    const toggle = screen.getByRole('switch', { name: /enable async-profiler/i });
+    expect(toggle).not.toBeDisabled();
+
+    expect(screen.queryByText('async-profiler events')).not.toBeInTheDocument();
+
+    await user.click(toggle);
+
+    expect(screen.getByText('async-profiler events')).toBeInTheDocument();
+  });
+
+  it('should disable create button when asprofEnabled is true but asprofEvents is empty', async () => {
+    jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.BETA));
+    jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockAgentTarget));
+    jest.spyOn(defaultServices.api, 'isAsyncProfilerSupported').mockReturnValue(of(true));
+    jest.spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents').mockReturnValue(of({}));
+
+    const { user } = render({
+      routerConfigs: { routes: [{ path: '/recordings', element: <CustomRecordingForm /> }] },
+    });
+
+    await user.type(screen.getByLabelText('Name *'), 'asprof_recording');
+    await user.selectOptions(screen.getByLabelText('Template *'), ['someEventTemplate']);
+
+    const toggle = screen.getByRole('switch', { name: /enable async-profiler/i });
+    await user.click(toggle);
+
+    expect(screen.getByText('async-profiler events')).toBeInTheDocument();
+
+    const createButton = screen.getByRole('button', { name: /^create$/i });
+    expect(createButton).toBeDisabled();
   });
 });

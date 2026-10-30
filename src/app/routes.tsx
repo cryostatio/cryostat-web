@@ -19,7 +19,6 @@ import { useLocation, Route, Routes } from 'react-router-dom';
 import About from './About/About';
 import Archives from './Archives/Archives';
 import AsyncProfiler from './AsyncProfiler/AsyncProfiler';
-import CreateAsyncProfilerSession from './AsyncProfiler/CreateAsyncProfilerSession';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
 import { HeapDumpAnalysis } from './Diagnostics/Analysis/HeapDumps/HeapDumpAnalysis';
@@ -99,7 +98,6 @@ const flightRecorderComponents: Record<string, React.ComponentType> = {
   [flightRecorderRouteDefs[3].path]: CaptureSmartTriggers,
   [flightRecorderRouteDefs[4].path]: Instrumentation,
   [flightRecorderRouteDefs[5].path]: AsyncProfiler,
-  [flightRecorderRouteDefs[5].children![0].path]: CreateAsyncProfilerSession,
   [flightRecorderRouteDefs[6].path]: Archives,
   [flightRecorderRouteDefs[7].path]: Reports,
   [flightRecorderRouteDefs[8].path]: RecordingAnalytics,

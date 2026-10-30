@@ -259,6 +259,7 @@ export interface RecordingAttributes {
   replace?: RecordingReplace;
   advancedOptions?: AdvancedRecordingOptions;
   metadata?: Metadata;
+  asprofEvents?: string[];
 }
 
 export type Recording = Pick<ActiveRecording, 'name' | 'downloadUrl' | 'reportUrl' | 'metadata'>;
