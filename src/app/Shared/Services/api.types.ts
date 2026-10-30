@@ -294,19 +294,11 @@ export type HeapDump = components['schemas']['HeapDump'];
 
 export type ActiveRecordingsFilterInput = GqlActiveRecordingsFilterInput;
 
-export interface PermissionResponse {
-  authorized: boolean;
-}
+export type PermissionResponse = components['schemas']['PermissionResponse'];
 
-export interface Permission {
-  resource: string;
-  action: string;
-}
+export type Permission = components['schemas']['Permission'];
 
-export interface Mapping {
-  permission: Permission;
-  response: PermissionResponse;
-}
+export type Mapping = components['schemas']['MappingResponse'];
 
 /**
  * New target specific archived recording apis now enforce a non-empty target field

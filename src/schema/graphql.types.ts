@@ -436,6 +436,8 @@ export type Query = {
   targetNodes?: Maybe<Array<Maybe<DiscoveryNode>>>;
   /** List archived thread dumps */
   threadDumps?: Maybe<ThreadDumps>;
+  /** List archived unified logs */
+  unifiedLogs?: Maybe<UnifiedLogs>;
 };
 
 /** Query root */
@@ -462,6 +464,11 @@ export type QueryTargetNodesArgs = {
 /** Query root */
 export type QueryThreadDumpsArgs = {
   filter?: InputMaybe<ThreadDumpsFilterInput>;
+};
+
+/** Query root */
+export type QueryUnifiedLogsArgs = {
+  filter?: InputMaybe<UnifiedLogsFilterInput>;
 };
 
 export type RecordingAggregateInfo = {
@@ -610,6 +617,8 @@ export type Target = {
   report?: Maybe<Report>;
   /** Retrieve a list of thread dumps belonging to the target */
   threadDumps?: Maybe<ThreadDumps>;
+  /** Retrieve a list of unified logs belonging to the target */
+  unifiedLogs?: Maybe<UnifiedLogs>;
 };
 
 export type TargetActiveRecordingsArgs = {
@@ -642,6 +651,10 @@ export type TargetReportArgs = {
 
 export type TargetThreadDumpsArgs = {
   filter?: InputMaybe<ThreadDumpsFilterInput>;
+};
+
+export type TargetUnifiedLogsArgs = {
+  filter?: InputMaybe<UnifiedLogsFilterInput>;
 };
 
 export type ThreadDump = {
@@ -703,4 +716,41 @@ export type ThreadMetrics = {
   threadCpuTimeEnabled: Scalars['Boolean']['output'];
   threadCpuTimeSupported: Scalars['Boolean']['output'];
   totalStartedThreadCount: Scalars['BigInteger']['output'];
+};
+
+export type UnifiedLog = {
+  __typename?: 'UnifiedLog';
+  /** Delete a unified log */
+  doDelete: UnifiedLog;
+  downloadUrl: Scalars['String']['output'];
+  jvmId: Scalars['String']['output'];
+  lastModified: Scalars['BigInteger']['output'];
+  metadata: Metadata;
+  size: Scalars['BigInteger']['output'];
+  unifiedLogId: Scalars['String']['output'];
+};
+
+export type UnifiedLogAggregateInfo = {
+  __typename?: 'UnifiedLogAggregateInfo';
+  /** The number of elements in this collection */
+  count: Scalars['BigInteger']['output'];
+  /** The sum of sizes of elements in this collection, or 0 if not applicable */
+  size: Scalars['BigInteger']['output'];
+};
+
+export type UnifiedLogs = {
+  __typename?: 'UnifiedLogs';
+  aggregate: UnifiedLogAggregateInfo;
+  data: Array<Maybe<UnifiedLog>>;
+};
+
+export type UnifiedLogsFilterInput = {
+  archivedTimeAfterEqual?: InputMaybe<Scalars['BigInteger']['input']>;
+  archivedTimeBeforeEqual?: InputMaybe<Scalars['BigInteger']['input']>;
+  labels?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  names?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  sizeBytesGreaterThanEqual?: InputMaybe<Scalars['BigInteger']['input']>;
+  sizeBytesLessThanEqual?: InputMaybe<Scalars['BigInteger']['input']>;
+  sourceTarget?: InputMaybe<Scalars['String']['input']>;
 };
