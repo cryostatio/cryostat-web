@@ -676,6 +676,13 @@
   },
   "PermissionsTable": {
     "TABLE_TITLE": "User Permissions",
+    "ACTIONS": {
+      "DELETE": "Delete",
+      "READ": "Read",
+      "WRITE": "Write"
+    },
+    "AUTHORIZED": "Authorized",
+    "UNAUTHORIZED": "Unauthorized",
     "SEARCH_PLACEHOLDER": "Search by resource, action",
     "ARIA_LABELS": {
       "SEARCH_INPUT": "permissions-table-search"

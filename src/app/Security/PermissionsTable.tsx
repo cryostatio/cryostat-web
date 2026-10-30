@@ -19,6 +19,7 @@ import { useSort } from '@app/utils/hooks/useSort';
 import { sortResources, TableColumn } from '@app/utils/utils';
 import {
   EmptyState,
+  Icon,
   Pagination,
   SearchInput,
   Toolbar,
@@ -26,7 +27,7 @@ import {
   ToolbarItem,
   ToolbarItemVariant,
 } from '@patternfly/react-core';
-import { TopologyIcon } from '@patternfly/react-icons';
+import { CheckCircleIcon, TimesCircleIcon, TopologyIcon } from '@patternfly/react-icons';
 import { SortByDirection, Table, TableVariant, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { t } from 'i18next';
 import _ from 'lodash';
@@ -37,6 +38,27 @@ interface PermissionRowData {
   cellContents: React.ReactNode[];
 }
 
+/**
+ * Returns the localized label for the expected read/write/delete actions.
+ * Any other action is returned unchanged.
+ */
+const localizeAction = (action: string): string => {
+  switch (action.toLowerCase()) {
+    case 'read':
+      return t('PermissionsTable.ACTIONS.READ');
+    case 'write':
+      return t('PermissionsTable.ACTIONS.WRITE');
+    case 'delete':
+      return t('PermissionsTable.ACTIONS.DELETE');
+    default:
+      return action;
+  }
+};
+
+/** Returns the localized label for an authorization result. */
+const localizeAuthorized = (authorized: boolean): string =>
+  authorized ? t('PermissionsTable.AUTHORIZED') : t('PermissionsTable.UNAUTHORIZED');
+
 const permissionsColumns: TableColumn[] = [
   {
     title: 'Resource',
@@ -46,14 +68,32 @@ const permissionsColumns: TableColumn[] = [
   {
     title: 'Action',
     keyPaths: ['permission', 'action'],
+    transform: (action) => localizeAction(action as string),
     sortable: true,
   },
   {
     title: 'Authorized',
     keyPaths: ['response', 'authorized'],
+    transform: (authorized) => localizeAuthorized(authorized as boolean),
     sortable: true,
   },
 ];
+
+const ACTION_ORDER = ['read', 'write', 'delete'];
+
+const actionRank = (action: string): number => {
+  const rank = ACTION_ORDER.indexOf(action.toLowerCase());
+  return rank === -1 ? ACTION_ORDER.length : rank;
+};
+
+/**
+ * Default ordering: resource A-Z, then action in read/write/delete order.
+ * Actions outside of that set follow, sorted alphabetically.
+ */
+const compareByResourceThenAction = (a: Mapping, b: Mapping): number =>
+  a.permission.resource.localeCompare(b.permission.resource) ||
+  actionRank(a.permission.action) - actionRank(b.permission.action) ||
+  a.permission.action.localeCompare(b.permission.action);
 
 export interface PermissionsTableProps {
   permissions: Mapping[];
@@ -99,15 +139,19 @@ export const PermissionsTable: React.FC<PermissionsTableProps> = (props: Permiss
     const reg = new RegExp(_.escapeRegExp(filterText), 'i');
     const withFilters = (t: Mapping) =>
       filterText === '' ||
-      reg.test(t.permission.action) ||
+      reg.test(localizeAction(t.permission.action)) ||
       reg.test(t.permission.resource) ||
-      reg.test(String(t.response.authorized));
+      reg.test(localizeAuthorized(t.response.authorized));
+    const filtered = props.permissions ? props.permissions.filter(withFilters) : [];
+    if (sortBy.index === undefined) {
+      return [...filtered].sort(compareByResourceThenAction);
+    }
     return sortResources(
       {
-        index: sortBy.index ?? 0,
+        index: sortBy.index,
         direction: sortBy.direction ?? SortByDirection.asc,
       },
-      props.permissions ? props.permissions.filter(withFilters) : [],
+      filtered,
       permissionsColumns,
     );
   }, [props.permissions, filterText, sortBy]);
@@ -161,11 +205,21 @@ export const PermissionsTable: React.FC<PermissionsTableProps> = (props: Permiss
           <Table aria-label={t('PermissionsTable.TABLE_TITLE')} variant={TableVariant.compact}>
             <Thead>
               <Tr>
-                {permissionsColumns.map(({ title, sortable }, index) => (
-                  <Th key={`permissions-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
-                    {title}
-                  </Th>
-                ))}
+                {permissionsColumns.map(({ title, sortable }, index) => {
+                  const sortParams = sortable ? getSortParams(index) : undefined;
+                  return (
+                    <Th
+                      key={`permissions-header-${title}`}
+                      sort={
+                        sortParams && sortBy.index === undefined && index === 0
+                          ? { ...sortParams, sortBy: { index: 0, direction: SortByDirection.asc } }
+                          : sortParams
+                      }
+                    >
+                      {title}
+                    </Th>
+                  );
+                })}
               </Tr>
             </Thead>
             {displayedPermissionsRowData.map((c: PermissionRowData, index) => (
@@ -174,11 +228,19 @@ export const PermissionsTable: React.FC<PermissionsTableProps> = (props: Permiss
                   <Td key={`permissions-resource-${index}`} colSpan={1} dataLabel={permissionsColumns[0].title}>
                     {c.permission.permission.resource}
                   </Td>
-                  <Td key={`permissions-resource-${index}`} colSpan={1} dataLabel={permissionsColumns[1].title}>
-                    {c.permission.permission.action}
+                  <Td key={`permissions-action-${index}`} colSpan={1} dataLabel={permissionsColumns[1].title}>
+                    {localizeAction(c.permission.permission.action)}
                   </Td>
-                  <Td key={`permissions-resource-${index}`} colSpan={1} dataLabel={permissionsColumns[2].title}>
-                    {c.permission.response.authorized ? 'true' : 'false'}
+                  <Td key={`permissions-authorized-${index}`} colSpan={1} dataLabel={permissionsColumns[2].title}>
+                    {c.permission.response.authorized ? (
+                      <Icon status="success">
+                        <CheckCircleIcon title={localizeAuthorized(true)} />
+                      </Icon>
+                    ) : (
+                      <Icon status="danger">
+                        <TimesCircleIcon title={localizeAuthorized(false)} />
+                      </Icon>
+                    )}
                   </Td>
                 </Tr>
               </Tbody>
@@ -194,6 +256,7 @@ export const PermissionsTable: React.FC<PermissionsTableProps> = (props: Permiss
     filterStringsByText.length,
     filterText,
     getSortParams,
+    sortBy,
     onCurrentPage,
     onFilterTextChange,
     onPerPage,
