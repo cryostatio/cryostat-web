@@ -112,19 +112,6 @@ export const CreateAsyncProfilerSession: React.FC<CreateAsyncProfilerSessionProp
     return () => subs.forEach((s) => s.unsubscribe());
   }, [addSubscription, target, context.notificationChannel, checkConflictingRecordings]);
 
-  React.useEffect(() => {
-    checkConflictingRecordings();
-  }, [checkConflictingRecordings]);
-
-  React.useEffect(() => {
-    if (!target) return;
-
-    const subs = [NotificationCategory.ActiveRecordingCreated, NotificationCategory.ActiveRecordingStopped].map((cat) =>
-      context.notificationChannel.messages(cat).subscribe(() => checkConflictingRecordings()),
-    );
-    return () => subs.forEach((s) => s.unsubscribe());
-  }, [addSubscription, target, context.notificationChannel, checkConflictingRecordings]);
-
   const exitForm = useExitForm(onClose);
 
   const handleSubmit = React.useCallback(() => {

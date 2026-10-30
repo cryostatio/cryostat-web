@@ -92,6 +92,8 @@ describe('<AsyncProfiler />', () => {
     expect(mockForm).toBeInTheDocument();
     expect(mockForm).toBeVisible();
 
+    expect(screen.getByRole('dialog', { name: /create async profiler session/i })).toBeInTheDocument();
+
     await user.click(mockForm);
 
     expect(screen.queryByText('mock-create-async-profiler-session')).not.toBeInTheDocument();
