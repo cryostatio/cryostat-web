@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { CreateAsyncProfilerSession } from '@app/AsyncProfiler/CreateAsyncProfilerSession';
-import { Target } from '@app/Shared/Services/api.types';
+import { NotificationMessage, Target } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -40,10 +40,21 @@ const mockResponse: Response = {
   ok: true,
 } as Response;
 
+const mockNotificationMessage: NotificationMessage = {
+  meta: {
+    category: 'test',
+    type: {
+      type: 'test',
+      subtype: 'test',
+    },
+  },
+  message: {},
+};
+
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents').mockReturnValue(of(mockAvailableEvents));
 jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(of([]));
-jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of({}));
+jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of(mockNotificationMessage));
 
 describe('<CreateAsyncProfilerSession />', () => {
   beforeEach(() => {
@@ -51,7 +62,7 @@ describe('<CreateAsyncProfilerSession />', () => {
     jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
     jest.spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents').mockReturnValue(of(mockAvailableEvents));
     jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(of([]));
-    jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of({}));
+    jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of(mockNotificationMessage));
   });
 
   afterEach(cleanup);
