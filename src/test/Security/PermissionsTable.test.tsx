@@ -25,7 +25,7 @@ const mockMapping: Mapping[] = [
   {
     permission: {
       resource: 'targets',
-      action: 'write',
+      action: 'read',
     },
     response: {
       authorized: true,
@@ -34,7 +34,7 @@ const mockMapping: Mapping[] = [
   {
     permission: {
       resource: 'audit',
-      action: 'read',
+      action: 'write',
     },
     response: {
       authorized: false,
@@ -67,21 +67,9 @@ describe('<PermissionsTable />', () => {
       },
     });
 
-    const targetResource = screen.getByText(mockMapping[0].permission.action);
-    expect(targetResource).toBeInTheDocument();
-    expect(targetResource).toBeVisible();
-
-    const targetAction = screen.getByText(mockMapping[0].permission.action);
-    expect(targetAction).toBeInTheDocument();
-    expect(targetAction).toBeVisible();
-
-    const auditResource = screen.getByText(mockMapping[1].permission.action);
-    expect(auditResource).toBeInTheDocument();
-    expect(auditResource).toBeVisible();
-
-    const auditAction = screen.getByText(mockMapping[1].permission.action);
-    expect(auditAction).toBeInTheDocument();
-    expect(auditAction).toBeVisible();
+    const rows = screen.getAllByRole('row');
+    expect(rows[1].querySelector('td')).toHaveTextContent('audit');
+    expect(rows[2].querySelector('td')).toHaveTextContent('targets');
   });
 
   it('should display the toolbar', async () => {

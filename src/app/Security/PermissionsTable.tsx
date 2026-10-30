@@ -126,7 +126,7 @@ export const PermissionsTable: React.FC<PermissionsTableProps> = (props: Permiss
       });
     }
     return rows;
-  }, [props.permissions, currentPage, perPage, filterStringsByText, sortBy]);
+  }, [props.permissions, currentPage, perPage, filterStringsByText]);
 
   const permissionsTable = React.useMemo(() => {
     return (
