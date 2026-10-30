@@ -17,7 +17,7 @@
   "customManagers": [
     {
       "customType": "regex",
-      "managerFilePatterns": ["^package\\.json$"],
+      "managerFilePatterns": ["/^package\\.json$/"],
       "matchStrings": [
         "\"backendSchemaRef\": \"(?<currentDigest>[a-f0-9]{40})\""
       ],
