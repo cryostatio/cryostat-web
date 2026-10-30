@@ -42,12 +42,16 @@ const mockResponse: Response = {
 
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents').mockReturnValue(of(mockAvailableEvents));
+jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(of([]));
+jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of({}));
 
 describe('<CreateAsyncProfilerSession />', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
     jest.spyOn(defaultServices.api, 'getAsyncProfilerAvailableEvents').mockReturnValue(of(mockAvailableEvents));
+    jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(of([]));
+    jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of({}));
   });
 
   afterEach(cleanup);
