@@ -17,7 +17,7 @@
 import { PermissionsTable } from '@app/Security/PermissionsTable';
 import { Mapping } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { of } from 'rxjs';
 import { DEFAULT_DIMENSIONS, render, resize } from '../utils';
 
@@ -86,6 +86,29 @@ describe('<PermissionsTable />', () => {
     const newFilterTool = container.querySelector("input[placeholder='Search by resource, action'][type='text']");
     expect(newFilterTool).toBeInTheDocument();
     expect(newFilterTool).toBeVisible();
+  });
+
+  it('should filter permissions by resource and action', () => {
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/triggers',
+            element: <PermissionsTable permissions={mockMapping} />,
+          },
+        ],
+      },
+    });
+
+    const filter = screen.getByPlaceholderText('Search by resource, action');
+
+    fireEvent.change(filter, { target: { value: 'audit' } });
+    expect(screen.getByText('audit')).toBeInTheDocument();
+    expect(screen.queryByText('targets')).not.toBeInTheDocument();
+
+    fireEvent.change(filter, { target: { value: 'write' } });
+    expect(screen.getByText('audit')).toBeInTheDocument();
+    expect(screen.queryByText('targets')).not.toBeInTheDocument();
   });
 
   it('should display an empty state when no permissions are found', async () => {
