@@ -7357,7 +7357,7 @@ __metadata:
     victory-stack: "npm:37.4.1"
     victory-tooltip: "npm:37.4.1"
     victory-voronoi-container: "npm:37.3.6"
-    victory-zoom-container: "npm:37.3.6"
+    victory-zoom-container: "npm:37.4.1"
     wait-on: "npm:9.5.1"
     webpack: "npm:5.112.2"
     webpack-bundle-analyzer: "npm:5.4.0"
@@ -19193,18 +19193,6 @@ __metadata:
   peerDependencies:
     react: ">=16.6.0"
   checksum: 10/a8577358acb149091820a388d7c1f74e4d3f9fbb588d0751914636c5e4ec68952bc2788411a0b470d7c356a300f50f0c9fa2dd6a979d7b51df518bb7e6e0a658
-  languageName: node
-  linkType: hard
-
-"victory-zoom-container@npm:37.3.6":
-  version: 37.3.6
-  resolution: "victory-zoom-container@npm:37.3.6"
-  dependencies:
-    lodash: "npm:^4.17.19"
-    victory-core: "npm:37.3.6"
-  peerDependencies:
-    react: ">=16.6.0"
-  checksum: 10/082d49bdface8bf632a263631137ceec3e105847bcdfafb94af349e68e326061364f71713859424f656cadd71b6b7661f745b4b7eb54c521af3472f40c4657f5
   languageName: node
   linkType: hard
 
