@@ -157,7 +157,7 @@
     "victory-stack": "37.4.1",
     "victory-tooltip": "37.4.1",
     "victory-voronoi-container": "37.3.6",
-    "victory-zoom-container": "37.3.6"
+    "victory-zoom-container": "37.4.1"
   },
   "resolutions": {
     "@types/react": "18.3.31",
