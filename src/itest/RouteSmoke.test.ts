@@ -29,8 +29,8 @@ const NOT_FOUND_TEXT = "404: We couldn't find that page";
 /**
  * Flattens the route metadata tree, propagating the parent's featureLevel
  * down to children that do not declare their own.  This ensures that child
- * routes of a BETA parent (e.g. /async-profiler/create) are correctly
- * classified as BETA rather than PRODUCTION.
+ * routes of a BETA parent are correctly classified as BETA rather than
+ * PRODUCTION.
  */
 function flattenWithInheritedLevel(defs: IRouteMeta[], parentLevel?: FeatureLevel): IRouteMeta[] {
   const result: IRouteMeta[] = [];
@@ -48,8 +48,8 @@ const allMeta = flattenWithInheritedLevel(routeDefs);
 
 // Test routes that are standalone navigation destinations: routes with a label
 // (nav-visible) or a description (listed on the NotFound page).  Unlabelled,
-// undescribed child routes (e.g. /d-solo, /async-profiler/create) are wizard
-// sub-steps not suitable for cold direct navigation.
+// undescribed child routes (e.g. /d-solo) are wizard sub-steps not suitable
+// for cold direct navigation.
 const navigableRoutes = allMeta.filter((r) => r.label !== undefined || r.description !== undefined);
 
 const productionRoutes = navigableRoutes.filter(
