@@ -38,6 +38,7 @@ import {
   TargetReference,
   AggregateReport,
   CachedHeapDumpReportValue,
+  PermissionResponse,
 } from '@app/Shared/Services/api.types';
 import { HeapDumpReportService } from '@app/Shared/Services/HeapDumpReport.service';
 import { NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
@@ -579,6 +580,10 @@ class FakeApiService extends ApiService {
 
   deleteRecording(_remoteId: number): Observable<boolean> {
     return of(true);
+  }
+
+  checkPermission(_permission: string): Observable<PermissionResponse> {
+    return of({ authorized: true });
   }
 }
 

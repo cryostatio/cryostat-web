@@ -80,6 +80,8 @@ const twoTargetsResponse = makeGraphqlResponse([
 
 const emptyTargetResponse = makeGraphqlResponse([{ target: mockEmptyTarget, recordings: [] }]);
 
+jest.spyOn(defaultServices.api, 'checkPermission').mockReturnValue(of({ authorized: true }));
+
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => ({
   ArchivedRecordingsTable: jest.fn(() => <div>Archived Recordings Table</div>),
 }));

@@ -95,6 +95,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = () => {
   const [errorMessage, setErrorMessage] = React.useState('');
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [actionLoadings, setActionLoadings] = React.useState<Record<LiveProbeActions, boolean>>({ REMOVE: false });
+  const [deleteEnabled, setDeleteEnabled] = React.useState(true);
 
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({
@@ -109,6 +110,26 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = () => {
     }),
     [sortBy, setSortBy],
   );
+
+  React.useEffect(() => {
+    addSubscription(
+      context.api.checkPermission('jmcagent:read').subscribe((v) => {
+        if (!v.authorized) {
+          setErrorMessage('User is not authorized to read JMC agent data');
+        }
+      }),
+    );
+  }, [addSubscription, context.api, setErrorMessage]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.api.checkPermission('jmcagent:write').subscribe((v) => {
+        if (!v.authorized) {
+          setDeleteEnabled(false);
+        }
+      }),
+    );
+  }, [addSubscription, context.api, setDeleteEnabled]);
 
   const handleProbes = React.useCallback(
     (probes) => {
@@ -329,7 +350,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = () => {
                   key="delete"
                   variant="danger"
                   onClick={handleDeleteButton}
-                  isDisabled={!filteredProbes.length || actionLoadings['REMOVE']}
+                  isDisabled={!filteredProbes.length || actionLoadings['REMOVE'] || !deleteEnabled}
                   {...actionLoadingProps['REMOVE']}
                 >
                   {actionLoadings['REMOVE'] ? 'Removing' : 'Remove'} all probes

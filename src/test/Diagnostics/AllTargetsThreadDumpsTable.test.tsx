@@ -241,6 +241,8 @@ jest.spyOn(defaultServices.api, 'getTargetLineage').mockImplementation(() => {
   });
 });
 
+jest.spyOn(defaultServices.api, 'checkPermission').mockReturnValue(of({ authorized: true }));
+
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly

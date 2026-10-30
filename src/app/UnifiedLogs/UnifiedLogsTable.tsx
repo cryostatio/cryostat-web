@@ -64,7 +64,7 @@ import { EllipsisVIcon, ImportIcon } from '@patternfly/react-icons';
 import { ISortBy, SortByDirection, Tbody, Td, ThProps, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { combineLatest, concatMap, first, forkJoin, Observable, of } from 'rxjs';
+import { combineLatest, concatMap, filter, first, forkJoin, Observable, of } from 'rxjs';
 import { UnifiedLogFilters, UnifiedLogFiltersCategories, filterUnifiedLogs } from './Filters/UnifiedLogFilters';
 import { UnifiedLogLabelsPanel } from './UnifiedLogLabelsPanel';
 
@@ -130,10 +130,69 @@ export const UnifiedLogsTable: React.FC<UnifiedLogsTableProps> = ({
   });
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
+  const [writeEnabled, setWriteEnabled] = React.useState(true);
+  const [deleteEnabled, setDeleteEnabled] = React.useState(true);
   const [actionLoadings, setActionLoadings] = React.useState<Record<UnifiedLogTableActions, boolean>>({
     DELETE: false,
     PULL: false,
   });
+
+  React.useEffect(() => {
+    addSubscription(
+      propsTarget
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('unifiedlogs:read')),
+        )
+        .subscribe({
+          next: (resp) => {
+            if (!resp.authorized) {
+              setErrorMessage('User is not authorized to read unified logs');
+            }
+          },
+          error: (resp) => setErrorMessage(resp.error),
+        }),
+    );
+  }, [addSubscription, propsTarget, context.api, setErrorMessage]);
+
+  React.useEffect(() => {
+    addSubscription(
+      propsTarget
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('unifiedlogs:write')),
+        )
+        .subscribe({
+          next: (resp) => {
+            if (!resp.authorized) {
+              setWriteEnabled(false);
+            }
+          },
+          error: () => setWriteEnabled(false),
+        }),
+    );
+  }, [addSubscription, propsTarget, context.api, context.target, setWriteEnabled]);
+
+  React.useEffect(() => {
+    addSubscription(
+      propsTarget
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('unifiedlogs:delete')),
+        )
+        .subscribe({
+          next: (resp) => {
+            if (!resp.authorized) {
+              setDeleteEnabled(false);
+            }
+          },
+          error: () => setDeleteEnabled(false),
+        }),
+    );
+  }, [addSubscription, propsTarget, context.api, context.target, setWriteEnabled]);
 
   const targetUnifiedLogFilters = useSelector((state: RootState) => {
     const filters = state.unifiedLogFilters.list.filter(
@@ -404,6 +463,8 @@ export const UnifiedLogsTable: React.FC<UnifiedLogsTableProps> = ({
         handlePull={isNestedTable ? undefined : handlePull}
         loggingEnabled={loggingEnabled}
         logFilePath={logFilePath}
+        writeEnabled={writeEnabled}
+        deleteEnabled={deleteEnabled}
       />
     ),
     [
@@ -415,6 +476,8 @@ export const UnifiedLogsTable: React.FC<UnifiedLogsTableProps> = ({
       handleClearFilters,
       handleEditLabels,
       actionLoadings,
+      deleteEnabled,
+      writeEnabled,
       handleDeleteSelected,
       handlePull,
       isNestedTable,
@@ -482,6 +545,8 @@ interface UnifiedLogsToolbarProps {
   handlePull?: () => void;
   loggingEnabled?: boolean;
   logFilePath?: string;
+  writeEnabled: boolean;
+  deleteEnabled: boolean;
 }
 
 const UnifiedLogsToolbar: React.FC<UnifiedLogsToolbarProps> = ({
@@ -497,6 +562,8 @@ const UnifiedLogsToolbar: React.FC<UnifiedLogsToolbarProps> = ({
   handlePull,
   loggingEnabled = false,
   logFilePath,
+  writeEnabled,
+  deleteEnabled,
 }) => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
@@ -537,7 +604,7 @@ const UnifiedLogsToolbar: React.FC<UnifiedLogsToolbarProps> = ({
             aria-label={t('UnifiedLogs.PULL_ARIA')}
             onClick={handlePull}
             isLoading={actionLoadings['PULL']}
-            isDisabled={isPullDisabled}
+            isDisabled={isPullDisabled || !writeEnabled}
             data-quickstart-id="unified-logs-pull-btn"
           >
             <ImportIcon />
@@ -551,7 +618,7 @@ const UnifiedLogsToolbar: React.FC<UnifiedLogsToolbarProps> = ({
       ),
       key: 'pull-log',
     };
-  }, [handlePull, actionLoadings, loggingEnabled, logFilePath, t]);
+  }, [handlePull, actionLoadings, writeEnabled, loggingEnabled, logFilePath, t]);
 
   const editLabelsButton = React.useMemo(
     () => ({
@@ -581,7 +648,7 @@ const UnifiedLogsToolbar: React.FC<UnifiedLogsToolbarProps> = ({
         <Button
           variant="danger"
           onClick={handleDeleteButton}
-          isDisabled={!checkedIndices.length || actionLoadings['DELETE']}
+          isDisabled={!checkedIndices.length || actionLoadings['DELETE'] || !deleteEnabled}
           isLoading={actionLoadings['DELETE']}
           data-quickstart-id="unified-logs-delete-btn"
         >
@@ -595,7 +662,7 @@ const UnifiedLogsToolbar: React.FC<UnifiedLogsToolbarProps> = ({
       ),
       key: 'delete',
     }),
-    [checkedIndices.length, actionLoadings, handleDeleteButton, t],
+    [checkedIndices.length, actionLoadings, deleteEnabled, handleDeleteButton, t],
   );
 
   const buttons = React.useMemo(

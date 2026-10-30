@@ -39,6 +39,7 @@ import {
 } from '@patternfly/react-core';
 import { ListIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { concatMap, filter, first } from 'rxjs';
 
 export interface UnifiedLoggingCaptureCardProps {}
 
@@ -53,6 +54,7 @@ export const UnifiedLoggingCaptureCard: React.FC<UnifiedLoggingCaptureCardProps>
   const [isLoadingStatus, setIsLoadingStatus] = React.useState(true);
   const [runningGc, setRunningGc] = React.useState(false);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [captureEnabled, setCaptureEnabled] = React.useState(false);
 
   React.useEffect(() => {
     addSubscription(serviceContext.target.target().subscribe(setTarget));
@@ -73,6 +75,24 @@ export const UnifiedLoggingCaptureCard: React.FC<UnifiedLoggingCaptureCardProps>
       }),
     );
   }, [addSubscription, serviceContext.api, target]);
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => serviceContext.api.checkPermission('unifiedlogs:write')),
+        )
+        .subscribe({
+          next: (resp) => {
+            setCaptureEnabled(resp.authorized);
+          },
+          error: () => setCaptureEnabled(false),
+        }),
+    );
+  }, [addSubscription, serviceContext.api, serviceContext.target, setCaptureEnabled]);
 
   React.useEffect(() => {
     fetchStatus();
@@ -142,7 +162,7 @@ export const UnifiedLoggingCaptureCard: React.FC<UnifiedLoggingCaptureCardProps>
                     <Button
                       variant="secondary"
                       onClick={() => setIsModalOpen(true)}
-                      isDisabled={isLoadingStatus}
+                      isDisabled={isLoadingStatus || !captureEnabled}
                       data-quickstart-id="unified-capture-configure-btn"
                     >
                       {actionLabel}

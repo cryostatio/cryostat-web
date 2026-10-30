@@ -161,6 +161,10 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
     DELETE: false,
     STOP: false,
   });
+  const [writeEnabled, setWriteEnabled] = React.useState(false);
+  const [archiveAllowed, setArchiveAllowed] = React.useState(false);
+  const [reportEnabled, setReportEnabled] = React.useState(false);
+  const [deleteEnabled, setDeleteEnabled] = React.useState(false);
   const [sortBy, getSortParams] = useSort();
   const [reportRefresh] = React.useState(new Subject<void>());
   const handleReportRefresh = React.useCallback(() => reportRefresh.next(), [reportRefresh]);
@@ -171,6 +175,98 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
     );
     return filters.length > 0 ? filters[0].active.filters : emptyActiveRecordingFilters;
   }) as RecordingFiltersCategories;
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('activerecordings:read')),
+        )
+        .subscribe({
+          next: (resp) => {
+            if (!resp.authorized) {
+              setErrorMessage('User is not authorized to read active recordings');
+            }
+          },
+          error: (resp) => setErrorMessage(resp.error),
+        }),
+    );
+  }, [addSubscription, context.api, context.target, setErrorMessage]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('activerecordings:write')),
+        )
+        .subscribe({
+          next: (resp) => {
+            setWriteEnabled(resp.authorized);
+          },
+          error: () => setWriteEnabled(false),
+        }),
+    );
+  }, [addSubscription, context.api, context.target, setWriteEnabled]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('archivedrecordings:write')),
+        )
+        .subscribe({
+          next: (resp) => {
+            setArchiveAllowed(resp.authorized);
+          },
+          error: () => setArchiveAllowed(false),
+        }),
+    );
+  }, [addSubscription, context.api, context.target, setArchiveAllowed]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('reports:write')),
+        )
+        .subscribe({
+          next: (resp) => {
+            setReportEnabled(resp.authorized);
+          },
+          error: () => setReportEnabled(false),
+        }),
+    );
+  }, [addSubscription, context.api, context.target, setReportEnabled]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('activerecordings:delete')),
+        )
+        .subscribe({
+          next: (resp) => {
+            setDeleteEnabled(resp.authorized);
+          },
+          error: () => setDeleteEnabled(false),
+        }),
+    );
+  }, [addSubscription, context.api, context.target, setDeleteEnabled]);
 
   const handleRowCheck = React.useCallback(
     (checked: boolean, index: number) => {
@@ -551,9 +647,17 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         handleAnalyze={handleShowReport}
         actionLoadings={actionLoadings}
         toolbarBreakReference={props.toolbarBreakReference}
+        writeEnabled={writeEnabled}
+        deleteEnabled={deleteEnabled}
+        archiveAllowed={archiveAllowed}
+        reportEnabled={reportEnabled}
       />
     ),
     [
+      archiveAllowed,
+      deleteEnabled,
+      reportEnabled,
+      writeEnabled,
       target,
       checkedIndices,
       targetRecordingFilters,
@@ -684,6 +788,10 @@ export interface ActiveRecordingsToolbarProps {
   handleAnalyze: () => void;
   actionLoadings: Record<ActiveActions, boolean>;
   toolbarBreakReference?: HTMLElement | (() => HTMLElement);
+  writeEnabled: boolean;
+  deleteEnabled: boolean;
+  archiveAllowed: boolean;
+  reportEnabled: boolean;
 }
 
 const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) => {
@@ -741,13 +849,23 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
       {
         default: (
           <Tooltip content={t('ActiveRecordingsTable.CREATE_TOOLTIP')}>
-            <Button variant="primary" onClick={props.handleCreateRecording} data-quickstart-id="recordings-create-btn">
+            <Button
+              variant="primary"
+              onClick={props.handleCreateRecording}
+              data-quickstart-id="recordings-create-btn"
+              isDisabled={!props.writeEnabled}
+            >
               {t('CREATE')}
             </Button>
           </Tooltip>
         ),
         collapsed: (
-          <OverflowMenuDropdownItem key={'Create'} isShared onClick={props.handleCreateRecording}>
+          <OverflowMenuDropdownItem
+            key={'Create'}
+            isShared
+            onClick={props.handleCreateRecording}
+            isDisabled={!props.writeEnabled}
+          >
             {t('CREATE')}
           </OverflowMenuDropdownItem>
         ),
@@ -756,13 +874,13 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
       {
         default: (
           <Tooltip content={t('ActiveRecordingsTable.SYNC_TOOLTIP')}>
-            <Button aria-label="sync" onClick={props.handleSync}>
+            <Button aria-label="sync" onClick={props.handleSync} isDisabled={!props.writeEnabled}>
               <ProcessAutomationIcon />
             </Button>
           </Tooltip>
         ),
         collapsed: (
-          <OverflowMenuDropdownItem key={'Sync'} isShared onClick={props.handleSync}>
+          <OverflowMenuDropdownItem key={'Sync'} isShared onClick={props.handleSync} isDisabled={!props.writeEnabled}>
             {t('SYNC')}
           </OverflowMenuDropdownItem>
         ),
@@ -779,7 +897,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
             <Button
               variant="secondary"
               onClick={props.handleArchiveRecordings}
-              isDisabled={!props.checkedIndices.length || props.actionLoadings['ARCHIVE']}
+              isDisabled={!props.checkedIndices.length || props.actionLoadings['ARCHIVE'] || !props.archiveAllowed}
               data-quickstart-id="recordings-archive-btn"
               {...actionLoadingProps['ARCHIVE']}
             >
@@ -788,7 +906,12 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
           </Tooltip>
         ),
         collapsed: (
-          <OverflowMenuDropdownItem key={'Archive'} isShared onClick={props.handleArchiveRecordings}>
+          <OverflowMenuDropdownItem
+            key={'Archive'}
+            isShared
+            onClick={props.handleArchiveRecordings}
+            isDisabled={!props.archiveAllowed}
+          >
             {props.actionLoadings['ARCHIVE'] ? t('ARCHIVING') : t('ARCHIVE')}
           </OverflowMenuDropdownItem>
         ),
@@ -823,7 +946,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
             <Button
               variant="tertiary"
               onClick={props.handleStopRecordings}
-              isDisabled={isStopDisabled}
+              isDisabled={isStopDisabled || !props.writeEnabled}
               data-quickstart-id="recordings-stop-btn"
               {...actionLoadingProps['STOP']}
             >
@@ -836,7 +959,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
             key={'Stop'}
             isShared
             onClick={props.handleStopRecordings}
-            isDisabled={isStopDisabled}
+            isDisabled={isStopDisabled || !props.writeEnabled}
           >
             {props.actionLoadings['STOP'] ? t('STOPPING') : t('STOP')}
           </OverflowMenuDropdownItem>
@@ -849,7 +972,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
             <Button
               variant="danger"
               onClick={handleDeleteButton}
-              isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE']}
+              isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE'] || !props.deleteEnabled}
               data-quickstart-id="recordings-delete-btn"
               {...actionLoadingProps['DELETE']}
             >
@@ -858,7 +981,12 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
           </Tooltip>
         ),
         collapsed: (
-          <OverflowMenuDropdownItem key={'Delete'} isShared onClick={handleDeleteButton}>
+          <OverflowMenuDropdownItem
+            key={'Delete'}
+            isShared
+            onClick={handleDeleteButton}
+            isDisabled={!props.deleteEnabled}
+          >
             {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
           </OverflowMenuDropdownItem>
         ),
@@ -867,13 +995,23 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
       {
         default: (
           <Tooltip content={t('ActiveRecordingsTable.REPORT_TOOLTIP')}>
-            <Button variant="secondary" onClick={props.handleAnalyze} data-quickstart-id="recordings-analyze-btn">
+            <Button
+              variant="secondary"
+              onClick={props.handleAnalyze}
+              data-quickstart-id="recordings-analyze-btn"
+              isDisabled={!props.reportEnabled}
+            >
               {t('ANALYZE')}
             </Button>
           </Tooltip>
         ),
         collapsed: (
-          <OverflowMenuDropdownItem key={'Analyze'} isShared onClick={props.handleAnalyze}>
+          <OverflowMenuDropdownItem
+            key={'Analyze'}
+            isShared
+            onClick={props.handleAnalyze}
+            isDisabled={!props.reportEnabled}
+          >
             {t('ANALYZE')}
           </OverflowMenuDropdownItem>
         ),
@@ -883,6 +1021,10 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
     return arr;
   }, [
     t,
+    props.archiveAllowed,
+    props.deleteEnabled,
+    props.reportEnabled,
+    props.writeEnabled,
     handleDeleteButton,
     isStopDisabled,
     actionLoadingProps,
@@ -902,11 +1044,13 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
       <DeleteWarningModal
         warningType={DeleteOrDisableWarningType.DeleteActiveRecordings}
         visible={warningModalOpen}
-        onAccept={props.handleDeleteRecordings}
+        onAccept={() => {
+          if (props.deleteEnabled) props.handleDeleteRecordings();
+        }}
         onClose={handleWarningModalClose}
       />
     );
-  }, [warningModalOpen, props.handleDeleteRecordings, handleWarningModalClose]);
+  }, [warningModalOpen, props, handleWarningModalClose]);
 
   return (
     <Toolbar

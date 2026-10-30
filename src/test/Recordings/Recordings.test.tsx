@@ -61,6 +61,7 @@ const mockFooTarget: Target = {
   },
 };
 
+jest.spyOn(defaultServices.api, 'checkPermission').mockReturnValue(of({ authorized: true }));
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockFooTarget));
 
 jest.spyOn(defaultServices.api, 'isArchiveEnabled').mockReturnValue(of(true));

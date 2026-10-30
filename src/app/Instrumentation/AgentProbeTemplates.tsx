@@ -98,6 +98,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
   const [errorMessage, setErrorMessage] = React.useState('');
   const [templateToDelete, setTemplateToDelete] = React.useState<ProbeTemplate | undefined>(undefined);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
+  const [writeEnabled, setWriteEnabled] = React.useState(true);
 
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({
@@ -112,6 +113,26 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
     }),
     [sortBy, setSortBy],
   );
+
+  React.useEffect(() => {
+    addSubscription(
+      context.api.checkPermission('jmcagent:read').subscribe((v) => {
+        if (!v.authorized) {
+          setErrorMessage('User is not authorized to read JMC agent data');
+        }
+      }),
+    );
+  }, [addSubscription, context.api, setErrorMessage]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.api.checkPermission('jmcagent:write').subscribe((v) => {
+        if (!v.authorized) {
+          setWriteEnabled(false);
+        }
+      }),
+    );
+  }, [addSubscription, context.api, setWriteEnabled]);
 
   const handleTemplates = React.useCallback(
     (templates: ProbeTemplate[]) => {
@@ -280,12 +301,13 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
                 onDelete={handleDeleteAction}
                 onDownload={handleDownloadAction}
                 onInsert={agentDetected ? handleInsertAction : undefined}
+                writeEnabled={writeEnabled}
               />
             </Td>
           </Tr>
         );
       }),
-    [filteredTemplates, agentDetected, handleInsertAction, handleDownloadAction, handleDeleteAction],
+    [writeEnabled, filteredTemplates, agentDetected, handleInsertAction, handleDownloadAction, handleDeleteAction],
   );
 
   if (errorMessage != '') {
@@ -339,6 +361,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
                       variant="secondary"
                       aria-label="Upload"
                       onClick={handleTemplateUpload}
+                      isDisabled={!writeEnabled}
                     ></Button>
                   </ToolbarItem>
                 </ToolbarGroup>
@@ -519,6 +542,7 @@ export interface AgentTemplateActionProps {
   onInsert?: (template: ProbeTemplate) => void;
   onDownload: (template: ProbeTemplate) => void;
   onDelete: (template: ProbeTemplate) => void;
+  writeEnabled: boolean;
 }
 
 export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({
@@ -526,6 +550,7 @@ export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({
   onDownload,
   onDelete,
   template,
+  writeEnabled,
 }) => {
   const { t } = useCryostatTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
@@ -536,7 +561,7 @@ export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({
         key: 'insert-template',
         title: 'Insert probes...',
         onClick: () => onInsert && onInsert(template),
-        isDisabled: !onInsert,
+        isDisabled: !onInsert || !writeEnabled,
       },
       {
         key: 'download-template',
@@ -551,9 +576,10 @@ export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({
         title: 'Delete',
         isDanger: true,
         onClick: () => onDelete(template),
+        isDisabled: !writeEnabled,
       },
     ];
-  }, [onInsert, onDownload, onDelete, template]);
+  }, [onInsert, onDownload, onDelete, template, writeEnabled]);
 
   const handleToggle = React.useCallback((_, opened: boolean) => setIsOpen(opened), [setIsOpen]);
 

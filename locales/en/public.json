@@ -668,6 +668,17 @@
     "HOME_REDIRECT_BUTTON_CONTENT": "Return to home page",
     "TITLE": "404: We couldn't find that page"
   },
+  "Permissions": {
+    "CARD_TITLE": "User Permissions",
+    "CARD_DESCRIPTION": "The current user has the following permissions",
+    "ERROR_TEXT": "Error fetching user permissions"
+  },
+  "PermissionsTable": {
+    "SEARCH_PLACEHOLDER": "Search by resource, action",
+    "ARIA_LABELS": {
+      "SEARCH_INPUT": "permissions-table-search"
+    }
+  },
   "ProblemFieldsTable": {
     "SEARCH_PLACEHOLDER": "Search by class, overhead, etc...",
     "ARIA_LABELS": {

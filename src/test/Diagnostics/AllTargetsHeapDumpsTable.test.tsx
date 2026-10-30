@@ -221,6 +221,8 @@ jest.mock('@app/Shared/Services/Target.service', () => ({
   ...jest.requireActual('@app/Shared/Services/Target.service'), // Require actual implementation of utility functions for Target
 }));
 
+jest.spyOn(defaultServices.api, 'checkPermission').mockReturnValue(of({ authorized: true }));
+
 jest
   .spyOn(defaultServices.api, 'graphql')
   .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // renders correctly

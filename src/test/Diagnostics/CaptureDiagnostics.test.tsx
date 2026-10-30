@@ -40,6 +40,7 @@ describe('<CaptureDiagnostics />', () => {
   };
 
   beforeEach(() => {
+    jest.spyOn(defaultServices.api, 'checkPermission').mockReturnValue(of({ authorized: true }));
     jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(target));
     jest
       .spyOn(defaultServices.api, 'getUnifiedLoggingStatus')

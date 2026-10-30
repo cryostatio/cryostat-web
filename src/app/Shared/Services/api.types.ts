@@ -286,6 +286,20 @@ export type ThreadDumpAnalysisResult = components['schemas']['ThreadDumpAnalysis
 
 export type ArchivedRecording = components['schemas']['ArchivedRecording'];
 
+export interface PermissionResponse {
+  authorized: boolean;
+}
+
+export interface Permission {
+  resource: string;
+  action: string;
+}
+
+export interface Mapping {
+  permission: Permission;
+  response: PermissionResponse;
+}
+
 export type ActiveRecording = components['schemas']['LinkedRecordingDescriptor'];
 
 export type HeapDumpDirectory = components['schemas']['ArchivedHeapDumpDirectory'];

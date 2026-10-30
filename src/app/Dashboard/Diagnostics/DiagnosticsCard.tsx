@@ -60,6 +60,9 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = ({ headerD
   const [heapDumpReady, setHeapDumpReady] = React.useState(false);
   const [threadDumpReady, setThreadDumpReady] = React.useState(false);
   const [controlEnabled, setControlEnabled] = React.useState(false);
+  const [heapDumpAuthorized, setHeapDumpAuthorized] = React.useState(true);
+  const [threadDumpAuthorized, setThreadDumpAuthorized] = React.useState(true);
+  const [targetReadEnabled, setTargetReadEnabled] = React.useState(true);
 
   React.useEffect(() => {
     addSubscription(
@@ -76,6 +79,54 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = ({ headerD
     },
     [notifications, t],
   );
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => serviceContext.api.checkPermission('heapdumps:write')),
+        )
+        .subscribe({
+          next: (resp) => setHeapDumpAuthorized(resp.authorized),
+          error: () => setHeapDumpAuthorized(false),
+        }),
+    );
+  }, [addSubscription, serviceContext.api, serviceContext.target, setHeapDumpAuthorized]);
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => serviceContext.api.checkPermission('targets:read')),
+        )
+        .subscribe({
+          next: (resp) => setTargetReadEnabled(resp.authorized),
+          error: () => setTargetReadEnabled(false),
+        }),
+    );
+  }, [addSubscription, serviceContext.api, serviceContext.target, setTargetReadEnabled]);
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => serviceContext.api.checkPermission('threaddumps:write')),
+        )
+        .subscribe({
+          next: (resp) => setThreadDumpAuthorized(resp.authorized),
+          error: () => setThreadDumpAuthorized(false),
+        }),
+    );
+  }, [addSubscription, serviceContext.api, serviceContext.target, setThreadDumpAuthorized]);
 
   React.useEffect(() => {
     addSubscription(
@@ -168,6 +219,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = ({ headerD
                   spinnerAriaValueText="Invoke Thread Dump"
                   spinnerAriaLabel="invoke-thread-dump"
                   isLoading={runningThreadDump}
+                  isDisabled={!threadDumpAuthorized || !targetReadEnabled}
                 >
                   <Truncate content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')} />
                 </Button>
@@ -176,7 +228,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = ({ headerD
                 <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_TABLE_TOOLTIP')}>
                   <Button
                     variant="primary"
-                    isAriaDisabled={!threadDumpReady}
+                    isAriaDisabled={!threadDumpReady || !threadDumpAuthorized || !targetReadEnabled}
                     component={(props) => <CryostatLink {...props} to="/thread-dumps" />}
                     icon={<ListIcon />}
                   />
@@ -194,7 +246,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = ({ headerD
                   <Button
                     variant="primary"
                     onClick={handleHeapDump}
-                    isAriaDisabled={!controlEnabled}
+                    isAriaDisabled={!controlEnabled || !heapDumpAuthorized || !targetReadEnabled}
                     spinnerAriaValueText="Invoke Heap Dump"
                     spinnerAriaLabel="invoke-heap-dump"
                     isLoading={runningHeapDump}
@@ -207,7 +259,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = ({ headerD
                 <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_REDIRECT_BUTTON')}>
                   <Button
                     variant="primary"
-                    isAriaDisabled={!(heapDumpReady && controlEnabled)}
+                    isAriaDisabled={!(heapDumpReady && controlEnabled) || !heapDumpAuthorized || !targetReadEnabled}
                     component={(props) => <CryostatLink {...props} to="/heapdumps" />}
                     icon={<ListIcon />}
                   />

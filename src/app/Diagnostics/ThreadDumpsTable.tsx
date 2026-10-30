@@ -71,7 +71,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { combineLatest, concatMap, first, forkJoin, Observable, of } from 'rxjs';
+import { combineLatest, concatMap, filter, first, forkJoin, Observable, of } from 'rxjs';
 import { ColumnConfig, DiagnosticsTable } from './DiagnosticsTable';
 import { filterThreadDumps, ThreadDumpFilters, ThreadDumpFiltersCategories } from './Filters/ThreadDumpFilters';
 import { ThreadDumpLabelsPanel } from './ThreadDumpLabelsPanel';
@@ -135,6 +135,26 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({
     );
     return filters.length > 0 ? filters[0].archived.filters : emptyArchivedThreadDumpFilters;
   }) as ThreadDumpFiltersCategories;
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('threaddumps:read')),
+        )
+        .subscribe({
+          next: (resp) => {
+            if (!resp.authorized) {
+              setErrorMessage('User is not authorized to read thread dumps');
+            }
+          },
+          error: (resp) => setErrorMessage(resp.error),
+        }),
+    );
+  }, [addSubscription, context.api, context.target, setErrorMessage]);
 
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({

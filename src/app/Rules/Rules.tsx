@@ -97,10 +97,72 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
   const [cleanRuleEnabled, setCleanRuleEnabled] = React.useState(true);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [createRuleModalOpen, setCreateRuleModalOpen, handleCreateRuleModalClose] = useModalFromLocationState();
+  const [controlEnabled, setControlEnabled] = React.useState(true);
+  const [deleteEnabled, setDeleteEnabled] = React.useState(true);
   const isEditMode = React.useMemo(
     () => createRuleModalOpen && store.getState().modalPrefill.data?.edit,
     [createRuleModalOpen],
   );
+
+  React.useEffect(() => {
+    addSubscription(
+      context.api.checkPermission('automatedrules:write').subscribe({
+        next: (v) => {
+          if (!v.authorized) {
+            setControlEnabled(false);
+          }
+        },
+        error: () => {
+          setControlEnabled(false);
+        },
+      }),
+    );
+  }, [addSubscription, context.api, setControlEnabled]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.api.checkPermission('matchexpressions:write').subscribe({
+        next: (v) => {
+          if (!v.authorized) {
+            setControlEnabled(false);
+          }
+        },
+        error: () => {
+          setControlEnabled(false);
+        },
+      }),
+    );
+  }, [addSubscription, context.api, setControlEnabled]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.api.checkPermission('matchexpressions:delete').subscribe({
+        next: (v) => {
+          if (!v.authorized) {
+            setDeleteEnabled(false);
+          }
+        },
+        error: () => {
+          setDeleteEnabled(false);
+        },
+      }),
+    );
+  }, [addSubscription, context.api, setDeleteEnabled]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.api.checkPermission('automatedrules:delete').subscribe({
+        next: (v) => {
+          if (!v.authorized) {
+            setDeleteEnabled(false);
+          }
+        },
+        error: () => {
+          setDeleteEnabled(false);
+        },
+      }),
+    );
+  }, [addSubscription, context.api, setDeleteEnabled]);
 
   const tableColumns: TableColumn[] = React.useMemo(
     () => [
@@ -316,10 +378,12 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         {
           title: t('EDIT'),
           onClick: () => handleEditButton(rule),
+          isDisabled: !controlEnabled,
         },
         {
           title: t('COPY'),
           onClick: () => handleCopyButton(rule),
+          isDisabled: !controlEnabled,
         },
         {
           title: t('DOWNLOAD'),
@@ -332,10 +396,11 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
           title: t('DELETE'),
           onClick: () => handleDeleteButton(rule),
           isDanger: true,
+          isDisabled: !deleteEnabled,
         },
       ];
     },
-    [context.api, handleEditButton, handleDeleteButton, handleCopyButton, t],
+    [context.api, deleteEnabled, controlEnabled, handleEditButton, handleDeleteButton, handleCopyButton, t],
   );
 
   const handleUploadModalClose = React.useCallback(() => {
@@ -408,6 +473,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
               aria-label={`${r.name} is enabled`}
               className={'switch-toggle-' + String(r.enabled)}
               isChecked={r.enabled}
+              isDisabled={!controlEnabled}
               onChange={(_event, state) => handleToggle(r, state)}
             />
           </Td>
@@ -447,7 +513,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
           </Td>
         </Tr>
       ));
-  }, [rules, ruleOptions, sortBy, handleToggle, actionResolver, t, tableColumns, searchTerm]);
+  }, [rules, controlEnabled, ruleOptions, sortBy, handleToggle, actionResolver, t, tableColumns, searchTerm]);
 
   const toolbar = React.useMemo(
     () => (
@@ -463,13 +529,24 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
           </ToolbarItem>
           <ToolbarItem variant="separator" />
           <ToolbarItem key="create" gap={{ default: 'gapSm' }}>
-            <Button variant="primary" onClick={handleCreateRule} data-quickstart-id="create-rule-btn">
+            <Button
+              variant="primary"
+              onClick={handleCreateRule}
+              data-quickstart-id="create-rule-btn"
+              isDisabled={!controlEnabled}
+            >
               {t('CREATE')}
             </Button>
           </ToolbarItem>
           {capabilities.fileUploads ? (
             <ToolbarItem key="upload">
-              <Button icon={<UploadIcon />} variant="secondary" aria-label="Upload" onClick={handleUploadRule}></Button>
+              <Button
+                icon={<UploadIcon />}
+                variant="secondary"
+                aria-label="Upload"
+                onClick={handleUploadRule}
+                isDisabled={!controlEnabled}
+              ></Button>
             </ToolbarItem>
           ) : (
             <></>
@@ -494,6 +571,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
     ),
     [
       t,
+      controlEnabled,
       searchTerm,
       setSearchTerm,
       handleCreateRule,

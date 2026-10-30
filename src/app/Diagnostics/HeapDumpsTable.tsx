@@ -71,7 +71,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { combineLatest, concatMap, first, forkJoin, Observable, of } from 'rxjs';
+import { combineLatest, concatMap, filter, first, forkJoin, Observable, of } from 'rxjs';
 import { ColumnConfig, DiagnosticsTable } from './DiagnosticsTable';
 import { filterHeapDumps, HeapDumpFilters, HeapDumpFiltersCategories } from './Filters/HeapDumpFilters';
 import { HeapDumpLabelsPanel } from './HeapDumpLabelsPanel';
@@ -135,6 +135,26 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({
     );
     return filters.length > 0 ? filters[0].archived.filters : emptyArchivedHeapDumpFilters;
   }) as HeapDumpFiltersCategories;
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => context.api.checkPermission('heapdumps:read')),
+        )
+        .subscribe({
+          next: (resp) => {
+            if (!resp.authorized) {
+              setErrorMessage('User is not authorized to read heap dumps');
+            }
+          },
+          error: (resp) => setErrorMessage(resp.error),
+        }),
+    );
+  }, [addSubscription, context.api, context.target, setErrorMessage]);
 
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({
