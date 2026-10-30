@@ -7346,7 +7346,7 @@ __metadata:
     victory-bar: "npm:37.4.1"
     victory-box-plot: "npm:37.4.1"
     victory-chart: "npm:37.4.1"
-    victory-core: "npm:37.3.6"
+    victory-core: "npm:37.4.1"
     victory-create-container: "npm:37.3.6"
     victory-cursor-container: "npm:37.3.6"
     victory-group: "npm:37.3.6"
