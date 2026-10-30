@@ -54,7 +54,7 @@ export const Permissions: React.FC = () => {
   return errorMessage ? (
     <ErrorView title={t('Permissions.ERROR_TEXT')} message={errorMessage} />
   ) : (
-    <BreadcrumbPage pageTitle="User Permissions">
+    <BreadcrumbPage pageTitle={t('Permissions.PAGE_TITLE')}>
       <Card>
         <CardTitle>
           <Content component="p">{t('Permissions.CARD_TITLE')}</Content>

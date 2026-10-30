@@ -158,7 +158,7 @@ export const PermissionsTable: React.FC<PermissionsTableProps> = (props: Permiss
           </ToolbarContent>
         </Toolbar>
         {displayedPermissionsRowData.length ? (
-          <Table aria-label="User Permissions" variant={TableVariant.compact}>
+          <Table aria-label={t('PermissionsTable.TABLE_TITLE')} variant={TableVariant.compact}>
             <Thead>
               <Tr>
                 {permissionsColumns.map(({ title, sortable }, index) => (
