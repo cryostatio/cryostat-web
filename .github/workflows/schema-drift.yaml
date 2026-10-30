@@ -1,0 +1,50 @@
+name: Schema drift check
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  schema-drift:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - id: read-config
+      run: echo "backendSchemaRef=$(jq -r .backendSchemaRef package.json)" >> $GITHUB_OUTPUT
+    - name: Use Node.js lts/*
+      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version: 'lts/*'
+        cache: 'yarn'
+    - uses: bahmutov/npm-install@20216767ca67f0f7b4d095dc5859c5700a6581cb # v1.12.1
+    - name: Regenerate schema files from backendSchemaRef
+      env:
+        CRYOSTAT_BACKEND_REF: ${{ steps.read-config.outputs.backendSchemaRef }}
+        SKIP_LOCAL_SCHEMAS: 'true'
+      run: yarn schema:sync
+    - name: Fail on schema drift
+      run: |
+        changes="$(git status --porcelain --untracked-files=all -- src/schema)"
+        if [ -z "${changes}" ]; then
+          echo "No schema drift: src/schema matches backendSchemaRef ${{ steps.read-config.outputs.backendSchemaRef }}"
+          exit 0
+        fi
+        {
+          echo "### Schema drift detected"
+          echo
+          echo "The files in \`src/schema\` do not match the output of \`yarn schema:sync\` for \`backendSchemaRef\` \`${{ steps.read-config.outputs.backendSchemaRef }}\`."
+          echo
+          echo '```'
+          echo "${changes}"
+          echo '```'
+          echo
+          echo '```diff'
+          git diff --stat -- src/schema
+          echo '```'
+        } >> "${GITHUB_STEP_SUMMARY}"
+        git diff -- src/schema
+        echo "::error title=Schema drift detected::src/schema is out of sync with backendSchemaRef. Run 'yarn schema:sync' locally and commit the changes under src/schema. This applies even to backward-compatible backend changes."
+        exit 1
