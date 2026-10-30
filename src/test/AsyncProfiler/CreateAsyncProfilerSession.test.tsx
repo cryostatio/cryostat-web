@@ -107,4 +107,33 @@ describe('<CreateAsyncProfilerSession />', () => {
     expect(startSpy).toHaveBeenCalledWith(mockTarget, ['jdk.ExecutionSample'], 30);
     expect(onClose).toHaveBeenCalledTimes(1);
   });
+
+  it('checks for conflicting recordings once on mount and once per notification, not doubled', async () => {
+    // With duplicate effects removed: 1 call on mount + 1 per notification category (2) = 3 total.
+    // With duplicates present it would be 6 (each effect pair fires independently).
+    const recordingsSpy = jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(of([]));
+    render({
+      routerConfigs: {
+        routes: [{ path: '/async-profiler', element: <CreateAsyncProfilerSession /> }],
+      },
+    });
+
+    await screen.findByRole('button', { name: /^cancel$/i });
+
+    expect(recordingsSpy).toHaveBeenCalledTimes(3);
+  });
+
+  it('subscribes to recording notifications exactly once per category', async () => {
+    const messagesSpy = jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of());
+    render({
+      routerConfigs: {
+        routes: [{ path: '/async-profiler', element: <CreateAsyncProfilerSession /> }],
+      },
+    });
+
+    await screen.findByRole('button', { name: /^cancel$/i });
+
+    // One subscription for ActiveRecordingCreated, one for ActiveRecordingStopped — not doubled.
+    expect(messagesSpy).toHaveBeenCalledTimes(2);
+  });
 });
