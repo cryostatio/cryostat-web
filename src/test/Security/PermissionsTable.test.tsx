@@ -72,6 +72,116 @@ describe('<PermissionsTable />', () => {
     expect(rows[2].querySelector('td')).toHaveTextContent('targets');
   });
 
+  it('should sort by resource A-Z then action in read/write/delete order by default', async () => {
+    const perm = (resource: string, action: string, authorized = true): Mapping => ({
+      permission: { resource, action },
+      response: { authorized },
+    });
+    const unordered: Mapping[] = [
+      perm('targets', 'delete'),
+      perm('rules', 'write'),
+      perm('targets', 'read'),
+      perm('rules', 'zzz'),
+      perm('rules', 'delete'),
+      perm('targets', 'write'),
+      perm('rules', 'read'),
+    ];
+    render({
+      routerConfigs: {
+        routes: [{ path: '/triggers', element: <PermissionsTable permissions={unordered} /> }],
+      },
+    });
+
+    const rows = screen.getAllByRole('row').slice(1);
+    const cells = rows.map((r) => Array.from(r.querySelectorAll('td')).map((td) => td.textContent));
+    expect(cells.map(([resource, action]) => `${resource}:${action}`)).toEqual([
+      'rules:Read',
+      'rules:Write',
+      'rules:Delete',
+      'rules:zzz',
+      'targets:Read',
+      'targets:Write',
+      'targets:Delete',
+    ]);
+  });
+
+  it('should switch to single column sorting when a header is clicked', async () => {
+    const { user } = render({
+      routerConfigs: {
+        routes: [{ path: '/triggers', element: <PermissionsTable permissions={mockMapping} /> }],
+      },
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Action' }));
+    let rows = screen.getAllByRole('row');
+    expect(rows[1].querySelector('td')).toHaveTextContent('targets');
+    expect(rows[2].querySelector('td')).toHaveTextContent('audit');
+
+    await user.click(screen.getByRole('button', { name: 'Action' }));
+    rows = screen.getAllByRole('row');
+    expect(rows[1].querySelector('td')).toHaveTextContent('audit');
+    expect(rows[2].querySelector('td')).toHaveTextContent('targets');
+  });
+
+  it('should sort the Action column by localized label', async () => {
+    const perm = (resource: string, action: string): Mapping => ({
+      permission: { resource, action },
+      response: { authorized: true },
+    });
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/triggers',
+            element: (
+              <PermissionsTable
+                permissions={[perm('a', 'read'), perm('b', 'write'), perm('c', 'delete'), perm('d', 'zzz')]}
+              />
+            ),
+          },
+        ],
+      },
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Action' }));
+    const actions = screen.getAllByRole('row').map((r) => r.querySelectorAll('td')[1]?.textContent);
+    expect(actions.slice(1)).toEqual(['Delete', 'Read', 'Write', 'zzz']);
+  });
+
+  it('should sort the Authorized column by localized label', async () => {
+    const { user } = render({
+      routerConfigs: {
+        routes: [{ path: '/triggers', element: <PermissionsTable permissions={mockMapping} /> }],
+      },
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Authorized' }));
+    let rows = screen.getAllByRole('row');
+    expect(rows[1].querySelectorAll('td')[2]).toHaveTextContent('Authorized');
+    expect(rows[2].querySelectorAll('td')[2]).toHaveTextContent('Unauthorized');
+
+    await user.click(screen.getByRole('button', { name: 'Authorized' }));
+    rows = screen.getAllByRole('row');
+    expect(rows[1].querySelectorAll('td')[2]).toHaveTextContent('Unauthorized');
+    expect(rows[2].querySelectorAll('td')[2]).toHaveTextContent('Authorized');
+  });
+
+  it('should render authorized state as icons', async () => {
+    render({
+      routerConfigs: {
+        routes: [{ path: '/triggers', element: <PermissionsTable permissions={mockMapping} /> }],
+      },
+    });
+
+    const rows = screen.getAllByRole('row');
+    expect(rows[1].querySelectorAll('td')[2]).toHaveTextContent('Unauthorized');
+    expect(rows[1].querySelectorAll('td')[2].querySelector('svg')).toBeInTheDocument();
+    expect(rows[2].querySelectorAll('td')[2]).toHaveTextContent('Authorized');
+    expect(rows[2].querySelectorAll('td')[2].querySelector('svg')).toBeInTheDocument();
+    expect(screen.queryByText('true')).not.toBeInTheDocument();
+    expect(screen.queryByText('false')).not.toBeInTheDocument();
+  });
+
   it('should display the toolbar', async () => {
     const { container } = render({
       routerConfigs: {
@@ -107,6 +217,24 @@ describe('<PermissionsTable />', () => {
     expect(screen.queryByText('targets')).not.toBeInTheDocument();
 
     fireEvent.change(filter, { target: { value: 'write' } });
+    expect(screen.getByText('audit')).toBeInTheDocument();
+    expect(screen.queryByText('targets')).not.toBeInTheDocument();
+  });
+
+  it('should not match unauthorized rows when searching for authorized', () => {
+    render({
+      routerConfigs: {
+        routes: [{ path: '/triggers', element: <PermissionsTable permissions={mockMapping} /> }],
+      },
+    });
+
+    const filter = screen.getByPlaceholderText('Search by resource, action');
+
+    fireEvent.change(filter, { target: { value: 'authorized' } });
+    expect(screen.getByText('targets')).toBeInTheDocument();
+    expect(screen.queryByText('audit')).not.toBeInTheDocument();
+
+    fireEvent.change(filter, { target: { value: 'unauthorized' } });
     expect(screen.getByText('audit')).toBeInTheDocument();
     expect(screen.queryByText('targets')).not.toBeInTheDocument();
   });
