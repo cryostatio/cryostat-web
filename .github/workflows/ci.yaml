@@ -108,4 +108,4 @@ jobs:
       run: curl -sL https://github.com/mozilla/geckodriver/releases/download/${{env.GECKODRIVER_VERSION}}/geckodriver-${{env.GECKODRIVER_VERSION}}-linux64.tar.gz | tar xzvf -
     - name: Add to PATH
       run: sudo mv geckodriver /usr/local/bin
-    - run: CRYOSTAT_BACKEND_REF=${{ steps.read-config.outputs.backendSchemaRef }} yarn itest:static
+    - run: CRYOSTAT_BACKEND_REF=${{ steps.read-config.outputs.backendSchemaRef }} yarn itest:preview

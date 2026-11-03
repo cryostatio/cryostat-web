@@ -72,7 +72,7 @@ To quickly preview changes without launching a `Cryostat` instance, run:
 $ yarn start:dev:preview
 ```
 
-In this case, API requests are intercepted and handled by [Mirage JS](https://miragejs.com/).
+In this case, API requests are intercepted and handled by [Mock Service Worker](https://mswjs.io/).
 
 ## TEST
 
@@ -85,6 +85,8 @@ $ yarn test
 ```bash
 $ yarn itest:preview
 ```
+
+This builds the application in preview mode (API requests handled by Mock Service Worker), serves the build on `127.0.0.1:9091`, runs the integration tests, and shuts the server down afterwards.
 
 Refer to [TESTING.md](TESTING.md) for more details about tests.
 

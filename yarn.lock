@@ -3031,13 +3031,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@miragejs/pretender-node-polyfill@npm:^0.1.0":
-  version: 0.1.2
-  resolution: "@miragejs/pretender-node-polyfill@npm:0.1.2"
-  checksum: 10/bb55983a253dc0d4162acac090b062500595c9844bfbd21fe25bc1f926808d0070d710e622aa6285fa16c673a65cf3e05f4b32e888c469f1bde8888a7934ee44
-  languageName: node
-  linkType: hard
-
 "@monaco-editor/loader@npm:^1.5.0":
   version: 1.7.0
   resolution: "@monaco-editor/loader@npm:1.7.0"
@@ -7328,7 +7321,6 @@ __metadata:
     lodash: "npm:4.18.1"
     marked: "npm:15.0.12"
     mini-css-extract-plugin: "npm:2.10.2"
-    miragejs: "npm:0.1.48"
     mock-socket: "npm:9.3.1"
     monaco-editor: "npm:0.57.0"
     monaco-editor-webpack-plugin: "npm:7.1.1"
@@ -9697,13 +9689,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fake-xml-http-request@npm:^2.1.2":
-  version: 2.1.2
-  resolution: "fake-xml-http-request@npm:2.1.2"
-  checksum: 10/3fa247ff0a0af7e050002b3cbe4e2aeccab9f98dcc3afb379a02ffc32efb2571879202b4474a6ff73013999eb1f85aef0f2bf6d96c008dcb307230df873c3db7
-  languageName: node
-  linkType: hard
-
 "fast-deep-equal@npm:^3.1.1, fast-deep-equal@npm:^3.1.3":
   version: 3.1.3
   resolution: "fast-deep-equal@npm:3.1.3"
@@ -11435,13 +11420,6 @@ __metadata:
   version: 1.0.4
   resolution: "infer-owner@npm:1.0.4"
   checksum: 10/181e732764e4a0611576466b4b87dac338972b839920b2a8cde43642e4ed6bd54dc1fb0b40874728f2a2df9a1b097b8ff83b56d5f8f8e3927f837fdcb47d8a89
-  languageName: node
-  linkType: hard
-
-"inflected@npm:^2.0.4":
-  version: 2.1.0
-  resolution: "inflected@npm:2.1.0"
-  checksum: 10/1a4d88cf12803663e25214df1f66f027b572c961f014e958a5607c1e95476f42c27e641db0b8779ef7b05c6d4d1ea4744c61d04dfb7cddf6c8fc26acdca1199d
   languageName: node
   linkType: hard
 
@@ -13943,18 +13921,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"miragejs@npm:0.1.48":
-  version: 0.1.48
-  resolution: "miragejs@npm:0.1.48"
-  dependencies:
-    "@miragejs/pretender-node-polyfill": "npm:^0.1.0"
-    inflected: "npm:^2.0.4"
-    lodash: "npm:^4.0.0"
-    pretender: "npm:^3.4.7"
-  checksum: 10/650aa4d9f46835f7bd66eeb54f927978742aa785abf8585a8e3c0c82f68dcfa548bbe603ba9203831a6524caaa1cf607c26f838e7a6d66ccb9491baa8d604f5d
-  languageName: node
-  linkType: hard
-
 "mkdirp@npm:^1.0.3, mkdirp@npm:^1.0.4":
   version: 1.0.4
   resolution: "mkdirp@npm:1.0.4"
@@ -15474,16 +15440,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pretender@npm:^3.4.7":
-  version: 3.4.7
-  resolution: "pretender@npm:3.4.7"
-  dependencies:
-    fake-xml-http-request: "npm:^2.1.2"
-    route-recognizer: "npm:^0.3.3"
-  checksum: 10/afadd10e22ede523a59cbbf503be033bb75c5d8402ce978dcaa15f4b82c9967ecb64e43a4b003256eb2780fe0e39e0b8b29574a870b50be6e2c026b8902742ed
-  languageName: node
-  linkType: hard
-
 "prettier@npm:3.9.10":
   version: 3.9.10
   resolution: "prettier@npm:3.9.10"
@@ -16357,13 +16313,6 @@ __metadata:
   version: 3.0.2
   resolution: "robust-predicates@npm:3.0.2"
   checksum: 10/88bd7d45a6b89e88da2631d4c111aaaf0443de4d7078e9ab7f732245790a3645cf79bf91882a9740dbc959cf56ba75d5dced5bf2259410f8b6de19fd240cd08c
-  languageName: node
-  linkType: hard
-
-"route-recognizer@npm:^0.3.3":
-  version: 0.3.4
-  resolution: "route-recognizer@npm:0.3.4"
-  checksum: 10/cf1b83378bfe17d945afc087fc10082545cc19d1a5d13f9c1321117780caec40934a7cd5ace69558fadeb17475ac3963d1b59a2f75d144d51082e1964318959a
   languageName: node
   linkType: hard
 
