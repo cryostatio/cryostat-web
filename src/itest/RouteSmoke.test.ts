@@ -17,7 +17,7 @@ import assert from 'assert';
 import { IRouteMeta, routeDefs } from '@app/routeDefs';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { By, WebDriver, until } from 'selenium-webdriver';
-import { Cryostat, setupDriver } from './util';
+import { Cryostat, quitDriver, setupDriver } from './util';
 
 // Base URL for the running dev server (matches the existing itest convention).
 const BASE_URL = process.env.CRYOSTAT_BASE_URL || 'http://localhost:9091';
@@ -108,7 +108,7 @@ describe('Route smoke test: unknown route', function () {
   });
 
   afterAll(async function () {
-    await driver.close();
+    await quitDriver(driver);
   });
 
   it('renders the NotFound page for an unregistered path', async function () {
@@ -137,7 +137,7 @@ describe('Route smoke test: PRODUCTION routes', function () {
   });
 
   afterAll(async function () {
-    await driver.close();
+    await quitDriver(driver);
   });
 
   for (const { path, title } of productionRoutes) {
@@ -164,7 +164,7 @@ describe('Route smoke test: BETA routes', function () {
   });
 
   afterAll(async function () {
-    await driver.close();
+    await quitDriver(driver);
   });
 
   for (const { path, title } of betaRoutes) {
