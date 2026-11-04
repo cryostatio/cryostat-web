@@ -261,9 +261,8 @@ export const routeDefs: IRouteMeta[] = [
 
 /**
  * Recursively flattens the route metadata tree into a single list.
- * Unlike the `flatten` in routes.tsx this function does not mutate the
- * path values and does not apply BASEPATH prefixing — callers that need
- * runtime BASEPATH handling should use the `flatten` export from routes.tsx.
+ * Paths already include BASEPATH through toPath and are left unchanged,
+ * matching the behavior of `flatten` in routes.tsx.
  */
 export const flattenMeta = (defs: IRouteMeta[]): IRouteMeta[] => {
   const ret: IRouteMeta[] = [];
