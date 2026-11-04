@@ -7296,7 +7296,7 @@ __metadata:
     html-webpack-plugin: "npm:5.6.8"
     humanize-duration: "npm:3.35.0"
     i18next: "npm:25.10.10"
-    i18next-browser-languagedetector: "npm:8.2.4"
+    i18next-browser-languagedetector: "npm:8.3.0"
     i18next-parser: "npm:9.4.0"
     imagemin: "npm:9.0.1"
     jest: "npm:30.5.2"
@@ -11173,12 +11173,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next-browser-languagedetector@npm:8.2.4":
-  version: 8.2.4
-  resolution: "i18next-browser-languagedetector@npm:8.2.4"
+"i18next-browser-languagedetector@npm:8.3.0":
+  version: 8.3.0
+  resolution: "i18next-browser-languagedetector@npm:8.3.0"
   dependencies:
     "@babel/runtime": "npm:^7.29.2"
-  checksum: 10/43ba08ca6ece8af78f96b278927503f843084b0866aa8a96f712a693a0e087a7f80f2ad3bae79240722c8a2724f0bfba7a6abd710d481babfc61da5307b867f0
+  checksum: 10/1b9117fd3a4d70d844bf731200d3dafde8276fc0625fd5c75d40d5774320f3ddae6795c2d92058e4001e99d6138a113e521405555a4e0834d1cd372bb3e00a5d
   languageName: node
   linkType: hard
 
