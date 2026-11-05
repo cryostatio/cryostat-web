@@ -7360,7 +7360,7 @@ __metadata:
     victory-zoom-container: "npm:37.4.1"
     wait-on: "npm:9.5.1"
     webpack: "npm:5.112.2"
-    webpack-bundle-analyzer: "npm:5.4.0"
+    webpack-bundle-analyzer: "npm:5.4.1"
     webpack-cli: "npm:7.3.1"
     webpack-dev-server: "npm:5.2.7"
     webpack-merge: "npm:6.0.1"
@@ -19261,9 +19261,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack-bundle-analyzer@npm:5.4.0":
-  version: 5.4.0
-  resolution: "webpack-bundle-analyzer@npm:5.4.0"
+"webpack-bundle-analyzer@npm:5.4.1":
+  version: 5.4.1
+  resolution: "webpack-bundle-analyzer@npm:5.4.1"
   dependencies:
     "@discoveryjs/json-ext": "npm:^0.6.3"
     acorn: "npm:^8.0.4"
@@ -19277,7 +19277,7 @@ __metadata:
     ws: "npm:^8.19.0"
   bin:
     webpack-bundle-analyzer: lib/bin/analyzer.js
-  checksum: 10/8265f21235bdb6f8472551747ca5133e3ccd684f982c13cf879e045a674a0e0560aadd09dfed73f9cce3aec7bec19e1b0a0f828b87d901d7c6046eb12556a0c3
+  checksum: 10/73f8b708e272d383b955baf2c338cfedc37fe10094e4b629ff924fdf75ac20cf0f91b0aa7ec6d2def6f59b37eacf1ebccc0141e68a14318eb88928905d1d77d2
   languageName: node
   linkType: hard
 
