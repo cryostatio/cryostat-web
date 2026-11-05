@@ -15,7 +15,7 @@
  */
 import assert from 'assert';
 import { WebDriver } from 'selenium-webdriver';
-import { Cryostat, Recordings, setupDriver, sleep } from './util';
+import { Cryostat, Recordings, quitDriver, setupDriver, sleep } from './util';
 
 describe('Recording workflow steps', function () {
   let driver: WebDriver;
@@ -33,7 +33,7 @@ describe('Recording workflow steps', function () {
   });
 
   afterAll(async function () {
-    await driver.close();
+    await quitDriver(driver);
   });
 
   it('shows correct route', async function () {

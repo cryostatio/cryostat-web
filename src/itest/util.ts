@@ -47,10 +47,32 @@ export async function setupDriver(): Promise<WebDriver> {
   options.setAcceptInsecureCerts(true);
   options.addArguments('--width=1920', '--height=1080');
   const driver = new Builder().forBrowser('firefox').setFirefoxOptions(options).build();
-  await driver.manage().setTimeouts({
-    implicit: DEFAULT_FIND_ELEMENT_TIMEOUT,
-  });
+  try {
+    await driver.manage().setTimeouts({
+      implicit: DEFAULT_FIND_ELEMENT_TIMEOUT,
+    });
+  } catch (e) {
+    await quitDriver(driver);
+    throw e;
+  }
   return driver;
+}
+
+/**
+ * Ends the WebDriver session, which terminates the browser and the geckodriver
+ * service process. Unlike `driver.close()`, which only closes the current window,
+ * this does not leave orphaned geckodriver/firefox processes behind. Tolerates an
+ * undefined driver (setup failed) and a session that has already ended.
+ */
+export async function quitDriver(driver?: WebDriver): Promise<void> {
+  if (!driver) {
+    return;
+  }
+  try {
+    await driver.quit();
+  } catch (_) {
+    // session already gone; the service is torn down by quit() regardless
+  }
 }
 
 export class Cryostat {
