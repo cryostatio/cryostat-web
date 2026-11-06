@@ -13,6 +13,7 @@
     ":separatePatchReleases",
     ":pinVersions"
   ],
+  "baseBranchPatterns": ["main", "/^cryostat-v.*/"],
   "reviewersFromCodeOwners": true,
   "customManagers": [
     {
@@ -34,6 +35,17 @@
   },
   "stopUpdatingLabel": "blocked",
   "packageRules": [
+    {
+      "description": "Disable all dependency updates on release branches except backendSchemaRef; other updates there are handled via Mergify backport",
+      "matchBaseBranches": ["/^cryostat-v.*/"],
+      "enabled": false
+    },
+    {
+      "description": "Allow backendSchemaRef to update on release branches, tracking the matching cryostat release branch",
+      "matchBaseBranches": ["/^cryostat-v.*/"],
+      "matchPackageNames": ["https://github.com/cryostatio/cryostat"],
+      "enabled": true
+    },
     {
       "groupName": "react ecosystem",
       "dependencyDashboardApproval": true,
