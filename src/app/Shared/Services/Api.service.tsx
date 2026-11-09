@@ -180,7 +180,7 @@ export class ApiService {
   addTriggers(definition: SmartTriggerRequest, target: Target): Observable<boolean> {
     const body = new window.FormData();
     body.append('definition', JSON.stringify([definition]));
-    return this.sendRequest('v5', `targets/${target.jvmId}/smart-triggers/`, { method: 'POST', body }).pipe(
+    return this.sendRequest('v5', `targets/${target.jvmId}/smart-triggers`, { method: 'POST', body }).pipe(
       map((resp) => resp.ok),
       first(),
     );
