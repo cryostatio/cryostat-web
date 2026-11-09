@@ -228,8 +228,8 @@ export const AllTargetsThreadDumpsTable: React.FC<AllTargetsThreadDumpsTableProp
       addSubscription(
         context.api
           .graphql<any>(
-            `query ThreadDumpCountForTarget($id: String!) {
-                targetNodes(filter: { targetIds: [$id] }) {
+            `query ThreadDumpCountForTarget($jvmId: String!) {
+                targetNodes(filter: { jvmIds: [$jvmId] }) {
                   target {
                     threadDumps {
                       data {
@@ -252,7 +252,7 @@ export const AllTargetsThreadDumpsTable: React.FC<AllTargetsThreadDumpsTableProp
                   }
                 }
               }`,
-            { id: target.id! },
+            { jvmId: target.jvmId! },
           )
           .subscribe((v) => {
             setArchivesForTargets((old) => {

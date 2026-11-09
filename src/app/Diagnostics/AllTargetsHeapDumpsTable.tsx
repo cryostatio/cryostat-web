@@ -228,8 +228,8 @@ export const AllTargetsHeapDumpsTable: React.FC<AllTargetsHeapDumpsTableProps> =
       addSubscription(
         context.api
           .graphql<any>(
-            `query HeapDumpCountForTarget($id: String!) {
-                targetNodes(filter: { targetIds: [$id] }) {
+            `query HeapDumpCountForTarget($jvmId: String!) {
+                targetNodes(filter: { jvmIds: [$jvmId] }) {
                   target {
                     heapDumps {
                       data {
@@ -252,7 +252,7 @@ export const AllTargetsHeapDumpsTable: React.FC<AllTargetsHeapDumpsTableProps> =
                   }
                 }
               }`,
-            { id: target.id! },
+            { jvmId: target.jvmId! },
           )
           .subscribe((v) => {
             setArchivesForTargets((old) => {

@@ -268,8 +268,8 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       addSubscription(
         context.api
           .graphql<any>(
-            `query ArchiveCountForTarget($id: String!) {
-              targetNodes(filter: { targetIds: [$id] }) {
+            `query ArchiveCountForTarget($jvmId: String!) {
+              targetNodes(filter: { jvmIds: [$jvmId] }) {
                 target {
                   archivedRecordings {
                     data {
@@ -293,7 +293,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
                 }
               }
             }`,
-            { id: target.id! },
+            { jvmId: target.jvmId! },
           )
           .subscribe((v) => {
             setArchivesForTargets((old) => {
