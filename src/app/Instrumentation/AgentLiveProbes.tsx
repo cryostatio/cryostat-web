@@ -149,13 +149,19 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = () => {
       };
     });
     addSubscription(
-      context.api.removeProbes().subscribe(() => {
-        setActionLoadings((old) => {
-          return {
+      context.api.removeProbes().subscribe({
+        next: () => {
+          setActionLoadings((old) => ({
             ...old,
             REMOVE: false,
-          };
-        });
+          }));
+        },
+        error: () => {
+          setActionLoadings((old) => ({
+            ...old,
+            REMOVE: false,
+          }));
+        },
       }),
     );
   }, [addSubscription, context.api, setActionLoadings]);
