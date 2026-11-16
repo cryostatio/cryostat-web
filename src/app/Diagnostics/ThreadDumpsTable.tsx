@@ -222,7 +222,12 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({
           tasks.push(context.api.deleteArchivedThreadDumpFromPath(directory.jvmId, r.threadDumpId).pipe(first()));
         }
       });
-      addSubscription(forkJoin(tasks).subscribe());
+      addSubscription(
+        forkJoin(tasks).subscribe({
+          next: () => handlePostActions('DELETE'),
+          error: () => handlePostActions('DELETE'),
+        }),
+      );
     } else {
       addSubscription(
         propsTarget.subscribe((t) => {
