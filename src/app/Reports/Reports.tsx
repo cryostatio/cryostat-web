@@ -57,9 +57,9 @@ import { ISortBy } from '@patternfly/react-table';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { concatMap, filter, first, map, tap } from 'rxjs';
+import { concatMap, filter, finalize, first, map, tap } from 'rxjs';
 
-type ReportEntry = { loading: boolean; target: Target; hasSources: boolean; report: AggregateReport };
+type ReportEntry = { loading: boolean; target: Target; hasSources: boolean; report?: AggregateReport };
 
 export const Reports: React.FC = () => {
   const { t } = useCryostatTranslation();
@@ -105,7 +105,7 @@ export const Reports: React.FC = () => {
           .getCurrentReportsForAllTargets(minScore)
           .pipe(
             first(),
-            tap(() => {
+            finalize(() => {
               if (onComplete) {
                 onComplete();
               }
@@ -113,7 +113,10 @@ export const Reports: React.FC = () => {
             map((reports) => reports.sort((a, b) => a.target.id! - b.target.id!)),
             map((reports) => reports.map((r) => ({ ...r, loading: false }))),
           )
-          .subscribe((a) => setState(a)),
+          .subscribe({
+            next: (a) => setState(a),
+            error: () => setState([]),
+          }),
       );
     },
     [addSubscription, context.api, minScore, setState],
@@ -128,6 +131,20 @@ export const Reports: React.FC = () => {
 
   const doUpdate = React.useCallback(
     (jvmId: string) => {
+      const updateEntry = (report?: AggregateReport) => {
+        setState((prev) =>
+          prev.map((e) =>
+            e.target.jvmId === jvmId
+              ? {
+                  ...e,
+                  loading: false,
+                  ...(report ? { report } : {}),
+                }
+              : e,
+          ),
+        );
+      };
+
       addSubscription(
         context.targets
           .targets()
@@ -145,17 +162,9 @@ export const Reports: React.FC = () => {
             ),
             concatMap((t) => context.api.getCurrentReportForTarget(t)),
           )
-          .subscribe((report) => {
-            setState((prev) => {
-              const copy: ReportEntry[] = [...prev];
-              for (let e of copy) {
-                if (e.target.jvmId === jvmId) {
-                  e.report = report;
-                }
-                e.loading = false;
-              }
-              return copy;
-            });
+          .subscribe({
+            next: (report) => updateEntry(report),
+            error: () => updateEntry(),
           }),
       );
     },
