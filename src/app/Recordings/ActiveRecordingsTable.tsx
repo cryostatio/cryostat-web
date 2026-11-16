@@ -437,11 +437,14 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
             merge(
               context.notificationChannel.replayableMessages(NotificationCategory.ArchiveRecordingSuccess),
               context.notificationChannel.replayableMessages(NotificationCategory.ArchiveRecordingFail),
-            ).subscribe((notification) => {
-              if (jobIds.includes(notification.message.jobId)) {
+            )
+              .pipe(
+                filter((notification) => jobIds.includes(notification.message.jobId)),
+                first(),
+              )
+              .subscribe(() => {
                 handlePostActions('ARCHIVE');
-              }
-            }),
+              }),
           );
         },
         error: () => handlePostActions('ARCHIVE'),
