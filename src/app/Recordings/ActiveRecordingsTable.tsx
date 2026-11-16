@@ -435,8 +435,8 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         next: (jobIds) => {
           addSubscription(
             merge(
-              context.notificationChannel.messages(NotificationCategory.ArchiveRecordingSuccess),
-              context.notificationChannel.messages(NotificationCategory.ArchiveRecordingFail),
+              context.notificationChannel.replayableMessages(NotificationCategory.ArchiveRecordingSuccess),
+              context.notificationChannel.replayableMessages(NotificationCategory.ArchiveRecordingFail),
             ).subscribe((notification) => {
               if (jobIds.includes(notification.message.jobId)) {
                 handlePostActions('ARCHIVE');
