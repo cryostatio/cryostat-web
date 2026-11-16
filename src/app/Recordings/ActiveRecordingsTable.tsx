@@ -80,7 +80,7 @@ import { SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
-import { combineLatest, forkJoin, Observable, of, Subject } from 'rxjs';
+import { combineLatest, forkJoin, merge, Observable, of, Subject } from 'rxjs';
 import { concatMap, filter, finalize, first } from 'rxjs/operators';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
@@ -434,13 +434,14 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
       forkJoin(tasks).subscribe({
         next: (jobIds) => {
           addSubscription(
-            context.notificationChannel
-              .messages(NotificationCategory.ArchiveRecordingSuccess)
-              .subscribe((notification) => {
-                if (jobIds.includes(notification.message.jobId)) {
-                  handlePostActions('ARCHIVE');
-                }
-              }),
+            merge(
+              context.notificationChannel.messages(NotificationCategory.ArchiveRecordingSuccess),
+              context.notificationChannel.messages(NotificationCategory.ArchiveRecordingFail),
+            ).subscribe((notification) => {
+              if (jobIds.includes(notification.message.jobId)) {
+                handlePostActions('ARCHIVE');
+              }
+            }),
           );
         },
         error: () => handlePostActions('ARCHIVE'),
