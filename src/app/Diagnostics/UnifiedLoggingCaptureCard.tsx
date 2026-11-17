@@ -69,7 +69,10 @@ export const UnifiedLoggingCaptureCard: React.FC<UnifiedLoggingCaptureCardProps>
           setStatus(nextStatus);
           setIsLoadingStatus(false);
         },
-        error: () => setIsLoadingStatus(false),
+        error: () => {
+          setStatus(undefined);
+          setIsLoadingStatus(false);
+        },
       }),
     );
   }, [addSubscription, serviceContext.api, target]);
