@@ -16,6 +16,7 @@
 import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { FeatureFlag } from '@app/Shared/Components/FeatureFlag';
 import { UnifiedLoggingStatus, NullableTarget } from '@app/Shared/Services/api.types';
+import { isHttpError } from '@app/Shared/Services/api.utils';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -51,28 +52,61 @@ export const UnifiedLoggingCaptureCard: React.FC<UnifiedLoggingCaptureCardProps>
   const [target, setTarget] = React.useState<NullableTarget>(undefined);
   const [status, setStatus] = React.useState<UnifiedLoggingStatus | undefined>(undefined);
   const [isLoadingStatus, setIsLoadingStatus] = React.useState(true);
+  const [statusFetchFailed, setStatusFetchFailed] = React.useState(false);
   const [runningGc, setRunningGc] = React.useState(false);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const targetRef = React.useRef<NullableTarget>(undefined);
 
   React.useEffect(() => {
     addSubscription(serviceContext.target.target().subscribe(setTarget));
   }, [addSubscription, serviceContext.target]);
 
+  React.useEffect(() => {
+    targetRef.current = target;
+  }, [target]);
+
+  const isAgentTarget = React.useMemo(() => Boolean(target?.agent), [target]);
+
   const fetchStatus = React.useCallback(() => {
     if (!target) {
       return;
     }
+    if (!target.agent) {
+      setStatus(undefined);
+      setStatusFetchFailed(false);
+      setIsLoadingStatus(false);
+      return;
+    }
+    const requestTarget = target;
     setIsLoadingStatus(true);
     addSubscription(
-      serviceContext.api.getUnifiedLoggingStatus(target, true).subscribe({
+      serviceContext.api.getUnifiedLoggingStatus(requestTarget, true).subscribe({
         next: (nextStatus) => {
+          if (targetRef.current !== requestTarget) {
+            return;
+          }
           setStatus(nextStatus);
+          setStatusFetchFailed(false);
           setIsLoadingStatus(false);
         },
-        error: () => setIsLoadingStatus(false),
+        error: (err) => {
+          if (targetRef.current !== requestTarget) {
+            return;
+          }
+          setStatusFetchFailed(true);
+          setIsLoadingStatus(false);
+          if (!(isHttpError(err) && err.httpResponse.status === 400)) {
+            notifications.danger(
+              t('DiagnosticsCard.DIAGNOSTICS_ACTION_FAILURE', {
+                kind: t('DiagnosticsCard.KINDS.UNIFIED_LOGGING_STATUS'),
+              }),
+              err?.message || err,
+            );
+          }
+        },
       }),
     );
-  }, [addSubscription, serviceContext.api, target]);
+  }, [addSubscription, serviceContext.api, target, notifications, t]);
 
   React.useEffect(() => {
     fetchStatus();
@@ -121,7 +155,15 @@ export const UnifiedLoggingCaptureCard: React.FC<UnifiedLoggingCaptureCardProps>
           <Stack hasGutter>
             <StackItem>
               <FeatureFlag level={FeatureLevel.BETA}>
-                <UnifiedLoggingStatusSummary status={status} isLoading={isLoadingStatus} />
+                {isAgentTarget ? (
+                  <UnifiedLoggingStatusSummary
+                    status={status}
+                    isLoading={isLoadingStatus}
+                    isError={statusFetchFailed}
+                  />
+                ) : (
+                  t('UnifiedLogs.AGENT_REQUIRED')
+                )}
               </FeatureFlag>
             </StackItem>
             <StackItem>
@@ -139,14 +181,19 @@ export const UnifiedLoggingCaptureCard: React.FC<UnifiedLoggingCaptureCardProps>
                 </SplitItem>
                 <FeatureFlag level={FeatureLevel.BETA}>
                   <SplitItem>
-                    <Button
-                      variant="secondary"
-                      onClick={() => setIsModalOpen(true)}
-                      isDisabled={isLoadingStatus}
-                      data-quickstart-id="unified-capture-configure-btn"
+                    <Tooltip
+                      trigger={isAgentTarget ? 'manual' : 'mouseenter focus'}
+                      content={t('UnifiedLogs.AGENT_REQUIRED')}
                     >
-                      {actionLabel}
-                    </Button>
+                      <Button
+                        variant="secondary"
+                        onClick={() => setIsModalOpen(true)}
+                        isAriaDisabled={!isAgentTarget || isLoadingStatus || statusFetchFailed}
+                        data-quickstart-id="unified-capture-configure-btn"
+                      >
+                        {actionLabel}
+                      </Button>
+                    </Tooltip>
                   </SplitItem>
                   <SplitItem>
                     <ActionList>

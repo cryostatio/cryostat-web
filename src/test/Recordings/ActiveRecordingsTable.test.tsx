@@ -23,7 +23,13 @@ import {
   TargetRecordingFilters,
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { ActiveRecording, NotificationMessage, Target, keyValueToString } from '@app/Shared/Services/api.types';
+import {
+  ActiveRecording,
+  NotificationCategory,
+  NotificationMessage,
+  Target,
+  keyValueToString,
+} from '@app/Shared/Services/api.types';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { defaultServices, ServiceContext, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
@@ -83,6 +89,14 @@ const mockStopNotification = {
   message: { target: mockConnectUrl, recording: mockRecording, jvmId: mockJvmId },
 } as NotificationMessage;
 const mockDeleteNotification = mockStopNotification;
+const mockArchiveNotification = {
+  meta: {
+    category: NotificationCategory.ArchiveRecordingSuccess,
+  },
+  message: {
+    jobId: '',
+  },
+} as NotificationMessage;
 
 jest.mock('@app/Recordings/RecordingFilters', () => {
   // Already tested separately
@@ -141,6 +155,8 @@ jest
   .mockReturnValueOnce(of()) // removes a Recording after receiving a notification
   .mockReturnValueOnce(of(mockDeleteNotification))
   .mockReturnValue(of()); // all other tests
+
+jest.spyOn(defaultServices.notificationChannel, 'replayableMessages').mockReturnValue(of(mockArchiveNotification));
 
 jest.spyOn(window, 'open').mockReturnValue(null);
 

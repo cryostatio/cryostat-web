@@ -123,11 +123,14 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
         context.api
           .createRecording(recordingAttributes)
           .pipe(first())
-          .subscribe((resp) => {
-            setLoading(false);
-            if (resp && resp.ok) {
-              exitForm();
-            }
+          .subscribe({
+            next: (resp) => {
+              setLoading(false);
+              if (resp && resp.ok) {
+                exitForm();
+              }
+            },
+            error: () => setLoading(false),
           }),
       );
     },
