@@ -129,7 +129,10 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = ({ headerD
     setRunningThreadDump(true);
     addSubscription(
       serviceContext.api.runThreadDump(true).subscribe({
-        error: (err) => handleError(t('DiagnosticsCard.KINDS.THREADS'), err),
+        error: (err) => {
+          setRunningThreadDump(false);
+          handleError(t('DiagnosticsCard.KINDS.THREADS'), err);
+        },
         complete: () => {
           setRunningThreadDump(false);
           setThreadDumpReady(true);
@@ -142,7 +145,10 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = ({ headerD
     setRunningHeapDump(true);
     addSubscription(
       serviceContext.api.runHeapDump(true).subscribe({
-        error: (err) => handleError(t('DiagnosticsCard.KINDS.HEAP_DUMP'), err),
+        error: (err) => {
+          setRunningHeapDump(false);
+          handleError(t('DiagnosticsCard.KINDS.HEAP_DUMP'), err);
+        },
         complete: () => {
           setRunningHeapDump(false);
         },

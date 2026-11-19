@@ -148,11 +148,14 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
     (username: string, password: string) => {
       setSaving(true);
       addSubscription(
-        context.api.postCredentials(matchExpressionInput, username, password).subscribe((ok) => {
-          setSaving(false);
-          if (ok) {
-            onPropsSave();
-          }
+        context.api.postCredentials(matchExpressionInput, username, password).subscribe({
+          next: (ok) => {
+            setSaving(false);
+            if (ok) {
+              onPropsSave();
+            }
+          },
+          error: () => setSaving(false),
         }),
       );
     },

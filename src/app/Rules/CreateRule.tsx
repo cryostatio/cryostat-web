@@ -340,11 +340,14 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
     };
     setLoading(true);
     addSubscription(
-      (isExistingEdit ? context.api.updateRule(rule, true) : context.api.createRule(rule)).subscribe((success) => {
-        setLoading(false);
-        if (success) {
-          exitForm();
-        }
+      (isExistingEdit ? context.api.updateRule(rule, true) : context.api.createRule(rule)).subscribe({
+        next: (success) => {
+          setLoading(false);
+          if (success) {
+            exitForm();
+          }
+        },
+        error: () => setLoading(false),
       }),
     );
   }, [

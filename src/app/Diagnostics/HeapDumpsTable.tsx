@@ -222,7 +222,12 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({
           tasks.push(context.api.deleteArchivedHeapDumpFromPath(directory.jvmId, r.heapDumpId).pipe(first()));
         }
       });
-      addSubscription(forkJoin(tasks).subscribe());
+      addSubscription(
+        forkJoin(tasks).subscribe({
+          next: () => handlePostActions('DELETE'),
+          error: () => handlePostActions('DELETE'),
+        }),
+      );
     } else {
       addSubscription(
         propsTarget.subscribe((t) => {

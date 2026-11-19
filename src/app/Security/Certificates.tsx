@@ -39,7 +39,7 @@ import {
 } from '@patternfly/react-core';
 import { FileIcon, OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { map, tap } from 'rxjs/operators';
+import { finalize, map } from 'rxjs/operators';
 
 export const Certificates: React.FC = () => {
   const { t } = useCryostatTranslation();
@@ -54,10 +54,13 @@ export const Certificates: React.FC = () => {
       context.api
         .doGet('tls/certs')
         .pipe(
-          tap((_) => setLoading(false)),
+          finalize(() => setLoading(false)),
           map((a: string[]) => a.sort()),
         )
-        .subscribe(setCerts),
+        .subscribe({
+          next: setCerts,
+          error: () => setCerts([]),
+        }),
     );
   }, [setLoading, addSubscription, context.api, setCerts]);
 
