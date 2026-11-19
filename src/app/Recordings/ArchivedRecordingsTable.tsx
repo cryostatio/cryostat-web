@@ -486,7 +486,12 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
           tasks.push(context.api.deleteArchivedRecordingFromPath(directory.jvmId, r.name).pipe(first()));
         }
       });
-      addSubscription(forkJoin(tasks).subscribe());
+      addSubscription(
+        forkJoin(tasks).subscribe({
+          next: () => handlePostActions('DELETE'),
+          error: () => handlePostActions('DELETE'),
+        }),
+      );
     } else {
       addSubscription(
         propsTarget.subscribe((t) => {

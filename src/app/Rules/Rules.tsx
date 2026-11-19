@@ -156,9 +156,12 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
   const refreshRules = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.api.getRules().subscribe((rules) => {
-        setRules(rules);
-        setIsLoading(false);
+      context.api.getRules().subscribe({
+        next: (rules) => {
+          setRules(rules);
+          setIsLoading(false);
+        },
+        error: () => setIsLoading(false),
       }),
     );
   }, [setIsLoading, addSubscription, context.api, setRules]);

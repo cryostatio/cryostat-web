@@ -184,9 +184,12 @@ export const StoredCredentials = () => {
   const refreshStoredCredentialsAndCounts = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.api.getCredentials().subscribe((credentials: MatchedCredential[]) => {
-        dispatch({ type: Actions.HANDLE_REFRESH, payload: { credentials: credentials } });
-        setIsLoading(false);
+      context.api.getCredentials().subscribe({
+        next: (credentials: MatchedCredential[]) => {
+          dispatch({ type: Actions.HANDLE_REFRESH, payload: { credentials: credentials } });
+          setIsLoading(false);
+        },
+        error: () => setIsLoading(false),
       }),
     );
   }, [addSubscription, context.api, setIsLoading]);
