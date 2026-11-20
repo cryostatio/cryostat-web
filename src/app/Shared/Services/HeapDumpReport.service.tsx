@@ -16,8 +16,7 @@
 import { HeapDumpAnalysisResult } from '@app/Diagnostics/Analysis/HeapDumps/types';
 import { Base64 } from 'js-base64';
 import { combineLatest, concatMap, filter, from, map, Observable, Subject } from 'rxjs';
-import { fromFetch } from 'rxjs/fetch';
-import { CachedHeapDumpReportValue, GenerationError, NotificationCategory } from './api.types';
+import { CachedHeapDumpReportValue, FetchFn, GenerationError, NotificationCategory } from './api.types';
 import { NotificationChannel } from './NotificationChannel.service';
 import { CryostatContext } from './Services';
 
@@ -25,6 +24,7 @@ export class HeapDumpReportService {
   constructor(
     private ctx: CryostatContext,
     private readonly channel: NotificationChannel,
+    private readonly fetchFn: FetchFn = (url, init) => fetch(url, init),
   ) {
     channel.replayableMessages(NotificationCategory.HeapDumpAnalysisSuccess).subscribe((v) => {
       if (this.jobIds.has(v.message.jobId)) {
@@ -68,7 +68,7 @@ export class HeapDumpReportService {
         ),
       ]).pipe(
         concatMap((parts) =>
-          fromFetch(parts[0], parts[1]).pipe(
+          from(this.fetchFn(parts[0], parts[1])).pipe(
             concatMap((resp) => {
               // 200 indicates that the backend has the report cached and it will return
               // the json in the response.
@@ -88,7 +88,7 @@ export class HeapDumpReportService {
                         const jobUrl = this.jobIds.get(id);
                         if (!jobUrl) throw new Error(`Unknown job ID: ${id}`);
                         this.jobIds.delete(id);
-                        fromFetch(parts[0], parts[1]).subscribe((resp) => {
+                        from(this.fetchFn(parts[0], parts[1])).subscribe((resp) => {
                           if (resp.ok && resp.status === 200) {
                             resp
                               .text()
