@@ -15,7 +15,7 @@
  */
 import assert from 'assert';
 import { WebDriver } from 'selenium-webdriver';
-import { CardType, Cryostat, Dashboard, setupDriver } from './util';
+import { CardType, Cryostat, Dashboard, quitDriver, setupDriver } from './util';
 
 describe('Dashboard route functionalities', function () {
   let driver: WebDriver;
@@ -33,7 +33,7 @@ describe('Dashboard route functionalities', function () {
   });
 
   afterAll(async function () {
-    await driver.close();
+    await quitDriver(driver);
   });
 
   it('shows correct route', async function () {

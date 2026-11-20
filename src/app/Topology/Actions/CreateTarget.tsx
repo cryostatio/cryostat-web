@@ -199,18 +199,27 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ onClose, prefilled }
           credentials,
           true,
         )
-        .subscribe((success) => {
-          setLoading(false);
-          const option = success ? ValidatedOptions.success : ValidatedOptions.error;
-          if (option === ValidatedOptions.success) {
-            exitForm();
-          } else {
-            let errorMessage = 'Connection test failure';
+        .subscribe({
+          next: (success) => {
+            setLoading(false);
+            const option = success ? ValidatedOptions.success : ValidatedOptions.error;
+            if (option === ValidatedOptions.success) {
+              exitForm();
+            } else {
+              let errorMessage = 'Connection test failure';
+              setValidation({
+                option: option,
+                errorMessage,
+              });
+            }
+          },
+          error: (err) => {
+            setLoading(false);
             setValidation({
-              option: option,
-              errorMessage,
+              option: ValidatedOptions.error,
+              errorMessage: err?.message || 'Connection test failure',
             });
-          }
+          },
         }),
     );
   }, [setLoading, setValidation, addSubscription, context.api, connectUrl, alias, exitForm, credentials]);
@@ -230,13 +239,22 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ onClose, prefilled }
           false,
           true,
         )
-        .subscribe((success) => {
-          setTesting(false);
-          const option = success ? ValidatedOptions.success : ValidatedOptions.error;
-          setValidation({
-            option: option,
-            errorMessage: option !== ValidatedOptions.success ? '' : 'Connection test failure',
-          });
+        .subscribe({
+          next: (success) => {
+            setTesting(false);
+            const option = success ? ValidatedOptions.success : ValidatedOptions.error;
+            setValidation({
+              option: option,
+              errorMessage: option !== ValidatedOptions.success ? '' : 'Connection test failure',
+            });
+          },
+          error: (err) => {
+            setTesting(false);
+            setValidation({
+              option: ValidatedOptions.error,
+              errorMessage: err?.message || 'Connection test failure',
+            });
+          },
         }),
     );
     setTesting(true);

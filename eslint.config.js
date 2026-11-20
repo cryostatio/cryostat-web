@@ -7,7 +7,7 @@ const eslintPluginUnusedImports = require("eslint-plugin-unused-imports");
 const prettier = require("prettier");
 
 module.exports = [{
-    ignores: ['src/mirage/', '**/node_modules/'],
+    ignores: ['**/node_modules/'],
   },
   {
     files: ['**/*.{ts,tsx,js}'],

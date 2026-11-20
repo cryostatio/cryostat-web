@@ -55,7 +55,7 @@ import CaptureSmartTriggers from './Triggers/CaptureSmartTriggers';
 import UnifiedLogs from './UnifiedLogs/UnifiedLogs';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
-import { accessibleRouteChangeHandler, BASEPATH } from './utils/utils';
+import { accessibleRouteChangeHandler } from './utils/utils';
 
 let routeFocusTimer: number;
 
@@ -137,10 +137,7 @@ const nonNavRoutes: IAppRoute[] = withComponents(nonNavRouteDefs, nonNavComponen
 
 const flatten = (routes: IAppRoute[]): IAppRoute[] => {
   const ret: IAppRoute[] = [];
-  for (var r of routes) {
-    if (BASEPATH) {
-      r.path = `/${BASEPATH}/${r.path}`;
-    }
+  for (const r of routes) {
     ret.push(r);
     if (r.children) {
       ret.push(...flatten(r.children));

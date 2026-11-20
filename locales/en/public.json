@@ -471,7 +471,8 @@
     "KINDS": {
       "GC": "Garbage Collection",
       "HEAP_DUMP": "Heap Dump",
-      "THREADS": "Thread Dump"
+      "THREADS": "Thread Dump",
+      "UNIFIED_LOGGING_STATUS": "Unified Logging Status"
     }
   },
   "BulkEditUnifiedLogLabels": {
@@ -521,6 +522,7 @@
     "STATUS_LABEL": "Status",
     "ENABLED": "Enabled",
     "DISABLED": "Disabled",
+    "UNKNOWN": "Unknown",
     "LOG_FILE_PATH_LABEL": "Log File Path",
     "WHAT_LABEL": "What",
     "DECORATORS_LABEL": "Decorators",

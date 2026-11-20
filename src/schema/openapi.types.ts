@@ -904,6 +904,15 @@ export interface paths {
             'application/json': unknown;
           };
         };
+        /** @description Heap dump analysis accepted; the body is the job ID */
+        202: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'text/plain': string;
+          };
+        };
         /** @description Not Authorized */
         401: {
           headers: {
@@ -1093,7 +1102,7 @@ export interface paths {
       };
       requestBody?: never;
       responses: {
-        /** @description OK */
+        /** @description Heap dump requested; the body is the job ID */
         200: {
           headers: {
             [name: string]: unknown;
@@ -1234,7 +1243,7 @@ export interface paths {
       };
       requestBody?: never;
       responses: {
-        /** @description OK */
+        /** @description Thread dump requested; the body is the job ID */
         200: {
           headers: {
             [name: string]: unknown;
@@ -2140,7 +2149,16 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            'application/json': unknown;
+            'application/json': components['schemas']['ArchivedRecording'];
+          };
+        };
+        /** @description Recording synthesis accepted; the body is the job ID */
+        202: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'text/plain': string;
           };
         };
         /** @description Not Authorized */
@@ -3132,13 +3150,13 @@ export interface paths {
       };
       requestBody?: never;
       responses: {
-        /** @description OK */
-        200: {
+        /** @description Target analysis accepted; the body is the job ID */
+        202: {
           headers: {
             [name: string]: unknown;
           };
           content: {
-            'application/json': unknown;
+            'text/plain': string;
           };
         };
         /** @description Not Authorized */
@@ -4436,7 +4454,7 @@ export interface paths {
       };
       requestBody?: never;
       responses: {
-        /** @description OK */
+        /** @description Grafana upload requested; the body is the job ID */
         200: {
           headers: {
             [name: string]: unknown;
@@ -5146,6 +5164,15 @@ export interface paths {
           };
           content: {
             'application/json': unknown;
+          };
+        };
+        /** @description Report generation accepted; the body is the job ID */
+        202: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'text/plain': string;
           };
         };
         /** @description Not Authorized */
@@ -6317,7 +6344,7 @@ export interface paths {
         };
       };
       responses: {
-        /** @description OK */
+        /** @description Recording archival requested; the body is the job ID for save */
         200: {
           headers: {
             [name: string]: unknown;
@@ -6325,6 +6352,13 @@ export interface paths {
           content: {
             'text/plain': string;
           };
+        };
+        /** @description Recording stopped; the response has no body */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
         };
         /** @description Not Authorized */
         401: {
@@ -6370,7 +6404,7 @@ export interface paths {
       };
       requestBody?: never;
       responses: {
-        /** @description OK */
+        /** @description Grafana upload requested; the body is the job ID */
         200: {
           headers: {
             [name: string]: unknown;
@@ -6436,6 +6470,15 @@ export interface paths {
           };
           content: {
             'application/json': unknown;
+          };
+        };
+        /** @description Report generation accepted; the body is the job ID */
+        202: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'text/plain': string;
           };
         };
         /** @description Not Authorized */

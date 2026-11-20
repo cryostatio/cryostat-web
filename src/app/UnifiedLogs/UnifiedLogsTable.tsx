@@ -328,9 +328,10 @@ export const UnifiedLogsTable: React.FC<UnifiedLogsTableProps> = ({
         }
       });
       addSubscription(
-        forkJoin(tasks.length ? tasks : [of(true)]).subscribe(() =>
-          setActionLoadings((old) => ({ ...old, DELETE: false })),
-        ),
+        forkJoin(tasks.length ? tasks : [of(true)]).subscribe({
+          next: () => setActionLoadings((old) => ({ ...old, DELETE: false })),
+          error: () => setActionLoadings((old) => ({ ...old, DELETE: false })),
+        }),
       );
     } else {
       addSubscription(
@@ -347,7 +348,10 @@ export const UnifiedLogsTable: React.FC<UnifiedLogsTableProps> = ({
               return forkJoin(tasks.length ? tasks : [of(true)]);
             }),
           )
-          .subscribe(() => setActionLoadings((old) => ({ ...old, DELETE: false }))),
+          .subscribe({
+            next: () => setActionLoadings((old) => ({ ...old, DELETE: false })),
+            error: () => setActionLoadings((old) => ({ ...old, DELETE: false })),
+          }),
       );
     }
   }, [addSubscription, propsTarget, jvmId, sortedUnifiedLogs, checkedIndices, context.api]);

@@ -94,20 +94,29 @@ Where the `-u` flag tells Jest to update the snapshot and the `-t` flag specifie
 
 We can also use Jest as a test runner for Selenium tests. This allows us to write integration tests that simulate user actions and interactions with the Cryostat Web UI.
 
-To run the integration tests, you will need to have the preview server running. You can start the preview server by running `yarn start:dev:preview`.
-
-You will also need a WebDriver implementation for the specific browser you want to automate. WebDriver allows Selenium to control the browser and perform actions on web elements. Here is list of currently supported drivers:
+You will need a WebDriver implementation for the specific browser you want to automate. WebDriver allows Selenium to control the browser and perform actions on web elements. Here is list of currently supported drivers:
 * [Geckodriver v0.33.0 (for Firefox)](https://github.com/mozilla/geckodriver/releases/tag/v0.33.0)
 
 <sub>**Note**: Currently only Geckodriver is supported for `cryostat-web` itests. In the future, there should be support for [ChromeDriver (for Chrome)](https://sites.google.com/chromium.org/driver) and [Edge WebDriver (for Microsoft Edge)](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/).</sub>
 
-Then, finally we can run `yarn itest` to run the integration tests, which will open up a fresh browser window and run the tests.
+### Running against the preview build
 
-Alternatively, you can start the integration tests immediately without the need for an already up and running dev server, by running 
+The standalone flow does not need a running Cryostat instance or an already running server:
 ```bash
 $ yarn itest:preview
 ```
-This will automatically start a Mirage dev server, run the integration tests on that server, and tear down the server on completion.
+This runs the following steps in order, and stops at the first failure:
+1. Builds the production bundle in preview mode (`yarn build:itest`), where API requests are handled by Mock Service Worker.
+2. Verifies that port `9091` is free, so that the tests cannot run against a stale server.
+3. Starts a static file server for `dist/` on `127.0.0.1:9091` and waits until it responds.
+4. Runs the integration tests (`yarn itest`) headlessly.
+5. Shuts the static server down, whether the tests passed or failed.
+
+The tests therefore run against the same minified bundle that is shipped, not a development build. The build is cached, so rebuilding after a small source change takes only a few seconds.
+
+### Running against a live Cryostat server
+
+`yarn itest` only runs the tests, and does not build or start anything. It expects a Cryostat web client to already be reachable at `http://localhost:9091`, for example a packaged Cryostat container whose port is mapped there. Set `HEADLESS_BROWSER=true` to run the browser without a window.
 
 ### Tips
 * Running the integration tests will open a Firefox browser and simulate any actions that you instruct the browser to perform. That means we must first navigate to the local Cryostat Web page, before performing any useful testing.

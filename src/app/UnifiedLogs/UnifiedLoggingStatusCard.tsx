@@ -37,9 +37,14 @@ import { UnifiedLoggingModal } from './UnifiedLoggingModal';
 export interface UnifiedLoggingStatusSummaryProps {
   status?: UnifiedLoggingStatus;
   isLoading: boolean;
+  isError?: boolean;
 }
 
-export const UnifiedLoggingStatusSummary: React.FC<UnifiedLoggingStatusSummaryProps> = ({ status, isLoading }) => {
+export const UnifiedLoggingStatusSummary: React.FC<UnifiedLoggingStatusSummaryProps> = ({
+  status,
+  isLoading,
+  isError,
+}) => {
   const { t } = useCryostatTranslation();
 
   const whatLabels = React.useMemo(() => (status?.what ? status.what.split('+').filter(Boolean) : []), [status]);
@@ -58,7 +63,11 @@ export const UnifiedLoggingStatusSummary: React.FC<UnifiedLoggingStatusSummaryPr
       <DescriptionListGroup>
         <DescriptionListTerm>{t('UnifiedLoggingStatusCard.STATUS_LABEL')}</DescriptionListTerm>
         <DescriptionListDescription>
-          {status?.enabled ? t('UnifiedLoggingStatusCard.ENABLED') : t('UnifiedLoggingStatusCard.DISABLED')}
+          {isError && !status
+            ? t('UnifiedLoggingStatusCard.UNKNOWN')
+            : status?.enabled
+              ? t('UnifiedLoggingStatusCard.ENABLED')
+              : t('UnifiedLoggingStatusCard.DISABLED')}
         </DescriptionListDescription>
       </DescriptionListGroup>
       {status?.enabled && (

@@ -81,7 +81,7 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable } from 'rxjs';
-import { concatMap, filter, map, tap } from 'rxjs/operators';
+import { concatMap, filter, finalize, map } from 'rxjs/operators';
 
 export interface TargetAnalysisProps {
   target: Target;
@@ -103,7 +103,7 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
   const fetchReport = React.useCallback(
     (target: Target) => {
       setLoading(true);
-      return context.api.getCurrentReportForTarget(target).pipe(tap(() => setLoading(false)));
+      return context.api.getCurrentReportForTarget(target).pipe(finalize(() => setLoading(false)));
     },
     [setLoading, context.api],
   );
@@ -156,7 +156,9 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
         .sendRequest('v4.1', `/targets/${target.id}/reports`, {
           method: 'POST',
         })
-        .subscribe(),
+        .subscribe({
+          error: () => setLoading(false),
+        }),
     );
   }, [target, hasSources, addSubscription, context.api, setLoading]);
 
@@ -177,7 +179,12 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
     if (!target) {
       return;
     }
-    addSubscription(fetchReport(target).subscribe((report) => setReport(report)));
+    addSubscription(
+      fetchReport(target).subscribe({
+        next: (report) => setReport(report),
+        error: () => setLoading(false),
+      }),
+    );
   }, [target, addSubscription, fetchReport, setReport]);
 
   React.useEffect(() => {
@@ -191,7 +198,16 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
           filter((msg) => msg.message.jvmId === target.jvmId),
           concatMap(() => fetchReport(target)),
         )
-        .subscribe((report) => setReport(report)),
+        .subscribe({
+          next: (report) => setReport(report),
+          error: () => setLoading(false),
+        }),
+    );
+    addSubscription(
+      context.notificationChannel
+        .messages(NotificationCategory.ReportFail)
+        .pipe(filter((msg) => msg.message.jvmId === target.jvmId))
+        .subscribe(() => setLoading(false)),
     );
   }, [target, context.notificationChannel, addSubscription, fetchReport]);
 
