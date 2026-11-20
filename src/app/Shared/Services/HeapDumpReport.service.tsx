@@ -16,7 +16,6 @@
 import { HeapDumpAnalysisResult } from '@app/Diagnostics/Analysis/HeapDumps/types';
 import { Base64 } from 'js-base64';
 import { combineLatest, concatMap, filter, from, map, Observable, Subject } from 'rxjs';
-import { fromFetch } from 'rxjs/fetch';
 import { CachedHeapDumpReportValue, FetchFn, GenerationError, NotificationCategory } from './api.types';
 import { NotificationChannel } from './NotificationChannel.service';
 import { CryostatContext } from './Services';
