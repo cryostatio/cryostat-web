@@ -7353,7 +7353,7 @@ __metadata:
     regenerator-runtime: "npm:0.14.1"
     rimraf: "npm:6.1.4"
     rxjs: "npm:7.8.2"
-    selenium-webdriver: "npm:4.52.0"
+    selenium-webdriver: "npm:4.53.0"
     semver: "npm:7.8.6"
     showdown: "npm:2.1.0"
     sirv-cli: "npm:3.0.1"
@@ -16641,15 +16641,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"selenium-webdriver@npm:4.52.0":
-  version: 4.52.0
-  resolution: "selenium-webdriver@npm:4.52.0"
+"selenium-webdriver@npm:4.53.0":
+  version: 4.53.0
+  resolution: "selenium-webdriver@npm:4.53.0"
   dependencies:
     "@bazel/runfiles": "npm:^6.5.0"
     jszip: "npm:^3.10.2"
     tmp: "npm:^0.2.7"
-    ws: "npm:^8.22.0"
-  checksum: 10/aaf94c81c1b5b50de6043bf7a76771c288a961b2372a92e9a285c2f9ea90492d049bbd1fe03e5ee15347296dddc5481dc3f9604a9bae110b0d154f3abe0c9a80
+    ws: "npm:^8.23.0"
+  checksum: 10/ff2f6ed4ca630a352e425a4083bcd2503b5646c2ed81a1d7e782e5566b2d8bcff02568a23da6de8c35ff7a07fbf42a66db9f5c49b96a7bee921def8b753c8b76
   languageName: node
   linkType: hard
 
@@ -19867,9 +19867,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.22.0":
-  version: 8.22.0
-  resolution: "ws@npm:8.22.0"
+"ws@npm:^8.23.0":
+  version: 8.23.0
+  resolution: "ws@npm:8.23.0"
   peerDependencies:
     bufferutil: ^4.0.1
     utf-8-validate: ">=5.0.2"
@@ -19878,7 +19878,7 @@ __metadata:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: 10/ed771c2766bdb5724a66872f60ffc1a39f06e1a5bc8849f453c273e97c91a40ed5a224f06dc0e22f44b4a9e03938bf746fc5938d6887433cc0f4c416237d3b10
+  checksum: 10/b9e8e16346288769bc945595e4dbb79e94f921e944e798ff7319e422efa05b10f670b2724b34729223689f4b9678e3089998392d236f10cbeccd5465a1b32c0a
   languageName: node
   linkType: hard
 
