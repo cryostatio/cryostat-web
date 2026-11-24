@@ -31,6 +31,7 @@ import {
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, formatDuration, hashCode, portalRoot, sortResources } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Toolbar,
   ToolbarContent,
@@ -71,38 +72,11 @@ import {
 } from '@patternfly/react-core';
 import { EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
 import { ISortBy, SortByDirection, Tbody, Td, ThProps, Tr } from '@patternfly/react-table';
-import { t } from 'i18next';
 import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { first, forkJoin, Observable } from 'rxjs';
 import { SmartTriggersFormData } from './types';
-
-export const tableColumns: TableColumn[] = [
-  {
-    title: 'ID',
-    keyPaths: ['id'],
-    sortable: true,
-  },
-  {
-    title: 'Trigger Condition',
-    keyPaths: ['triggerCondition'],
-    sortable: false,
-    tooltip: t('Triggers.TARGET_DURATION_TOOLTIP'),
-  },
-  {
-    title: 'Target Duration',
-    keyPaths: ['targetDuration'],
-    sortable: true,
-    tooltip: t('Triggers.DURATION_CONSTRAINT_TOOLTIP'),
-  },
-  {
-    title: 'Template',
-    keyPaths: ['recordingTemplateName'],
-    sortable: true,
-    tooltip: t('Triggers.TEMPLATE_TOOLTIP'),
-  },
-];
 
 export interface SmartTriggersProps {
   target: Observable<NullableTarget>;
@@ -128,6 +102,36 @@ export const SmartTriggersTable: React.FC<SmartTriggersProps> = ({
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [actionLoadings, setActionLoadings] = React.useState<Record<ArchiveActions, boolean>>({ DELETE: false });
+  const { t } = useCryostatTranslation();
+
+  const tableColumns: TableColumn[] = React.useMemo(
+    () => [
+      {
+        title: 'ID',
+        keyPaths: ['id'],
+        sortable: true,
+      },
+      {
+        title: 'Trigger Condition',
+        keyPaths: ['triggerCondition'],
+        sortable: false,
+        tooltip: t('Triggers.TARGET_DURATION_TOOLTIP'),
+      },
+      {
+        title: 'Target Duration',
+        keyPaths: ['targetDuration'],
+        sortable: true,
+        tooltip: t('Triggers.DURATION_CONSTRAINT_TOOLTIP'),
+      },
+      {
+        title: 'Template',
+        keyPaths: ['recordingTemplateName'],
+        sortable: true,
+        tooltip: t('Triggers.TEMPLATE_TOOLTIP'),
+      },
+    ],
+    [t],
+  );
 
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({
@@ -240,6 +244,7 @@ export const SmartTriggersTable: React.FC<SmartTriggersProps> = ({
     },
     [addSubscription, context.api, propsTarget, setActionLoadings, handlePostActions],
   );
+
   const handleRowCheck = React.useCallback(
     (checked, index) => {
       if (checked) {
@@ -331,7 +336,7 @@ export const SmartTriggersTable: React.FC<SmartTriggersProps> = ({
         tableColumns,
       ),
     );
-  }, [filterText, triggers, sortBy, setFilteredTriggers]);
+  }, [filterText, tableColumns, triggers, sortBy, setFilteredTriggers]);
 
   const triggersToolbar = React.useMemo(
     () => (
@@ -364,7 +369,7 @@ export const SmartTriggersTable: React.FC<SmartTriggersProps> = ({
       columns: tableColumns,
       onSort: getSortParams,
     }),
-    [getSortParams],
+    [getSortParams, tableColumns],
   );
 
   if (controlEnabled) {
@@ -389,6 +394,7 @@ export const SmartTriggersTable: React.FC<SmartTriggersProps> = ({
             sourceTarget={propsTarget}
             checkedIndices={checkedIndices}
             handleRowCheck={handleRowCheck}
+            tableColumns={tableColumns}
           />
         ))}
       </DiagnosticsTable>
@@ -412,10 +418,17 @@ export interface SmartTriggerRowProps {
   index: number;
   sourceTarget: Observable<NullableTarget>;
   checkedIndices: number[];
+  tableColumns: TableColumn[];
   handleRowCheck: (checked: boolean, rowIdx: string | number) => void;
 }
 
-export const SmartTriggerRow: React.FC<SmartTriggerRowProps> = ({ trigger, index, checkedIndices, handleRowCheck }) => {
+export const SmartTriggerRow: React.FC<SmartTriggerRowProps> = ({
+  trigger,
+  index,
+  checkedIndices,
+  tableColumns,
+  handleRowCheck,
+}) => {
   const handleCheck = React.useCallback(
     (_, checked: boolean) => {
       handleRowCheck(checked, index);
@@ -449,7 +462,7 @@ export const SmartTriggerRow: React.FC<SmartTriggerRowProps> = ({ trigger, index
         </Td>
       </Tr>
     );
-  }, [trigger, index, checkedIndices, handleCheck]);
+  }, [trigger, index, checkedIndices, handleCheck, tableColumns]);
 
   return <Tbody key={index}>{parentRow}</Tbody>;
 };
@@ -473,6 +486,7 @@ const SmartTriggersToolbar: React.FC<SmartTriggersTableToolbarProps> = (props) =
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [uploadModalOpen, setUploadModalOpen] = React.useState(false);
   const [actionToggleOpen, setActionToggleOpen] = React.useState(false);
+  const { t } = useCryostatTranslation();
 
   const handleActionToggle = React.useCallback(() => setActionToggleOpen((old) => !old), [setActionToggleOpen]);
 
@@ -671,6 +685,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
     durationUnit: 's',
     durationValid: ValidatedOptions.default,
   });
+  const { t } = useCryostatTranslation();
 
   const [uploading, setUploading] = React.useState(false);
 

@@ -33,6 +33,7 @@ export interface ColumnConfig {
   columns: {
     title: string;
     sortable?: boolean;
+    tooltip?: string;
   }[];
   onSort: (columnIndex: number) => ThProps['sort'];
 }
@@ -131,8 +132,12 @@ export const DiagnosticsTable: React.FC<DiagnosticsTableProps> = ({
                   isSelected: isHeaderChecked,
                 }}
               />
-              {tableColumns.columns.map(({ title, sortable }, index) => (
-                <Th key={`table-header-${title}`} sort={sortable ? tableColumns.onSort(index) : undefined}>
+              {tableColumns.columns.map(({ title, sortable, tooltip }, index) => (
+                <Th
+                  key={`table-header-${title}`}
+                  sort={sortable ? tableColumns.onSort(index) : undefined}
+                  tooltip={tooltip}
+                >
                   {title}
                 </Th>
               ))}
