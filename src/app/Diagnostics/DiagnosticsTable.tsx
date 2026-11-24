@@ -137,7 +137,7 @@ export const DiagnosticsTable: React.FC<DiagnosticsTableProps> = ({
                 <Th
                   key={`table-header-${title}`}
                   sort={sortable ? tableColumns.onSort(index) : undefined}
-                  tooltip={tooltip ? <Tooltip content={tooltip} /> : undefined}
+                  tooltip={tooltip}
                 >
                   {title}
                 </Th>
