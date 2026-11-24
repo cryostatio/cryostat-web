@@ -11213,7 +11213,7 @@ __metadata:
   version: 26.5.0
   resolution: "i18next@npm:26.5.0"
   peerDependencies:
-    typescript: ^5 || ^6
+    typescript: ^5 || ^6 || ^7
   peerDependenciesMeta:
     typescript:
       optional: true
@@ -15719,7 +15719,7 @@ __metadata:
   peerDependencies:
     i18next: ">= 25.10.9"
     react: ">= 16.8.0"
-    typescript: ^5 || ^6 || ^7
+    typescript: ^5 || ^6
   peerDependenciesMeta:
     react-dom:
       optional: true
