@@ -125,8 +125,13 @@
     "@types/react": "18.3.31",
     "dayjs": "1.11.23",
     "echarts": "6.1.0",
+<<<<<<< HEAD
     "humanize-duration": "3.35.0",
     "i18next": "26.3.4",
+=======
+    "humanize-duration": "3.35.1",
+    "i18next": "26.5.0",
+>>>>>>> 0212337 (build(deps): bump i18next from 26.4.7 to 26.5.0 (#2637))
     "i18next-browser-languagedetector": "8.3.1",
     "js-base64": "3.9.7",
     "lodash": "4.18.1",
