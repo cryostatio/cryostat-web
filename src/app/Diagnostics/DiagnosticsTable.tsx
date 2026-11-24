@@ -24,6 +24,7 @@ import {
   Bullseye,
   EmptyStateActions,
   EmptyStateFooter,
+  Tooltip,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { Table, Thead, Tr, Th, OuterScrollContainer, InnerScrollContainer, ThProps } from '@patternfly/react-table';
@@ -33,6 +34,7 @@ export interface ColumnConfig {
   columns: {
     title: string;
     sortable?: boolean;
+    tooltip?: string;
   }[];
   onSort: (columnIndex: number) => ThProps['sort'];
 }
@@ -131,8 +133,12 @@ export const DiagnosticsTable: React.FC<DiagnosticsTableProps> = ({
                   isSelected: isHeaderChecked,
                 }}
               />
-              {tableColumns.columns.map(({ title, sortable }, index) => (
-                <Th key={`table-header-${title}`} sort={sortable ? tableColumns.onSort(index) : undefined}>
+              {tableColumns.columns.map(({ title, sortable, tooltip }, index) => (
+                <Th
+                  key={`table-header-${title}`}
+                  sort={sortable ? tableColumns.onSort(index) : undefined}
+                  tooltip={tooltip ? <Tooltip content={tooltip} /> : undefined}
+                >
                   {title}
                 </Th>
               ))}
