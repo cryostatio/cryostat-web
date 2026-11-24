@@ -7320,7 +7320,7 @@ __metadata:
     graphql: "npm:17.1.0"
     html-webpack-plugin: "npm:5.6.8"
     humanize-duration: "npm:3.35.1"
-    i18next: "npm:25.10.10"
+    i18next: "npm:26.3.4"
     i18next-browser-languagedetector: "npm:8.3.1"
     i18next-parser: "npm:9.4.0"
     imagemin: "npm:9.0.1"
@@ -11235,17 +11235,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:25.10.10":
-  version: 25.10.10
-  resolution: "i18next@npm:25.10.10"
-  dependencies:
-    "@babel/runtime": "npm:^7.29.2"
+"i18next@npm:26.3.4":
+  version: 26.3.4
+  resolution: "i18next@npm:26.3.4"
   peerDependencies:
     typescript: ^5 || ^6
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/ee4f6ba360902a2f0550cfeef234c9e68a67487b575d204e89bdf2f2db647934aa3900a39c64174b9201a8979e455d0bf8f56b57934c34fc8f9aa3b430cb152d
+  checksum: 10/133ba9a5f76c1d57337f0dcc1b0ab0ff987714a1863813dcc95024531074c6d92603a19b0bac9c16a6b04c734742d8d098da0c222bef5a9562bdde231ea4b221
   languageName: node
   linkType: hard
 
