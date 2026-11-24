@@ -24,7 +24,6 @@ import {
   Bullseye,
   EmptyStateActions,
   EmptyStateFooter,
-  Tooltip,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { Table, Thead, Tr, Th, OuterScrollContainer, InnerScrollContainer, ThProps } from '@patternfly/react-table';
