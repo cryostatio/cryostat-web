@@ -13,6 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+ * Copyright The Cryostat Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 import { EventTemplateIdentifier } from '@app/CreateRecording/types';
 import { ColumnConfig, DiagnosticsTable } from '@app/Diagnostics/DiagnosticsTable';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
@@ -31,6 +47,7 @@ import {
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, formatDuration, hashCode, portalRoot, sortResources } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Toolbar,
   ToolbarContent,
@@ -71,7 +88,6 @@ import {
 } from '@patternfly/react-core';
 import { EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
 import { ISortBy, SortByDirection, Tbody, Td, ThProps, Tr } from '@patternfly/react-table';
-import { t } from 'i18next';
 import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
@@ -88,19 +104,16 @@ export const tableColumns: TableColumn[] = [
     title: 'Trigger Condition',
     keyPaths: ['triggerCondition'],
     sortable: false,
-    tooltip: t('Triggers.TARGET_DURATION_TOOLTIP'),
   },
   {
     title: 'Target Duration',
     keyPaths: ['targetDuration'],
     sortable: true,
-    tooltip: t('Triggers.DURATION_CONSTRAINT_TOOLTIP'),
   },
   {
     title: 'Template',
     keyPaths: ['recordingTemplateName'],
     sortable: true,
-    tooltip: t('Triggers.TEMPLATE_TOOLTIP'),
   },
 ];
 
@@ -473,6 +486,7 @@ const SmartTriggersToolbar: React.FC<SmartTriggersTableToolbarProps> = (props) =
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [uploadModalOpen, setUploadModalOpen] = React.useState(false);
   const [actionToggleOpen, setActionToggleOpen] = React.useState(false);
+  const { t } = useCryostatTranslation();
 
   const handleActionToggle = React.useCallback(() => setActionToggleOpen((old) => !old), [setActionToggleOpen]);
 
@@ -671,6 +685,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
     durationUnit: 's',
     durationValid: ValidatedOptions.default,
   });
+  const { t } = useCryostatTranslation();
 
   const [uploading, setUploading] = React.useState(false);
 
