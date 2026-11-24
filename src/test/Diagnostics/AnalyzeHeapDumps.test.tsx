@@ -22,6 +22,7 @@ import { HeapDump, Target } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { basePreloadedState, DEFAULT_DIMENSIONS, mockMediaQueryList, render, resize } from '@test/utils';
 import { act, screen, cleanup, waitFor, within } from '@testing-library/react';
+import { useLocation } from 'react-router-dom';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 
 const mockNewConnectUrl = 'service:jmx:rmi://someNewUrl';
@@ -308,7 +309,15 @@ describe('<HeapDumpAnalysis />', () => {
     expect(screen.getByText('Fundamental Stats')).toBeInTheDocument();
   });
 
-  it('prefills the selected heap dump from query params', async () => {
+  const ConsoleHeapDumpAnalysis = () => {
+    const { key } = useLocation();
+    return <HeapDumpAnalysis key={key} keepPrefillInUrl />;
+  };
+
+  it.each([
+    ['standalone', <HeapDumpAnalysis />],
+    ['Console route remount', <ConsoleHeapDumpAnalysis />],
+  ])('prefills the selected heap dump from query params (%s)', async (_, element) => {
     const analyzeSpy = jest
       .spyOn(defaultServices.heapDumpReports, 'reportJson')
       .mockReturnValue(of(mockHeapDumpAnalysis));
@@ -318,7 +327,7 @@ describe('<HeapDumpAnalysis />', () => {
         routes: [
           {
             path: '/analyze-heap-dumps',
-            element: <HeapDumpAnalysis />,
+            element,
           },
         ],
         options: {

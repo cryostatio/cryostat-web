@@ -61,7 +61,9 @@ import { EMPTY, concatMap, finalize, first, map, of } from 'rxjs';
 import { AggregateDataCard } from './AggregateDataCard.tsx';
 import { ThreadDumpSelector } from './ThreadDumpSelector';
 
-export interface ThreadDumpAnalysisProps {}
+export interface ThreadDumpAnalysisProps {
+  keepPrefillInUrl?: boolean;
+}
 
 const isSameTarget = (a: NullableTarget, b: NullableTarget): boolean =>
   a?.connectUrl === b?.connectUrl && a?.jvmId === b?.jvmId;
@@ -270,7 +272,7 @@ const lockInstancesColumns: TableColumn[] = [
   },
 ];
 
-export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props }) => {
+export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ keepPrefillInUrl, ...props }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const location = useLocation();
@@ -287,6 +289,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
   const [openDeadlockRows, setOpenDeadlockRows] = React.useState<number[]>([]);
   const [sortBy, getSortParams] = useSort();
   const selectedThreadDumpJvmIdRef = React.useRef<string>();
+  const appliedPrefillKeyRef = React.useRef<string>();
 
   const prefill = React.useMemo(
     () =>
@@ -300,7 +303,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
       ),
     [location.pathname, location.search, location.state, modalPrefill],
   );
-  const hasPendingPrefill = !!prefill.jvmId && !!prefill.threadDumpId;
+  const hasPendingPrefill = !!prefill.jvmId && !!prefill.threadDumpId && appliedPrefillKeyRef.current !== location.key;
   const targetAsObs = React.useMemo(() => of(target), [target]);
 
   React.useEffect(() => {
@@ -750,34 +753,35 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
   );
 
   React.useEffect(() => {
-    if (!prefill.jvmId || !prefill.threadDumpId) {
+    const { jvmId, threadDumpId } = prefill;
+    if (!jvmId || !threadDumpId || appliedPrefillKeyRef.current === location.key) {
       return;
     }
 
-    addSubscription(
-      findTargetByJvmId(prefill.jvmId).subscribe((target) => {
-        setAnalysisResult(undefined);
-        selectedThreadDumpJvmIdRef.current = prefill.jvmId;
-        setSelectedThreadDump(prefill.threadDumpId!);
-        if (target) {
-          context.target.setTarget(target);
-        }
-        queryThreadDumpAnalysis(prefill.threadDumpId!, prefill.jvmId);
-        dispatch(modalPrefillClearIntent());
-        if (location.state || location.search) {
-          navigate(`${location.pathname}${location.hash}`, { replace: true, state: null });
-        }
-      }),
-    );
+    const subscription = findTargetByJvmId(jvmId).subscribe((target) => {
+      appliedPrefillKeyRef.current = location.key;
+      setAnalysisResult(undefined);
+      selectedThreadDumpJvmIdRef.current = jvmId;
+      setSelectedThreadDump(threadDumpId);
+      if (target) {
+        context.target.setTarget(target);
+      }
+      queryThreadDumpAnalysis(threadDumpId, jvmId);
+      dispatch(modalPrefillClearIntent());
+      if (!keepPrefillInUrl && (location.state || location.search)) {
+        navigate(`${location.pathname}${location.hash}`, { replace: true, state: null });
+      }
+    });
+    return () => subscription.unsubscribe();
   }, [
-    addSubscription,
     context.target,
+    keepPrefillInUrl,
+    location.key,
     location.state,
     location.search,
     location.hash,
     location.pathname,
-    prefill.jvmId,
-    prefill.threadDumpId,
+    prefill,
     dispatch,
     findTargetByJvmId,
     navigate,

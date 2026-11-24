@@ -20,6 +20,7 @@ import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { Target, ThreadDump, ThreadDumpAnalysisResult } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen, within, act, waitFor } from '@testing-library/react';
+import { useLocation } from 'react-router-dom';
 import { BehaviorSubject, Subject, of } from 'rxjs';
 import { basePreloadedState, DEFAULT_DIMENSIONS, mockMediaQueryList, render, resize } from '../utils';
 
@@ -292,7 +293,15 @@ describe('<ThreadDumpAnalysis />', () => {
     expect(screen.getByText('JVM Information')).toBeInTheDocument();
   });
 
-  it('prefills the selected thread dump from query params', async () => {
+  const ConsoleThreadDumpAnalysis = () => {
+    const { key } = useLocation();
+    return <ThreadDumpAnalysis key={key} keepPrefillInUrl />;
+  };
+
+  it.each([
+    ['standalone', <ThreadDumpAnalysis />],
+    ['Console route remount', <ConsoleThreadDumpAnalysis />],
+  ])('prefills the selected thread dump from query params (%s)', async (_, element) => {
     const analyzeSpy = jest.spyOn(defaultServices.api, 'analyzeThreadDump').mockReturnValue(of(mockThreadDumpAnalysis));
 
     render({
@@ -300,7 +309,7 @@ describe('<ThreadDumpAnalysis />', () => {
         routes: [
           {
             path: '/analyze-thread-dumps',
-            element: <ThreadDumpAnalysis />,
+            element,
           },
         ],
         options: {

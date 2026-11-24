@@ -59,7 +59,9 @@ import { ProblemFieldTable } from './ProblemFieldTable';
 import { HeapDumpAnalysisResult, HistogramEntry } from './types';
 import { WeakHashMapsTable } from './WeakHashMapsTable';
 
-export interface HeapDumpAnalysisProps {}
+export interface HeapDumpAnalysisProps {
+  keepPrefillInUrl?: boolean;
+}
 
 const isSameTarget = (a: NullableTarget, b: NullableTarget): boolean =>
   a?.connectUrl === b?.connectUrl && a?.jvmId === b?.jvmId;
@@ -132,7 +134,7 @@ const objectHistogramTableColumns: TableColumn[] = [
   },
 ];
 
-export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) => {
+export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ keepPrefillInUrl, ...props }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const location = useLocation();
@@ -152,6 +154,7 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
   const [filterText, setFilterText] = React.useState('');
 
   const selectedHeapDumpJvmIdRef = React.useRef<string>();
+  const appliedPrefillKeyRef = React.useRef<string>();
 
   const targetAsObs = React.useMemo(() => of(target), [target]);
   const [activeTab, setActiveTab] = React.useState(0);
@@ -235,7 +238,7 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
       ),
     [location.pathname, location.search, location.state, modalPrefill],
   );
-  const hasPendingPrefill = !!prefill.jvmId && !!prefill.heapDumpId;
+  const hasPendingPrefill = !!prefill.jvmId && !!prefill.heapDumpId && appliedPrefillKeyRef.current !== location.key;
 
   const onTabSelect = React.useCallback(
     (_evt: MouseEvent | React.MouseEvent, idx: string | number) => setActiveTab(Number(idx)),
@@ -313,34 +316,35 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
   );
 
   React.useEffect(() => {
-    if (!prefill.jvmId || !prefill.heapDumpId) {
+    const { jvmId, heapDumpId } = prefill;
+    if (!jvmId || !heapDumpId || appliedPrefillKeyRef.current === location.key) {
       return;
     }
 
-    addSubscription(
-      findTargetByJvmId(prefill.jvmId).subscribe((target) => {
-        setAnalysisResult(undefined);
-        selectedHeapDumpJvmIdRef.current = prefill.jvmId;
-        setSelectedHeapDump(prefill.heapDumpId!);
-        if (target) {
-          context.target.setTarget(target);
-        }
-        queryHeapDumpAnalysis(prefill.heapDumpId!, prefill.jvmId);
-        dispatch(modalPrefillClearIntent());
-        if (location.state || location.search) {
-          navigate(`${location.pathname}${location.hash}`, { replace: true, state: null });
-        }
-      }),
-    );
+    const subscription = findTargetByJvmId(jvmId).subscribe((target) => {
+      appliedPrefillKeyRef.current = location.key;
+      setAnalysisResult(undefined);
+      selectedHeapDumpJvmIdRef.current = jvmId;
+      setSelectedHeapDump(heapDumpId);
+      if (target) {
+        context.target.setTarget(target);
+      }
+      queryHeapDumpAnalysis(heapDumpId, jvmId);
+      dispatch(modalPrefillClearIntent());
+      if (!keepPrefillInUrl && (location.state || location.search)) {
+        navigate(`${location.pathname}${location.hash}`, { replace: true, state: null });
+      }
+    });
+    return () => subscription.unsubscribe();
   }, [
-    addSubscription,
     context.target,
+    keepPrefillInUrl,
+    location.key,
     location.state,
     location.search,
     location.hash,
     location.pathname,
-    prefill.jvmId,
-    prefill.heapDumpId,
+    prefill,
     dispatch,
     findTargetByJvmId,
     navigate,
