@@ -7294,13 +7294,8 @@ __metadata:
     file-loader: "npm:6.2.0"
     graphql: "npm:17.1.0"
     html-webpack-plugin: "npm:5.6.8"
-<<<<<<< HEAD
     humanize-duration: "npm:3.35.0"
-    i18next: "npm:26.3.4"
-=======
-    humanize-duration: "npm:3.35.1"
     i18next: "npm:26.5.0"
->>>>>>> 0212337 (build(deps): bump i18next from 26.4.7 to 26.5.0 (#2637))
     i18next-browser-languagedetector: "npm:8.3.1"
     i18next-parser: "npm:9.4.0"
     imagemin: "npm:9.0.1"
@@ -11214,25 +11209,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"i18next@npm:26.3.4":
-  version: 26.3.4
-  resolution: "i18next@npm:26.3.4"
-=======
 "i18next@npm:26.5.0":
   version: 26.5.0
   resolution: "i18next@npm:26.5.0"
->>>>>>> 0212337 (build(deps): bump i18next from 26.4.7 to 26.5.0 (#2637))
   peerDependencies:
     typescript: ^5 || ^6
   peerDependenciesMeta:
     typescript:
       optional: true
-<<<<<<< HEAD
-  checksum: 10/133ba9a5f76c1d57337f0dcc1b0ab0ff987714a1863813dcc95024531074c6d92603a19b0bac9c16a6b04c734742d8d098da0c222bef5a9562bdde231ea4b221
-=======
   checksum: 10/d71debb41f4b7d803d2e7621a27539b410bc11a11fccd784a0da3e8d79fb86a9301c03f8d85fcc7ab6e8a742b1b119a85ef39564c5fedd5a5e5674f69f9daa0e
->>>>>>> 0212337 (build(deps): bump i18next from 26.4.7 to 26.5.0 (#2637))
   languageName: node
   linkType: hard
 
