@@ -623,8 +623,11 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
     [setThreadDumps],
   );
 
-  const handleThreadDumpAnalysis = React.useCallback((result: ThreadDumpAnalysisResult) => {
-    setAnalysisResult(result);
+  const handleThreadDumpAnalysis = React.useCallback((threadDumpKey: string, result: ThreadDumpAnalysisResult) => {
+    // Only update state if this response is for the currently active request
+    if (activeThreadDumpKeyRef.current === threadDumpKey) {
+      setAnalysisResult(result);
+    }
   }, []);
 
   const handleThreadDumpAnalysisError = React.useCallback(() => {
@@ -662,10 +665,13 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
 
       if (selectedJvmId) {
         addSubscription(
-          context.api.analyzeThreadDump(selectedJvmId, threadDump).pipe(finalize(handleFinalize)).subscribe({
-            next: handleThreadDumpAnalysis,
-            error: handleError,
-          }),
+          context.api
+            .analyzeThreadDump(selectedJvmId, threadDump)
+            .pipe(finalize(handleFinalize))
+            .subscribe({
+              next: (result) => handleThreadDumpAnalysis(threadDumpKey, result),
+              error: handleError,
+            }),
         );
         return;
       }
@@ -684,7 +690,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
             finalize(handleFinalize),
           )
           .subscribe({
-            next: handleThreadDumpAnalysis,
+            next: (result) => handleThreadDumpAnalysis(threadDumpKey, result),
             error: handleError,
           }),
       );
@@ -761,6 +767,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
         queryThreadDumpAnalysis(threadDump, jvmId);
       } else {
         selectedThreadDumpKeyRef.current = undefined;
+        activeThreadDumpKeyRef.current = undefined;
         appliedPrefillKeyRef.current = undefined;
         dispatch(modalPrefillSetIntent(location.pathname, {}));
       }
