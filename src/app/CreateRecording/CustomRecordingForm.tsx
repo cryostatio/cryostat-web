@@ -450,9 +450,9 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
     if (location.state && typeof location.state === 'object' && Object.keys(location.state as object).length > 0) {
       prefilled = location.state as Partial<CustomRecordingFormData>;
     } else {
-      const { modalPrefill } = store.getState();
-      if (modalPrefill.data && Object.keys(modalPrefill.data).length > 0) {
-        prefilled = modalPrefill.data as Partial<CustomRecordingFormData>;
+      const routeData = store.getState().modalPrefill[location.pathname];
+      if (routeData && Object.keys(routeData).length > 0) {
+        prefilled = routeData as Partial<CustomRecordingFormData>;
       }
     }
     const {
