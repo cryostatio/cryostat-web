@@ -274,7 +274,10 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
   const [openDeadlockRows, setOpenDeadlockRows] = React.useState<number[]>([]);
   const [sortBy, getSortParams] = useSort();
   const selectedThreadDumpJvmIdRef = React.useRef<string>();
+  const selectedThreadDumpIdRef = React.useRef<string>();
   const appliedPrefillKeyRef = React.useRef<string>();
+  const latestPrefillKeyRef = React.useRef<string | undefined>();
+  const inFlightPrefillKeyRef = React.useRef<string | undefined>();
 
   const prefill = React.useMemo(
     () => readThreadDumpPrefill({ pathname: location.pathname, state: location.state }, modalPrefill),
@@ -637,7 +640,17 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
     (threadDump: string, jvmId?: string) => {
       const selectedJvmId = jvmId || threadDumps.find((t) => t.threadDumpId === threadDump)?.jvmId;
       selectedThreadDumpJvmIdRef.current = selectedJvmId;
+      selectedThreadDumpIdRef.current = threadDump;
       setIsAnalysisLoading(true);
+
+      const handleError = () => {
+        // Only clear state if this error is for the currently-expected request
+        if (selectedThreadDumpJvmIdRef.current !== selectedJvmId || selectedThreadDumpIdRef.current !== threadDump) {
+          return;
+        }
+        handleThreadDumpAnalysisError();
+      };
+
       if (selectedJvmId) {
         addSubscription(
           context.api
@@ -645,7 +658,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
             .pipe(finalize(() => setIsAnalysisLoading(false)))
             .subscribe({
               next: handleThreadDumpAnalysis,
-              error: handleThreadDumpAnalysisError,
+              error: handleError,
             }),
         );
         return;
@@ -666,7 +679,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
           )
           .subscribe({
             next: handleThreadDumpAnalysis,
-            error: handleThreadDumpAnalysisError,
+            error: handleError,
           }),
       );
     },
@@ -755,16 +768,32 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
   );
 
   React.useEffect(() => {
+    latestPrefillKeyRef.current = prefillKey;
+  }, [prefillKey]);
+
+  React.useEffect(() => {
     if (!prefill.jvmId || !prefill.threadDumpId || appliedPrefillKeyRef.current === prefillKey) {
       return;
     }
+    // Guard against duplicate requests if effect re-runs before first request completes
+    if (inFlightPrefillKeyRef.current === prefillKey) {
+      return;
+    }
     const { jvmId, threadDumpId } = prefill;
+    inFlightPrefillKeyRef.current = prefillKey;
 
     addSubscription(
       findTargetByJvmId(jvmId).subscribe((target) => {
         if (appliedPrefillKeyRef.current === prefillKey) {
+          inFlightPrefillKeyRef.current = undefined;
           return;
         }
+        // Discard stale results that have been superseded by a newer prefill
+        if (latestPrefillKeyRef.current !== prefillKey) {
+          inFlightPrefillKeyRef.current = undefined;
+          return;
+        }
+        inFlightPrefillKeyRef.current = undefined;
         appliedPrefillKeyRef.current = prefillKey;
         setAnalysisResult(undefined);
         selectedThreadDumpJvmIdRef.current = jvmId;
