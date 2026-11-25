@@ -15,7 +15,8 @@
  */
 import { HeapDump } from '@app/Shared/Services/api.types';
 import { portalRoot } from '@app/utils/utils';
-import { Dropdown, DropdownItem, DropdownList, MenuToggle, MenuToggleElement } from '@patternfly/react-core';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
+import { Divider, Dropdown, DropdownItem, DropdownList, MenuToggle, MenuToggleElement } from '@patternfly/react-core';
 import * as React from 'react';
 
 export interface HeapDumpSelectorProps {
@@ -25,6 +26,7 @@ export interface HeapDumpSelectorProps {
 }
 
 export const HeapDumpSelector: React.FC<HeapDumpSelectorProps> = ({ selected, heapDumps, onSelect }) => {
+  const { t } = useCryostatTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const handleHeapDumpSelect = React.useCallback(
@@ -71,11 +73,20 @@ export const HeapDumpSelector: React.FC<HeapDumpSelectorProps> = ({ selected, he
       onOpenChangeKeys={['Escape']}
     >
       <DropdownList>
-        {heapDumps.map((t: HeapDump) => (
-          <DropdownItem name={t.heapDumpId} key={t.heapDumpId} label={t.heapDumpId} value={t.heapDumpId}>
-            {t.heapDumpId}
+        {heapDumps.map((heapDump: HeapDump) => (
+          <DropdownItem
+            name={heapDump.heapDumpId}
+            key={heapDump.heapDumpId}
+            label={heapDump.heapDumpId}
+            value={heapDump.heapDumpId}
+          >
+            {heapDump.heapDumpId}
           </DropdownItem>
         ))}
+        <Divider component="li" key="separator" />
+        <DropdownItem name="clear" key="clear" label="" value="">
+          {t('CLEAR_SELECTION')}
+        </DropdownItem>
       </DropdownList>
     </Dropdown>
   );

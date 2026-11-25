@@ -98,7 +98,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [createRuleModalOpen, setCreateRuleModalOpen, handleCreateRuleModalClose] = useModalFromLocationState();
   const isEditMode = React.useMemo(
-    () => createRuleModalOpen && store.getState().modalPrefill.data?.edit,
+    () => createRuleModalOpen && store.getState().modalPrefill[toPath('/rules')]?.edit,
     [createRuleModalOpen],
   );
 

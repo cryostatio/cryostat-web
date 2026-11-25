@@ -15,7 +15,8 @@
  */
 import { ThreadDump } from '@app/Shared/Services/api.types';
 import { portalRoot } from '@app/utils/utils';
-import { Dropdown, DropdownItem, DropdownList, MenuToggle, MenuToggleElement } from '@patternfly/react-core';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
+import { Divider, Dropdown, DropdownItem, DropdownList, MenuToggle, MenuToggleElement } from '@patternfly/react-core';
 import * as React from 'react';
 
 export interface ThreadDumpSelectorProps {
@@ -25,6 +26,7 @@ export interface ThreadDumpSelectorProps {
 }
 
 export const ThreadDumpSelector: React.FC<ThreadDumpSelectorProps> = ({ selected, threadDumps, onSelect }) => {
+  const { t } = useCryostatTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const handleThreadDumpSelect = React.useCallback(
@@ -71,11 +73,20 @@ export const ThreadDumpSelector: React.FC<ThreadDumpSelectorProps> = ({ selected
       onOpenChangeKeys={['Escape']}
     >
       <DropdownList>
-        {threadDumps.map((t: ThreadDump) => (
-          <DropdownItem name={t.threadDumpId} key={t.threadDumpId} label={t.threadDumpId} value={t.threadDumpId}>
-            {t.threadDumpId}
+        {threadDumps.map((threadDump: ThreadDump) => (
+          <DropdownItem
+            name={threadDump.threadDumpId}
+            key={threadDump.threadDumpId}
+            label={threadDump.threadDumpId}
+            value={threadDump.threadDumpId}
+          >
+            {threadDump.threadDumpId}
           </DropdownItem>
         ))}
+        <Divider component="li" key="separator" />
+        <DropdownItem name="clear" key="clear" label="" value="">
+          {t('CLEAR_SELECTION')}
+        </DropdownItem>
       </DropdownList>
     </Dropdown>
   );

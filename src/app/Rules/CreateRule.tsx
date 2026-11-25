@@ -86,9 +86,9 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
     if (location.state && typeof location.state === 'object' && Object.keys(location.state as object).length > 0) {
       isEdit = (location.state as Record<string, unknown>).edit === true;
     } else {
-      const { modalPrefill } = store.getState();
-      if (modalPrefill.data && Object.keys(modalPrefill.data).length > 0) {
-        isEdit = modalPrefill.data.edit === true;
+      const routeData = store.getState().modalPrefill[location.pathname];
+      if (routeData && Object.keys(routeData).length > 0) {
+        isEdit = routeData.edit === true;
       }
     }
     return isEdit;
@@ -180,9 +180,9 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
     if (location.state && typeof location.state === 'object' && Object.keys(location.state as object).length > 0) {
       stateSource = location.state as Record<string, unknown>;
     } else {
-      const { modalPrefill } = store.getState();
-      if (modalPrefill.data && Object.keys(modalPrefill.data).length > 0) {
-        stateSource = modalPrefill.data;
+      const routeData = store.getState().modalPrefill[location.pathname];
+      if (routeData && Object.keys(routeData).length > 0) {
+        stateSource = routeData;
       }
     }
     const prefilled: Partial<RuleFormData> = stateSource as Partial<RuleFormData>;
