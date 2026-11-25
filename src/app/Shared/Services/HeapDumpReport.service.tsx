@@ -15,10 +15,10 @@
  */
 import { HeapDumpAnalysisResult } from '@app/Diagnostics/Analysis/HeapDumps/types';
 import { Base64 } from 'js-base64';
-import { combineLatest, concatMap, filter, from, map, Observable, Subject } from 'rxjs';
-import { CachedHeapDumpReportValue, FetchFn, GenerationError, NotificationCategory } from './api.types';
+import { concatMap, Observable, Subject } from 'rxjs';
+import { CachedHeapDumpReportValue, NotificationCategory } from './api.types';
+import { ApiService } from './Api.service';
 import { NotificationChannel } from './NotificationChannel.service';
-import { CryostatContext } from './Services';
 
 export interface HeapDumpAnalysisResponse {
   jobId: string;
@@ -27,9 +27,8 @@ export interface HeapDumpAnalysisResponse {
 
 export class HeapDumpReportService {
   constructor(
-    private ctx: CryostatContext,
+    private readonly api: ApiService,
     private readonly channel: NotificationChannel,
-    private readonly fetchFn: FetchFn = (url, init) => fetch(url, init),
   ) {
     channel.replayableMessages(NotificationCategory.HeapDumpAnalysisSuccess).subscribe((v) => {
       if (this.jobIds.has(v.message.jobId)) {
@@ -56,84 +55,21 @@ export class HeapDumpReportService {
   private readonly _jobCompletion: Subject<string> = new Subject();
 
   reportJson(jvmId: string, heapDumpId: string): Observable<HeapDumpAnalysisResponse> {
-    const headers = new Headers();
-    headers.append('Accept', 'application/json');
-    const req = () =>
-      combineLatest([
-        this.ctx.url(`/api/beta/diagnostics/targets/${jvmId}/heapdump/${heapDumpId}/analyze`),
-        this.ctx.headers(headers).pipe(
-          map((headers) => {
-            let cfg: RequestInit = {};
-            cfg.method = 'POST';
-            cfg.mode = 'cors';
-            cfg.credentials = 'include';
-            cfg.headers = headers;
-            return cfg;
-          }),
-        ),
-      ]).pipe(
-        concatMap((parts) =>
-          from(this.fetchFn(parts[0], parts[1])).pipe(
-            concatMap((resp) => {
-              // 200 indicates that the backend has the report cached and it will return
-              // the json in the response.
-              if (resp.ok) {
-                // 202 indicates that the backend does not have the report cached and will return an
-                // async job ID in the response immediately, then emit a notification with the same
-                // job ID later to inform us that the report is now ready and can be retrieved by
-                // sending a follow-up GET to the Location header value
-                if (resp.status == 202) {
-                  let subj = new Subject<HeapDumpAnalysisResponse>();
-                  resp.text().then((jobId) => {
-                    this.jobIds.set(jobId, parts[0]);
-                    this._jobCompletion
-                      .asObservable()
-                      .pipe(filter((id) => id === jobId))
-                      .subscribe((id) => {
-                        const jobUrl = this.jobIds.get(id);
-                        if (!jobUrl) throw new Error(`Unknown job ID: ${id}`);
-                        this.jobIds.delete(id);
-                        from(this.fetchFn(parts[0], parts[1])).subscribe((resp) => {
-                          if (resp.ok && resp.status === 200) {
-                            resp
-                              .text()
-                              .then(JSON.parse)
-                              .then((obj) => subj.next({ jobId: id, result: obj as HeapDumpAnalysisResult }));
-                          } else {
-                            const ge: GenerationError = {
-                              name: `Heap Dump Report Failure (${heapDumpId})`,
-                              message: resp.statusText,
-                              messageDetail: from(resp.text()),
-                              status: resp.status,
-                            };
-                            subj.error(ge);
-                          }
-                        });
-                      });
-                    this.checkReplayBuffer(jobId);
-                  });
-                  return subj.asObservable();
-                }
-                return from(
-                  resp
-                    .text()
-                    .then(JSON.parse)
-                    .then((obj) => ({ jobId: '', result: obj as HeapDumpAnalysisResult })),
-                );
-              } else {
-                const ge: GenerationError = {
-                  name: `Report Failure (${heapDumpId})`,
-                  message: resp.statusText,
-                  messageDetail: from(resp.text()),
-                  status: resp.status,
-                };
-                throw ge;
-              }
-            }),
-          ),
-        ),
-      );
-    return req();
+    return this.api.analyzeHeapDump(jvmId, heapDumpId, this._jobCompletion.asObservable()).pipe(
+      concatMap(({ jobId, response }) => {
+        this.jobIds.set(jobId, jvmId);
+        return response
+          .text()
+          .then(JSON.parse)
+          .then((obj) => {
+            if (jobId) {
+              this.jobIds.delete(jobId);
+              this.checkReplayBuffer(jobId);
+            }
+            return { jobId, result: obj as HeapDumpAnalysisResult };
+          });
+      }),
+    );
   }
 
   getCachedAnalysisReport(connectUrl: string): CachedHeapDumpReportValue {

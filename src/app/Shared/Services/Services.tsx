@@ -54,10 +54,10 @@ const settings = new SettingsService();
 const api = new ApiService(defaultContext, target, NotificationsInstance);
 const login = new LoginService(api, settings);
 const notificationChannel = new NotificationChannel(defaultContext, NotificationsInstance, login);
-const reports = new ReportService(defaultContext, NotificationsInstance, notificationChannel);
+const reports = new ReportService(api, NotificationsInstance, notificationChannel);
 const targets = new TargetsService(api, NotificationsInstance, notificationChannel);
 const targetAlias = new TargetAliasService(api);
-const heapDumpReports = new HeapDumpReportService(defaultContext, notificationChannel);
+const heapDumpReports = new HeapDumpReportService(api, notificationChannel);
 
 const defaultServices: Services = {
   target,
