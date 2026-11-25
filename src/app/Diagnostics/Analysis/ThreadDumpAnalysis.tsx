@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { LoadingView } from '@app/Shared/Components/LoadingView';
-import { modalPrefillClearIntent, RootState } from '@app/Shared/Redux/ReduxStore';
+import { modalPrefillSetIntent, RootState } from '@app/Shared/Redux/ReduxStore';
 import {
   AnalysisFinding,
   DeadlockedThread,
@@ -56,7 +56,7 @@ import {
 } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { EMPTY, concatMap, finalize, first, map, of } from 'rxjs';
 import { AggregateDataCard } from './AggregateDataCard.tsx';
 import { ThreadDumpSelector } from './ThreadDumpSelector';
@@ -68,13 +68,7 @@ const isSameTarget = (a: NullableTarget, b: NullableTarget): boolean =>
 
 interface ThreadDumpPrefillLocation {
   state: unknown;
-  search: string;
   pathname: string;
-}
-
-interface ThreadDumpPrefillStore {
-  route: string | null;
-  data: unknown;
 }
 
 interface ThreadDumpPrefill {
@@ -82,27 +76,21 @@ interface ThreadDumpPrefill {
   threadDumpId?: string;
 }
 
-const firstString = (...values: unknown[]): string | undefined =>
-  values.find((value): value is string => typeof value === 'string' && value.length > 0);
+const asString = (value: unknown): string | undefined =>
+  typeof value === 'string' && value.length > 0 ? value : undefined;
 
+/**
+ * Reads the requested thread dump from the Redux slot of the current route, which is authoritative whenever it
+ * exists (an empty slot means the selection was explicitly cleared), and otherwise from router location state.
+ */
 const readThreadDumpPrefill = (
   location: ThreadDumpPrefillLocation,
-  modalPrefill: ThreadDumpPrefillStore,
+  modalPrefill: RootState['modalPrefill'],
 ): ThreadDumpPrefill => {
-  const stateData = location.state as Record<string, unknown> | null;
-  const reduxData = modalPrefill.route === location.pathname ? (modalPrefill.data as Record<string, unknown>) : null;
-  const params = new URLSearchParams(location.search);
-
+  const data = (modalPrefill[location.pathname] ?? location.state) as Record<string, unknown> | null;
   return {
-    jvmId: firstString(stateData?.jvmId, reduxData?.jvmId, params.get('jvmId')),
-    threadDumpId: firstString(
-      stateData?.id,
-      stateData?.threadDumpId,
-      reduxData?.id,
-      reduxData?.threadDumpId,
-      params.get('threadDumpId'),
-      params.get('id'),
-    ),
+    jvmId: asString(data?.jvmId),
+    threadDumpId: asString(data?.threadDumpId),
   };
 };
 
@@ -275,7 +263,6 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
   const addSubscription = useSubscriptions();
   const location = useLocation();
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const modalPrefill = useSelector((state: RootState) => state.modalPrefill);
 
   const [threadDumps, setThreadDumps] = React.useState<ThreadDump[]>([]);
@@ -287,20 +274,14 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
   const [openDeadlockRows, setOpenDeadlockRows] = React.useState<number[]>([]);
   const [sortBy, getSortParams] = useSort();
   const selectedThreadDumpJvmIdRef = React.useRef<string>();
+  const appliedPrefillKeyRef = React.useRef<string>();
 
   const prefill = React.useMemo(
-    () =>
-      readThreadDumpPrefill(
-        {
-          pathname: location.pathname,
-          search: location.search,
-          state: location.state,
-        },
-        modalPrefill,
-      ),
-    [location.pathname, location.search, location.state, modalPrefill],
+    () => readThreadDumpPrefill({ pathname: location.pathname, state: location.state }, modalPrefill),
+    [location.pathname, location.state, modalPrefill],
   );
-  const hasPendingPrefill = !!prefill.jvmId && !!prefill.threadDumpId;
+  const prefillKey = prefill.jvmId && prefill.threadDumpId ? `${prefill.jvmId}/${prefill.threadDumpId}` : undefined;
+  const hasPendingPrefill = !!prefillKey && appliedPrefillKeyRef.current !== prefillKey;
   const targetAsObs = React.useMemo(() => of(target), [target]);
 
   React.useEffect(() => {
@@ -644,6 +625,14 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
     [setAnalysisResult],
   );
 
+  const handleThreadDumpAnalysisError = React.useCallback(() => {
+    selectedThreadDumpJvmIdRef.current = undefined;
+    appliedPrefillKeyRef.current = undefined;
+    setAnalysisResult(undefined);
+    setSelectedThreadDump('');
+    dispatch(modalPrefillSetIntent(location.pathname, {}));
+  }, [dispatch, location.pathname, setAnalysisResult, setSelectedThreadDump]);
+
   const queryThreadDumpAnalysis = React.useCallback(
     (threadDump: string, jvmId?: string) => {
       const selectedJvmId = jvmId || threadDumps.find((t) => t.threadDumpId === threadDump)?.jvmId;
@@ -656,6 +645,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
             .pipe(finalize(() => setIsAnalysisLoading(false)))
             .subscribe({
               next: handleThreadDumpAnalysis,
+              error: handleThreadDumpAnalysisError,
             }),
         );
         return;
@@ -676,10 +666,11 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
           )
           .subscribe({
             next: handleThreadDumpAnalysis,
+            error: handleThreadDumpAnalysisError,
           }),
       );
     },
-    [addSubscription, context.api, handleThreadDumpAnalysis, targetAsObs, threadDumps],
+    [addSubscription, context.api, handleThreadDumpAnalysis, handleThreadDumpAnalysisError, targetAsObs, threadDumps],
   );
 
   const findTargetByJvmId = React.useCallback(
@@ -739,48 +730,57 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
     (threadDump?: string) => {
       setSelectedThreadDump(threadDump || '');
       setAnalysisResult(undefined);
-      selectedThreadDumpJvmIdRef.current = threadDump
+      const jvmId = threadDump
         ? threadDumps.find((t) => t.threadDumpId === threadDump)?.jvmId || target?.jvmId
         : undefined;
+      selectedThreadDumpJvmIdRef.current = jvmId;
       if (threadDump) {
-        queryThreadDumpAnalysis(threadDump, selectedThreadDumpJvmIdRef.current);
+        appliedPrefillKeyRef.current = `${jvmId}/${threadDump}`;
+        dispatch(modalPrefillSetIntent(location.pathname, { jvmId, threadDumpId: threadDump }));
+        queryThreadDumpAnalysis(threadDump, jvmId);
+      } else {
+        appliedPrefillKeyRef.current = undefined;
+        dispatch(modalPrefillSetIntent(location.pathname, {}));
       }
     },
-    [setSelectedThreadDump, setAnalysisResult, threadDumps, target, queryThreadDumpAnalysis],
+    [
+      setSelectedThreadDump,
+      setAnalysisResult,
+      threadDumps,
+      target,
+      queryThreadDumpAnalysis,
+      dispatch,
+      location.pathname,
+    ],
   );
 
   React.useEffect(() => {
-    if (!prefill.jvmId || !prefill.threadDumpId) {
+    if (!prefill.jvmId || !prefill.threadDumpId || appliedPrefillKeyRef.current === prefillKey) {
       return;
     }
+    const { jvmId, threadDumpId } = prefill;
 
     addSubscription(
-      findTargetByJvmId(prefill.jvmId).subscribe((target) => {
+      findTargetByJvmId(jvmId).subscribe((target) => {
+        if (appliedPrefillKeyRef.current === prefillKey) {
+          return;
+        }
+        appliedPrefillKeyRef.current = prefillKey;
         setAnalysisResult(undefined);
-        selectedThreadDumpJvmIdRef.current = prefill.jvmId;
-        setSelectedThreadDump(prefill.threadDumpId!);
+        selectedThreadDumpJvmIdRef.current = jvmId;
+        setSelectedThreadDump(threadDumpId);
         if (target) {
           context.target.setTarget(target);
         }
-        queryThreadDumpAnalysis(prefill.threadDumpId!, prefill.jvmId);
-        dispatch(modalPrefillClearIntent());
-        if (location.state || location.search) {
-          navigate(`${location.pathname}${location.hash}`, { replace: true, state: null });
-        }
+        queryThreadDumpAnalysis(threadDumpId, jvmId);
       }),
     );
   }, [
     addSubscription,
     context.target,
-    location.state,
-    location.search,
-    location.hash,
-    location.pathname,
-    prefill.jvmId,
-    prefill.threadDumpId,
-    dispatch,
+    prefill,
+    prefillKey,
     findTargetByJvmId,
-    navigate,
     queryThreadDumpAnalysis,
     setAnalysisResult,
     setSelectedThreadDump,

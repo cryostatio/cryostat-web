@@ -22,7 +22,8 @@ import { HeapDump, Target } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { basePreloadedState, DEFAULT_DIMENSIONS, mockMediaQueryList, render, resize } from '@test/utils';
 import { act, screen, cleanup, waitFor, within } from '@testing-library/react';
-import { BehaviorSubject, of, Subject } from 'rxjs';
+import { useState } from 'react';
+import { BehaviorSubject, of, Subject, throwError } from 'rxjs';
 
 const mockNewConnectUrl = 'service:jmx:rmi://someNewUrl';
 const mockNewAlias = 'target';
@@ -58,6 +59,13 @@ const mockHeapDump: HeapDump = {
   size: 1,
   metadata: { labels: [{ key: 'someLabel', value: 'someUpdatedValue' }] },
 };
+
+const mockSecondHeapDump: HeapDump = {
+  ...mockHeapDump,
+  heapDumpId: 'someSecondUuid',
+};
+
+const ANALYSIS_ROUTE = '/analyze-heap-dumps';
 
 const mockOtherHeapDump: HeapDump = {
   downloadUrl: 'someOtherDownloadUrl',
@@ -274,24 +282,39 @@ describe('<HeapDumpAnalysis />', () => {
     expect(screen.getByRole('heading', { name: 'Select a Heap Dump to Analyze' })).toBeInTheDocument();
   });
 
+  const prefillState = (heapDump: HeapDump) => ({ jvmId: heapDump.jvmId, heapDumpId: heapDump.heapDumpId });
+
+  const Remountable = () => {
+    const [generation, setGeneration] = useState(0);
+    return (
+      <>
+        <button onClick={() => setGeneration((g) => g + 1)}>remount analysis</button>
+        <HeapDumpAnalysis key={generation} />
+      </>
+    );
+  };
+
+  const selectorToggle = () => screen.getByRole('button', { name: 'heap dump selector toggle' });
+
+  const spyOnReport = () =>
+    jest.spyOn(defaultServices.heapDumpReports, 'reportJson').mockReturnValue(of(mockHeapDumpAnalysis));
+
   it('prefills the selected heap dump from location state', async () => {
-    const analyzeSpy = jest
-      .spyOn(defaultServices.heapDumpReports, 'reportJson')
-      .mockReturnValue(of(mockHeapDumpAnalysis));
+    const analyzeSpy = spyOnReport();
 
     render({
       routerConfigs: {
         routes: [
           {
-            path: '/analyze-heap-dumps',
+            path: ANALYSIS_ROUTE,
             element: <HeapDumpAnalysis />,
           },
         ],
         options: {
           initialEntries: [
             {
-              pathname: '/analyze-heap-dumps',
-              state: { jvmId: mockTarget.jvmId, id: mockHeapDump.heapDumpId },
+              pathname: ANALYSIS_ROUTE,
+              state: prefillState(mockHeapDump),
             },
           ],
         },
@@ -301,40 +324,409 @@ describe('<HeapDumpAnalysis />', () => {
 
     await waitFor(() => {
       expect(analyzeSpy).toHaveBeenCalledWith(mockTarget.jvmId, mockHeapDump.heapDumpId);
-      expect(screen.getByRole('button', { name: 'heap dump selector toggle' })).toHaveTextContent(
-        mockHeapDump.heapDumpId,
-      );
+      expect(selectorToggle()).toHaveTextContent(mockHeapDump.heapDumpId);
     });
     expect(screen.getByText('Fundamental Stats')).toBeInTheDocument();
   });
 
-  it('prefills the selected heap dump from query params', async () => {
-    const analyzeSpy = jest
-      .spyOn(defaultServices.heapDumpReports, 'reportJson')
-      .mockReturnValue(of(mockHeapDumpAnalysis));
+  it('prefills the selected heap dump from Redux state when router state is absent', async () => {
+    const analyzeSpy = spyOnReport();
 
     render({
       routerConfigs: {
         routes: [
           {
-            path: '/analyze-heap-dumps',
+            path: ANALYSIS_ROUTE,
+            element: <HeapDumpAnalysis />,
+          },
+        ],
+        options: { initialEntries: [ANALYSIS_ROUTE] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { [ANALYSIS_ROUTE]: prefillState(mockHeapDump) },
+      },
+    });
+
+    await waitFor(() => {
+      expect(analyzeSpy).toHaveBeenCalledWith(mockTarget.jvmId, mockHeapDump.heapDumpId);
+      expect(selectorToggle()).toHaveTextContent(mockHeapDump.heapDumpId);
+    });
+  });
+
+  it('ignores query params', async () => {
+    const analyzeSpy = spyOnReport();
+
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
             element: <HeapDumpAnalysis />,
           },
         ],
         options: {
-          initialEntries: [`/analyze-heap-dumps?jvmId=${mockTarget.jvmId}&heapDumpId=${mockHeapDump.heapDumpId}`],
+          initialEntries: [`${ANALYSIS_ROUTE}?jvmId=${mockTarget.jvmId}&heapDumpId=${mockHeapDump.heapDumpId}`],
         },
       },
       preloadedState: preloadedState,
     });
 
-    await waitFor(() => {
-      expect(analyzeSpy).toHaveBeenCalledWith(mockTarget.jvmId, mockHeapDump.heapDumpId);
-      expect(screen.getByRole('button', { name: 'heap dump selector toggle' })).toHaveTextContent(
-        mockHeapDump.heapDumpId,
-      );
+    expect(screen.getByRole('heading', { name: 'Select a Heap Dump to Analyze' })).toBeInTheDocument();
+    expect(analyzeSpy).not.toHaveBeenCalled();
+  });
+
+  it('ignores a Redux slot that belongs to another route', async () => {
+    const analyzeSpy = spyOnReport();
+
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <HeapDumpAnalysis />,
+          },
+        ],
+        options: { initialEntries: [ANALYSIS_ROUTE] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { '/recordings': prefillState(mockHeapDump) },
+      },
     });
+
+    expect(screen.getByRole('heading', { name: 'Select a Heap Dump to Analyze' })).toBeInTheDocument();
+    expect(analyzeSpy).not.toHaveBeenCalled();
+  });
+
+  it('retains the Redux slot and router state after applying the prefill', async () => {
+    const analyzeSpy = spyOnReport();
+    const state = prefillState(mockHeapDump);
+
+    const { store, router } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <HeapDumpAnalysis />,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { [ANALYSIS_ROUTE]: state },
+      },
+    });
+
+    await waitFor(() => expect(analyzeSpy).toHaveBeenCalledTimes(1));
     expect(screen.getByText('Fundamental Stats')).toBeInTheDocument();
+    expect(store.getState().modalPrefill).toEqual({ [ANALYSIS_ROUTE]: state });
+    expect(router.state.location.state).toEqual(state);
+    expect(router.state.location.search).toEqual('');
+  });
+
+  it('re-applies the prefill when the analysis view is remounted', async () => {
+    const analyzeSpy = spyOnReport();
+    const state = prefillState(mockHeapDump);
+
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <Remountable />,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { [ANALYSIS_ROUTE]: state },
+      },
+    });
+
+    await waitFor(() => expect(analyzeSpy).toHaveBeenCalledTimes(1));
+
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'remount analysis' }));
+    });
+
+    await waitFor(() => {
+      expect(analyzeSpy).toHaveBeenCalledTimes(2);
+      expect(selectorToggle()).toHaveTextContent(mockHeapDump.heapDumpId);
+      expect(screen.getByText('Fundamental Stats')).toBeInTheDocument();
+    });
+    expect(analyzeSpy).toHaveBeenLastCalledWith(mockTarget.jvmId, mockHeapDump.heapDumpId);
+  });
+
+  it('re-applies the prefill when remounted while the analysis request is still in flight', async () => {
+    const pending$ = new Subject<HeapDumpAnalysisResult>();
+    const analyzeSpy = jest.spyOn(defaultServices.heapDumpReports, 'reportJson').mockReturnValueOnce(pending$);
+    analyzeSpy.mockReturnValue(of(mockHeapDumpAnalysis));
+    const state = prefillState(mockHeapDump);
+
+    const { user, store } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <Remountable />,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { [ANALYSIS_ROUTE]: state },
+      },
+    });
+
+    await waitFor(() => expect(analyzeSpy).toHaveBeenCalledTimes(1));
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(store.getState().modalPrefill).toEqual({ [ANALYSIS_ROUTE]: state });
+
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'remount analysis' }));
+    });
+
+    await waitFor(() => {
+      expect(analyzeSpy).toHaveBeenCalledTimes(2);
+      expect(screen.getByText('Fundamental Stats')).toBeInTheDocument();
+    });
+    expect(selectorToggle()).toHaveTextContent(mockHeapDump.heapDumpId);
+  });
+
+  it('restores the previously analysed heap dump after navigating away and back', async () => {
+    const analyzeSpy = spyOnReport();
+    const state = prefillState(mockHeapDump);
+
+    const { router } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <HeapDumpAnalysis />,
+          },
+          {
+            path: '/elsewhere',
+            element: <>Elsewhere</>,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { [ANALYSIS_ROUTE]: state },
+      },
+    });
+
+    await waitFor(() => expect(analyzeSpy).toHaveBeenCalledTimes(1));
+
+    await act(async () => {
+      await router.navigate('/elsewhere');
+    });
+    expect(screen.getByText('Elsewhere')).toBeInTheDocument();
+
+    await act(async () => {
+      await router.navigate(ANALYSIS_ROUTE);
+    });
+
+    await waitFor(() => {
+      expect(analyzeSpy).toHaveBeenCalledTimes(2);
+      expect(selectorToggle()).toHaveTextContent(mockHeapDump.heapDumpId);
+      expect(screen.getByText('Fundamental Stats')).toBeInTheDocument();
+    });
+  });
+
+  it('writes a manual selection to the Redux slot and prefers it over router state on remount', async () => {
+    const analyzeSpy = spyOnReport();
+    jest.spyOn(defaultServices.api, 'getTargetHeapDumps').mockReturnValue(of([mockHeapDump, mockSecondHeapDump]));
+    const state = prefillState(mockHeapDump);
+
+    const { user, store } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <Remountable />,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { [ANALYSIS_ROUTE]: state },
+      },
+    });
+
+    await waitFor(() => expect(selectorToggle()).toHaveTextContent(mockHeapDump.heapDumpId));
+
+    await act(async () => {
+      await user.click(selectorToggle());
+    });
+    await act(async () => {
+      await user.click(within(await screen.findByRole('menu')).getByText(mockSecondHeapDump.heapDumpId));
+    });
+
+    await waitFor(() => {
+      expect(analyzeSpy).toHaveBeenLastCalledWith(mockTarget.jvmId, mockSecondHeapDump.heapDumpId);
+    });
+    expect(store.getState().modalPrefill).toEqual({ [ANALYSIS_ROUTE]: prefillState(mockSecondHeapDump) });
+
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'remount analysis' }));
+    });
+
+    await waitFor(() => {
+      expect(selectorToggle()).toHaveTextContent(mockSecondHeapDump.heapDumpId);
+      expect(analyzeSpy).toHaveBeenLastCalledWith(mockTarget.jvmId, mockSecondHeapDump.heapDumpId);
+    });
+  });
+
+  it('does not re-apply the prefill over a manual selection when the target or dump list refreshes', async () => {
+    const analyzeSpy = spyOnReport();
+    jest.spyOn(defaultServices.api, 'getTargetHeapDumps').mockReturnValue(of([mockHeapDump, mockSecondHeapDump]));
+    const target$ = new BehaviorSubject<Target | undefined>(mockTarget);
+    jest.spyOn(defaultServices.target, 'target').mockReturnValue(target$);
+    const state = prefillState(mockHeapDump);
+
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <HeapDumpAnalysis />,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { [ANALYSIS_ROUTE]: state },
+      },
+    });
+
+    await waitFor(() => expect(selectorToggle()).toHaveTextContent(mockHeapDump.heapDumpId));
+
+    await act(async () => {
+      await user.click(selectorToggle());
+    });
+    await act(async () => {
+      await user.click(within(await screen.findByRole('menu')).getByText(mockSecondHeapDump.heapDumpId));
+    });
+    await waitFor(() => expect(analyzeSpy).toHaveBeenCalledTimes(2));
+
+    await act(async () => {
+      target$.next({ ...mockTarget });
+    });
+
+    expect(selectorToggle()).toHaveTextContent(mockSecondHeapDump.heapDumpId);
+    expect(analyzeSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it('offers a Clear Selection option that resets the view and records an explicitly empty Redux slot', async () => {
+    const analyzeSpy = spyOnReport();
+    const state = prefillState(mockHeapDump);
+
+    const { user, store } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <HeapDumpAnalysis />,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { [ANALYSIS_ROUTE]: state },
+      },
+    });
+
+    await waitFor(() => expect(screen.getByText('Fundamental Stats')).toBeInTheDocument());
+
+    await act(async () => {
+      await user.click(selectorToggle());
+    });
+    const menu = await screen.findByRole('menu');
+    expect(within(menu).getByText('Clear Selection')).toBeInTheDocument();
+    await act(async () => {
+      await user.click(within(menu).getByText('Clear Selection'));
+    });
+
+    expect(screen.getByRole('heading', { name: 'Select a Heap Dump to Analyze' })).toBeInTheDocument();
+    expect(selectorToggle()).toHaveTextContent('Select a Heap Dump');
+    expect(store.getState().modalPrefill).toEqual({ [ANALYSIS_ROUTE]: {} });
+    expect(analyzeSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('stays cleared after a remount even though router state still carries the old selection', async () => {
+    const analyzeSpy = spyOnReport();
+    const state = prefillState(mockHeapDump);
+
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <Remountable />,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { [ANALYSIS_ROUTE]: state },
+      },
+    });
+
+    await waitFor(() => expect(screen.getByText('Fundamental Stats')).toBeInTheDocument());
+
+    await act(async () => {
+      await user.click(selectorToggle());
+    });
+    await act(async () => {
+      await user.click(within(await screen.findByRole('menu')).getByText('Clear Selection'));
+    });
+
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'remount analysis' }));
+    });
+
+    expect(screen.getByRole('heading', { name: 'Select a Heap Dump to Analyze' })).toBeInTheDocument();
+    expect(selectorToggle()).toHaveTextContent('Select a Heap Dump');
+    expect(analyzeSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('clears the selection and the Redux selection when the analysis request fails', async () => {
+    jest
+      .spyOn(defaultServices.heapDumpReports, 'reportJson')
+      .mockReturnValue(throwError(() => new Error('heap dump no longer exists')));
+    const state = prefillState(mockHeapDump);
+
+    const { store } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <HeapDumpAnalysis />,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { [ANALYSIS_ROUTE]: state },
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Select a Heap Dump to Analyze' })).toBeInTheDocument();
+    });
+    expect(selectorToggle()).toHaveTextContent('Select a Heap Dump');
+    expect(store.getState().modalPrefill).toEqual({ [ANALYSIS_ROUTE]: {} });
   });
 
   it('updates the target context for a prefilled archived thread dump from another target', async () => {
@@ -361,7 +753,7 @@ describe('<HeapDumpAnalysis />', () => {
           initialEntries: [
             {
               pathname: '/analyze-heap-dumps',
-              state: { jvmId: mockOtherTarget.jvmId, id: mockOtherHeapDump.heapDumpId },
+              state: prefillState(mockOtherHeapDump),
             },
           ],
         },
@@ -399,7 +791,7 @@ describe('<HeapDumpAnalysis />', () => {
           initialEntries: [
             {
               pathname: '/analyze-heap-dumps',
-              state: { jvmId: mockTarget.jvmId, id: mockHeapDump.heapDumpId },
+              state: prefillState(mockHeapDump),
             },
           ],
         },
