@@ -23,10 +23,7 @@ export enum ModalPrefillAction {
 
 export const enumValues = new Set(Object.values(ModalPrefillAction));
 
-export interface ModalPrefillState {
-  route: string | null;
-  data: Record<string, unknown>;
-}
+export type ModalPrefillState = Record<string, Record<string, unknown>>;
 
 export const modalPrefillSetIntent = createAction(
   ModalPrefillAction.SET,
@@ -35,20 +32,20 @@ export const modalPrefillSetIntent = createAction(
   }),
 );
 
-export const modalPrefillClearIntent = createAction(ModalPrefillAction.CLEAR);
+export const modalPrefillClearIntent = createAction(ModalPrefillAction.CLEAR, (route: string) => ({
+  payload: { route },
+}));
 
-const INITIAL_STATE: ModalPrefillState = {
-  route: null,
-  data: {},
-};
+const INITIAL_STATE: ModalPrefillState = {};
 
 export const modalPrefillReducer = createReducer(INITIAL_STATE, (builder) => {
   builder
     .addCase(modalPrefillSetIntent, (state, { payload }) => {
-      state.route = payload.route;
-      state.data = payload.data;
+      state[payload.route] = payload.data;
     })
-    .addCase(modalPrefillClearIntent, () => INITIAL_STATE);
+    .addCase(modalPrefillClearIntent, (state, { payload }) => {
+      delete state[payload.route];
+    });
 });
 
 export default modalPrefillReducer;

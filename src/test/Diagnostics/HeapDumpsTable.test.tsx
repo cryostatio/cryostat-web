@@ -17,7 +17,7 @@
 import { HeapDumpsTable } from '@app/Diagnostics/HeapDumpsTable';
 import { DeleteHeapDump, DeleteOrDisableWarningType } from '@app/Modal/types';
 import { emptyArchivedHeapDumpFilters, TargetHeapDumpFilters } from '@app/Shared/Redux/Filters/HeapDumpFilterSlice';
-import { RootState } from '@app/Shared/Redux/ReduxStore';
+import { modalPrefillClearIntent, RootState, store as globalStore } from '@app/Shared/Redux/ReduxStore';
 import { HeapDump, KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
@@ -315,5 +315,39 @@ describe('<HeapDumpsTable />', () => {
 
     expect(downloadRequestSpy).toHaveBeenCalledTimes(1);
     expect(downloadRequestSpy).toHaveBeenCalledWith(mockHeapDump);
+  });
+
+  it('navigates to analysis with the selected heap dump prefill data in router state and Redux only', async () => {
+    globalStore.dispatch(modalPrefillClearIntent('/analyze-heap-dumps'));
+    const { user, router } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/heapdumps',
+            element: <HeapDumpsTable target={of(mockTarget)} isNestedTable={false} />,
+          },
+          {
+            path: '/analyze-heap-dumps',
+            element: <>Analysis</>,
+          },
+        ],
+        options: {
+          initialEntries: ['/heapdumps'],
+        },
+      },
+      preloadedState: preloadedState,
+    });
+
+    await user.click(screen.getByLabelText(testT('HeapDumpActions.ARIA_LABELS.MENU_TOGGLE')));
+    await user.click(await screen.findByText('Analyze Heap Dump'));
+
+    const state = {
+      jvmId: mockTarget.jvmId,
+      heapDumpId: mockHeapDump.heapDumpId,
+    };
+    expect(router.state.location.pathname).toEqual('/analyze-heap-dumps');
+    expect(router.state.location.search).toEqual('');
+    expect(router.state.location.state).toEqual(state);
+    expect(globalStore.getState().modalPrefill).toEqual({ '/analyze-heap-dumps': state });
   });
 });

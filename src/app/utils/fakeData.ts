@@ -391,8 +391,8 @@ class FakeHeapDumpReportService extends HeapDumpReportService {
     super(ctx, channel);
   }
 
-  reportJson(_jvmId: string, _heapDump: string): Observable<HeapDumpAnalysisResult> {
-    return of(fakeHeapDumpAnalysis);
+  reportJson(_jvmId: string, _heapDump: string): Observable<{ jobId: string; result: HeapDumpAnalysisResult }> {
+    return of({ jobId: 'fake-job-id', result: fakeHeapDumpAnalysis });
   }
 
   getCachedAnalysisReport(_connectUrl: string): CachedHeapDumpReportValue {

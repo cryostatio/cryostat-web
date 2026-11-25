@@ -78,9 +78,9 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ onClose, prefilled }
   const locationPrefilled = React.useMemo(() => {
     let state = location.state as Partial<CreateTargetProps['prefilled']> | null;
     if (!state?.connectUrl) {
-      const { modalPrefill } = store.getState();
-      if (modalPrefill.data && Object.keys(modalPrefill.data).length > 0) {
-        state = modalPrefill.data as Partial<CreateTargetProps['prefilled']>;
+      const routeData = store.getState().modalPrefill[location.pathname];
+      if (routeData && Object.keys(routeData).length > 0) {
+        state = routeData as Partial<CreateTargetProps['prefilled']>;
       }
     }
     if (!state?.connectUrl) {
@@ -92,7 +92,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ onClose, prefilled }
       username: state.username,
       password: state.password,
     };
-  }, [location.state]);
+  }, [location.state, location.pathname]);
   const resolvedPrefilled = React.useMemo(() => prefilled ?? locationPrefilled, [prefilled, locationPrefilled]);
 
   const [example, setExample] = React.useState('');

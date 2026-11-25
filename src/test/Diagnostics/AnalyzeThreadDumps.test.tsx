@@ -20,7 +20,8 @@ import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { Target, ThreadDump, ThreadDumpAnalysisResult } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen, within, act, waitFor } from '@testing-library/react';
-import { BehaviorSubject, Subject, of } from 'rxjs';
+import { useState } from 'react';
+import { BehaviorSubject, Subject, of, throwError } from 'rxjs';
 import { basePreloadedState, DEFAULT_DIMENSIONS, mockMediaQueryList, render, resize } from '../utils';
 
 const mockNewConnectUrl = 'service:jmx:rmi://someNewUrl';
@@ -57,6 +58,13 @@ const mockThreadDump: ThreadDump = {
   size: 1,
   metadata: { labels: [{ key: 'someLabel', value: 'someUpdatedValue' }] },
 };
+
+const mockSecondThreadDump: ThreadDump = {
+  ...mockThreadDump,
+  threadDumpId: 'someSecondUuid',
+};
+
+const ANALYSIS_ROUTE = '/analyze-thread-dumps';
 
 const mockOtherThreadDump: ThreadDump = {
   downloadUrl: 'someOtherDownloadUrl',
@@ -260,6 +268,20 @@ describe('<ThreadDumpAnalysis />', () => {
     expect(screen.getByRole('heading', { name: 'Select a Thread Dump to Analyze' })).toBeInTheDocument();
   });
 
+  const prefillState = (threadDump: ThreadDump) => ({ jvmId: threadDump.jvmId, threadDumpId: threadDump.threadDumpId });
+
+  const Remountable = () => {
+    const [generation, setGeneration] = useState(0);
+    return (
+      <>
+        <button onClick={() => setGeneration((g) => g + 1)}>remount analysis</button>
+        <ThreadDumpAnalysis key={generation} />
+      </>
+    );
+  };
+
+  const selectorToggle = () => screen.getByRole('button', { name: 'thread dump selector toggle' });
+
   it('prefills the selected thread dump from location state', async () => {
     const analyzeSpy = jest.spyOn(defaultServices.api, 'analyzeThreadDump').mockReturnValue(of(mockThreadDumpAnalysis));
 
@@ -267,15 +289,15 @@ describe('<ThreadDumpAnalysis />', () => {
       routerConfigs: {
         routes: [
           {
-            path: '/analyze-thread-dumps',
+            path: ANALYSIS_ROUTE,
             element: <ThreadDumpAnalysis />,
           },
         ],
         options: {
           initialEntries: [
             {
-              pathname: '/analyze-thread-dumps',
-              state: { jvmId: mockTarget.jvmId, id: mockThreadDump.threadDumpId },
+              pathname: ANALYSIS_ROUTE,
+              state: prefillState(mockThreadDump),
             },
           ],
         },
@@ -285,40 +307,409 @@ describe('<ThreadDumpAnalysis />', () => {
 
     await waitFor(() => {
       expect(analyzeSpy).toHaveBeenCalledWith(mockTarget.jvmId, mockThreadDump.threadDumpId);
-      expect(screen.getByRole('button', { name: 'thread dump selector toggle' })).toHaveTextContent(
-        mockThreadDump.threadDumpId,
-      );
+      expect(selectorToggle()).toHaveTextContent(mockThreadDump.threadDumpId);
     });
     expect(screen.getByText('JVM Information')).toBeInTheDocument();
   });
 
-  it('prefills the selected thread dump from query params', async () => {
+  it('prefills the selected thread dump from Redux state when router state is absent', async () => {
     const analyzeSpy = jest.spyOn(defaultServices.api, 'analyzeThreadDump').mockReturnValue(of(mockThreadDumpAnalysis));
 
     render({
       routerConfigs: {
         routes: [
           {
-            path: '/analyze-thread-dumps',
+            path: ANALYSIS_ROUTE,
+            element: <ThreadDumpAnalysis />,
+          },
+        ],
+        options: { initialEntries: [ANALYSIS_ROUTE] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { [ANALYSIS_ROUTE]: prefillState(mockThreadDump) },
+      },
+    });
+
+    await waitFor(() => {
+      expect(analyzeSpy).toHaveBeenCalledWith(mockTarget.jvmId, mockThreadDump.threadDumpId);
+      expect(selectorToggle()).toHaveTextContent(mockThreadDump.threadDumpId);
+    });
+  });
+
+  it('ignores query params', async () => {
+    const analyzeSpy = jest.spyOn(defaultServices.api, 'analyzeThreadDump').mockReturnValue(of(mockThreadDumpAnalysis));
+
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
             element: <ThreadDumpAnalysis />,
           },
         ],
         options: {
-          initialEntries: [
-            `/analyze-thread-dumps?jvmId=${mockTarget.jvmId}&threadDumpId=${mockThreadDump.threadDumpId}`,
-          ],
+          initialEntries: [`${ANALYSIS_ROUTE}?jvmId=${mockTarget.jvmId}&threadDumpId=${mockThreadDump.threadDumpId}`],
         },
       },
       preloadedState: preloadedState,
     });
 
-    await waitFor(() => {
-      expect(analyzeSpy).toHaveBeenCalledWith(mockTarget.jvmId, mockThreadDump.threadDumpId);
-      expect(screen.getByRole('button', { name: 'thread dump selector toggle' })).toHaveTextContent(
-        mockThreadDump.threadDumpId,
-      );
+    expect(screen.getByRole('heading', { name: 'Select a Thread Dump to Analyze' })).toBeInTheDocument();
+    expect(analyzeSpy).not.toHaveBeenCalled();
+  });
+
+  it('ignores a Redux slot that belongs to another route', async () => {
+    const analyzeSpy = jest.spyOn(defaultServices.api, 'analyzeThreadDump').mockReturnValue(of(mockThreadDumpAnalysis));
+
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <ThreadDumpAnalysis />,
+          },
+        ],
+        options: { initialEntries: [ANALYSIS_ROUTE] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { '/recordings': prefillState(mockThreadDump) },
+      },
     });
+
+    expect(screen.getByRole('heading', { name: 'Select a Thread Dump to Analyze' })).toBeInTheDocument();
+    expect(analyzeSpy).not.toHaveBeenCalled();
+  });
+
+  it('retains the Redux slot and router state after applying the prefill', async () => {
+    const analyzeSpy = jest.spyOn(defaultServices.api, 'analyzeThreadDump').mockReturnValue(of(mockThreadDumpAnalysis));
+    const state = prefillState(mockThreadDump);
+
+    const { store, router } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <ThreadDumpAnalysis />,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { [ANALYSIS_ROUTE]: state },
+      },
+    });
+
+    await waitFor(() => expect(analyzeSpy).toHaveBeenCalledTimes(1));
     expect(screen.getByText('JVM Information')).toBeInTheDocument();
+    expect(store.getState().modalPrefill).toEqual({ [ANALYSIS_ROUTE]: state });
+    expect(router.state.location.state).toEqual(state);
+    expect(router.state.location.search).toEqual('');
+  });
+
+  it('re-applies the prefill when the analysis view is remounted', async () => {
+    const analyzeSpy = jest.spyOn(defaultServices.api, 'analyzeThreadDump').mockReturnValue(of(mockThreadDumpAnalysis));
+    const state = prefillState(mockThreadDump);
+
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <Remountable />,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { [ANALYSIS_ROUTE]: state },
+      },
+    });
+
+    await waitFor(() => expect(analyzeSpy).toHaveBeenCalledTimes(1));
+
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'remount analysis' }));
+    });
+
+    await waitFor(() => {
+      expect(analyzeSpy).toHaveBeenCalledTimes(2);
+      expect(selectorToggle()).toHaveTextContent(mockThreadDump.threadDumpId);
+      expect(screen.getByText('JVM Information')).toBeInTheDocument();
+    });
+    expect(analyzeSpy).toHaveBeenLastCalledWith(mockTarget.jvmId, mockThreadDump.threadDumpId);
+  });
+
+  it('re-applies the prefill when remounted while the analysis request is still in flight', async () => {
+    const pending$ = new Subject<ThreadDumpAnalysisResult>();
+    const analyzeSpy = jest.spyOn(defaultServices.api, 'analyzeThreadDump').mockReturnValueOnce(pending$);
+    analyzeSpy.mockReturnValue(of(mockThreadDumpAnalysis));
+    const state = prefillState(mockThreadDump);
+
+    const { user, store } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <Remountable />,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { [ANALYSIS_ROUTE]: state },
+      },
+    });
+
+    await waitFor(() => expect(analyzeSpy).toHaveBeenCalledTimes(1));
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(store.getState().modalPrefill).toEqual({ [ANALYSIS_ROUTE]: state });
+
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'remount analysis' }));
+    });
+
+    await waitFor(() => {
+      expect(analyzeSpy).toHaveBeenCalledTimes(2);
+      expect(screen.getByText('JVM Information')).toBeInTheDocument();
+    });
+    expect(selectorToggle()).toHaveTextContent(mockThreadDump.threadDumpId);
+  });
+
+  it('restores the previously analysed thread dump after navigating away and back', async () => {
+    const analyzeSpy = jest.spyOn(defaultServices.api, 'analyzeThreadDump').mockReturnValue(of(mockThreadDumpAnalysis));
+    const state = prefillState(mockThreadDump);
+
+    const { router } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <ThreadDumpAnalysis />,
+          },
+          {
+            path: '/elsewhere',
+            element: <>Elsewhere</>,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { [ANALYSIS_ROUTE]: state },
+      },
+    });
+
+    await waitFor(() => expect(analyzeSpy).toHaveBeenCalledTimes(1));
+
+    await act(async () => {
+      await router.navigate('/elsewhere');
+    });
+    expect(screen.getByText('Elsewhere')).toBeInTheDocument();
+
+    await act(async () => {
+      await router.navigate(ANALYSIS_ROUTE);
+    });
+
+    await waitFor(() => {
+      expect(analyzeSpy).toHaveBeenCalledTimes(2);
+      expect(selectorToggle()).toHaveTextContent(mockThreadDump.threadDumpId);
+      expect(screen.getByText('JVM Information')).toBeInTheDocument();
+    });
+  });
+
+  it('writes a manual selection to the Redux slot and prefers it over router state on remount', async () => {
+    const analyzeSpy = jest.spyOn(defaultServices.api, 'analyzeThreadDump').mockReturnValue(of(mockThreadDumpAnalysis));
+    jest.spyOn(defaultServices.api, 'getTargetThreadDumps').mockReturnValue(of([mockThreadDump, mockSecondThreadDump]));
+    const state = prefillState(mockThreadDump);
+
+    const { user, store } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <Remountable />,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { [ANALYSIS_ROUTE]: state },
+      },
+    });
+
+    await waitFor(() => expect(selectorToggle()).toHaveTextContent(mockThreadDump.threadDumpId));
+
+    await act(async () => {
+      await user.click(selectorToggle());
+    });
+    await act(async () => {
+      await user.click(within(await screen.findByRole('menu')).getByText(mockSecondThreadDump.threadDumpId));
+    });
+
+    await waitFor(() => {
+      expect(analyzeSpy).toHaveBeenLastCalledWith(mockTarget.jvmId, mockSecondThreadDump.threadDumpId);
+    });
+    expect(store.getState().modalPrefill).toEqual({ [ANALYSIS_ROUTE]: prefillState(mockSecondThreadDump) });
+
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'remount analysis' }));
+    });
+
+    await waitFor(() => {
+      expect(selectorToggle()).toHaveTextContent(mockSecondThreadDump.threadDumpId);
+      expect(analyzeSpy).toHaveBeenLastCalledWith(mockTarget.jvmId, mockSecondThreadDump.threadDumpId);
+    });
+  });
+
+  it('does not re-apply the prefill over a manual selection when the target or dump list refreshes', async () => {
+    const analyzeSpy = jest.spyOn(defaultServices.api, 'analyzeThreadDump').mockReturnValue(of(mockThreadDumpAnalysis));
+    jest.spyOn(defaultServices.api, 'getTargetThreadDumps').mockReturnValue(of([mockThreadDump, mockSecondThreadDump]));
+    const target$ = new BehaviorSubject<Target | undefined>(mockTarget);
+    jest.spyOn(defaultServices.target, 'target').mockReturnValue(target$);
+    const state = prefillState(mockThreadDump);
+
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <ThreadDumpAnalysis />,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { [ANALYSIS_ROUTE]: state },
+      },
+    });
+
+    await waitFor(() => expect(selectorToggle()).toHaveTextContent(mockThreadDump.threadDumpId));
+
+    await act(async () => {
+      await user.click(selectorToggle());
+    });
+    await act(async () => {
+      await user.click(within(await screen.findByRole('menu')).getByText(mockSecondThreadDump.threadDumpId));
+    });
+    await waitFor(() => expect(analyzeSpy).toHaveBeenCalledTimes(2));
+
+    await act(async () => {
+      target$.next({ ...mockTarget });
+    });
+
+    expect(selectorToggle()).toHaveTextContent(mockSecondThreadDump.threadDumpId);
+    expect(analyzeSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it('offers a Clear Selection option that resets the view and records an explicitly empty Redux slot', async () => {
+    const analyzeSpy = jest.spyOn(defaultServices.api, 'analyzeThreadDump').mockReturnValue(of(mockThreadDumpAnalysis));
+    const state = prefillState(mockThreadDump);
+
+    const { user, store } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <ThreadDumpAnalysis />,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { [ANALYSIS_ROUTE]: state },
+      },
+    });
+
+    await waitFor(() => expect(screen.getByText('JVM Information')).toBeInTheDocument());
+
+    await act(async () => {
+      await user.click(selectorToggle());
+    });
+    const menu = await screen.findByRole('menu');
+    expect(within(menu).getByText('Clear Selection')).toBeInTheDocument();
+    await act(async () => {
+      await user.click(within(menu).getByText('Clear Selection'));
+    });
+
+    expect(screen.getByRole('heading', { name: 'Select a Thread Dump to Analyze' })).toBeInTheDocument();
+    expect(selectorToggle()).toHaveTextContent('Select a Thread Dump');
+    expect(store.getState().modalPrefill).toEqual({ [ANALYSIS_ROUTE]: {} });
+    expect(analyzeSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('stays cleared after a remount even though router state still carries the old selection', async () => {
+    const analyzeSpy = jest.spyOn(defaultServices.api, 'analyzeThreadDump').mockReturnValue(of(mockThreadDumpAnalysis));
+    const state = prefillState(mockThreadDump);
+
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <Remountable />,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { [ANALYSIS_ROUTE]: state },
+      },
+    });
+
+    await waitFor(() => expect(screen.getByText('JVM Information')).toBeInTheDocument());
+
+    await act(async () => {
+      await user.click(selectorToggle());
+    });
+    await act(async () => {
+      await user.click(within(await screen.findByRole('menu')).getByText('Clear Selection'));
+    });
+
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'remount analysis' }));
+    });
+
+    expect(screen.getByRole('heading', { name: 'Select a Thread Dump to Analyze' })).toBeInTheDocument();
+    expect(selectorToggle()).toHaveTextContent('Select a Thread Dump');
+    expect(analyzeSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('clears the selection and the Redux selection when the analysis request fails', async () => {
+    jest
+      .spyOn(defaultServices.api, 'analyzeThreadDump')
+      .mockReturnValue(throwError(() => new Error('thread dump no longer exists')));
+    const state = prefillState(mockThreadDump);
+
+    const { store } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <ThreadDumpAnalysis />,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: {
+        ...preloadedState,
+        modalPrefill: { [ANALYSIS_ROUTE]: state },
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Select a Thread Dump to Analyze' })).toBeInTheDocument();
+    });
+    expect(selectorToggle()).toHaveTextContent('Select a Thread Dump');
+    expect(store.getState().modalPrefill).toEqual({ [ANALYSIS_ROUTE]: {} });
   });
 
   it('updates the target context for a prefilled archived thread dump from another target', async () => {
@@ -343,7 +734,7 @@ describe('<ThreadDumpAnalysis />', () => {
           initialEntries: [
             {
               pathname: '/analyze-thread-dumps',
-              state: { jvmId: mockOtherTarget.jvmId, id: mockOtherThreadDump.threadDumpId },
+              state: prefillState(mockOtherThreadDump),
             },
           ],
         },
@@ -381,7 +772,7 @@ describe('<ThreadDumpAnalysis />', () => {
           initialEntries: [
             {
               pathname: '/analyze-thread-dumps',
-              state: { jvmId: mockTarget.jvmId, id: mockThreadDump.threadDumpId },
+              state: prefillState(mockThreadDump),
             },
           ],
         },

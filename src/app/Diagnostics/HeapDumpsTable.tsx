@@ -529,16 +529,10 @@ export const HeapDumpAction: React.FC<HeapDumpActionProps> = ({ heapDump, onDown
 
   const handleViewInAnalysis = React.useCallback(
     (jvmId) => {
-      const id = heapDump.heapDumpId;
       const analysisPath = toPath('/analyze-heap-dumps');
-      const params = new URLSearchParams({ jvmId, heapDumpId: id });
-      const state = {
-        jvmId,
-        id,
-        threadDumpId: id,
-      };
-      store.dispatch(modalPrefillSetIntent(analysisPath, state as Record<string, unknown>));
-      navigate(`${analysisPath}?${params.toString()}`, { state });
+      const state = { jvmId, heapDumpId: heapDump.heapDumpId };
+      store.dispatch(modalPrefillSetIntent(analysisPath, state));
+      navigate(analysisPath, { state });
     },
     [heapDump, navigate],
   );
