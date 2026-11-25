@@ -15,7 +15,7 @@
  */
 import { HeapDumpAnalysisResult } from '@app/Diagnostics/Analysis/HeapDumps/types';
 import { Base64 } from 'js-base64';
-import { concatMap, Observable, Subject } from 'rxjs';
+import { concatMap, map, Observable } from 'rxjs';
 import { ApiService } from './Api.service';
 import { CachedHeapDumpReportValue, NotificationCategory } from './api.types';
 import { NotificationChannel } from './NotificationChannel.service';
@@ -29,46 +29,20 @@ export class HeapDumpReportService {
   constructor(
     private readonly api: ApiService,
     private readonly channel: NotificationChannel,
-  ) {
-    channel.replayableMessages(NotificationCategory.HeapDumpAnalysisSuccess).subscribe((v) => {
-      if (this.jobIds.has(v.message.jobId)) {
-        this._jobCompletion.next(v.message.jobId);
-      }
-    });
-  }
-
-  // Resolves the pending job if a completion notification for it was already replayed
-  // before the job ID was registered (i.e. the notification arrived before the HTTP 202
-  // response was processed). The ReplaySubject delivers buffered messages synchronously
-  // on subscribe, so we drain and immediately unsubscribe to avoid catching live messages,
-  // which are already handled by the constructor subscription.
-  private checkReplayBuffer(jobId: string): void {
-    const sub = this.channel.replayableMessages(NotificationCategory.HeapDumpAnalysisSuccess).subscribe((v) => {
-      if (v.message.jobId === jobId && this.jobIds.has(jobId)) {
-        this._jobCompletion.next(jobId);
-      }
-    });
-    sub.unsubscribe();
-  }
-
-  private readonly jobIds: Map<string, string> = new Map();
-  private readonly _jobCompletion: Subject<string> = new Subject();
+  ) {}
 
   reportJson(jvmId: string, heapDumpId: string): Observable<HeapDumpAnalysisResponse> {
-    return this.api.analyzeHeapDump(jvmId, heapDumpId, this._jobCompletion.asObservable()).pipe(
-      concatMap(({ jobId, response }) => {
-        this.jobIds.set(jobId, jvmId);
-        return response
+    const jobCompletion$ = this.channel
+      .replayableMessages(NotificationCategory.HeapDumpAnalysisSuccess)
+      .pipe(map((v) => v.message.jobId));
+
+    return this.api.analyzeHeapDump(jvmId, heapDumpId, jobCompletion$).pipe(
+      concatMap(({ jobId, response }) =>
+        response
           .text()
           .then(JSON.parse)
-          .then((obj) => {
-            if (jobId) {
-              this.jobIds.delete(jobId);
-              this.checkReplayBuffer(jobId);
-            }
-            return { jobId, result: obj as HeapDumpAnalysisResult };
-          });
-      }),
+          .then((obj) => ({ jobId, result: obj as HeapDumpAnalysisResult })),
+      ),
     );
   }
 

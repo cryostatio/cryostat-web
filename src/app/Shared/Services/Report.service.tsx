@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { Base64 } from 'js-base64';
-import { Observable, Subject, throwError } from 'rxjs';
-import { concatMap, tap } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { concatMap, map, tap } from 'rxjs/operators';
 import { ApiService } from './Api.service';
 import { Recording, CachedReportValue, AnalysisResult, NotificationCategory } from './api.types';
 import { isActiveRecording, isQuotaExceededError } from './api.utils';
@@ -27,49 +27,24 @@ export class ReportService {
     private api: ApiService,
     private notifications: NotificationService,
     private readonly channel: NotificationChannel,
-  ) {
-    channel.replayableMessages(NotificationCategory.ReportSuccess).subscribe((v) => {
-      if (this.jobIds.has(v.message.jobId)) {
-        this._jobCompletion.next(v.message.jobId);
-      }
-    });
-  }
-
-  // Resolves the pending job if a completion notification for it was already replayed
-  // before the job ID was registered (i.e. the notification arrived before the HTTP 202
-  // response was processed). The ReplaySubject delivers buffered messages synchronously
-  // on subscribe, so we drain and immediately unsubscribe to avoid catching live messages,
-  // which are already handled by the constructor subscription.
-  private checkReplayBuffer(jobId: string): void {
-    const sub = this.channel.replayableMessages(NotificationCategory.ReportSuccess).subscribe((v) => {
-      if (v.message.jobId === jobId && this.jobIds.has(jobId)) {
-        this._jobCompletion.next(jobId);
-      }
-    });
-    sub.unsubscribe();
-  }
-
-  private readonly jobIds: Map<string, string> = new Map();
-  private readonly _jobCompletion: Subject<string> = new Subject();
+  ) {}
 
   reportJson(recording: Recording, connectUrl: string): Observable<AnalysisResult[]> {
     if (!recording.reportUrl) {
       return throwError(() => new Error('No Recording report URL'));
     }
-    return this.api.generateReport(recording.reportUrl, this._jobCompletion.asObservable()).pipe(
-      concatMap(({ jobId, response }) => {
-        this.jobIds.set(jobId, recording.reportUrl);
-        return response
+
+    const jobCompletion$ = this.channel
+      .replayableMessages(NotificationCategory.ReportSuccess)
+      .pipe(map((v) => v.message.jobId));
+
+    return this.api.generateReport(recording.reportUrl, jobCompletion$).pipe(
+      concatMap(({ response }) =>
+        response
           .text()
           .then(JSON.parse)
-          .then((obj) => {
-            if (jobId) {
-              this.jobIds.delete(jobId);
-              this.checkReplayBuffer(jobId);
-            }
-            return Object.values(obj) as AnalysisResult[];
-          });
-      }),
+          .then((obj) => Object.values(obj) as AnalysisResult[]),
+      ),
       tap({
         next: (report) => {
           if (isActiveRecording(recording)) {

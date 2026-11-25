@@ -2384,15 +2384,12 @@ export class ApiService {
     return combineLatest([
       urlObs,
       this.ctx.headers(config?.headers).pipe(
-        map((headers) => {
-          const cfg = config || {};
-          if (!cfg.headers) {
-            cfg.headers = new Headers();
-          }
+        map((contextHeaders) => {
+          const callerHeaders = config?.headers || new Headers();
           const mergedHeaders = new Headers();
-          [headers, cfg.headers].forEach((source) => new Headers(source).forEach((v, k) => mergedHeaders.set(k, v)));
-          cfg.headers = mergedHeaders;
-          return cfg;
+          new Headers(contextHeaders).forEach((v, k) => mergedHeaders.set(k, v));
+          new Headers(callerHeaders).forEach((v, k) => mergedHeaders.set(k, v));
+          return { ...config, headers: mergedHeaders };
         }),
       ),
     ]).pipe(
@@ -2412,7 +2409,7 @@ export class ApiService {
                     first(),
                     concatMap(() => from(this.fetchFn(url, cfg))),
                     map((followUpResp) => {
-                      if (!followUpResp.ok) {
+                      if (followUpResp.status !== 200) {
                         throw new HttpError(followUpResp);
                       }
                       return { jobId, response: followUpResp };
