@@ -18,7 +18,7 @@ import { RecordingAnalytics } from '@app/RecordingAnalytics/RecordingAnalytics';
 import { NotificationCategory, RecordingDirectory } from '@app/Shared/Services/api.types';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { cleanup, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of, Subject } from 'rxjs';
 import { basePreloadedState, render } from '../utils';
@@ -254,7 +254,7 @@ describe('<RecordingAnalytics />', () => {
       routerConfigs: { routes: [{ path: '/analytics', element: <RecordingAnalytics /> }] },
       preloadedState: {
         ...basePreloadedState,
-        modalPrefill: { route: '/analytics', data: { jvmId: 'jvm-2', filename: 'recording3.jfr' } },
+        modalPrefill: { '/analytics': { jvmId: 'jvm-2', filename: 'recording3.jfr' } },
       },
     });
 
@@ -264,6 +264,151 @@ describe('<RecordingAnalytics />', () => {
         'recording3.jfr',
       );
     });
+  });
+
+  it('ignores a Redux slot that belongs to another route', async () => {
+    render({
+      routerConfigs: { routes: [{ path: '/analytics', element: <RecordingAnalytics /> }] },
+      preloadedState: {
+        ...basePreloadedState,
+        modalPrefill: { '/recordings': { jvmId: 'jvm-2', filename: 'recording3.jfr' } },
+      },
+    });
+
+    await waitFor(() => expect(mockDoGet).toHaveBeenCalledWith('fs/recordings', 'beta'));
+    expect(within(screen.getAllByTestId('simple-dropdown')[0]).getAllByRole('button')[0]).toHaveTextContent('JVM ID');
+  });
+
+  it('retains the Redux slot and router state after applying the prefill', async () => {
+    const state = { jvmId: 'jvm-1', filename: 'recording1.jfr' };
+    const { store, router } = render({
+      routerConfigs: {
+        routes: [{ path: '/analytics', element: <RecordingAnalytics /> }],
+        options: { initialEntries: [{ pathname: '/analytics', state }] },
+      },
+      preloadedState: {
+        ...basePreloadedState,
+        modalPrefill: { '/analytics': state },
+      },
+    });
+
+    await waitFor(() => {
+      expect(within(screen.getAllByTestId('simple-dropdown')[1]).getAllByRole('button')[0]).toHaveTextContent(
+        'recording1.jfr',
+      );
+    });
+    expect(store.getState().modalPrefill).toEqual({ '/analytics': state });
+    expect(router.state.location.state).toEqual(state);
+  });
+
+  it('re-applies the prefill when the page is remounted', async () => {
+    const state = { jvmId: 'jvm-1', filename: 'recording1.jfr' };
+    const { router } = render({
+      routerConfigs: {
+        routes: [
+          { path: '/analytics', element: <RecordingAnalytics /> },
+          { path: '/elsewhere', element: <>Elsewhere</> },
+        ],
+        options: { initialEntries: [{ pathname: '/analytics', state }] },
+      },
+      preloadedState: {
+        ...basePreloadedState,
+        modalPrefill: { '/analytics': state },
+      },
+    });
+
+    await waitFor(() => {
+      expect(within(screen.getAllByTestId('simple-dropdown')[1]).getAllByRole('button')[0]).toHaveTextContent(
+        'recording1.jfr',
+      );
+    });
+
+    await act(async () => {
+      await router.navigate('/elsewhere');
+    });
+    expect(screen.getByText('Elsewhere')).toBeInTheDocument();
+
+    await act(async () => {
+      await router.navigate('/analytics');
+    });
+
+    await waitFor(() => {
+      expect(within(screen.getAllByTestId('simple-dropdown')[0]).getAllByRole('button')[0]).toHaveTextContent('jvm-1');
+      expect(within(screen.getAllByTestId('simple-dropdown')[1]).getAllByRole('button')[0]).toHaveTextContent(
+        'recording1.jfr',
+      );
+    });
+  });
+
+  it('writes manual JVM ID and filename selections to the Redux slot', async () => {
+    const { user, store } = renderPage();
+    await waitFor(() => expect(screen.getByText('JVM ID')).toBeInTheDocument());
+
+    await user.click(within(screen.getAllByTestId('simple-dropdown')[0]).getByText('jvm-1'));
+    expect(store.getState().modalPrefill).toEqual({ '/analytics': { jvmId: 'jvm-1' } });
+
+    await user.click(within(screen.getAllByTestId('simple-dropdown')[1]).getByText('recording2.jfr'));
+    expect(store.getState().modalPrefill).toEqual({ '/analytics': { jvmId: 'jvm-1', filename: 'recording2.jfr' } });
+  });
+
+  it('records an explicitly empty Redux slot when the JVM ID selection is cleared', async () => {
+    const { user, store } = renderPage();
+    await waitFor(() => expect(screen.getByText('JVM ID')).toBeInTheDocument());
+
+    await user.click(within(screen.getAllByTestId('simple-dropdown')[0]).getByText('jvm-1'));
+    await user.click(
+      within(within(screen.getAllByTestId('simple-dropdown')[0]).getByTestId('dropdown-items')).getByRole('button', {
+        name: 'Clear Selection',
+      }),
+    );
+
+    expect(store.getState().modalPrefill).toEqual({ '/analytics': {} });
+  });
+
+  it('keeps the JVM ID in the Redux slot when only the filename selection is cleared', async () => {
+    const { user, store } = renderPage();
+    await waitFor(() => expect(screen.getByText('JVM ID')).toBeInTheDocument());
+
+    await user.click(within(screen.getAllByTestId('simple-dropdown')[0]).getByText('jvm-1'));
+    await user.click(within(screen.getAllByTestId('simple-dropdown')[1]).getByText('recording1.jfr'));
+    await user.click(
+      within(within(screen.getAllByTestId('simple-dropdown')[1]).getByTestId('dropdown-items')).getByRole('button', {
+        name: 'Clear Selection',
+      }),
+    );
+
+    expect(store.getState().modalPrefill).toEqual({ '/analytics': { jvmId: 'jvm-1' } });
+  });
+
+  it('does not overwrite a manual selection with the prefill when recording directories refresh', async () => {
+    const state = { jvmId: 'jvm-1', filename: 'recording1.jfr' };
+    const { user } = render({
+      routerConfigs: {
+        routes: [{ path: '/analytics', element: <RecordingAnalytics /> }],
+        options: { initialEntries: [{ pathname: '/analytics', state }] },
+      },
+      preloadedState: {
+        ...basePreloadedState,
+        modalPrefill: { '/analytics': state },
+      },
+    });
+
+    await waitFor(() => {
+      expect(within(screen.getAllByTestId('simple-dropdown')[1]).getAllByRole('button')[0]).toHaveTextContent(
+        'recording1.jfr',
+      );
+    });
+
+    await user.click(within(screen.getAllByTestId('simple-dropdown')[1]).getByText('recording2.jfr'));
+
+    await act(async () => {
+      archivedRecordingCreatedSubject.next({});
+    });
+
+    await waitFor(() => expect(mockDoGet).toHaveBeenCalledTimes(2));
+    expect(within(screen.getAllByTestId('simple-dropdown')[1]).getAllByRole('button')[0]).toHaveTextContent(
+      'recording2.jfr',
+    );
   });
 
   it('renders the Queries tab selected by default', async () => {
