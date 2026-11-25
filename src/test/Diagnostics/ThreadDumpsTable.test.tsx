@@ -20,7 +20,7 @@ import {
   emptyArchivedThreadDumpFilters,
   TargetThreadDumpFilters,
 } from '@app/Shared/Redux/Filters/ThreadDumpFilterSlice';
-import { RootState } from '@app/Shared/Redux/ReduxStore';
+import { modalPrefillClearIntent, RootState, store as globalStore } from '@app/Shared/Redux/ReduxStore';
 import { KeyValue, keyValueToString, ThreadDump } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
@@ -322,7 +322,8 @@ describe('<ThreadDumpsTable />', () => {
     expect(downloadRequestSpy).toHaveBeenCalledWith(mockThreadDump);
   });
 
-  it('navigates to analysis with the selected thread dump prefill data', async () => {
+  it('navigates to analysis with the selected thread dump prefill data in router state and Redux only', async () => {
+    globalStore.dispatch(modalPrefillClearIntent('/analyze-thread-dumps'));
     const { user, router } = render({
       routerConfigs: {
         routes: [
@@ -347,13 +348,11 @@ describe('<ThreadDumpsTable />', () => {
 
     const state = {
       jvmId: mockTarget.jvmId,
-      id: mockThreadDump.threadDumpId,
       threadDumpId: mockThreadDump.threadDumpId,
     };
     expect(router.state.location.pathname).toEqual('/analyze-thread-dumps');
-    expect(router.state.location.search).toEqual(
-      `?jvmId=${mockTarget.jvmId}&threadDumpId=${mockThreadDump.threadDumpId}`,
-    );
+    expect(router.state.location.search).toEqual('');
     expect(router.state.location.state).toEqual(state);
+    expect(globalStore.getState().modalPrefill).toEqual({ '/analyze-thread-dumps': state });
   });
 });
