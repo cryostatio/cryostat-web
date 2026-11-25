@@ -158,11 +158,11 @@ export const RecordingAnalytics: React.FC = () => {
             setJvmId('');
             setFilename('');
           },
-          content: 'Clear Selection',
+          content: t('CLEAR_SELECTION'),
         },
       ]);
     return a;
-  }, [jvmIds]);
+  }, [jvmIds, t]);
 
   const filenameItems = React.useMemo(() => {
     const a: SimpleDropdownItem[] = filenames
@@ -182,11 +182,11 @@ export const RecordingAnalytics: React.FC = () => {
         {
           value: 'Clear Selection',
           onClick: () => setFilename(''),
-          content: 'Clear Selection',
+          content: t('CLEAR_SELECTION'),
         },
       ]);
     return a;
-  }, [filenames]);
+  }, [filenames, t]);
 
   const activeTab = React.useMemo(
     () => getActiveTab(search, 'tab', Object.values(RecordingAnalyticsTab), RecordingAnalyticsTab.QUERIES),
