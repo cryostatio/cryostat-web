@@ -16,10 +16,10 @@
 
 import { HeapDumpAnalysis } from '@app/Diagnostics/Analysis/HeapDumps/HeapDumpAnalysis';
 import { HeapDumpAnalysisResult } from '@app/Diagnostics/Analysis/HeapDumps/types';
-import { HeapDumpAnalysisResponse } from '@app/Shared/Services/HeapDumpReport.service';
 import { ThemeSetting } from '@app/Settings/types';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { HeapDump, Target } from '@app/Shared/Services/api.types';
+import { HeapDumpAnalysisResponse } from '@app/Shared/Services/HeapDumpReport.service';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { basePreloadedState, DEFAULT_DIMENSIONS, mockMediaQueryList, render, resize } from '@test/utils';
 import { act, screen, cleanup, waitFor, within } from '@testing-library/react';
@@ -467,7 +467,7 @@ describe('<HeapDumpAnalysis />', () => {
   });
 
   it('re-applies the prefill when remounted while the analysis request is still in flight', async () => {
-    const pending$ = new Subject<HeapDumpAnalysisResult>();
+    const pending$ = new Subject<HeapDumpAnalysisResponse>();
     const analyzeSpy = jest.spyOn(defaultServices.heapDumpReports, 'reportJson').mockReturnValueOnce(pending$);
     analyzeSpy.mockReturnValue(of(mockHeapDumpAnalysisResponse));
     const state = prefillState(mockHeapDump);
@@ -735,7 +735,7 @@ describe('<HeapDumpAnalysis />', () => {
     expect(store.getState().modalPrefill).toEqual({ [ANALYSIS_ROUTE]: {} });
   });
   it('ignores the failure of an analysis request that was superseded by a newer selection', async () => {
-    const failing$ = new Subject<HeapDumpAnalysisResult>();
+    const failing$ = new Subject<HeapDumpAnalysisResponse>();
     jest.spyOn(defaultServices.api, 'getTargetHeapDumps').mockReturnValue(of([mockHeapDump, mockSecondHeapDump]));
     jest
       .spyOn(defaultServices.heapDumpReports, 'reportJson')
@@ -895,7 +895,7 @@ describe('<HeapDumpAnalysis />', () => {
   });
 
   it('shows a loading state while prefilled heap dump analysis is pending', async () => {
-    const analysis$ = new Subject<HeapDumpAnalysisResult>();
+    const analysis$ = new Subject<HeapDumpAnalysisResponse>();
     jest.spyOn(defaultServices.heapDumpReports, 'reportJson').mockReturnValue(analysis$);
 
     render({
