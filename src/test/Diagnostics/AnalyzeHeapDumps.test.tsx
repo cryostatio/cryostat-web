@@ -728,6 +728,119 @@ describe('<HeapDumpAnalysis />', () => {
     expect(selectorToggle()).toHaveTextContent('Select a Heap Dump');
     expect(store.getState().modalPrefill).toEqual({ [ANALYSIS_ROUTE]: {} });
   });
+  it('ignores the failure of an analysis request that was superseded by a newer selection', async () => {
+    const failing$ = new Subject<HeapDumpAnalysisResult>();
+    jest.spyOn(defaultServices.api, 'getTargetHeapDumps').mockReturnValue(of([mockHeapDump, mockSecondHeapDump]));
+    jest
+      .spyOn(defaultServices.heapDumpReports, 'reportJson')
+      .mockImplementation((_jvmId, heapDumpId) =>
+        heapDumpId === mockHeapDump.heapDumpId ? failing$ : of(mockHeapDumpAnalysis),
+      );
+    const state = prefillState(mockHeapDump);
+
+    const { user, store } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <HeapDumpAnalysis />,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: preloadedState,
+    });
+
+    await waitFor(() => expect(selectorToggle()).toHaveTextContent(mockHeapDump.heapDumpId));
+    await act(async () => {
+      await user.click(selectorToggle());
+    });
+    await act(async () => {
+      await user.click(within(await screen.findByRole('menu')).getByText(mockSecondHeapDump.heapDumpId));
+    });
+    await waitFor(() => expect(screen.getByText('Fundamental Stats')).toBeInTheDocument());
+
+    await act(async () => {
+      failing$.error(new Error('heap dump no longer exists'));
+    });
+
+    expect(selectorToggle()).toHaveTextContent(mockSecondHeapDump.heapDumpId);
+    expect(screen.getByText('Fundamental Stats')).toBeInTheDocument();
+    expect(store.getState().modalPrefill).toEqual({ [ANALYSIS_ROUTE]: prefillState(mockSecondHeapDump) });
+  });
+
+  it('discards a pending prefill lookup that was superseded by a manual selection', async () => {
+    const analyzeSpy = spyOnReport();
+    const targets$ = new Subject<Target[]>();
+    jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(targets$);
+    jest.spyOn(defaultServices.api, 'getTargetHeapDumps').mockReturnValue(of([mockHeapDump, mockSecondHeapDump]));
+    const state = prefillState(mockHeapDump);
+
+    const { user, store } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <HeapDumpAnalysis />,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: preloadedState,
+    });
+
+    await act(async () => {
+      await user.click(selectorToggle());
+    });
+    await act(async () => {
+      await user.click(within(await screen.findByRole('menu')).getByText(mockSecondHeapDump.heapDumpId));
+    });
+    await waitFor(() => expect(analyzeSpy).toHaveBeenCalledWith(mockTarget.jvmId, mockSecondHeapDump.heapDumpId));
+
+    await act(async () => {
+      targets$.next([mockTarget]);
+    });
+
+    expect(selectorToggle()).toHaveTextContent(mockSecondHeapDump.heapDumpId);
+    expect(analyzeSpy).not.toHaveBeenCalledWith(mockTarget.jvmId, mockHeapDump.heapDumpId);
+    expect(store.getState().modalPrefill).toEqual({ [ANALYSIS_ROUTE]: prefillState(mockSecondHeapDump) });
+  });
+
+  it('discards a pending prefill lookup that was superseded by Clear Selection', async () => {
+    const analyzeSpy = spyOnReport();
+    const targets$ = new Subject<Target[]>();
+    jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(targets$);
+    const state = prefillState(mockHeapDump);
+
+    const { user, store } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: ANALYSIS_ROUTE,
+            element: <HeapDumpAnalysis />,
+          },
+        ],
+        options: { initialEntries: [{ pathname: ANALYSIS_ROUTE, state }] },
+      },
+      preloadedState: preloadedState,
+    });
+
+    await act(async () => {
+      await user.click(selectorToggle());
+    });
+    await act(async () => {
+      await user.click(within(await screen.findByRole('menu')).getByText('Clear Selection'));
+    });
+
+    await act(async () => {
+      targets$.next([mockTarget]);
+    });
+
+    expect(screen.getByRole('heading', { name: 'Select a Heap Dump to Analyze' })).toBeInTheDocument();
+    expect(selectorToggle()).toHaveTextContent('Select a Heap Dump');
+    expect(analyzeSpy).not.toHaveBeenCalled();
+    expect(store.getState().modalPrefill).toEqual({ [ANALYSIS_ROUTE]: {} });
+  });
 
   it('updates the target context for a prefilled archived thread dump from another target', async () => {
     const analyzeSpy = jest

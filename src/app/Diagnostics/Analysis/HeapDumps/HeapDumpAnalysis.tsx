@@ -139,7 +139,9 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
   const [filterText, setFilterText] = React.useState('');
 
   const selectedHeapDumpJvmIdRef = React.useRef<string>();
+  const selectedHeapDumpIdRef = React.useRef<string>();
   const appliedPrefillKeyRef = React.useRef<string>();
+  const latestPrefillKeyRef = React.useRef<string | undefined>();
 
   const targetAsObs = React.useMemo(() => of(target), [target]);
   const [activeTab, setActiveTab] = React.useState(0);
@@ -239,6 +241,10 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
     dispatch(modalPrefillSetIntent(location.pathname, {}));
   }, [dispatch, location.pathname, setAnalysisResult, setSelectedHeapDump]);
 
+  React.useEffect(() => {
+    latestPrefillKeyRef.current = prefillKey;
+  }, [prefillKey]);
+
   const findTargetByJvmId = React.useCallback(
     (jvmId: string) =>
       context.targets.targets().pipe(
@@ -268,7 +274,17 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
     (heapDump: string, jvmId?: string) => {
       const selectedJvmId = jvmId || heapDumps.find((t) => t.heapDumpId === heapDump)?.jvmId;
       selectedHeapDumpJvmIdRef.current = selectedJvmId;
+      selectedHeapDumpIdRef.current = heapDump;
       setIsAnalysisLoading(true);
+
+      const handleError = () => {
+        // Only clear state if this error is for the currently-expected request
+        if (selectedHeapDumpJvmIdRef.current !== selectedJvmId || selectedHeapDumpIdRef.current !== heapDump) {
+          return;
+        }
+        handleHeapDumpAnalysisError();
+      };
+
       if (selectedJvmId) {
         addSubscription(
           context.heapDumpReports
@@ -276,7 +292,7 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
             .pipe(finalize(() => setIsAnalysisLoading(false)))
             .subscribe({
               next: handleHeapDumpAnalysis,
-              error: handleHeapDumpAnalysisError,
+              error: handleError,
             }),
         );
         return;
@@ -296,7 +312,7 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
           )
           .subscribe({
             next: handleHeapDumpAnalysis,
-            error: handleHeapDumpAnalysisError,
+            error: handleError,
           }),
       );
     },
@@ -319,6 +335,10 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
     addSubscription(
       findTargetByJvmId(jvmId).subscribe((target) => {
         if (appliedPrefillKeyRef.current === prefillKey) {
+          return;
+        }
+        // Discard stale results that have been superseded by a newer prefill
+        if (latestPrefillKeyRef.current !== prefillKey) {
           return;
         }
         appliedPrefillKeyRef.current = prefillKey;
