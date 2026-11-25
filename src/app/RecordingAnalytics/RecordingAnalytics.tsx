@@ -16,7 +16,7 @@
 
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { FeatureLevelBadge } from '@app/Shared/Components/FeatureLevelBadge';
-import { modalPrefillClearIntent, RootState } from '@app/Shared/Redux/ReduxStore';
+import { modalPrefillSetIntent, RootState } from '@app/Shared/Redux/ReduxStore';
 import { NotificationCategory, RecordingDirectory } from '@app/Shared/Services/api.types';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -61,6 +61,26 @@ export const RecordingAnalytics: React.FC = () => {
   const [jvmId, setJvmId] = React.useState('');
   const [recordingDirectories, setRecordingDirectories] = React.useState([] as RecordingDirectory[]);
   const [filename, setFilename] = React.useState('');
+  const prefillAppliedRef = React.useRef(false);
+
+  const selectJvmId = React.useCallback(
+    (id: string) => {
+      prefillAppliedRef.current = true;
+      setJvmId(id);
+      setFilename('');
+      dispatch(modalPrefillSetIntent(pathname, id ? { jvmId: id } : {}));
+    },
+    [dispatch, pathname],
+  );
+
+  const selectFilename = React.useCallback(
+    (name: string) => {
+      prefillAppliedRef.current = true;
+      setFilename(name);
+      dispatch(modalPrefillSetIntent(pathname, name ? { jvmId, filename: name } : { jvmId }));
+    },
+    [dispatch, pathname, jvmId],
+  );
 
   const refreshRecordingDirectories = React.useCallback(() => {
     addSubscription(
@@ -95,13 +115,15 @@ export const RecordingAnalytics: React.FC = () => {
   }, [addSubscription, context.notificationChannel, refreshRecordingDirectories]);
 
   React.useEffect(() => {
-    const stateData = location.state as Record<string, unknown> | null;
-    const reduxData = modalPrefill.route === location.pathname ? (modalPrefill.data as Record<string, unknown>) : null;
-
-    const prefillJvmId = (stateData?.jvmId || reduxData?.jvmId) as string | undefined;
-    const prefillFilename = (stateData?.filename || reduxData?.filename) as string | undefined;
+    if (prefillAppliedRef.current) {
+      return;
+    }
+    const data = (modalPrefill[pathname] ?? location.state) as Record<string, unknown> | null;
+    const prefillJvmId = data?.jvmId as string | undefined;
+    const prefillFilename = data?.filename as string | undefined;
 
     if (prefillJvmId && recordingDirectories.some((d) => d.jvmId === prefillJvmId)) {
+      prefillAppliedRef.current = true;
       setJvmId(prefillJvmId);
 
       if (prefillFilename) {
@@ -110,22 +132,8 @@ export const RecordingAnalytics: React.FC = () => {
           setFilename(prefillFilename);
         }
       }
-
-      dispatch(modalPrefillClearIntent());
-      if (location.state) {
-        navigate(`${location.pathname}${location.search}${location.hash}`, { replace: true, state: null });
-      }
     }
-  }, [
-    recordingDirectories,
-    location.state,
-    location.pathname,
-    location.search,
-    location.hash,
-    modalPrefill,
-    dispatch,
-    navigate,
-  ]);
+  }, [recordingDirectories, location.state, pathname, modalPrefill]);
 
   const jvmIds = React.useMemo(() => recordingDirectories.map((e) => e.jvmId), [recordingDirectories]);
 
@@ -140,10 +148,7 @@ export const RecordingAnalytics: React.FC = () => {
         (id) =>
           ({
             value: id,
-            onClick: () => {
-              setJvmId(id);
-              setFilename('');
-            },
+            onClick: () => selectJvmId(id),
             content: id,
           }) as SimpleDropdownItem,
       )
@@ -154,15 +159,12 @@ export const RecordingAnalytics: React.FC = () => {
         },
         {
           value: 'Clear Selection',
-          onClick: () => {
-            setJvmId('');
-            setFilename('');
-          },
+          onClick: () => selectJvmId(''),
           content: t('CLEAR_SELECTION'),
         },
       ]);
     return a;
-  }, [jvmIds, t]);
+  }, [jvmIds, selectJvmId, t]);
 
   const filenameItems = React.useMemo(() => {
     const a: SimpleDropdownItem[] = filenames
@@ -170,7 +172,7 @@ export const RecordingAnalytics: React.FC = () => {
         (f) =>
           ({
             value: f,
-            onClick: () => setFilename(f),
+            onClick: () => selectFilename(f),
             content: f,
           }) as SimpleDropdownItem,
       )
@@ -181,12 +183,12 @@ export const RecordingAnalytics: React.FC = () => {
         },
         {
           value: 'Clear Selection',
-          onClick: () => setFilename(''),
+          onClick: () => selectFilename(''),
           content: t('CLEAR_SELECTION'),
         },
       ]);
     return a;
-  }, [filenames, t]);
+  }, [filenames, selectFilename, t]);
 
   const activeTab = React.useMemo(
     () => getActiveTab(search, 'tab', Object.values(RecordingAnalyticsTab), RecordingAnalyticsTab.QUERIES),
