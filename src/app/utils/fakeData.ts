@@ -44,7 +44,7 @@ import { NotificationChannel } from '@app/Shared/Services/NotificationChannel.se
 import { NotificationService, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ReportService } from '@app/Shared/Services/Report.service';
 import { ChartControllerConfig } from '@app/Shared/Services/service.types';
-import { CryostatContext, defaultContext, defaultServices, Services } from '@app/Shared/Services/Services';
+import { defaultServices, Services } from '@app/Shared/Services/Services';
 import { SettingsService } from '@app/Shared/Services/Settings.service';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { Observable, of } from 'rxjs';
@@ -373,8 +373,8 @@ class FakeTargetService extends TargetService {
 }
 
 class FakeReportService extends ReportService {
-  constructor(ctx: CryostatContext, notifications: NotificationService, channel: NotificationChannel) {
-    super(ctx, notifications, channel);
+  constructor(api: ApiService, notifications: NotificationService, channel: NotificationChannel) {
+    super(api, notifications, channel);
   }
 
   reportJson(_recording: Recording, _connectUrl: string): Observable<AnalysisResult[]> {
@@ -387,8 +387,8 @@ class FakeReportService extends ReportService {
 }
 
 class FakeHeapDumpReportService extends HeapDumpReportService {
-  constructor(ctx: CryostatContext, channel: NotificationChannel) {
-    super(ctx, channel);
+  constructor(api: ApiService, channel: NotificationChannel) {
+    super(api, channel);
   }
 
   reportJson(_jvmId: string, _heapDump: string): Observable<{ jobId: string; result: HeapDumpAnalysisResult }> {
@@ -584,8 +584,8 @@ class FakeApiService extends ApiService {
 
 const target = new FakeTargetService();
 const api = new FakeApiService(target, NotificationsInstance);
-const reports = new FakeReportService(defaultContext, NotificationsInstance, defaultServices.notificationChannel);
-const heapDumpReports = new FakeHeapDumpReportService(defaultContext, defaultServices.notificationChannel);
+const reports = new FakeReportService(api, NotificationsInstance, defaultServices.notificationChannel);
+const heapDumpReports = new FakeHeapDumpReportService(api, defaultServices.notificationChannel);
 const settings = new FakeSetting();
 
 export const fakeServices: Services = {

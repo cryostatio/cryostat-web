@@ -2376,6 +2376,99 @@ export class ApiService {
     });
   }
 
+  asyncJobRequest(
+    urlObs: Observable<string>,
+    config: RequestInit,
+    jobCompletionObs: Observable<string>,
+  ): Observable<{ jobId: string; response: Response }> {
+    return combineLatest([
+      urlObs,
+      this.ctx.headers(config?.headers).pipe(
+        map((contextHeaders) => {
+          const callerHeaders = config?.headers || new Headers();
+          const mergedHeaders = new Headers();
+          new Headers(contextHeaders).forEach((v, k) => mergedHeaders.set(k, v));
+          new Headers(callerHeaders).forEach((v, k) => mergedHeaders.set(k, v));
+          return { ...config, headers: mergedHeaders };
+        }),
+      ),
+    ]).pipe(
+      concatMap((parts) => {
+        const url = parts[0];
+        const cfg = parts[1];
+        return from(this.fetchFn(url, cfg)).pipe(
+          concatMap((resp) => {
+            if (!resp.ok) {
+              throw new HttpError(resp);
+            }
+            if (resp.status === 202) {
+              return from(resp.text()).pipe(
+                concatMap((jobId) => {
+                  return jobCompletionObs.pipe(
+                    filter((id) => id === jobId),
+                    first(),
+                    concatMap(() => from(this.fetchFn(url, cfg))),
+                    map((followUpResp) => {
+                      if (followUpResp.status !== 200) {
+                        throw new HttpError(followUpResp);
+                      }
+                      return { jobId, response: followUpResp };
+                    }),
+                  );
+                }),
+              );
+            }
+            return of({ jobId: '', response: resp });
+          }),
+        );
+      }),
+      catchError((err) => {
+        return this.handleError<{ jobId: string; response: Response }>(
+          err,
+          () => this.asyncJobRequest(urlObs, config, jobCompletionObs),
+          false,
+        );
+      }),
+    );
+  }
+
+  analyzeHeapDump(
+    jvmId: string,
+    heapDumpId: string,
+    jobCompletionObs: Observable<string>,
+  ): Observable<{ jobId: string; response: Response }> {
+    const headers = new Headers();
+    headers.append('Accept', 'application/json');
+    return this.asyncJobRequest(
+      this.ctx.url(`/api/beta/diagnostics/targets/${jvmId}/heapdump/${heapDumpId}/analyze`),
+      {
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'include',
+        headers,
+      },
+      jobCompletionObs,
+    );
+  }
+
+  generateReport(
+    recordingUrl: string,
+    jobCompletionObs: Observable<string>,
+  ): Observable<{ jobId: string; response: Response }> {
+    const headers = new Headers();
+    headers.append('Accept', 'application/json');
+    return this.asyncJobRequest(
+      this.ctx.url(recordingUrl),
+      {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'include',
+        headers,
+      },
+      jobCompletionObs,
+    );
+  }
+
   sendRequest(
     apiVersion: ApiVersion,
     path: string,
