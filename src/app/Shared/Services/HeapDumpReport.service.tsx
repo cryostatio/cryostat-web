@@ -20,6 +20,11 @@ import { CachedHeapDumpReportValue, FetchFn, GenerationError, NotificationCatego
 import { NotificationChannel } from './NotificationChannel.service';
 import { CryostatContext } from './Services';
 
+export interface HeapDumpAnalysisResponse {
+  jobId: string;
+  result: HeapDumpAnalysisResult;
+}
+
 export class HeapDumpReportService {
   constructor(
     private ctx: CryostatContext,
@@ -50,7 +55,7 @@ export class HeapDumpReportService {
   private readonly jobIds: Map<string, string> = new Map();
   private readonly _jobCompletion: Subject<string> = new Subject();
 
-  reportJson(jvmId: string, heapDumpId: string): Observable<HeapDumpAnalysisResult> {
+  reportJson(jvmId: string, heapDumpId: string): Observable<HeapDumpAnalysisResponse> {
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     const req = () =>
@@ -78,7 +83,7 @@ export class HeapDumpReportService {
                 // job ID later to inform us that the report is now ready and can be retrieved by
                 // sending a follow-up GET to the Location header value
                 if (resp.status == 202) {
-                  let subj = new Subject<HeapDumpAnalysisResult>();
+                  let subj = new Subject<HeapDumpAnalysisResponse>();
                   resp.text().then((jobId) => {
                     this.jobIds.set(jobId, parts[0]);
                     this._jobCompletion
@@ -93,7 +98,7 @@ export class HeapDumpReportService {
                             resp
                               .text()
                               .then(JSON.parse)
-                              .then((obj) => subj.next(obj as HeapDumpAnalysisResult));
+                              .then((obj) => subj.next({ jobId: id, result: obj as HeapDumpAnalysisResult }));
                           } else {
                             const ge: GenerationError = {
                               name: `Heap Dump Report Failure (${heapDumpId})`,
@@ -113,7 +118,7 @@ export class HeapDumpReportService {
                   resp
                     .text()
                     .then(JSON.parse)
-                    .then((obj) => obj as HeapDumpAnalysisResult),
+                    .then((obj) => ({ jobId: '', result: obj as HeapDumpAnalysisResult })),
                 );
               } else {
                 const ge: GenerationError = {

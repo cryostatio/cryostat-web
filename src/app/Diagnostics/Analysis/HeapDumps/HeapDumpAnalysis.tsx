@@ -143,6 +143,8 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
   const appliedPrefillKeyRef = React.useRef<string>();
   const latestPrefillKeyRef = React.useRef<string | undefined>();
   const inFlightPrefillKeyRef = React.useRef<string | undefined>();
+  const activeJobIdRef = React.useRef<string>();
+  const selectedJobIdRef = React.useRef<string>();
 
   const targetAsObs = React.useMemo(() => of(target), [target]);
   const [activeTab, setActiveTab] = React.useState(0);
@@ -226,13 +228,16 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
     [setActiveTab],
   );
 
-  const handleHeapDumpAnalysis = React.useCallback(
-    (result: HeapDumpAnalysisResult) => {
-      setIsAnalysisLoading(false);
-      setAnalysisResult(result);
-    },
-    [setAnalysisResult],
-  );
+  const handleHeapDumpAnalysis = React.useCallback((jobId: string, result: HeapDumpAnalysisResult) => {
+    // Only process if this response is for the currently-active request
+    if (selectedJobIdRef.current && activeJobIdRef.current !== selectedJobIdRef.current) {
+      return;
+    }
+    // Record this jobId as selected since we're accepting this response
+    selectedJobIdRef.current = activeJobIdRef.current;
+    setIsAnalysisLoading(false);
+    setAnalysisResult(result);
+  }, []);
 
   const handleHeapDumpAnalysisError = React.useCallback(() => {
     selectedHeapDumpJvmIdRef.current = undefined;
@@ -278,21 +283,45 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
       selectedHeapDumpIdRef.current = heapDump;
       setIsAnalysisLoading(true);
 
+      // Create a request context to track this specific request
+      const requestContext = { heapDump, jvmId: selectedJvmId };
+
+      const handleResponse = (jobId: string) => {
+        activeJobIdRef.current = jobId;
+        selectedJobIdRef.current = jobId;
+      };
+
+      const isCurrentRequest = () =>
+        selectedHeapDumpIdRef.current === requestContext.heapDump &&
+        selectedHeapDumpJvmIdRef.current === requestContext.jvmId;
+
       const handleError = () => {
-        // Only clear state if this error is for the currently-expected request
-        if (selectedHeapDumpJvmIdRef.current !== selectedJvmId || selectedHeapDumpIdRef.current !== heapDump) {
+        // Only clear state if this error is for the currently-selected request
+        if (!isCurrentRequest()) {
           return;
         }
+        // Clear loading state before calling error handler which modifies refs
+        setIsAnalysisLoading(false);
         handleHeapDumpAnalysisError();
+      };
+
+      const handleFinalize = () => {
+        // Only clear loading if still in progress (not already cleared by error/success)
+        if (isCurrentRequest()) {
+          setIsAnalysisLoading(false);
+        }
       };
 
       if (selectedJvmId) {
         addSubscription(
           context.heapDumpReports
             .reportJson(selectedJvmId, heapDump)
-            .pipe(finalize(() => setIsAnalysisLoading(false)))
+            .pipe(finalize(handleFinalize))
             .subscribe({
-              next: handleHeapDumpAnalysis,
+              next: ({ jobId, result }) => {
+                handleResponse(jobId);
+                handleHeapDumpAnalysis(jobId, result);
+              },
               error: handleError,
             }),
         );
@@ -309,10 +338,13 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
               }
               return EMPTY;
             }),
-            finalize(() => setIsAnalysisLoading(false)),
+            finalize(handleFinalize),
           )
           .subscribe({
-            next: handleHeapDumpAnalysis,
+            next: ({ jobId, result }) => {
+              handleResponse(jobId);
+              handleHeapDumpAnalysis(jobId, result);
+            },
             error: handleError,
           }),
       );
@@ -353,6 +385,8 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
         appliedPrefillKeyRef.current = prefillKey;
         setAnalysisResult(undefined);
         selectedHeapDumpJvmIdRef.current = jvmId;
+        // Invalidate old jobId so we accept the new one from the response
+        selectedJobIdRef.current = undefined;
         setSelectedHeapDump(heapDumpId);
         if (target) {
           context.target.setTarget(target);
@@ -378,10 +412,13 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
       const jvmId = heapDump ? heapDumps.find((t) => t.heapDumpId === heapDump)?.jvmId || target?.jvmId : undefined;
       selectedHeapDumpJvmIdRef.current = jvmId;
       if (heapDump) {
+        // Invalidate old jobId so stale responses are ignored
+        selectedJobIdRef.current = undefined;
         appliedPrefillKeyRef.current = `${jvmId}/${heapDump}`;
         dispatch(modalPrefillSetIntent(location.pathname, { jvmId, heapDumpId: heapDump }));
         queryHeapDumpAnalysis(heapDump, jvmId);
       } else {
+        selectedJobIdRef.current = undefined;
         appliedPrefillKeyRef.current = undefined;
         dispatch(modalPrefillSetIntent(location.pathname, {}));
       }

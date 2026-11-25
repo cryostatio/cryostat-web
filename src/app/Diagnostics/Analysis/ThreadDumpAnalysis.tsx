@@ -278,6 +278,8 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
   const appliedPrefillKeyRef = React.useRef<string>();
   const latestPrefillKeyRef = React.useRef<string | undefined>();
   const inFlightPrefillKeyRef = React.useRef<string | undefined>();
+  const activeThreadDumpKeyRef = React.useRef<string>();
+  const selectedThreadDumpKeyRef = React.useRef<string>();
 
   const prefill = React.useMemo(
     () => readThreadDumpPrefill({ pathname: location.pathname, state: location.state }, modalPrefill),
@@ -621,12 +623,9 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
     [setThreadDumps],
   );
 
-  const handleThreadDumpAnalysis = React.useCallback(
-    (result: ThreadDumpAnalysisResult) => {
-      setAnalysisResult(result);
-    },
-    [setAnalysisResult],
-  );
+  const handleThreadDumpAnalysis = React.useCallback((result: ThreadDumpAnalysisResult) => {
+    setAnalysisResult(result);
+  }, []);
 
   const handleThreadDumpAnalysisError = React.useCallback(() => {
     selectedThreadDumpJvmIdRef.current = undefined;
@@ -641,25 +640,32 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
       const selectedJvmId = jvmId || threadDumps.find((t) => t.threadDumpId === threadDump)?.jvmId;
       selectedThreadDumpJvmIdRef.current = selectedJvmId;
       selectedThreadDumpIdRef.current = threadDump;
+      const threadDumpKey = `${selectedJvmId}/${threadDump}`;
+      activeThreadDumpKeyRef.current = threadDumpKey;
       setIsAnalysisLoading(true);
 
       const handleError = () => {
-        // Only clear state if this error is for the currently-expected request
-        if (selectedThreadDumpJvmIdRef.current !== selectedJvmId || selectedThreadDumpIdRef.current !== threadDump) {
+        // Only clear state if this error is for the currently-active request
+        if (activeThreadDumpKeyRef.current !== threadDumpKey) {
           return;
         }
         handleThreadDumpAnalysisError();
       };
 
+      const handleFinalize = () => {
+        // Only clear loading if this is the active request
+        if (activeThreadDumpKeyRef.current !== threadDumpKey) {
+          return;
+        }
+        setIsAnalysisLoading(false);
+      };
+
       if (selectedJvmId) {
         addSubscription(
-          context.api
-            .analyzeThreadDump(selectedJvmId, threadDump)
-            .pipe(finalize(() => setIsAnalysisLoading(false)))
-            .subscribe({
-              next: handleThreadDumpAnalysis,
-              error: handleError,
-            }),
+          context.api.analyzeThreadDump(selectedJvmId, threadDump).pipe(finalize(handleFinalize)).subscribe({
+            next: handleThreadDumpAnalysis,
+            error: handleError,
+          }),
         );
         return;
       }
@@ -675,7 +681,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
               }
               return EMPTY;
             }),
-            finalize(() => setIsAnalysisLoading(false)),
+            finalize(handleFinalize),
           )
           .subscribe({
             next: handleThreadDumpAnalysis,
@@ -748,10 +754,13 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
         : undefined;
       selectedThreadDumpJvmIdRef.current = jvmId;
       if (threadDump) {
-        appliedPrefillKeyRef.current = `${jvmId}/${threadDump}`;
+        const threadDumpKey = `${jvmId}/${threadDump}`;
+        selectedThreadDumpKeyRef.current = threadDumpKey;
+        appliedPrefillKeyRef.current = threadDumpKey;
         dispatch(modalPrefillSetIntent(location.pathname, { jvmId, threadDumpId: threadDump }));
         queryThreadDumpAnalysis(threadDump, jvmId);
       } else {
+        selectedThreadDumpKeyRef.current = undefined;
         appliedPrefillKeyRef.current = undefined;
         dispatch(modalPrefillSetIntent(location.pathname, {}));
       }
@@ -797,6 +806,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
         appliedPrefillKeyRef.current = prefillKey;
         setAnalysisResult(undefined);
         selectedThreadDumpJvmIdRef.current = jvmId;
+        selectedThreadDumpKeyRef.current = prefillKey;
         setSelectedThreadDump(threadDumpId);
         if (target) {
           context.target.setTarget(target);
