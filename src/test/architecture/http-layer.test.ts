@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { it, describe } from '@jest/globals';
 import * as fs from 'fs';
 import * as path from 'path';
+import { it, describe } from '@jest/globals';
 
 describe('HTTP Layer Architecture', () => {
   const srcDir = path.join(__dirname, '../../app');
-  const testDir = path.join(__dirname, '..');
 
   const getSourceFiles = (dir: string, excludeDirs: string[] = []): string[] => {
     const files: string[] = [];

@@ -16,8 +16,8 @@
 import { HeapDumpAnalysisResult } from '@app/Diagnostics/Analysis/HeapDumps/types';
 import { Base64 } from 'js-base64';
 import { concatMap, Observable, Subject } from 'rxjs';
-import { CachedHeapDumpReportValue, NotificationCategory } from './api.types';
 import { ApiService } from './Api.service';
+import { CachedHeapDumpReportValue, NotificationCategory } from './api.types';
 import { NotificationChannel } from './NotificationChannel.service';
 
 export interface HeapDumpAnalysisResponse {

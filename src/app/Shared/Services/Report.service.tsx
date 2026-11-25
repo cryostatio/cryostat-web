@@ -16,9 +16,9 @@
 import { Base64 } from 'js-base64';
 import { Observable, Subject, throwError } from 'rxjs';
 import { concatMap, tap } from 'rxjs/operators';
-import { Recording, CachedReportValue, AnalysisResult, NotificationCategory } from './api.types';
-import { isActiveRecording, isQuotaExceededError, isGenerationError } from './api.utils';
 import { ApiService } from './Api.service';
+import { Recording, CachedReportValue, AnalysisResult, NotificationCategory } from './api.types';
+import { isActiveRecording, isQuotaExceededError } from './api.utils';
 import { NotificationChannel } from './NotificationChannel.service';
 import type { NotificationService } from './Notifications.service';
 
