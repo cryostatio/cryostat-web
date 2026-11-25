@@ -142,6 +142,7 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
   const selectedHeapDumpIdRef = React.useRef<string>();
   const appliedPrefillKeyRef = React.useRef<string>();
   const latestPrefillKeyRef = React.useRef<string | undefined>();
+  const inFlightPrefillKeyRef = React.useRef<string | undefined>();
 
   const targetAsObs = React.useMemo(() => of(target), [target]);
   const [activeTab, setActiveTab] = React.useState(0);
@@ -330,17 +331,25 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
     if (!prefill.jvmId || !prefill.heapDumpId || appliedPrefillKeyRef.current === prefillKey) {
       return;
     }
+    // Guard against duplicate requests if effect re-runs before first request completes
+    if (inFlightPrefillKeyRef.current === prefillKey) {
+      return;
+    }
     const { jvmId, heapDumpId } = prefill;
+    inFlightPrefillKeyRef.current = prefillKey;
 
     addSubscription(
       findTargetByJvmId(jvmId).subscribe((target) => {
         if (appliedPrefillKeyRef.current === prefillKey) {
+          inFlightPrefillKeyRef.current = undefined;
           return;
         }
         // Discard stale results that have been superseded by a newer prefill
         if (latestPrefillKeyRef.current !== prefillKey) {
+          inFlightPrefillKeyRef.current = undefined;
           return;
         }
+        inFlightPrefillKeyRef.current = undefined;
         appliedPrefillKeyRef.current = prefillKey;
         setAnalysisResult(undefined);
         selectedHeapDumpJvmIdRef.current = jvmId;
