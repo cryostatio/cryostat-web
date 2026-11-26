@@ -1,7 +1,7 @@
 {
   "name": "cryostat-web",
   "version": "5.0.0-dev",
-  "backendSchemaRef": "3aeb6100b4fd77bc29f62e7f28025801b73cc4c8",
+  "backendSchemaRef": "137217723348860b3cead561400b6a7f0333b5d8",
   "description": "Web-Client for Cryostat",
   "repository": "https://github.com/cryostatio/cryostat-web.git",
   "license": "Apache-2.0",
